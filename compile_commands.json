@@ -1,0 +1,34 @@
+[
+ {
+  "directory": "/home/jose/axd_interpolant",
+  "arguments": [
+   "g++",
+   "-g",
+   "-c",
+   "-o",
+   "obj/AXDInterpolant.o",
+   "-I./src",
+   "-I./include",
+   "-std=c++11",
+   "-Wall",
+   "src/AXDInterpolant.cpp"
+  ],
+  "file": "src/AXDInterpolant.cpp"
+ },
+ {
+  "directory": "/home/jose/axd_interpolant",
+  "arguments": [
+   "g++",
+   "-g",
+   "-c",
+   "-o",
+   "./tests/basic.o",
+   "-I./src",
+   "-I./include",
+   "-std=c++11",
+   "-Wall",
+   "./tests/basic.cpp"
+  ],
+  "file": "./tests/basic.cpp"
+ }
+]
