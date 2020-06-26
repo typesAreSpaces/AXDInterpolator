@@ -138,6 +138,7 @@ void AXDInterpolant::traverseB(z3::expr const & e){
 
 void AXDInterpolant::saturate(Part & part, z3::expr const & new_formula){
   part.first.push_back(new_formula);
+  // TODO: implement the rest
 }
 
 void AXDInterpolant::loop(){
@@ -145,6 +146,7 @@ void AXDInterpolant::loop(){
   while(solver.check() != z3::unsat){
     std::cout << solver.check() << std::endl;
     std::cin >> stop;
+    // TODO: implement the rest
   }
 }
 
