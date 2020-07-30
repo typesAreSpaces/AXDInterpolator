@@ -1,13 +1,54 @@
 #include "StandardInput.h"
+#include <functional>
+#include <ios>
+#include <unordered_set>
+#include <utility>
 
-StandardInput::DiffTableEntry::DiffTableEntry(){
+StandardInput::DiffTableEntry::DiffTableEntry(z3::context & ctx) : 
+  index(ctx)
+{
 }
 
-StandardInput::DiffTable::DiffTable(){
+StandardInput::DiffTable::DiffTable(std::unordered_set<unsigned> const & array_var_ids, z3::context & ctx) : 
+  m_table()
+{
+  for(auto const & x : array_var_ids)
+    for(auto const & y : array_var_ids){
+      if(x > y)
+        m_table.insert(std::make_pair(
+              std::pair<unsigned, unsigned>(x, y), 
+              DiffTableEntry(ctx)));
+      else if(y > x)
+        m_table.insert(std::make_pair(
+              std::pair<unsigned, unsigned>(y, x), 
+              DiffTableEntry(ctx)));
+    }
+}
+
+void StandardInput::DiffTable::add(
+    z3::expr const & a, 
+    z3::expr const & b, 
+    z3::expr const & index){
+  if(a.id() > b.id())
+    add_aux(a, b, index);
+  else if(b.id() > a.id())
+    add_aux(b, a, index);
+}
+
+void StandardInput::DiffTable::add_aux(
+    z3::expr const & a, 
+    z3::expr const & b, 
+    z3::expr const & index){
+  auto table_entry = m_table.find(std::make_pair(a.id(), b.id()));
+  if(table_entry == m_table.end()){
+    std::cout << "Not found" << std::endl;
+    return;
+  }
+  table_entry->second.index.push_back(index);
 }
 
 StandardInput::WriteVector::WriteVector() : 
-  m_vector()
+  m_vector({})
 {
 }
 
@@ -16,8 +57,10 @@ void StandardInput::WriteVector::add(z3::expr const & a, z3::expr const & b, z3:
 }
 
 
-StandardInput::StandardInput(z3::expr const & e) : 
-  part_1(e.ctx()), part_2(e.ctx())
+StandardInput::StandardInput(z3::expr const & e, std::unordered_set<unsigned> const & array_var_ids) : 
+  part_1(e.ctx()), part_2(e.ctx()),
+  array_var_ids(array_var_ids),
+  diff_table(array_var_ids, e.ctx())
 {
   assert(e.decl().decl_kind() == Z3_OP_AND);
   for(unsigned i = 0; i < e.num_args(); i++){
@@ -48,7 +91,10 @@ StandardInput::StandardInput(z3::expr const & e) :
   std::cout << "Part 1: " << part_1 << std::endl;
   std::cout << "Part 2: " << part_2 << std::endl;
 #endif
+
   for(auto const & equation : part_1){
+    //std::cout << "Processing equation: " << equation << std::endl;
+
     auto f_name = equation.arg(1).decl().name().str();
     if(f_name == "wr"){
       write_vector.add(
@@ -57,8 +103,30 @@ StandardInput::StandardInput(z3::expr const & e) :
           equation.arg(1).arg(1));
     }
     else if(f_name == "diff"){
+      //std::cout << "-****** equation in diff" << std::endl;
+      //std::cout << equation << std::endl;
+      diff_table.add(
+          equation.arg(1).arg(0), 
+          equation.arg(1).arg(1), 
+          equation.arg(0));
     }
   }
+
+  std::cout << "---------wot" << std::endl;
+  for(auto const & x : diff_table.m_table){
+    std::cout << x.first.first << " " << x.first.second << " -> ";
+    std::cout << x.second.index << std::endl;
+  }
+  std::cout << "-hhhmmm" << std::endl;
+
+  std::cout << "---------wot1" << std::endl;
+  for(auto const & x : write_vector.m_vector){
+    std::cout << std::get<0>(x) << ", " 
+    << std::get<1>(x) << ", "
+    << std::get<2>(x) << std::endl;
+  }
+  std::cout << "-hhhmmm" << std::endl;
+  std::cout << std::endl << std::endl;
 }
 
 void StandardInput::update(){

@@ -1,6 +1,6 @@
 #ifndef _AXD_INTERPOLANT_
 #define _AXD_INTERPOLANT_
-#define _DEBUG_AXD_INTER_ 1
+#define _DEBUG_AXD_INTER_ 0
 
 #include <iostream>
 #include <utility>

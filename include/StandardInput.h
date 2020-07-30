@@ -1,7 +1,8 @@
 #ifndef _STANDARD_INPUT_
 #define _STANDARD_INPUT_
+#include <unordered_set>
 #include <utility>
-#define _DEBUG_STDINPUT_ 1
+#define _DEBUG_STDINPUT_ 0
 
 #include <z3++.h>
 #include <map>
@@ -9,31 +10,32 @@
 #include <tuple>
 
 class StandardInput {
-  class DiffTableEntry {
-    public:
-      DiffTableEntry();
+  struct DiffTableEntry {
+    z3::expr_vector index;
+    DiffTableEntry(z3::context &);
   };
 
-  class DiffTable {
-    std::map<std::pair<z3::expr, z3::expr>, DiffTableEntry> m_table;
-    public:
-    DiffTable();
+  struct DiffTable {
+    std::map<std::pair<unsigned, unsigned>, DiffTableEntry> m_table;
+    DiffTable(std::unordered_set<unsigned> const &, z3::context &);
+    void add(z3::expr const &, z3::expr const &, z3::expr const &);
+    void add_aux(z3::expr const &, z3::expr const &, z3::expr const &);
   };
 
-  class WriteVector {
+  struct WriteVector {
     std::vector<std::tuple<z3::expr, z3::expr, z3::expr> > m_vector;
-    public:
     WriteVector();
     void add(z3::expr const &, z3::expr const &, z3::expr const &);
   };
 
+  z3::expr_vector part_1, part_2;
+  std::unordered_set<unsigned> const & array_var_ids;
+
   DiffTable diff_table;
   WriteVector write_vector;
 
-  z3::expr_vector part_1, part_2;
-
   public:
-  StandardInput(z3::expr const &);
+  StandardInput(z3::expr const &, std::unordered_set<unsigned> const &);
   void update();
   z3::expr_vector const & getPart_1() const;
   z3::expr_vector const & getPart_2() const;

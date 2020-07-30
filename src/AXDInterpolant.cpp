@@ -3,7 +3,8 @@
 AXDInterpolant::AXDInterpolant(char const * file) : 
   Preprocessor(file),
   solver(ctx),
-  part_a(getPartA()), part_b(getPartB())
+  part_a(getPartA(), getALocalArrayVarIds()), 
+  part_b(getPartB(), getBLocalArrayVarIds())
 {
   for(auto const & form : part_a.getPart_2())
     solver.add(form);

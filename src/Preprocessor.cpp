@@ -1,4 +1,5 @@
 #include "Preprocess.h"
+#include <exception>
 #include <pthread.h>
 #include <tuple>
 #include <unordered_set>
@@ -7,7 +8,7 @@ Preprocessor::Preprocessor(char const * file):
   AXDSignature(),
   really_a_parser(ctx), 
   fresh_index(0), num_args_aux(0),
-  part_a_array_var_ids({}), part_b_array_var_ids({}),
+  part_a_array_var_ids({}), part_b_array_var_ids({}), common_array_var_ids({}),
   assertions((really_a_parser.from_file(file), 
         really_a_parser.assertions())),
   initial_index_vars(ctx)
@@ -28,10 +29,18 @@ Preprocessor::Preprocessor(char const * file):
     flattenPredicate(assertions[1].arg(i), PART_B);
   //}
   
+  //std::cout << "Arrays A-local" << std::endl;
   //for(auto const & x : part_a_array_var_ids)
     //std::cout << x << std::endl;
+  //std::cout << "Arrays B-local" << std::endl;
   //for(auto const & x : part_b_array_var_ids)
     //std::cout << x << std::endl;
+  
+  for(auto iterator_a = part_a_array_var_ids.begin(); 
+      iterator_a != part_a_array_var_ids.end(); ++iterator_a){
+    if(inSet(*iterator_a, part_b_array_var_ids))
+      common_array_var_ids.insert(*iterator_a);
+  }
 
   removeDuplicates(initial_index_vars);
   //std::cout << initial_index_vars << std::endl;
@@ -48,14 +57,20 @@ void Preprocessor::flattenPredicate(z3::expr const & formula,
     case Z3_OP_LT: // <
       if(formula.arg(0).num_args() > 0)
         flattenTerm(formula.arg(0), side);
-      else
+      else{
         if(formula.arg(0).decl().range().name().str() == "Int")
           initial_index_vars.push_back(formula.arg(0));
+        if(formula.arg(0).decl().range().name().str() == "ArraySort")
+          updateArrayVarIds(formula.arg(0), side);
+      }
       if(formula.arg(1).num_args() > 0)
         flattenTerm(formula.arg(1), side);
-      else
+      else{
         if(formula.arg(1).decl().range().name().str() == "Int")
           initial_index_vars.push_back(formula.arg(1));
+        if(formula.arg(1).decl().range().name().str() == "ArraySort")
+          updateArrayVarIds(formula.arg(1), side);
+      }
       break;
     default:
       throw "Error at "
@@ -97,12 +112,6 @@ void Preprocessor::flattenTerm(z3::expr const & term,
   }
   if(f_name == "diff"){
     //std::cout << "-------A diff function" << std::endl;
-    if(term.arg(0).num_args() == 0 
-        && term.arg(1).num_args() == 0){
-      // TODO: setup grounded term
-      return;
-    }
-
     if(term.arg(0).num_args() > 0)
       cojoin(term.arg(0), fresh_array_constant(), side);
     else
@@ -173,6 +182,18 @@ z3::expr Preprocessor::getPartB() const {
 
 z3::expr_vector Preprocessor::getIndexVars() const {
   return initial_index_vars;
+}
+
+std::unordered_set<unsigned> Preprocessor::getALocalArrayVarIds() const {
+  return part_a_array_var_ids;
+}
+
+std::unordered_set<unsigned> Preprocessor::getBLocalArrayVarIds() const {
+  return part_b_array_var_ids;
+}
+
+std::unordered_set<unsigned> Preprocessor::getCommonArrayVarIds() const {
+  return common_array_var_ids;
 }
 
 void Preprocessor::removeDuplicates(z3::expr_vector & terms){

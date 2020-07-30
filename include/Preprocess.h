@@ -18,7 +18,8 @@ class Preprocessor : public AXDSignature {
 
   std::unordered_set<unsigned>
     part_a_array_var_ids, 
-    part_b_array_var_ids;
+    part_b_array_var_ids,
+    common_array_var_ids;
 
   void flattenPredicate(z3::expr const &, SideInterpolant);
   void flattenTerm(z3::expr const &, SideInterpolant);
@@ -39,6 +40,9 @@ class Preprocessor : public AXDSignature {
   z3::expr getPartA() const;
   z3::expr getPartB() const;
   z3::expr_vector getIndexVars() const;
+  std::unordered_set<unsigned> getALocalArrayVarIds() const;
+  std::unordered_set<unsigned> getBLocalArrayVarIds() const;
+  std::unordered_set<unsigned> getCommonArrayVarIds() const;
 };
 
 #endif
