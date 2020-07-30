@@ -14,8 +14,6 @@ class AXDInterpolant : public Preprocessor {
   
   StandardInput part_a, part_b;
 
-  //unsigned fresh_index;
-
   void loop();
 
   public: 
