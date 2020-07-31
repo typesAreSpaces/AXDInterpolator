@@ -2,6 +2,8 @@
 #define _AXD_SIG_
 
 #define inSet(element, set) (set.find(element) != set.end())
+#define lhs(x) x.arg(0)
+#define rhs(x) x.arg(1)
 
 #include <z3++.h>
 

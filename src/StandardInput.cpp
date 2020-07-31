@@ -1,31 +1,29 @@
 #include "StandardInput.h"
-#include <functional>
-#include <ios>
-#include <unordered_set>
-#include <utility>
 
-StandardInput::DiffTableEntry::DiffTableEntry(z3::context & ctx) : 
-  index(ctx)
+StandardInput::DiffMap::DiffMapEntry::DiffMapEntry(z3::context & ctx) : 
+  new_index_vars(ctx)
 {
 }
 
-StandardInput::DiffTable::DiffTable(std::unordered_set<unsigned> const & array_var_ids, z3::context & ctx) : 
-  m_table()
+StandardInput::DiffMap::DiffMap(
+    z3::context & ctx,
+    std::unordered_set<unsigned> const & array_var_ids) : 
+  m_map()
 {
   for(auto const & x : array_var_ids)
     for(auto const & y : array_var_ids){
       if(x > y)
-        m_table.insert(std::make_pair(
+        m_map.insert(std::make_pair(
               std::pair<unsigned, unsigned>(x, y), 
-              DiffTableEntry(ctx)));
+              DiffMapEntry(ctx)));
       else if(y > x)
-        m_table.insert(std::make_pair(
+        m_map.insert(std::make_pair(
               std::pair<unsigned, unsigned>(y, x), 
-              DiffTableEntry(ctx)));
+              DiffMapEntry(ctx)));
     }
 }
 
-void StandardInput::DiffTable::add(
+void StandardInput::DiffMap::add(
     z3::expr const & a, 
     z3::expr const & b, 
     z3::expr const & index){
@@ -35,16 +33,16 @@ void StandardInput::DiffTable::add(
     add_aux(b, a, index);
 }
 
-void StandardInput::DiffTable::add_aux(
+void StandardInput::DiffMap::add_aux(
     z3::expr const & a, 
     z3::expr const & b, 
     z3::expr const & index){
-  auto table_entry = m_table.find(std::make_pair(a.id(), b.id()));
-  if(table_entry == m_table.end()){
+  auto table_entry = m_map.find(std::make_pair(a.id(), b.id()));
+  if(table_entry == m_map.end()){
     std::cout << "Not found" << std::endl;
     return;
   }
-  table_entry->second.index.push_back(index);
+  table_entry->second.new_index_vars.push_back(index);
 }
 
 StandardInput::WriteVector::WriteVector() : 
@@ -52,24 +50,33 @@ StandardInput::WriteVector::WriteVector() :
 {
 }
 
-void StandardInput::WriteVector::add(z3::expr const & a, z3::expr const & b, z3::expr const & i){
-  m_vector.push_back(std::make_tuple(a, b, i));
+// Keeps track of the a, b, index in 
+// wr-equations of the form a = wr(b, index, e)
+void StandardInput::WriteVector::add(
+    z3::expr const & a, 
+    z3::expr const & b, 
+    z3::expr const & index,
+    z3::expr const & element){
+  m_vector.push_back(std::make_tuple(a, b, index, element));
 }
 
-
-StandardInput::StandardInput(z3::expr const & e, std::unordered_set<unsigned> const & array_var_ids) : 
-  part_1(e.ctx()), part_2(e.ctx()),
-  array_var_ids(array_var_ids),
-  diff_table(array_var_ids, e.ctx())
+StandardInput::StandardInput(z3::expr const & e, 
+    z3::expr_vector const & initial_index_vars,
+    std::unordered_set<unsigned> const & array_var_ids, 
+    AXDSignature const & sig) :
+  sig(sig),
+  diff_map(e.ctx(), array_var_ids),
+  part_1(e.ctx()), part_2(e.ctx()), 
+  initial_index_vars(initial_index_vars)
 {
   assert(e.decl().decl_kind() == Z3_OP_AND);
   for(unsigned i = 0; i < e.num_args(); i++){
     auto current_arg = e.arg(i);
     switch(current_arg.decl().decl_kind()){
       case Z3_OP_EQ: // ==
-        if(current_arg.arg(0).decl().range().name().str() == "ArraySort" 
-            || current_arg.arg(0).decl().name().str() == "diff" 
-            || current_arg.arg(1).decl().name().str() == "diff" ){
+        if(lhs(current_arg).decl().range().name().str() == "ArraySort" 
+            || lhs(current_arg).decl().name().str() == "diff" 
+            || rhs(current_arg).decl().name().str() == "diff" ){
           part_1.push_back(orientBinPredicate(current_arg));
         }
         else
@@ -94,54 +101,75 @@ StandardInput::StandardInput(z3::expr const & e, std::unordered_set<unsigned> co
 
   for(auto const & equation : part_1){
     //std::cout << "Processing equation: " << equation << std::endl;
-
-    auto f_name = equation.arg(1).decl().name().str();
+    auto f_name = rhs(equation).decl().name().str();
     if(f_name == "wr"){
       write_vector.add(
-          equation.arg(0), 
-          equation.arg(1).arg(0), 
-          equation.arg(1).arg(1));
+          lhs(equation), 
+          lhs(rhs(equation)), 
+          rhs(rhs(equation)),
+          rhs(equation).arg(2)
+          );
     }
     else if(f_name == "diff"){
       //std::cout << "-****** equation in diff" << std::endl;
       //std::cout << equation << std::endl;
-      diff_table.add(
-          equation.arg(1).arg(0), 
-          equation.arg(1).arg(1), 
-          equation.arg(0));
+      diff_map.add(
+          lhs(rhs(equation)), 
+          rhs(rhs(equation)),
+          lhs(equation));
     }
   }
 
-  std::cout << "---------wot" << std::endl;
-  for(auto const & x : diff_table.m_table){
+#if _DEBUG_STDINPUT_
+  std::cout << "Start DiffMap" << std::endl;
+  for(auto const & x : diff_map.m_map){
     std::cout << x.first.first << " " << x.first.second << " -> ";
-    std::cout << x.second.index << std::endl;
+    std::cout << x.second.new_index_vars << std::endl;
   }
-  std::cout << "-hhhmmm" << std::endl;
+  std::cout << "End DiffMap" << std::endl;
 
-  std::cout << "---------wot1" << std::endl;
+  std::cout << "Start WriteVector" << std::endl;
   for(auto const & x : write_vector.m_vector){
     std::cout << std::get<0>(x) << ", " 
     << std::get<1>(x) << ", "
     << std::get<2>(x) << std::endl;
   }
-  std::cout << "-hhhmmm" << std::endl;
+  std::cout << "End WriteVector" << std::endl;
   std::cout << std::endl << std::endl;
-}
-
-void StandardInput::update(){
-}
-
-z3::expr_vector const & StandardInput::getPart_1() const {
-  return part_1;
-}
-
-z3::expr_vector const & StandardInput::getPart_2() const {
-  return part_2;
+#endif
+  initSaturation();
 }
 
 z3::expr StandardInput::orientBinPredicate(z3::expr const & eq){
-  if(eq.arg(0).num_args() > eq.arg(1).num_args())
-    return eq.arg(1) == eq.arg(0);
+  if(lhs(eq).num_args() > rhs(eq).num_args())
+    return rhs(eq) == lhs(eq);
   return eq;
 }
+
+void StandardInput::initSaturation(){
+  // Processing equations of the form a = wr(b, i, e)
+  for(auto const & _4tuple : write_vector.m_vector){
+    // The following adds rd(a, i) = e
+    part_2.push_back(
+        sig.rd(std::get<0>(_4tuple), std::get<2>(_4tuple)) 
+        == std::get<3>(_4tuple));
+    // TODO:
+    // The following instantiates the universally
+    // quantified formula 
+    // \forall h . h \neq i \rightarrow rd(a, b) = rd(b, h)
+  }
+  
+  // Processing equations of the form diff(a, b) = i
+  //for(auto const & entry : diff_map.m_map){
+    //auto const & jkkk = entry.first;
+  // The following adds (27) predicates
+  // The following adds (28) predicates
+  // The following adds (29) predicates
+  // The following adds (30) predicates
+  // The following adds (31) predicates
+  //}
+}
+
+void StandardInput::updateSaturation(){
+}
+

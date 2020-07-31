@@ -1,5 +1,6 @@
 #ifndef _PREPROCESS_
 #define _PREPROCESS_
+#define _DEBUG_PREPROCESS_ 0
 
 #include <iostream>
 #include <string>
@@ -8,7 +9,7 @@
 
 class Preprocessor : public AXDSignature {
 
-    enum SideInterpolant {
+  enum SideInterpolant {
     PART_A, PART_B
   };
 
@@ -16,33 +17,30 @@ class Preprocessor : public AXDSignature {
 
   unsigned fresh_index, num_args_aux;
 
-  std::unordered_set<unsigned>
-    part_a_array_var_ids, 
-    part_b_array_var_ids,
-    common_array_var_ids;
-
   void flattenPredicate(z3::expr const &, SideInterpolant);
+  void flattenPredicateAux(z3::expr const &, SideInterpolant);
   void flattenTerm(z3::expr const &, SideInterpolant);
+  
   z3::expr fresh_array_constant();
   z3::expr fresh_element_constant();
   z3::expr fresh_index_constant();
+
   void cojoin(z3::expr const &, z3::expr const &, SideInterpolant);
   void updateArrayVarIds(z3::expr const &, SideInterpolant);
   void removeDuplicates(z3::expr_vector &);
 
   protected:
-  z3::expr_vector assertions, initial_index_vars;
+  z3::expr_vector assertions, all_index_vars;
+
+  std::unordered_set<unsigned>
+    part_a_array_var_ids, 
+    part_b_array_var_ids,
+    common_array_var_ids;
 
   public:
   Preprocessor(char const *);
 
   bool isArrayVarCommon(z3::expr const &);
-  z3::expr getPartA() const;
-  z3::expr getPartB() const;
-  z3::expr_vector getIndexVars() const;
-  std::unordered_set<unsigned> getALocalArrayVarIds() const;
-  std::unordered_set<unsigned> getBLocalArrayVarIds() const;
-  std::unordered_set<unsigned> getCommonArrayVarIds() const;
 };
 
 #endif

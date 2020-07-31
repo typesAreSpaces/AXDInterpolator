@@ -1,19 +1,14 @@
 #include "Preprocess.h"
-#include <exception>
-#include <pthread.h>
-#include <tuple>
-#include <unordered_set>
 
 Preprocessor::Preprocessor(char const * file):
   AXDSignature(),
   really_a_parser(ctx), 
   fresh_index(0), num_args_aux(0),
-  part_a_array_var_ids({}), part_b_array_var_ids({}), common_array_var_ids({}),
   assertions((really_a_parser.from_file(file), 
         really_a_parser.assertions())),
-  initial_index_vars(ctx)
+  all_index_vars(ctx),
+  part_a_array_var_ids({}), part_b_array_var_ids({}), common_array_var_ids({})
 {
-
   assert(assertions.size() == 2);
 
   // Processing Part-A
@@ -24,26 +19,28 @@ Preprocessor::Preprocessor(char const * file):
   // Processing Part-B
   num_args_aux = assertions[1].num_args();
   for(unsigned i = 0; i < num_args_aux; i++)
-  ////for(unsigned i = 0; i <  assertions[1].num_args(); i++){
-    ////std::cout << "@#$#!$!@#$ " << i << std::endl;
     flattenPredicate(assertions[1].arg(i), PART_B);
-  //}
   
-  //std::cout << "Arrays A-local" << std::endl;
-  //for(auto const & x : part_a_array_var_ids)
-    //std::cout << x << std::endl;
-  //std::cout << "Arrays B-local" << std::endl;
-  //for(auto const & x : part_b_array_var_ids)
-    //std::cout << x << std::endl;
-  
+#if _DEBUG_PREPROCESS_
+  std::cout << "Arrays A-local" << std::endl;
+  for(auto const & x : part_a_array_var_ids)
+    std::cout << x << std::endl;
+  std::cout << "Arrays B-local" << std::endl;
+  for(auto const & x : part_b_array_var_ids)
+    std::cout << x << std::endl;
+#endif
+   
+  // Compute Common Array Var Ids
   for(auto iterator_a = part_a_array_var_ids.begin(); 
       iterator_a != part_a_array_var_ids.end(); ++iterator_a){
     if(inSet(*iterator_a, part_b_array_var_ids))
       common_array_var_ids.insert(*iterator_a);
   }
 
-  removeDuplicates(initial_index_vars);
-  //std::cout << initial_index_vars << std::endl;
+  removeDuplicates(all_index_vars);
+#if _DEBUG_PREPROCESS_
+  std::cout << all_index_vars << std::endl;
+#endif
 }
 
 void Preprocessor::flattenPredicate(z3::expr const & formula, 
@@ -55,27 +52,26 @@ void Preprocessor::flattenPredicate(z3::expr const & formula,
     case Z3_OP_LE: // <=
     case Z3_OP_GT: // >
     case Z3_OP_LT: // <
-      if(formula.arg(0).num_args() > 0)
-        flattenTerm(formula.arg(0), side);
-      else{
-        if(formula.arg(0).decl().range().name().str() == "Int")
-          initial_index_vars.push_back(formula.arg(0));
-        if(formula.arg(0).decl().range().name().str() == "ArraySort")
-          updateArrayVarIds(formula.arg(0), side);
-      }
-      if(formula.arg(1).num_args() > 0)
-        flattenTerm(formula.arg(1), side);
-      else{
-        if(formula.arg(1).decl().range().name().str() == "Int")
-          initial_index_vars.push_back(formula.arg(1));
-        if(formula.arg(1).decl().range().name().str() == "ArraySort")
-          updateArrayVarIds(formula.arg(1), side);
-      }
-      break;
+      flattenPredicateAux(formula.arg(0), side);
+      flattenPredicateAux(formula.arg(1), side);
+      return;
     default:
       throw "Error at "
         "Preprocessor::flattenPredicate(z3::expr const &)." 
         "Formula not in AXD";
+  }
+}
+
+void Preprocessor::flattenPredicateAux(z3::expr const & term, 
+    SideInterpolant side){
+  if(term.num_args() > 0)
+    flattenTerm(term, side);
+  else{
+    auto sort_name = term.decl().range().name().str(); 
+    if(sort_name == "Int")
+      all_index_vars.push_back(term);
+    if(sort_name == "ArraySort")
+      updateArrayVarIds(term, side);
   }
 }
 
@@ -85,6 +81,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
   auto f_name = term.decl().name().str();
   if(f_name == "wr"){
     //std::cout << "-------A write function" << std::endl;
+    
     if(term.arg(0).num_args() > 0)
       cojoin(term.arg(0), fresh_array_constant(), side);
     else
@@ -93,13 +90,14 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     if(term.arg(1).num_args() > 0)
       cojoin(term.arg(1), fresh_index_constant(), side);
     else
-      initial_index_vars.push_back(term.arg(1)); 
+      all_index_vars.push_back(term.arg(1)); 
 
     if(term.arg(2).num_args() > 0)
       cojoin(term.arg(2), fresh_element_constant(), side);
   }
   if(f_name == "rd"){
     //std::cout << "-------A read function" << std::endl;
+    
     if(term.arg(0).num_args() > 0)
       cojoin(term.arg(0), fresh_array_constant(), side);
     else
@@ -108,10 +106,11 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     if(term.arg(1).num_args() > 0)
       cojoin(term.arg(1), fresh_index_constant(), side);
     else
-      initial_index_vars.push_back(term.arg(1)); 
+      all_index_vars.push_back(term.arg(1)); 
   }
   if(f_name == "diff"){
     //std::cout << "-------A diff function" << std::endl;
+    
     if(term.arg(0).num_args() > 0)
       cojoin(term.arg(0), fresh_array_constant(), side);
     else
@@ -160,40 +159,16 @@ void Preprocessor::updateArrayVarIds(z3::expr const & e,
   switch(side){
     case PART_A:
       part_a_array_var_ids.insert(e.id());
-      break;
+      return;
     case PART_B:
       part_b_array_var_ids.insert(e.id());
-      break;
+      return;
   }
 }
 
 bool Preprocessor::isArrayVarCommon(z3::expr const & e){
   return inSet(e.id(), part_a_array_var_ids) 
     && inSet(e.id(), part_b_array_var_ids);
-}
-
-z3::expr Preprocessor::getPartA() const {
-  return assertions[0];
-}
-
-z3::expr Preprocessor::getPartB() const {
-  return assertions[1];
-}
-
-z3::expr_vector Preprocessor::getIndexVars() const {
-  return initial_index_vars;
-}
-
-std::unordered_set<unsigned> Preprocessor::getALocalArrayVarIds() const {
-  return part_a_array_var_ids;
-}
-
-std::unordered_set<unsigned> Preprocessor::getBLocalArrayVarIds() const {
-  return part_b_array_var_ids;
-}
-
-std::unordered_set<unsigned> Preprocessor::getCommonArrayVarIds() const {
-  return common_array_var_ids;
 }
 
 void Preprocessor::removeDuplicates(z3::expr_vector & terms){

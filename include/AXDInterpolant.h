@@ -11,7 +11,6 @@
 class AXDInterpolant : public Preprocessor {
 
   z3::solver solver;
-  
   StandardInput part_a, part_b;
 
   void loop();
