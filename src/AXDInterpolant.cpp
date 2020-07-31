@@ -1,12 +1,10 @@
 #include "AXDInterpolant.h"
 
-AXDInterpolant::AXDInterpolant(char const * file) : 
-  Preprocessor(file),
+AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file) : 
+  Preprocessor(ctx, file),
   solver(ctx),
-  part_a(assertions[0], all_index_vars, part_a_array_var_ids, 
-      *static_cast<AXDSignature *>(this)), 
-  part_b(assertions[1], all_index_vars, part_b_array_var_ids,
-      *static_cast<AXDSignature *>(this))
+  part_a(assertions[0], all_index_vars, part_a_array_var_ids),
+  part_b(assertions[1], all_index_vars, part_b_array_var_ids)
 {
   std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
   std::cout << "B-part part 2: " << part_b.part_2 << std::endl;

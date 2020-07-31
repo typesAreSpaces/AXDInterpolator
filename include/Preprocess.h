@@ -38,7 +38,7 @@ class Preprocessor : public AXDSignature {
     common_array_var_ids;
 
   public:
-  Preprocessor(char const *);
+  Preprocessor(z3::context &, char const *);
 
   bool isArrayVarCommon(z3::expr const &);
 };

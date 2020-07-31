@@ -10,7 +10,7 @@
 #include <tuple>
 #include "AXDSignature.h"
 
-class StandardInput {
+class StandardInput : public AXDSignature {
 
   friend class AXDInterpolant;
 
@@ -46,7 +46,6 @@ class StandardInput {
     void add(z3::expr const &, z3::expr const &, z3::expr const &, z3::expr const &);
   };
 
-  AXDSignature const & sig;
   DiffMap diff_map;
   WriteVector write_vector;
 
@@ -62,8 +61,7 @@ class StandardInput {
   StandardInput(
       z3::expr const &, 
       z3::expr_vector const & initial_index_vars,
-      z3_expr_set const &,
-      AXDSignature const &);
+      z3_expr_set const &);
   void initSaturation(); // TODO: implement
   void updateSaturation(); // TODO: implement
 };

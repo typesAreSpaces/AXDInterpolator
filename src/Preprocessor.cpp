@@ -1,7 +1,7 @@
 #include "Preprocess.h"
 
-Preprocessor::Preprocessor(char const * file):
-  AXDSignature(),
+Preprocessor::Preprocessor(z3::context & ctx, char const * file):
+  AXDSignature(ctx),
   really_a_parser(ctx), 
   fresh_index(0), num_args_aux(0),
   assertions((really_a_parser.from_file(file), 

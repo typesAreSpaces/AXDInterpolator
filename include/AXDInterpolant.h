@@ -16,7 +16,7 @@ class AXDInterpolant : public Preprocessor {
   void loop();
 
   public: 
-  AXDInterpolant(char const *);
+  AXDInterpolant(z3::context &, char const *);
 };
 
 #endif

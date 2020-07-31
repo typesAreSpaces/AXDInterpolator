@@ -62,9 +62,8 @@ void StandardInput::WriteVector::add(
 
 StandardInput::StandardInput(z3::expr const & e, 
     z3::expr_vector const & initial_index_vars,
-    z3_expr_set const & array_var_ids, 
-    AXDSignature const & sig) :
-  sig(sig),
+    z3_expr_set const & array_var_ids) :
+  AXDSignature(e.ctx()),
   diff_map(e.ctx(), array_var_ids),
   part_1(e.ctx()), part_2(e.ctx()), 
   initial_index_vars(initial_index_vars)
@@ -151,7 +150,7 @@ void StandardInput::initSaturation(){
   for(auto const & _4tuple : write_vector.m_vector){
     // The following adds rd(a, i) = e
     part_2.push_back(
-        sig.rd(std::get<0>(_4tuple), std::get<2>(_4tuple)) 
+        rd(std::get<0>(_4tuple), std::get<2>(_4tuple)) 
         == std::get<3>(_4tuple));
     // TODO:
     // The following instantiates the universally

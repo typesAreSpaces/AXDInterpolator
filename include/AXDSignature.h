@@ -18,7 +18,7 @@ struct Z3ExprComparator {
 typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
 
 struct AXDSignature {
-  z3::context ctx;
+  z3::context & ctx;
   z3::sort 
     int_sort, 
     index_sort, 
@@ -28,7 +28,7 @@ struct AXDSignature {
     diff,
     wr,
     rd;
-  AXDSignature();
+  AXDSignature(z3::context &);
 };
 
 #endif
