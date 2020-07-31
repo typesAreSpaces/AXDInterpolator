@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_set>
+//#include <unordered_set>
 #include "AXDSignature.h"
 
 class Preprocessor : public AXDSignature {
@@ -32,7 +32,7 @@ class Preprocessor : public AXDSignature {
   protected:
   z3::expr_vector assertions, all_index_vars;
 
-  std::unordered_set<unsigned>
+  z3_expr_set
     part_a_array_var_ids, 
     part_b_array_var_ids,
     common_array_var_ids;

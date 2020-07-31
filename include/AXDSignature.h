@@ -6,6 +6,16 @@
 #define rhs(x) x.arg(1)
 
 #include <z3++.h>
+#include <set>
+#include <utility>
+
+struct Z3ExprComparator {
+  bool operator() (z3::expr const & a, z3::expr const & b){
+    return a.id() > b.id();
+  }
+};
+
+typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
 
 struct AXDSignature {
   z3::context ctx;

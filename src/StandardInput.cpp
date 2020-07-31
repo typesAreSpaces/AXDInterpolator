@@ -7,18 +7,18 @@ StandardInput::DiffMap::DiffMapEntry::DiffMapEntry(z3::context & ctx) :
 
 StandardInput::DiffMap::DiffMap(
     z3::context & ctx,
-    std::unordered_set<unsigned> const & array_var_ids) : 
+    z3_expr_set const & array_var_ids) : 
   m_map()
 {
   for(auto const & x : array_var_ids)
     for(auto const & y : array_var_ids){
-      if(x > y)
+      if(x.id() > y.id())
         m_map.insert(std::make_pair(
-              std::pair<unsigned, unsigned>(x, y), 
+              std::pair<z3::expr, z3::expr>(x, y), 
               DiffMapEntry(ctx)));
-      else if(y > x)
+      else if(y.id() > x.id())
         m_map.insert(std::make_pair(
-              std::pair<unsigned, unsigned>(y, x), 
+              std::pair<z3::expr, z3::expr>(y, x), 
               DiffMapEntry(ctx)));
     }
 }
@@ -37,7 +37,7 @@ void StandardInput::DiffMap::add_aux(
     z3::expr const & a, 
     z3::expr const & b, 
     z3::expr const & index){
-  auto table_entry = m_map.find(std::make_pair(a.id(), b.id()));
+  auto table_entry = m_map.find(std::make_pair(a, b));
   if(table_entry == m_map.end()){
     std::cout << "Not found" << std::endl;
     return;
@@ -62,7 +62,7 @@ void StandardInput::WriteVector::add(
 
 StandardInput::StandardInput(z3::expr const & e, 
     z3::expr_vector const & initial_index_vars,
-    std::unordered_set<unsigned> const & array_var_ids, 
+    z3_expr_set const & array_var_ids, 
     AXDSignature const & sig) :
   sig(sig),
   diff_map(e.ctx(), array_var_ids),
@@ -157,17 +157,26 @@ void StandardInput::initSaturation(){
     // The following instantiates the universally
     // quantified formula 
     // \forall h . h \neq i \rightarrow rd(a, b) = rd(b, h)
+    for(auto const & index : initial_index_vars){
+      index.check_error();
+    }
   }
   
   // Processing equations of the form diff(a, b) = i
-  //for(auto const & entry : diff_map.m_map){
-    //auto const & jkkk = entry.first;
   // The following adds (27) predicates
   // The following adds (28) predicates
   // The following adds (29) predicates
   // The following adds (30) predicates
   // The following adds (31) predicates
-  //}
+  for(auto const & entry : diff_map.m_map){
+    auto const & a = entry.first.first;
+    auto const & b = entry.first.second;
+    std::cout << a << ", " << b << std::endl;
+
+    for(auto const & index : initial_index_vars){
+      index.check_error();
+    }
+  }
 }
 
 void StandardInput::updateSaturation(){

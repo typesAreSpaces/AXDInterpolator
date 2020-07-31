@@ -2,7 +2,8 @@
 #define _STANDARD_INPUT_
 #define _DEBUG_STDINPUT_ 0
 
-#include <unordered_set>
+//#include <unordered_set>
+#include <set>
 #include <utility>
 #include <map>
 #include <vector>
@@ -20,10 +21,18 @@ class StandardInput {
       z3::expr_vector new_index_vars;
       DiffMapEntry(z3::context &);
     };
-
-    std::map<std::pair<unsigned, unsigned>, DiffMapEntry> m_map;
     
-    DiffMap(z3::context &, std::unordered_set<unsigned> const &);
+    struct Z3ExprExprComparator {
+      bool operator() (std::pair<z3::expr, z3::expr> const & a, std::pair<z3::expr, z3::expr> const & b){
+        return a.first.id() > b.first.id() || (a.first.id() == b.first.id() && a.second.id() > b.second.id());
+      }
+    };
+
+    std::map<std::pair<z3::expr, z3::expr>, 
+      DiffMapEntry, 
+      Z3ExprExprComparator> m_map;
+    
+    DiffMap(z3::context &, z3_expr_set const &);
 
     void add(z3::expr const &, z3::expr const &, z3::expr const &);
     void add_aux(z3::expr const &, z3::expr const &, z3::expr const &);
@@ -53,7 +62,7 @@ class StandardInput {
   StandardInput(
       z3::expr const &, 
       z3::expr_vector const & initial_index_vars,
-      std::unordered_set<unsigned> const &,
+      z3_expr_set const &,
       AXDSignature const &);
   void initSaturation(); // TODO: implement
   void updateSaturation(); // TODO: implement

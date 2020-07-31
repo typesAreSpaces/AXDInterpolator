@@ -158,25 +158,25 @@ void Preprocessor::updateArrayVarIds(z3::expr const & e,
     SideInterpolant side){
   switch(side){
     case PART_A:
-      part_a_array_var_ids.insert(e.id());
+      part_a_array_var_ids.insert(e);
       return;
     case PART_B:
-      part_b_array_var_ids.insert(e.id());
+      part_b_array_var_ids.insert(e);
       return;
   }
 }
 
 bool Preprocessor::isArrayVarCommon(z3::expr const & e){
-  return inSet(e.id(), part_a_array_var_ids) 
-    && inSet(e.id(), part_b_array_var_ids);
+  return inSet(e, part_a_array_var_ids) 
+    && inSet(e, part_b_array_var_ids);
 }
 
 void Preprocessor::removeDuplicates(z3::expr_vector & terms){
   z3::expr_vector aux(ctx);
-  std::unordered_set<unsigned> ids({});
+  z3_expr_set ids({});
   for(auto const & term : terms)
-    if(!inSet(term.id(), ids)){
-      ids.insert(term.id());
+    if(!inSet(term, ids)){
+      ids.insert(term);
       aux.push_back(term);
     }
   terms = aux;
