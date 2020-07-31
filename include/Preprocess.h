@@ -33,14 +33,12 @@ class Preprocessor : public AXDSignature {
   z3::expr_vector assertions, all_index_vars;
 
   z3_expr_set
-    part_a_array_var_ids, 
-    part_b_array_var_ids,
-    common_array_var_ids;
+    part_a_array_vars, 
+    part_b_array_vars,
+    common_array_vars;
 
   public:
   Preprocessor(z3::context &, char const *);
-
-  bool isArrayVarCommon(z3::expr const &);
 };
 
 #endif

@@ -7,7 +7,7 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   assertions((really_a_parser.from_file(file), 
         really_a_parser.assertions())),
   all_index_vars(ctx),
-  part_a_array_var_ids({}), part_b_array_var_ids({}), common_array_var_ids({})
+  part_a_array_vars({}), part_b_array_vars({}), common_array_vars({})
 {
   assert(assertions.size() == 2);
 
@@ -31,10 +31,10 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
 #endif
    
   // Compute Common Array Var Ids
-  for(auto iterator_a = part_a_array_var_ids.begin(); 
-      iterator_a != part_a_array_var_ids.end(); ++iterator_a){
-    if(inSet(*iterator_a, part_b_array_var_ids))
-      common_array_var_ids.insert(*iterator_a);
+  for(auto iterator_a = part_a_array_vars.begin(); 
+      iterator_a != part_a_array_vars.end(); ++iterator_a){
+    if(inSet(*iterator_a, part_b_array_vars))
+      common_array_vars.insert(*iterator_a);
   }
 
   removeDuplicates(all_index_vars);
@@ -158,17 +158,12 @@ void Preprocessor::updateArrayVarIds(z3::expr const & e,
     SideInterpolant side){
   switch(side){
     case PART_A:
-      part_a_array_var_ids.insert(e);
+      part_a_array_vars.insert(e);
       return;
     case PART_B:
-      part_b_array_var_ids.insert(e);
+      part_b_array_vars.insert(e);
       return;
   }
-}
-
-bool Preprocessor::isArrayVarCommon(z3::expr const & e){
-  return inSet(e, part_a_array_var_ids) 
-    && inSet(e, part_b_array_var_ids);
 }
 
 void Preprocessor::removeDuplicates(z3::expr_vector & terms){

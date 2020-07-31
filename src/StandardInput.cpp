@@ -39,8 +39,11 @@ void StandardInput::DiffMap::add_aux(
     z3::expr const & index){
   auto table_entry = m_map.find(std::make_pair(a, b));
   if(table_entry == m_map.end()){
-    std::cout << "Not found" << std::endl;
-    return;
+    throw "Problem @ StandardInput::DiffMap::add_aux."
+      "Query a pair that should'nt be in the map";
+    //std::cout << "The pair" << a << " " << b 
+      //<< "was not found but still added" << std::endl;
+    //table_entry->second = DiffMapEntry(a.ctx());
   }
   table_entry->second.new_index_vars.push_back(index);
 }
@@ -75,21 +78,21 @@ StandardInput::StandardInput(z3::expr const & e,
       case Z3_OP_EQ: // ==
         if(lhs(current_arg).decl().range().name().str() == "ArraySort" 
             || lhs(current_arg).decl().name().str() == "diff" 
-            || rhs(current_arg).decl().name().str() == "diff" ){
+            || rhs(current_arg).decl().name().str() == "diff")
           part_1.push_back(orientBinPredicate(current_arg));
-        }
         else
           part_2.push_back(orientBinPredicate(current_arg));
-        break;
+        continue;
       case Z3_OP_DISTINCT: // !=
       case Z3_OP_GE: // >=
       case Z3_OP_LE: // <=
       case Z3_OP_GT: // >
       case Z3_OP_LT: // <
         part_2.push_back(orientBinPredicate(current_arg));
-        break;
+        continue;
       default:
-        throw "Invalid formula.";
+        throw "Problem @ StandardInput::StandardInput"
+          "Invalid formula.";
     }
   }
 #if _DEBUG_STDINPUT_
@@ -126,7 +129,6 @@ StandardInput::StandardInput(z3::expr const & e,
     std::cout << x.second.new_index_vars << std::endl;
   }
   std::cout << "End DiffMap" << std::endl;
-
   std::cout << "Start WriteVector" << std::endl;
   for(auto const & x : write_vector.m_vector){
     std::cout << std::get<0>(x) << ", " 
@@ -134,8 +136,9 @@ StandardInput::StandardInput(z3::expr const & e,
     << std::get<2>(x) << std::endl;
   }
   std::cout << "End WriteVector" << std::endl;
-  std::cout << std::endl << std::endl;
+  std::cout << std::endl;
 #endif
+
   initSaturation();
 }
 
@@ -148,36 +151,50 @@ z3::expr StandardInput::orientBinPredicate(z3::expr const & eq){
 void StandardInput::initSaturation(){
   // Processing equations of the form a = wr(b, i, e)
   for(auto const & _4tuple : write_vector.m_vector){
+    auto const & a = std::get<0>(_4tuple);
+    auto const & b = std::get<1>(_4tuple);
+    auto const & i = std::get<2>(_4tuple);
+    auto const & e = std::get<3>(_4tuple);
     // The following adds rd(a, i) = e
     part_2.push_back(
-        rd(std::get<0>(_4tuple), std::get<2>(_4tuple)) 
-        == std::get<3>(_4tuple));
-    // TODO:
+        rd(a, i) == e
+        );
     // The following instantiates the universally
     // quantified formula 
     // \forall h . h \neq i \rightarrow rd(a, b) = rd(b, h)
-    for(auto const & index : initial_index_vars){
-      index.check_error();
+    for(auto const & h : initial_index_vars){
+      part_2.push_back(
+          z3::implies(h != i, rd(a, h) == rd(b, h))
+          );
     }
   }
   
   // Processing equations of the form diff(a, b) = i
-  // The following adds (27) predicates
-  // The following adds (28) predicates
-  // The following adds (29) predicates
-  // The following adds (30) predicates
-  // The following adds (31) predicates
+  // The following adds (25) predicates
   for(auto const & entry : diff_map.m_map){
-    auto const & a = entry.first.first;
-    auto const & b = entry.first.second;
-    std::cout << a << ", " << b << std::endl;
+    auto const & a   = entry.first.first;
+    auto const & b   = entry.first.second;
+    auto const & seq = entry.second;
 
-    for(auto const & index : initial_index_vars){
-      index.check_error();
+    if(seq.new_index_vars.size() > 0){
+      auto const & index = seq.new_index_vars[0];
+      for(auto const & h : initial_index_vars)
+        part_2.push_back(
+            z3::implies(h > index,
+              rd(a, h) == rd(b, h))
+            );
+      part_2.push_back(
+          z3::implies(rd(a, index) == rd(b, index),
+            index == ctx.int_val(0))
+          );
     }
   }
 }
 
 void StandardInput::updateSaturation(){
+  // The following adds (28) predicates
+  // The following adds (29) predicates
+  // The following adds (30) predicates
+  // The following adds (31) predicates
 }
 

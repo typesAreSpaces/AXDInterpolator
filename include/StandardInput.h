@@ -34,16 +34,27 @@ class StandardInput : public AXDSignature {
     
     DiffMap(z3::context &, z3_expr_set const &);
 
-    void add(z3::expr const &, z3::expr const &, z3::expr const &);
-    void add_aux(z3::expr const &, z3::expr const &, z3::expr const &);
+    void add(
+        z3::expr const &, 
+        z3::expr const &, 
+        z3::expr const &);
+    void add_aux(
+        z3::expr const &, 
+        z3::expr const &, 
+        z3::expr const &);
   };
 
   // Container keeping track of a, b, i, e from 
   // a = wr(b, i, e) equations
   struct WriteVector {
-    std::vector<std::tuple<z3::expr, z3::expr, z3::expr, z3::expr> > m_vector;
+    std::vector<
+      std::tuple<z3::expr, z3::expr, z3::expr, z3::expr> > m_vector;
     WriteVector();
-    void add(z3::expr const &, z3::expr const &, z3::expr const &, z3::expr const &);
+    void add(
+        z3::expr const &, 
+        z3::expr const &, 
+        z3::expr const &, 
+        z3::expr const &);
   };
 
   DiffMap diff_map;
