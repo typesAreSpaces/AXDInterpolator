@@ -27,6 +27,8 @@ class AXDInterpolant : public Preprocessor {
     public:
     CircularPairIterator(z3_expr_set const &);
     void next();
+    StandardInput::DiffMap::z3_expr_pair operator *() const;
+
     friend std::ostream & operator << (std::ostream &, CircularPairIterator const &);
   };
 

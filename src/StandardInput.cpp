@@ -14,11 +14,11 @@ StandardInput::DiffMap::DiffMap(
     for(auto const & y : array_var_ids){
       if(x.id() > y.id())
         m_map.insert(std::make_pair(
-              std::pair<z3::expr, z3::expr>(x, y), 
+              z3_expr_pair(x, y), 
               DiffMapEntry(ctx)));
       else if(y.id() > x.id())
         m_map.insert(std::make_pair(
-              std::pair<z3::expr, z3::expr>(y, x), 
+              z3_expr_pair(y, x), 
               DiffMapEntry(ctx)));
     }
 }

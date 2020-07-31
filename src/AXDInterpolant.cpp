@@ -21,6 +21,10 @@ void AXDInterpolant::CircularPairIterator::next(){
   avoidLowerDiagonal();
 }
 
+StandardInput::DiffMap::z3_expr_pair AXDInterpolant::CircularPairIterator::operator *() const {
+  return StandardInput::DiffMap::z3_expr_pair(*first, *second);
+}
+
 void AXDInterpolant::CircularPairIterator::avoidLowerDiagonal(){
   while(!Z3ExprComparator()(*first, *second)) 
     next();
@@ -39,7 +43,6 @@ AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file) :
 {
   //std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
   //std::cout << "B-part part 2: " << part_b.part_2 << std::endl;
-
   loop();
 }
 
@@ -66,11 +69,11 @@ void AXDInterpolant::loop(){
     }
 
     solver.pop();
-    // TODO: 
     // Find pair of common array variables
+    auto pair = *it;
+    // TODO: 
     // and ...
-    //std::cout << it << std::endl;
-    //it.next();
+    it.next();
   }
   if(!allowed_attempts)
     std::cout << "Input formula is satisfiable / "

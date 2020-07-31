@@ -1,8 +1,7 @@
 #ifndef _STANDARD_INPUT_
 #define _STANDARD_INPUT_
-#define _DEBUG_STDINPUT_ 0
+#define _DEBUG_STDINPUT_ 1
 
-//#include <unordered_set>
 #include <set>
 #include <utility>
 #include <map>
@@ -22,13 +21,15 @@ class StandardInput : public AXDSignature {
       DiffMapEntry(z3::context &);
     };
     
+    typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
+
     struct Z3ExprExprComparator {
-      bool operator() (std::pair<z3::expr, z3::expr> const & a, std::pair<z3::expr, z3::expr> const & b){
+      bool operator() (z3_expr_pair const & a, z3_expr_pair const & b){
         return a.first.id() > b.first.id() || (a.first.id() == b.first.id() && a.second.id() > b.second.id());
       }
     };
 
-    std::map<std::pair<z3::expr, z3::expr>, 
+    std::map<z3_expr_pair, 
       DiffMapEntry, 
       Z3ExprExprComparator> m_map;
     
