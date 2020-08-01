@@ -29,7 +29,9 @@ class Preprocessor : public AXDSignature {
   void removeDuplicates(z3::expr_vector &);
 
   protected:
-  z3::expr_vector assertions, all_index_vars;
+  z3::expr_vector 
+    assertions,
+    all_index_vars;
 
   z3_expr_set
     part_a_array_vars, 

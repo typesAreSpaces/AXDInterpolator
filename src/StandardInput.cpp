@@ -1,9 +1,7 @@
 #include "StandardInput.h"
 
 StandardInput::DiffMap::DiffMapEntry::DiffMapEntry(z3::context & ctx) : 
-  new_index_vars(ctx)
-{
-}
+  new_index_vars(ctx) {}
 
 StandardInput::DiffMap::DiffMap(
     z3::context & ctx,
@@ -49,9 +47,7 @@ void StandardInput::DiffMap::add_aux(
 }
 
 StandardInput::WriteVector::WriteVector() : 
-  m_vector({})
-{
-}
+  m_vector({}) {}
 
 // Keeps track of the a, b, index in 
 // wr-equations of the form a = wr(b, index, e)
