@@ -6,7 +6,7 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   fresh_index(0), num_args_aux(0),
   assertions((really_a_parser.from_file(file), 
         really_a_parser.assertions())),
-  all_index_vars(ctx),
+  part_a_index_vars(ctx), part_b_index_vars(ctx),
   part_a_array_vars({}), part_b_array_vars({}), common_array_vars({})
 {
   assert(assertions.size() == 2);
@@ -23,10 +23,10 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   
 #if _DEBUG_PREPROCESS_
   std::cout << "Arrays A-local" << std::endl;
-  for(auto const & x : part_a_array_var_ids)
+  for(auto const & x : part_a_array_vars)
     std::cout << x << std::endl;
   std::cout << "Arrays B-local" << std::endl;
-  for(auto const & x : part_b_array_var_ids)
+  for(auto const & x : part_b_array_vars)
     std::cout << x << std::endl;
 #endif
    
@@ -37,9 +37,11 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
       common_array_vars.insert(*iterator_a);
   }
 
-  removeDuplicates(all_index_vars);
+  removeDuplicates(part_a_index_vars);
+  removeDuplicates(part_b_index_vars);
 #if _DEBUG_PREPROCESS_
-  std::cout << all_index_vars << std::endl;
+  std::cout << part_a_index_vars << std::endl;
+  std::cout << part_b_index_vars << std::endl;
 #endif
 }
 
@@ -69,9 +71,9 @@ void Preprocessor::flattenPredicateAux(z3::expr const & term,
   else{
     auto sort_name = term.decl().range().name().str(); 
     if(sort_name == "Int")
-      all_index_vars.push_back(term);
+      updateIndexVars(term, side);
     if(sort_name == "ArraySort")
-      updateArrayVarIds(term, side);
+      updateArrayVars(term, side);
   }
 }
 
@@ -85,12 +87,12 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     if(term.arg(0).num_args() > 0)
       cojoin(term.arg(0), fresh_array_constant(), side);
     else
-      updateArrayVarIds(term.arg(0), side);
+      updateArrayVars(term.arg(0), side);
 
     if(term.arg(1).num_args() > 0)
       cojoin(term.arg(1), fresh_index_constant(), side);
     else
-      all_index_vars.push_back(term.arg(1)); 
+      updateIndexVars(term.arg(1), side);
 
     if(term.arg(2).num_args() > 0)
       cojoin(term.arg(2), fresh_element_constant(), side);
@@ -101,12 +103,12 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     if(term.arg(0).num_args() > 0)
       cojoin(term.arg(0), fresh_array_constant(), side);
     else
-      updateArrayVarIds(term.arg(0), side);
+      updateArrayVars(term.arg(0), side);
 
     if(term.arg(1).num_args() > 0)
       cojoin(term.arg(1), fresh_index_constant(), side);
     else
-      all_index_vars.push_back(term.arg(1)); 
+      updateIndexVars(term.arg(1), side);
   }
   if(f_name == "diff"){
     //std::cout << "-------A diff function" << std::endl;
@@ -114,12 +116,12 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     if(term.arg(0).num_args() > 0)
       cojoin(term.arg(0), fresh_array_constant(), side);
     else
-      updateArrayVarIds(term.arg(0), side);
+      updateArrayVars(term.arg(0), side);
 
     if(term.arg(1).num_args() > 0)
       cojoin(term.arg(1), fresh_array_constant(), side);
     else
-      updateArrayVarIds(term.arg(1), side);
+      updateArrayVars(term.arg(1), side);
   }
 }
 
@@ -154,7 +156,7 @@ void Preprocessor::cojoin(z3::expr const & e, z3::expr const & _new_const, SideI
   num_args_aux++;
 }
 
-void Preprocessor::updateArrayVarIds(z3::expr const & e, 
+void Preprocessor::updateArrayVars(z3::expr const & e, 
     SideInterpolant side){
   switch(side){
     case PART_A:
@@ -162,6 +164,18 @@ void Preprocessor::updateArrayVarIds(z3::expr const & e,
       return;
     case PART_B:
       part_b_array_vars.insert(e);
+      return;
+  }
+}
+
+void Preprocessor::updateIndexVars(z3::expr const & e, 
+    SideInterpolant side){
+  switch(side){
+    case PART_A:
+      part_a_index_vars.push_back(e);
+      return;
+    case PART_B:
+      part_b_index_vars.push_back(e);
       return;
   }
 }

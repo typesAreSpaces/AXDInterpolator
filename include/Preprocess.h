@@ -25,13 +25,15 @@ class Preprocessor : public AXDSignature {
   z3::expr fresh_index_constant();
 
   void cojoin(z3::expr const &, z3::expr const &, SideInterpolant);
-  void updateArrayVarIds(z3::expr const &, SideInterpolant);
+  void updateArrayVars(z3::expr const &, SideInterpolant);
+  void updateIndexVars(z3::expr const &, SideInterpolant);
   void removeDuplicates(z3::expr_vector &);
 
   protected:
   z3::expr_vector 
     assertions,
-    all_index_vars;
+    part_a_index_vars,
+    part_b_index_vars;
 
   z3_expr_set
     part_a_array_vars, 

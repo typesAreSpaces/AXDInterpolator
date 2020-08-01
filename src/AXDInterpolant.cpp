@@ -38,11 +38,11 @@ AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file) :
   Preprocessor(ctx, file),
   //solver(ctx, "QF_LIA"), 
   solver(ctx), 
-  part_a(assertions[0], all_index_vars, part_a_array_vars),
-  part_b(assertions[1], all_index_vars, part_b_array_vars)
+  part_a(assertions[0], part_a_index_vars, part_a_array_vars),
+  part_b(assertions[1], part_b_index_vars, part_b_array_vars)
 {
-  std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
-  std::cout << "B-part part 2: " << part_b.part_2 << std::endl;
+  //std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
+  //std::cout << "B-part part 2: " << part_b.part_2 << std::endl;
   loop();
 }
 
@@ -54,7 +54,7 @@ void AXDInterpolant::loop(){
   std::ofstream file("output.smt2");
 #endif 
 
-  while(allowed_attempts--){
+  while(--allowed_attempts){
     solver.push();
     //for(auto const & assertion : part_a.part_2)
       //solver.add(assertion);
@@ -62,8 +62,9 @@ void AXDInterpolant::loop(){
       //solver.add(assertion);
     if(solver.check() == z3::unsat){
 #if _OUTPUT_FILE_
-      file << solver.to_smt2(),
+      file << solver.to_smt2();
 #endif
+      std::cout << "Interesting" << std::endl;
       solver.pop();
       return;
     }
