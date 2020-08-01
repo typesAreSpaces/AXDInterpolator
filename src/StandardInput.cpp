@@ -46,6 +46,10 @@ void StandardInput::DiffMap::add_aux(
   table_entry->second.new_index_vars.push_back(index);
 }
 
+unsigned StandardInput::DiffMap::size_of_entry(z3_expr_pair const & entry){
+  return m_map.find(entry)->second.new_index_vars.size();
+}
+
 StandardInput::WriteVector::WriteVector() : 
   m_vector({}) {}
 
@@ -187,10 +191,60 @@ void StandardInput::initSaturation(){
   }
 }
 
-void StandardInput::updateSaturation(){
+void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
+    z3::expr const & _new_index, unsigned min_dim){
+
+  std::cout << "what" << std::endl;
+  auto const & a = entry.first;
+  auto const & b = entry.second;
+  auto const & map_element = diff_map.m_map.find(entry);
+  unsigned old_size = map_element->second.new_index_vars.size();
+
+  if(min_dim < old_size){
+    std::cout << "what 1" << std::endl;
+    part_2.push_back(_new_index == map_element->second.new_index_vars[min_dim]);
+    std::cout << "what 2" << std::endl;
+  }
+  else{
+    diff_map.add(entry.first, entry.second, _new_index);
+  }
+
+  // TODO: Problem here
+  std::cout << "what 3" << std::endl;
+  auto const & _previous_index = map_element->second.new_index_vars[old_size - 1];
+
+  std::cout << "what 4" << std::endl;
+  // The following adds (27) predicates
+  part_2.push_back(
+      _previous_index >= _new_index
+      );
+  
   // The following adds (28) predicates
+  part_2.push_back(z3::implies(
+        _previous_index > _new_index,
+        rd(a, _previous_index) != rd(b, _previous_index)
+        ));
+  
   // The following adds (29) predicates
+  part_2.push_back(z3::implies(
+        _previous_index == _new_index,
+        _previous_index == ctx.int_val(0)
+        ));
+  
   // The following adds (30) predicates
+  part_2.push_back(z3::implies(
+        rd(a, _previous_index) == rd(b, _previous_index),
+        _previous_index == ctx.int_val(0)
+        ));
+  
   // The following adds (31) predicates
+  for(auto const & h : initial_index_vars){ // ?
+    h.check_error();
+  }
+  
+  // The following adds (24) predicates rest of quantifiers
+  
+  // The following adds (31) predicates rest of quantifiers
+
 }
 

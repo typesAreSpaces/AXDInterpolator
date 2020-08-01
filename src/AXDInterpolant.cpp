@@ -56,24 +56,33 @@ void AXDInterpolant::loop(){
 
   while(--allowed_attempts){
     solver.push();
-    //for(auto const & assertion : part_a.part_2)
-      //solver.add(assertion);
-    //for(auto const & assertion : part_b.part_2)
-      //solver.add(assertion);
+    for(auto const & assertion : part_a.part_2)
+      solver.add(assertion);
+    for(auto const & assertion : part_b.part_2)
+      solver.add(assertion);
     if(solver.check() == z3::unsat){
 #if _OUTPUT_FILE_
       file << solver.to_smt2();
 #endif
-      std::cout << "Interesting" << std::endl;
       solver.pop();
       return;
     }
-
     solver.pop();
+
     // Find pair of common array variables
-    auto pair = *it;
-    // TODO: 
-    // and ...
+    auto const & entry = *it;
+
+    unsigned part_a_dim = part_a.diff_map.size_of_entry(entry),
+    part_b_dim = part_b.diff_map.size_of_entry(entry),
+    min_dim = std::min(part_a_dim, part_b_dim);
+    
+    std::cout << "Part a dim " << part_a_dim << std::endl;
+    std::cout << "Part b dim " << part_b_dim << std::endl;
+
+    auto const & _new_index = fresh_index_constant();
+    part_a.updateSaturation(entry, _new_index, min_dim);
+    part_b.updateSaturation(entry, _new_index, min_dim);
+
     it.next();
   }
   if(!allowed_attempts)

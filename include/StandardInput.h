@@ -43,6 +43,7 @@ class StandardInput : public AXDSignature {
         z3::expr const &, 
         z3::expr const &, 
         z3::expr const &);
+    unsigned size_of_entry(z3_expr_pair const &);
   };
 
   // Container keeping track of a, b, i, e from 
@@ -74,8 +75,9 @@ class StandardInput : public AXDSignature {
       z3::expr const &, 
       z3::expr_vector const & initial_index_vars,
       z3_expr_set const &);
-  void initSaturation(); // TODO: implement
-  void updateSaturation(); // TODO: implement
+  void initSaturation(); 
+  // TODO: implement
+  void updateSaturation(DiffMap::z3_expr_pair const &, z3::expr const &, unsigned min_dim); 
 };
 
 #endif

@@ -20,10 +20,6 @@ class Preprocessor : public AXDSignature {
   void flattenPredicateAux(z3::expr const &, SideInterpolant);
   void flattenTerm(z3::expr const &, SideInterpolant);
   
-  z3::expr fresh_array_constant();
-  z3::expr fresh_element_constant();
-  z3::expr fresh_index_constant();
-
   void cojoin(z3::expr const &, z3::expr const &, SideInterpolant);
   void updateArrayVars(z3::expr const &, SideInterpolant);
   void updateIndexVars(z3::expr const &, SideInterpolant);
@@ -39,6 +35,10 @@ class Preprocessor : public AXDSignature {
     part_a_array_vars, 
     part_b_array_vars,
     common_array_vars;
+
+  z3::expr fresh_array_constant();
+  z3::expr fresh_element_constant();
+  z3::expr fresh_index_constant();
 
   public:
   Preprocessor(z3::context &, char const *);
