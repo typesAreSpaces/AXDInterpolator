@@ -194,23 +194,23 @@ void StandardInput::initSaturation(){
 void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
     z3::expr const & _new_index, unsigned min_dim){
 
-  std::cout << "what" << std::endl;
   auto const & a = entry.first;
   auto const & b = entry.second;
   auto const & map_element = diff_map.m_map.find(entry);
-  unsigned old_size = map_element->second.new_index_vars.size();
+  auto const & current_indices = map_element->second.new_index_vars;
+  unsigned old_dim = current_indices.size();
 
-  if(min_dim < old_size){
-    part_2.push_back(_new_index == map_element->second.new_index_vars[min_dim]);
-  }
-  else{
+  if(min_dim < old_dim)
+    part_2.push_back(
+        _new_index == map_element->second.new_index_vars[min_dim]
+        );
+  else
     diff_map.add(entry.first, entry.second, _new_index);
-  }
- 
+
   index_vars.push_back(_new_index);
 
-  if(old_size){
-    auto const & _previous_index = map_element->second.new_index_vars[old_size - 1];
+  if(old_dim){
+    auto const & _previous_index = map_element->second.new_index_vars[old_dim - 1];
 
     // The following adds (27) predicates
     part_2.push_back(
@@ -238,12 +238,51 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
   
   // The following adds (31) predicates
   for(auto const & h : index_vars){ // ?
-    h.check_error();
+    z3::expr_vector consequent_vector(ctx);
+    consequent_vector.push_back(rd(a, h) == rd(b, h));
+    for(auto const & k_ : current_indices)
+      consequent_vector.push_back(h == k_);
+
+    part_2.push_back(z3::implies(
+          h > _new_index,
+          z3::mk_or(consequent_vector)));
   }
   
-  // The following adds (24) predicates rest of quantifiers
+  // The following adds (24) predicates for the 
+  // previous quantifiers formulas effectively
+  // updating them with _new_index
+  for(auto const & _4tuple : write_vector.m_vector){
+    auto const & wr_a = std::get<0>(_4tuple);
+    auto const & wr_b = std::get<1>(_4tuple);
+    auto const & wr_i = std::get<2>(_4tuple);
+    part_2.push_back(z3::implies(
+          _new_index != wr_i,
+          rd(wr_a, _new_index) == rd(wr_b, _new_index)
+          ));
+  }
   
-  // The following adds (31) predicates rest of quantifiers
+  // The following adds (31) predicates for the 
+  // previous quantifiers formulas effectively
+  // updating them with _new_index
+  for(auto const & wr_entry : diff_map.m_map){
+    wr_entry.first.first.check_error();
+    //auto const & diff_a = wr_entry.first.first;
+    //auto const & diff_b = wr_entry.first.second;
+    //auto const & diff_seq = wr_entry.second.new_index_vars;
+    //// -----------------------------------------------------------------
+    //// TODO: keep working here
+    //// Update the quantifiers
+    //// for each index in diff_seq!
+    //for(auto const & k_ : diff_seq){
+      //z3::expr_vector consequent_vector(ctx);
+      //consequent_vector.push_back(
+          //rd(diff_a, _new_index) == rd(diff_b, _new_index));
+      //consequent_vector.push_back(_new_index == k_);
 
+      //part_2.push_back(z3::implies(_new_index > _new_index, _new_index));
+
+    //}
+    //// -----------------------------------------------------------------
+  }
 }
 

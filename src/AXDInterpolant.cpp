@@ -47,7 +47,7 @@ AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file) :
 }
 
 void AXDInterpolant::loop(){
-  unsigned allowed_attempts = 100;
+  unsigned allowed_attempts = 5;
   CircularPairIterator it(common_array_vars);
 
 #if _OUTPUT_FILE_
@@ -73,12 +73,9 @@ void AXDInterpolant::loop(){
     auto const & entry = *it;
 
     unsigned part_a_dim = part_a.diff_map.size_of_entry(entry),
-    part_b_dim = part_b.diff_map.size_of_entry(entry),
-    min_dim = std::min(part_a_dim, part_b_dim);
+             part_b_dim = part_b.diff_map.size_of_entry(entry),
+             min_dim = std::min(part_a_dim, part_b_dim);
     
-    std::cout << "Part a dim " << part_a_dim << std::endl;
-    std::cout << "Part b dim " << part_b_dim << std::endl;
-
     auto const & _new_index = fresh_index_constant();
     part_a.updateSaturation(entry, _new_index, min_dim);
     part_b.updateSaturation(entry, _new_index, min_dim);
