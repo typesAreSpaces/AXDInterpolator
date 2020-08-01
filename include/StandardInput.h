@@ -66,14 +66,14 @@ class StandardInput : public AXDSignature {
   // of the original input
   // -) part_2 contains the rest
   z3::expr_vector part_1, part_2;
-  z3::expr_vector const & initial_index_vars;
+  z3::expr_vector & index_vars;
 
   z3::expr orientBinPredicate(z3::expr const &);
 
   public:
   StandardInput(
       z3::expr const &, 
-      z3::expr_vector const & initial_index_vars,
+      z3::expr_vector &,
       z3_expr_set const &);
   void initSaturation(); 
   // TODO: implement

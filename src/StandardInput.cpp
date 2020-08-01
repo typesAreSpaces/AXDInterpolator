@@ -64,12 +64,12 @@ void StandardInput::WriteVector::add(
 }
 
 StandardInput::StandardInput(z3::expr const & e, 
-    z3::expr_vector const & initial_index_vars,
+    z3::expr_vector & initial_index_vars,
     z3_expr_set const & array_var_ids) :
   AXDSignature(e.ctx()),
   diff_map(e.ctx(), array_var_ids),
   part_1(e.ctx()), part_2(e.ctx()), 
-  initial_index_vars(initial_index_vars)
+  index_vars(initial_index_vars)
 {
   assert(e.decl().decl_kind() == Z3_OP_AND);
   for(unsigned i = 0; i < e.num_args(); i++){
@@ -162,7 +162,7 @@ void StandardInput::initSaturation(){
     // The following instantiates the universally
     // quantified formula 
     // \forall h . h \neq i \rightarrow rd(a, b) = rd(b, h)
-    for(auto const & h : initial_index_vars){
+    for(auto const & h : index_vars){
       part_2.push_back(
           z3::implies(h != i, rd(a, h) == rd(b, h))
           );
@@ -178,7 +178,7 @@ void StandardInput::initSaturation(){
 
     if(seq.new_index_vars.size() > 0){
       auto const & index = seq.new_index_vars[0];
-      for(auto const & h : initial_index_vars)
+      for(auto const & h : index_vars)
         part_2.push_back(
             z3::implies(h > index,
               rd(a, h) == rd(b, h))
@@ -201,44 +201,43 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
   unsigned old_size = map_element->second.new_index_vars.size();
 
   if(min_dim < old_size){
-    std::cout << "what 1" << std::endl;
     part_2.push_back(_new_index == map_element->second.new_index_vars[min_dim]);
-    std::cout << "what 2" << std::endl;
   }
   else{
     diff_map.add(entry.first, entry.second, _new_index);
   }
+ 
+  index_vars.push_back(_new_index);
 
-  // TODO: Problem here
-  std::cout << "what 3" << std::endl;
-  auto const & _previous_index = map_element->second.new_index_vars[old_size - 1];
+  if(old_size){
+    auto const & _previous_index = map_element->second.new_index_vars[old_size - 1];
 
-  std::cout << "what 4" << std::endl;
-  // The following adds (27) predicates
-  part_2.push_back(
-      _previous_index >= _new_index
-      );
-  
-  // The following adds (28) predicates
-  part_2.push_back(z3::implies(
-        _previous_index > _new_index,
-        rd(a, _previous_index) != rd(b, _previous_index)
-        ));
-  
-  // The following adds (29) predicates
-  part_2.push_back(z3::implies(
-        _previous_index == _new_index,
-        _previous_index == ctx.int_val(0)
-        ));
-  
+    // The following adds (27) predicates
+    part_2.push_back(
+        _previous_index >= _new_index
+        );
+
+    // The following adds (28) predicates
+    part_2.push_back(z3::implies(
+          _previous_index > _new_index,
+          rd(a, _previous_index) != rd(b, _previous_index)
+          ));
+
+    // The following adds (29) predicates
+    part_2.push_back(z3::implies(
+          _previous_index == _new_index,
+          _previous_index == ctx.int_val(0)
+          ));
+  }
+
   // The following adds (30) predicates
   part_2.push_back(z3::implies(
-        rd(a, _previous_index) == rd(b, _previous_index),
-        _previous_index == ctx.int_val(0)
+        rd(a, _new_index) == rd(b, _new_index),
+        _new_index == ctx.int_val(0)
         ));
   
   // The following adds (31) predicates
-  for(auto const & h : initial_index_vars){ // ?
+  for(auto const & h : index_vars){ // ?
     h.check_error();
   }
   
