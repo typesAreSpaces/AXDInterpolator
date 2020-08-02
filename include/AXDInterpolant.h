@@ -14,10 +14,10 @@ class AXDInterpolant : public Preprocessor {
   z3::solver solver;
   StandardInput part_a, part_b;
 
-  void loop();
+  void loop(unsigned);
 
   public: 
-  AXDInterpolant(z3::context &, char const *);
+  AXDInterpolant(z3::context &, char const *, unsigned);
 
   class CircularPairIterator {
     friend class AXDInterpolant;

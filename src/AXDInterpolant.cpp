@@ -35,18 +35,17 @@ std::ostream & operator << (std::ostream & os,
   return os << *cpi.first << ", " << *cpi.second;
 }
 
-AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file) : 
+AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file, unsigned allowed_attempts) : 
   Preprocessor(ctx, file),
   //solver(ctx, "QF_LIA"), 
   solver(ctx), 
   part_a(assertions[0], part_a_index_vars, part_a_array_vars),
   part_b(assertions[1], part_b_index_vars, part_b_array_vars)
 {
-  loop();
+  loop(allowed_attempts);
 }
 
-void AXDInterpolant::loop(){
-  unsigned allowed_attempts = 10;
+void AXDInterpolant::loop(unsigned allowed_attempts){
   unsigned const constant_allowed_attempts = allowed_attempts;
   CircularPairIterator it(common_array_vars);
 
