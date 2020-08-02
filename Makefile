@@ -24,7 +24,10 @@ DEPS = $(wildcard $(IDIR)/*.h)
 
 all: tests/basic
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
+obj:
+	mkdir -p obj
+
+$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
 # ------------------------------------------------------------------------------------------
@@ -41,4 +44,4 @@ tests/basic: $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -rf $(ODIR)/*
+	rm -rf $(ODIR)/* output.smt2

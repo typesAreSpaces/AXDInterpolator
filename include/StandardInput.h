@@ -25,7 +25,8 @@ class StandardInput : public AXDSignature {
 
     struct Z3ExprExprComparator {
       bool operator() (z3_expr_pair const & a, z3_expr_pair const & b){
-        return a.first.id() > b.first.id() || (a.first.id() == b.first.id() && a.second.id() > b.second.id());
+        return a.first.id() > b.first.id() 
+          || (a.first.id() == b.first.id() && a.second.id() > b.second.id());
       }
     };
 
@@ -76,8 +77,8 @@ class StandardInput : public AXDSignature {
       z3::expr_vector &,
       z3_expr_set const &);
   void initSaturation(); 
-  // TODO: implement
-  void updateSaturation(DiffMap::z3_expr_pair const &, z3::expr const &, unsigned min_dim); 
+  void updateSaturation(DiffMap::z3_expr_pair const &, 
+      z3::expr const &, unsigned min_dim); 
 };
 
 #endif

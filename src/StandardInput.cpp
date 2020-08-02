@@ -1,4 +1,5 @@
 #include "StandardInput.h"
+#include <z3++.h>
 
 StandardInput::DiffMap::DiffMapEntry::DiffMapEntry(z3::context & ctx) : 
   new_index_vars(ctx) {}
@@ -39,9 +40,6 @@ void StandardInput::DiffMap::add_aux(
   if(table_entry == m_map.end()){
     throw "Problem @ StandardInput::DiffMap::add_aux."
       "Query a pair that should'nt be in the map";
-    //std::cout << "The pair" << a << " " << b 
-      //<< "was not found but still added" << std::endl;
-    //table_entry->second = DiffMapEntry(a.ctx());
   }
   table_entry->second.new_index_vars.push_back(index);
 }
@@ -113,8 +111,6 @@ StandardInput::StandardInput(z3::expr const & e,
           );
     }
     else if(f_name == "diff"){
-      //std::cout << "-****** equation in diff" << std::endl;
-      //std::cout << equation << std::endl;
       diff_map.add(
           lhs(rhs(equation)), 
           rhs(rhs(equation)),
@@ -237,7 +233,7 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
         ));
   
   // The following adds (31) predicates
-  for(auto const & h : index_vars){ // ?
+  for(auto const & h : index_vars){
     z3::expr_vector consequent_vector(ctx);
     consequent_vector.push_back(rd(a, h) == rd(b, h));
     for(auto const & k_ : current_indices)
@@ -265,24 +261,26 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
   // previous quantifiers formulas effectively
   // updating them with _new_index
   for(auto const & wr_entry : diff_map.m_map){
-    wr_entry.first.first.check_error();
-    //auto const & diff_a = wr_entry.first.first;
-    //auto const & diff_b = wr_entry.first.second;
-    //auto const & diff_seq = wr_entry.second.new_index_vars;
-    //// -----------------------------------------------------------------
-    //// TODO: keep working here
-    //// Update the quantifiers
-    //// for each index in diff_seq!
-    //for(auto const & k_ : diff_seq){
-      //z3::expr_vector consequent_vector(ctx);
-      //consequent_vector.push_back(
-          //rd(diff_a, _new_index) == rd(diff_b, _new_index));
-      //consequent_vector.push_back(_new_index == k_);
+    auto const & diff_a = wr_entry.first.first;
+    auto const & diff_b = wr_entry.first.second;
+    auto const & diff_seq = wr_entry.second.new_index_vars;
 
-      //part_2.push_back(z3::implies(_new_index > _new_index, _new_index));
+    unsigned _i = 0, _size = diff_seq.size();
+    z3::expr_vector accum_k_(ctx);
+    for(; _i < _size; ++_i){
+      auto const & k_ = diff_seq[_i];
 
-    //}
-    //// -----------------------------------------------------------------
+      z3::expr_vector equalities_k(ctx);
+      equalities_k.push_back(
+          rd(diff_a, _new_index) == rd(diff_b, _new_index));
+      for(unsigned _j = 0; _j < _i; ++_j)
+        equalities_k.push_back(_new_index == accum_k_[_j]);
+
+      part_2.push_back(z3::implies(
+            _new_index > k_, 
+            z3::mk_or(equalities_k)));
+
+      accum_k_.push_back(k_);
+    }
   }
 }
-
