@@ -97,11 +97,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 16) / 33)
+let s:l = 21 - ((16 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+21
 normal! 0
 wincmd w
 argglobal
@@ -115,12 +115,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 91 - ((23 * winheight(0) + 16) / 33)
+let s:l = 38 - ((6 * winheight(0) + 16) / 33)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-91
-normal! 07|
+38
+normal! 023|
 wincmd w
 argglobal
 if bufexists("tests/basic.cpp") | buffer tests/basic.cpp | else | edit tests/basic.cpp | endif
@@ -133,14 +133,14 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 8 - ((7 * winheight(0) + 33) / 67)
+let s:l = 3 - ((2 * winheight(0) + 33) / 67)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-8
-normal! 03|
+3
+normal! 0
 wincmd w
-5wincmd w
+3wincmd w
 exe '1resize ' . ((&lines * 33 + 34) / 69)
 exe 'vert 1resize ' . ((&columns * 122 + 157) / 315)
 exe '2resize ' . ((&lines * 33 + 34) / 69)
