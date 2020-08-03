@@ -6,6 +6,7 @@
 #include <iostream>
 #include <utility>
 #include <set>
+#include <fstream>
 #include "Preprocess.h"
 #include "StandardInput.h"
 

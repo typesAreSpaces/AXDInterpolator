@@ -1,5 +1,5 @@
 #include "AXDInterpolant.h"
-#include <fstream>
+#include <z3++.h>
 
 AXDInterpolant::CircularPairIterator::CircularPairIterator(z3_expr_set const & vars) : 
   vars(vars),
@@ -71,6 +71,10 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
       std::cout << "Unsat after " 
         << constant_allowed_attempts - allowed_attempts 
         << " iterations" << std::endl;
+      z3::expr const empty_pat(ctx);
+      z3::params empty_params(ctx);
+      // TODO: keep working here
+      std::cout << ctx.get_interpolant(solver.proof(), empty_pat, empty_params) << std::endl;
       return;
     }
     solver.pop();
