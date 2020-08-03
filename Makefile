@@ -1,13 +1,6 @@
-UNAME = $(shell uname)
-
-ifeq ($(UNAME), Linux)
-	Z3DIR = /home/jose/Documents/GithubProjects/z3__
-	Z3EXT = so
-endif
-ifeq ($(UNAME), Darwin)
-	Z3DIR = /Users/joseabelcastellanosjoo/Documents/Applications/z3__
-	Z3EXT = dylib
-endif
+Z3DIR = /home/jose/Documents/GithubProjects/z3-interp-plus
+Z3EXT = so    # Linux extension
+#Z3EXT = dylib # macOS extension
 
 IDIR = ./include
 ODIR = ./obj
