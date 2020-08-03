@@ -67,21 +67,69 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
 #if _OUTPUT_FILE_
       file << solver.to_smt2();
 #endif
+
+#if 1 -_OUTPUT_FILE_
+      // -------------------------------------------------------------------
+      // Interpolant computation
+      z3::expr_vector part_a_vector(ctx);
+      z3::expr_vector part_b_vector(ctx);
+      for(auto const & assertion : part_a.part_2)
+        part_a_vector.push_back(assertion);
+      for(auto const & assertion : part_b.part_2)
+        part_b_vector.push_back(assertion);
+      for(auto const & index : part_a.index_vars)
+        part_a_vector.push_back(index >= 0);
+      for(auto const & index : part_b.index_vars)
+        part_b_vector.push_back(index >= 0);
+      z3::expr marked_formula = 
+        interpolant(z3::mk_and(part_a_vector)) && z3::mk_and(part_b_vector);
+      z3::expr_vector interpolant = ctx.get_interpolant(solver.proof(),
+          marked_formula,
+          z3::params(ctx));
+      std::cout << interpolant[0] << std::endl;
+      // -------------------------------------------------------------------
+#endif
       solver.pop();
+
+      z3::solver test1(ctx);
+      //test1.add(not(z3::implies(assertions[0], interpolant[0])));
+      test1.add(not(z3::implies(z3::mk_and(part_a_vector), interpolant[0])));
+      std::cout << "Checking if it is interpolant of original input: test 1" << std::endl;
+      //std::cout << test1.assertions() << std::endl;
+      switch(test1.check()){ 
+        case z3::unsat:
+          std::cout << "As expected" << std::endl;
+          break;
+        case z3::sat:
+        case z3::unknown:
+          std::cout << "Bad news" << std::endl;
+          break;
+      }
+      z3::solver test2(ctx);
+      //test2.add(assertions[1] && interpolant[0]);
+      test2.add(z3::mk_and(part_b_vector) && interpolant[0]);
+      std::cout << "Checking if it is interpolant of original input: test 2" << std::endl;
+      //std::cout << test2.assertions() << std::endl;
+      switch(test2.check()){
+        case z3::unsat:
+          std::cout << "As expected" << std::endl;
+          break;
+        case z3::sat:
+        case z3::unknown:
+          std::cout << "Bad news" << std::endl;
+          break;
+      }
+
       std::cout << "Unsat after " 
         << constant_allowed_attempts - allowed_attempts 
         << " iterations" << std::endl;
-      z3::expr const empty_pat(ctx);
-      z3::params empty_params(ctx);
-      // TODO: keep working here
-      std::cout << ctx.get_interpolant(solver.proof(), empty_pat, empty_params) << std::endl;
       return;
     }
     solver.pop();
 
 #if _DEBUG_AXD_INTER_ 
-  std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
-  std::cout << "B-part part 2: " << part_b.part_2 << std::endl;
+    std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
+    std::cout << "B-part part 2: " << part_b.part_2 << std::endl;
 #endif
 
     // Find pair of common array variables
@@ -90,7 +138,7 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     unsigned part_a_dim = part_a.diff_map.size_of_entry(common_pair),
              part_b_dim = part_b.diff_map.size_of_entry(common_pair),
              min_dim = std::min(part_a_dim, part_b_dim);
-    
+
     auto const & _new_index = fresh_index_constant();
     part_a.updateSaturation(common_pair, _new_index, min_dim);
     part_b.updateSaturation(common_pair, _new_index, min_dim);

@@ -1,7 +1,7 @@
 #ifndef _AXD_INTERPOLANT_
 #define _AXD_INTERPOLANT_
 #define _DEBUG_AXD_INTER_ 0
-#define _OUTPUT_FILE_ 1
+#define _OUTPUT_FILE_ 0
 
 #include <iostream>
 #include <utility>
