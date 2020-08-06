@@ -1,11 +1,10 @@
 #ifndef _AXD_INTERPOLANT_
 #define _AXD_INTERPOLANT_
-#define _DEBUG_AXD_INTER_ 0
-#define _Z3_OUTPUT_FILE_ 0
-#define _MATHSAT5_OUTPUT_FILE_ 0
+#define _DEBUG_AXD_INTER_           0
+#define _Z3_OUTPUT_FILE_            1
+#define _MATHSAT5_OUTPUT_FILE_      0
 #define _DIRECT_INTERP_COMPUTATION_ 1
-#define _TEST_OUTPUT 1
-#define _TEST_ORIGINAL_INPUT 1
+#define _TEST_ORIGINAL_INPUT        1
 
 #include <iostream>
 #include <utility>
@@ -20,9 +19,12 @@ class AXDInterpolant : public Preprocessor {
   StandardInput part_a, part_b;
 
   void loop(unsigned);
+  void testOutput(z3::expr const &);
 
   public: 
   AXDInterpolant(z3::context &, char const *, unsigned);
+
+  z3::expr computeInterpolant();
 
   class CircularPairIterator {
     friend class AXDInterpolant;
@@ -36,7 +38,6 @@ class AXDInterpolant : public Preprocessor {
 
     friend std::ostream & operator << (std::ostream &, CircularPairIterator const &);
   };
-
 };
 
 #endif

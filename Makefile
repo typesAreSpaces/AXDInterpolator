@@ -30,7 +30,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) obj
 tests/basic: $(OBJS)
 	$(CC) -g -c -o ./$@.o $(FLAGS) ./$@.cpp
 	$(CC) -g -o $@ $(OBJS) ./$@.o -lpthread -Wall
-	./$@
+	./$@ ./tests/smt2-files/paper_example.smt2 
 	rm -rf tests/*.o $@
 
 # ------------------------------------------------------------------------------------------
