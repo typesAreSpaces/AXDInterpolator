@@ -37,4 +37,4 @@ tests/basic: $(OBJS)
 
 .PHONY: clean
 clean:
-	rm -rf $(ODIR)/* output.smt2
+	rm -rf $(ODIR)/* output.smt2 test1.smt2 test2.smt2

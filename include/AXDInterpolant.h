@@ -2,6 +2,9 @@
 #define _AXD_INTERPOLANT_
 #define _DEBUG_AXD_INTER_ 0
 #define _OUTPUT_FILE_ 0
+#define _DIRECT_INTERP_COMPUTATION_ 1
+#define _TEST_OUTPUT 1
+#define _TEST_ORIGINAL_INPUT 1
 
 #include <iostream>
 #include <utility>

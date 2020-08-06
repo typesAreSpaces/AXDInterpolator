@@ -1,6 +1,6 @@
 ; Sorts
-(declare-sort ElementSort)
-(declare-sort ArraySort)
+(declare-sort ElementSort 0)
+(declare-sort ArraySort 0)
 
 ; Function declarartions
 (declare-fun diff (ArraySort ArraySort) Int)
