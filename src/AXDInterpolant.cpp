@@ -1,4 +1,5 @@
 #include "AXDInterpolant.h"
+#include <fstream>
 #include <z3++.h>
 
 AXDInterpolant::CircularPairIterator::CircularPairIterator(z3_expr_set const & vars) : 
@@ -40,8 +41,10 @@ AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file_name, unsign
   //solver(ctx, "QF_LIA"), 
   solver(ctx), 
   part_a(assertions[0], part_a_index_vars, part_a_array_vars),
-  part_b(assertions[1], part_b_index_vars, part_b_array_vars)
+  part_b(assertions[1], part_b_index_vars, part_b_array_vars),
+  file_name(std::string(file_name))
 {
+  this->file_name = this->file_name.substr(this->file_name.find_last_of("\\/") + 1);
   loop(allowed_attempts);
 }
 
@@ -62,13 +65,13 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     if(solver.check() == z3::unsat){
 
 #if _Z3_OUTPUT_FILE_
-      std::ofstream file("output.smt2");
+      std::ofstream file("./output/" + file_name + "_reduced.smt2" );
       // TODO: Design proper output file for:
       // - Z3
       file << solver.to_smt2();
 #endif
 #if _MATHSAT5_OUTPUT_FILE_
-      std::ofstream file("output.smt2");
+      std::ofstream file("./output/" + file_name + "_reduced.smt2");
       // TODO: Design proper output file for:
       // - Mathsat5
       file << solver.to_smt2();
@@ -77,9 +80,10 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
 #if _DIRECT_INTERP_COMPUTATION_
       z3::expr interpolant = computeInterpolant();
       // Show interpolant
-      std::cout << interpolant << std::endl;
+      std::ofstream interpolant_file("./output/" + file_name + "_interpolant.smt2");
+      interpolant_file << interpolant;
 
-#if _TEST_OUTPUT
+#if _TEST_OUTPUT_
       testOutput(interpolant);
 #endif
       solver.pop();
@@ -140,8 +144,8 @@ z3::expr AXDInterpolant::computeInterpolant(){
 }
 
 void AXDInterpolant::testOutput(z3::expr const & interpolant){
-  std::ofstream test1_file("test1.smt2");
-  std::ofstream test2_file("test2.smt2");
+  std::ofstream test1_file("./output/" + file_name + "_test1.smt2");
+  std::ofstream test2_file("./output/" + file_name + "_test2.smt2");
 
   z3::expr x = ctx.constant("x", this->array_sort);
   z3::expr y = ctx.constant("y", this->array_sort);
@@ -150,7 +154,7 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant){
   z3::expr j = ctx.constant("j", this->int_sort);
 
   z3::solver test1(ctx);
-#if _TEST_ORIGINAL_INPUT
+#if _TEST_ORIGINAL_INPUT_
   test1.add(not(z3::implies(assertions[0], interpolant)));
   // Adding axiomatization
   test1.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
@@ -161,10 +165,10 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant){
 #else
   test1.add(not(z3::implies(z3::mk_and(part_a_vector), interpolant)));
 #endif
-  test1_file << test1.to_smt2();
+ test1_file << test1.to_smt2();
 
   z3::solver test2(ctx);
-#if _TEST_ORIGINAL_INPUT
+#if _TEST_ORIGINAL_INPUT_
   test2.add(assertions[1] && interpolant);
   // Adding axiomatization
   test2.add(forall(y, i, e, rd(wr(y, i, e), i) == e));

@@ -89,6 +89,7 @@ StandardInput::StandardInput(z3::expr const & e,
         part_2.push_back(orientBinPredicate(current_arg));
         continue;
       default:
+        //part_2.push_back(current_arg);
         throw "Problem @ StandardInput::StandardInput"
           "Invalid formula.";
     }

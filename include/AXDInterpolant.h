@@ -4,7 +4,8 @@
 #define _Z3_OUTPUT_FILE_            1
 #define _MATHSAT5_OUTPUT_FILE_      0
 #define _DIRECT_INTERP_COMPUTATION_ 1
-#define _TEST_ORIGINAL_INPUT        1
+#define _TEST_OUTPUT_               1
+#define _TEST_ORIGINAL_INPUT_       1
 
 #include <iostream>
 #include <utility>
@@ -17,6 +18,7 @@ class AXDInterpolant : public Preprocessor {
 
   z3::solver solver;
   StandardInput part_a, part_b;
+  std::string file_name;
 
   void loop(unsigned);
   void testOutput(z3::expr const &);

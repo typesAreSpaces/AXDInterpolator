@@ -11,10 +11,20 @@ int main(int argc, char * argv[]){
 
   switch(argc){
     case 1:
+      try {
       AXDInterpolant(ctx, file_name, allowed_attempts);
+      }
+      catch(char const * e){
+        std::cout << e << std::endl;
+      }
       return 0;
     case 2:
+      try {
       AXDInterpolant(ctx, argv[1], allowed_attempts);
+      }
+      catch(char const * e){
+        std::cout << e << std::endl;
+      }
       return 0;
     default:
       return 1;
