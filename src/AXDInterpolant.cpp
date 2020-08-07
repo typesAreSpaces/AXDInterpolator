@@ -57,52 +57,79 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
 
   while(--allowed_attempts){
     solver.push();
-    for(auto const & assertion : part_a.part_2){
-      std::cout << assertion << std::endl;
+    for(auto const & assertion : part_a.part_2)
       solver.add(assertion);
-    }
-    for(auto const & assertion : part_b.part_2){
-      std::cout << assertion << std::endl;
+    for(auto const & assertion : part_b.part_2)
       solver.add(assertion);
-    }
-    for(auto const & index : part_a.index_vars){
-      std::cout << (index >= 0) << std::endl;
+    for(auto const & index : part_a.index_vars)
       solver.add(index >= 0);
-    }
-    for(auto const & index : part_b.index_vars){
-      std::cout << (index >= 0) << std::endl;
+    for(auto const & index : part_b.index_vars)
       solver.add(index >= 0);
-    }
     if(solver.check() == z3::unsat){
 
 #if _Z3_OUTPUT_FILE_
-      std::ofstream z3_file("./output/" + m_file_name + "_reduced.smt2" );
+      std::ofstream z3_file("./output/" + m_file_name + "_reduced_z3.smt2" );
       // TODO: Design proper output file for Z3
-      z3_file << solver.to_smt2();
+      z3_file << solver.to_smt2_decls_only();
+
+      z3_file << "(define-fun part_a () Bool (and " << std::endl;
+      for(auto const & assertion : part_a.part_2)
+        z3_file << assertion << std::endl;
+      for(auto const & index : part_a.index_vars)
+        z3_file << (index >= 0) << std::endl;
+      z3_file << "))" << std::endl;
+
+      z3_file << "(define-fun part_b () Bool (and " << std::endl;
+      for(auto const & assertion : part_b.part_2)
+        z3_file << assertion << std::endl;
+      for(auto const & index : part_b.index_vars)
+        z3_file << (index >= 0) << std::endl;
+      z3_file << "))" << std::endl;
+
+      z3_file << "(compute-interpolant (interp part_a) part_b)" << std::endl;
 #endif
 #if _MATHSAT5_OUTPUT_FILE_
-      std::ofstream mathsat_file("./output/" + m_file_name + "_reduced.smt2");
+      std::ofstream mathsat_file("./output/" + m_file_name + "_reduced_mathsat.smt2");
       // TODO: Design proper output file for Mathsat5
-      mathsat_file << solver.to_smt2();
+      mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
+      mathsat_file << solver.to_smt2_decls_only();
+
+      mathsat_file << "(assert (! (and" << std::endl;
+      for(auto const & assertion : part_a.part_2)
+        mathsat_file << assertion << std::endl;
+      for(auto const & index : part_a.index_vars)
+        mathsat_file << (index >= 0) << std::endl;
+      mathsat_file << ") :interpolation-group part_a))" << std::endl;
+
+      mathsat_file << "(assert (! (and " << std::endl;
+      for(auto const & assertion : part_b.part_2)
+        mathsat_file << assertion << std::endl;
+      for(auto const & index : part_b.index_vars)
+        mathsat_file << (index >= 0) << std::endl;
+      mathsat_file << ") :interpolation-group part_b))" << std::endl;
+
+      mathsat_file << "(check-sat)" << std::endl;
+      mathsat_file << "(get-interpolant (part_a))" << std::endl;
+      mathsat_file << "(exit)" << std::endl;
 #endif
 
 #if _DIRECT_INTERP_COMPUTATION_
       z3::expr interpolant = computeInterpolant();
-      // Show interpolant
+      //z3::expr interpolant = computeInterpolant().simplify();
       std::ofstream interpolant_file("./output/" + m_file_name + "_interpolant.smt2");
       interpolant_file << interpolant;
 
 #if _TEST_OUTPUT_
       testOutput(interpolant);
 #endif
-      solver.pop();
 
+#endif
+      solver.pop();
       std::cout << "Unsat after " 
         << constant_allowed_attempts - allowed_attempts 
         << " iterations" << std::endl;
       return;
     }
-#endif
 
     solver.pop();
 
@@ -153,6 +180,7 @@ z3::expr AXDInterpolant::computeInterpolant(){
 }
 
 void AXDInterpolant::testOutput(z3::expr const & interpolant){
+#if _TEST_OUTPUT_
   std::ofstream test1_file("./output/" + m_file_name + "_test1.smt2");
   std::ofstream test2_file("./output/" + m_file_name + "_test2.smt2");
 
@@ -174,7 +202,7 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant){
 #else
   test1.add(not(z3::implies(z3::mk_and(part_a_vector), interpolant)));
 #endif
- test1_file << test1.to_smt2();
+  test1_file << test1.to_smt2();
 
   z3::solver test2(ctx);
 #if _TEST_ORIGINAL_INPUT_
@@ -189,4 +217,5 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant){
   test2.add(mk_and(part_b_vector) && interpolant);
 #endif
   test2_file << test2.to_smt2();
+#endif
 }
