@@ -42,9 +42,12 @@ AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file_name, unsign
   solver(ctx), 
   part_a(assertions[0], part_a_index_vars, part_a_array_vars),
   part_b(assertions[1], part_b_index_vars, part_b_array_vars),
-  file_name(std::string(file_name))
+  m_file_name(std::string(file_name))
 {
-  this->file_name = this->file_name.substr(this->file_name.find_last_of("\\/") + 1);
+  m_file_name = 
+    m_file_name
+    .substr(0, m_file_name.find_last_of("."))
+    .substr(m_file_name.find_last_of("\\/") + 1);
   loop(allowed_attempts);
 }
 
@@ -54,33 +57,39 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
 
   while(--allowed_attempts){
     solver.push();
-    for(auto const & assertion : part_a.part_2)
+    for(auto const & assertion : part_a.part_2){
+      std::cout << assertion << std::endl;
       solver.add(assertion);
-    for(auto const & assertion : part_b.part_2)
+    }
+    for(auto const & assertion : part_b.part_2){
+      std::cout << assertion << std::endl;
       solver.add(assertion);
-    for(auto const & index : part_a.index_vars)
+    }
+    for(auto const & index : part_a.index_vars){
+      std::cout << (index >= 0) << std::endl;
       solver.add(index >= 0);
-    for(auto const & index : part_b.index_vars)
+    }
+    for(auto const & index : part_b.index_vars){
+      std::cout << (index >= 0) << std::endl;
       solver.add(index >= 0);
+    }
     if(solver.check() == z3::unsat){
 
 #if _Z3_OUTPUT_FILE_
-      std::ofstream file("./output/" + file_name + "_reduced.smt2" );
-      // TODO: Design proper output file for:
-      // - Z3
-      file << solver.to_smt2();
+      std::ofstream z3_file("./output/" + m_file_name + "_reduced.smt2" );
+      // TODO: Design proper output file for Z3
+      z3_file << solver.to_smt2();
 #endif
 #if _MATHSAT5_OUTPUT_FILE_
-      std::ofstream file("./output/" + file_name + "_reduced.smt2");
-      // TODO: Design proper output file for:
-      // - Mathsat5
-      file << solver.to_smt2();
+      std::ofstream mathsat_file("./output/" + m_file_name + "_reduced.smt2");
+      // TODO: Design proper output file for Mathsat5
+      mathsat_file << solver.to_smt2();
 #endif
 
 #if _DIRECT_INTERP_COMPUTATION_
       z3::expr interpolant = computeInterpolant();
       // Show interpolant
-      std::ofstream interpolant_file("./output/" + file_name + "_interpolant.smt2");
+      std::ofstream interpolant_file("./output/" + m_file_name + "_interpolant.smt2");
       interpolant_file << interpolant;
 
 #if _TEST_OUTPUT_
@@ -144,8 +153,8 @@ z3::expr AXDInterpolant::computeInterpolant(){
 }
 
 void AXDInterpolant::testOutput(z3::expr const & interpolant){
-  std::ofstream test1_file("./output/" + file_name + "_test1.smt2");
-  std::ofstream test2_file("./output/" + file_name + "_test2.smt2");
+  std::ofstream test1_file("./output/" + m_file_name + "_test1.smt2");
+  std::ofstream test2_file("./output/" + m_file_name + "_test2.smt2");
 
   z3::expr x = ctx.constant("x", this->array_sort);
   z3::expr y = ctx.constant("y", this->array_sort);

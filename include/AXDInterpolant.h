@@ -18,7 +18,7 @@ class AXDInterpolant : public Preprocessor {
 
   z3::solver solver;
   StandardInput part_a, part_b;
-  std::string file_name;
+  std::string m_file_name;
 
   void loop(unsigned);
   void testOutput(z3::expr const &);
