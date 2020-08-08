@@ -49,3 +49,5 @@ tests/basic: $(OBJS)
 .PHONY: clean
 clean:
 	rm -rf $(ODIR)/* output/*.smt2
+	cd output && make clean
+
