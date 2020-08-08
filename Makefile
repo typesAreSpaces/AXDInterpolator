@@ -11,11 +11,11 @@ FLAGS = -I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 SRC  = $(wildcard $(SDIR)/*.cpp)
 OBJS = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC)) $(Z3DIR)/build/libz3.$(Z3EXT) 
 DEPS = $(wildcard $(IDIR)/*.h)
-#FILE_TEST = ./tests/smt2-files/example.smt2 
+FILE_TEST = ./tests/smt2-files/example.smt2 
 #FILE_TEST = ./tests/smt2-files/example1.smt2 
 #FILE_TEST = ./tests/smt2-files/example2.smt2 
 #FILE_TEST = ./tests/smt2-files/example3.smt2 
-FILE_TEST = ./tests/smt2-files/example4.smt2 
+#FILE_TEST = ./tests/smt2-files/example4.smt2 
 #FILE_TEST = ./tests/smt2-files/example5.smt2 
 
 # ------------------------------------------------------------------------------------------
