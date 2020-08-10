@@ -87,6 +87,8 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
       z3_file << "))" << std::endl;
 
       z3_file << "(compute-interpolant (interp part_a) part_b)" << std::endl;
+
+      system(("z3 ./output/" + m_file_name + "_reduced_z3.smt2").c_str());
 #endif
 #if _MATHSAT5_OUTPUT_FILE_
       std::ofstream mathsat_file("./output/" + m_file_name + "_reduced_mathsat.smt2");
@@ -111,6 +113,8 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
       mathsat_file << "(check-sat)" << std::endl;
       mathsat_file << "(get-interpolant (part_a))" << std::endl;
       mathsat_file << "(exit)" << std::endl;
+
+      system(("mathsat ./output/" + m_file_name + "_reduced_mathsat.smt2").c_str());
 #endif
 
 #if _DIRECT_INTERP_COMPUTATION_
@@ -177,6 +181,12 @@ z3::expr AXDInterpolant::computeInterpolant(){
       z3::params(ctx));
 
   return interpolant[0];
+}
+
+z3::expr AXDInterpolant::liftInterpolant(){
+  // TODO: implementation is missing
+  // WRONG
+  return ctx.int_val(0);
 }
 
 void AXDInterpolant::testOutput(z3::expr const & interpolant){

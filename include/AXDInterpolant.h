@@ -1,7 +1,7 @@
 #ifndef _AXD_INTERPOLANT_
 #define _AXD_INTERPOLANT_
 #define _DEBUG_AXD_INTER_           0
-#define _Z3_OUTPUT_FILE_            0
+#define _Z3_OUTPUT_FILE_            1
 #define _MATHSAT5_OUTPUT_FILE_      1
 #define _DIRECT_INTERP_COMPUTATION_ 0
 #define _TEST_OUTPUT_               0
@@ -27,6 +27,8 @@ class AXDInterpolant : public Preprocessor {
   AXDInterpolant(z3::context &, char const *, unsigned);
 
   z3::expr computeInterpolant();
+  // TODO: implementation is missing
+  z3::expr liftInterpolant(); 
 
   class CircularPairIterator {
     friend class AXDInterpolant;
