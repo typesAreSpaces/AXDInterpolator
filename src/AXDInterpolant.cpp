@@ -68,65 +68,13 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     if(solver.check() == z3::unsat){
 
 #if _Z3_OUTPUT_FILE_
-      std::ofstream z3_file("./output/" + m_file_name + "_reduced_z3.smt2" );
-      // TODO: Design proper output file for Z3
-      z3_file << solver.to_smt2_decls_only();
-
-      z3_file << "(define-fun part_a () Bool (and " << std::endl;
-      for(auto const & assertion : part_a.part_2)
-        z3_file << assertion << std::endl;
-      for(auto const & index : part_a.index_vars)
-        z3_file << (index >= 0) << std::endl;
-      z3_file << "))" << std::endl;
-
-      z3_file << "(define-fun part_b () Bool (and " << std::endl;
-      for(auto const & assertion : part_b.part_2)
-        z3_file << assertion << std::endl;
-      for(auto const & index : part_b.index_vars)
-        z3_file << (index >= 0) << std::endl;
-      z3_file << "))" << std::endl;
-
-      z3_file << "(compute-interpolant (interp part_a) part_b)" << std::endl;
-
-      system(("z3 ./output/" + m_file_name + "_reduced_z3.smt2").c_str());
+      z3OutputFile();
 #endif
 #if _MATHSAT5_OUTPUT_FILE_
-      std::ofstream mathsat_file("./output/" + m_file_name + "_reduced_mathsat.smt2");
-      // TODO: Design proper output file for Mathsat5
-      mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
-      mathsat_file << solver.to_smt2_decls_only();
-
-      mathsat_file << "(assert (! (and" << std::endl;
-      for(auto const & assertion : part_a.part_2)
-        mathsat_file << assertion << std::endl;
-      for(auto const & index : part_a.index_vars)
-        mathsat_file << (index >= 0) << std::endl;
-      mathsat_file << ") :interpolation-group part_a))" << std::endl;
-
-      mathsat_file << "(assert (! (and " << std::endl;
-      for(auto const & assertion : part_b.part_2)
-        mathsat_file << assertion << std::endl;
-      for(auto const & index : part_b.index_vars)
-        mathsat_file << (index >= 0) << std::endl;
-      mathsat_file << ") :interpolation-group part_b))" << std::endl;
-
-      mathsat_file << "(check-sat)" << std::endl;
-      mathsat_file << "(get-interpolant (part_a))" << std::endl;
-      mathsat_file << "(exit)" << std::endl;
-
-      system(("mathsat ./output/" + m_file_name + "_reduced_mathsat.smt2").c_str());
+      mathsatOutputFile();
 #endif
-
 #if _DIRECT_INTERP_COMPUTATION_
-      z3::expr interpolant = computeInterpolant();
-      //z3::expr interpolant = computeInterpolant().simplify();
-      std::ofstream interpolant_file("./output/" + m_file_name + "_interpolant.smt2");
-      interpolant_file << interpolant;
-
-#if _TEST_OUTPUT_
-      testOutput(interpolant);
-#endif
-
+     directComputation();
 #endif
       solver.pop();
       std::cout << "Unsat after " 
@@ -136,19 +84,16 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     }
 
     solver.pop();
-
 #if _DEBUG_AXD_INTER_ 
     std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
     std::cout << "B-part part 2: " << part_b.part_2 << std::endl;
 #endif
-
     // Find pair of common array variables
     auto const & common_pair = *it;
 
     unsigned part_a_dim = part_a.diff_map.size_of_entry(common_pair),
              part_b_dim = part_b.diff_map.size_of_entry(common_pair),
              min_dim = std::min(part_a_dim, part_b_dim);
-
     auto const & _new_index = fresh_index_constant();
     part_a.updateSaturation(common_pair, _new_index, min_dim);
     part_b.updateSaturation(common_pair, _new_index, min_dim);
@@ -160,18 +105,9 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
       "Or internal failure" << std::endl;
 }
 
-z3::expr AXDInterpolant::computeInterpolant(){
-  z3::expr_vector part_a_vector(ctx);
-  z3::expr_vector part_b_vector(ctx);
-
-  for(auto const & assertion : part_a.part_2)
-    part_a_vector.push_back(assertion);
-  for(auto const & assertion : part_b.part_2)
-    part_b_vector.push_back(assertion);
-  for(auto const & index : part_a.index_vars)
-    part_a_vector.push_back(index >= 0);
-  for(auto const & index : part_b.index_vars)
-    part_b_vector.push_back(index >= 0);
+// Precondition: part_a_vector and part_b_vector should be updated using
+// setupPart_A_B_Vectors
+z3::expr AXDInterpolant::computeInterpolant(z3::expr_vector & part_a_vector, z3::expr_vector & part_b_vector){
 
   z3::expr marked_formula = 
     interpolant(z3::mk_and(part_a_vector)) && z3::mk_and(part_b_vector);
@@ -183,14 +119,74 @@ z3::expr AXDInterpolant::computeInterpolant(){
   return interpolant[0];
 }
 
-z3::expr AXDInterpolant::liftInterpolant(){
-  // TODO: implementation is missing
-  // WRONG
-  return ctx.int_val(0);
+//z3::expr AXDInterpolant::liftInterpolant(z3::expr const & interpolant){
+  //z3::goal g(ctx);
+  //z3::solver s(ctx);
+
+  //for(auto const & diff_entry : part_a.diff_map.m_map){
+    //auto const & diff_a = diff_entry.first.first;
+    //auto const & diff_b = diff_entry.first.second;
+    //auto const & diff_seq = diff_entry.second.new_index_vars;
+    //unsigned _index = 1;
+    //for(auto const & k_ : diff_seq){
+      //g.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
+      //s.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
+      //_index++;
+    //}
+  //}
+
+  //g.add(interpolant);
+  //s.add(interpolant);
+
+  //std::cout << s.to_smt2_decls_only() << std::endl;
+  //std::cout << g << std::endl;
+  ////std::cout <<  z3::tactic(ctx, "solve-eqs")(g) << std::endl;
+  
+   ////
+  
+  //return interpolant;
+//}
+
+z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
+
+  z3::expr_vector from(ctx);
+  z3::expr_vector to(ctx);
+
+  for(auto const & diff_entry : part_a.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second.new_index_vars;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+        from.push_back(k_);
+        to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
+
+  for(auto const & diff_entry : part_b.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second.new_index_vars;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+        from.push_back(k_);
+        to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
+
+  return interpolant.substitute(from, to);
 }
 
-void AXDInterpolant::testOutput(z3::expr const & interpolant){
-#if _TEST_OUTPUT_
+// Precondition: part_a_vector and part_b_vector should be updated using
+// setupPart_A_B_Vectors
+void AXDInterpolant::testOutput(z3::expr const & interpolant, 
+    z3::expr_vector & part_a_vector, z3::expr_vector & part_b_vector){
   std::ofstream test1_file("./output/" + m_file_name + "_test1.smt2");
   std::ofstream test2_file("./output/" + m_file_name + "_test2.smt2");
 
@@ -227,5 +223,79 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant){
   test2.add(mk_and(part_b_vector) && interpolant);
 #endif
   test2_file << test2.to_smt2();
+}
+
+void AXDInterpolant::z3OutputFile(){
+  std::ofstream z3_file("./output/" + m_file_name + "_reduced_z3.smt2" );
+  z3_file << solver.to_smt2_decls_only();
+
+  z3_file << "(define-fun part_a () Bool (and " << std::endl;
+  for(auto const & assertion : part_a.part_2)
+    z3_file << assertion << std::endl;
+  for(auto const & index : part_a.index_vars)
+    z3_file << (index >= 0) << std::endl;
+  z3_file << "))" << std::endl;
+
+  z3_file << "(define-fun part_b () Bool (and " << std::endl;
+  for(auto const & assertion : part_b.part_2)
+    z3_file << assertion << std::endl;
+  for(auto const & index : part_b.index_vars)
+    z3_file << (index >= 0) << std::endl;
+  z3_file << "))" << std::endl;
+
+  z3_file << "(compute-interpolant (interp part_a) part_b)" << std::endl;
+
+  system(("z3 ./output/" + m_file_name + "_reduced_z3.smt2").c_str());
+}
+
+void AXDInterpolant::mathsatOutputFile(){
+  std::ofstream mathsat_file("./output/" + m_file_name + "_reduced_mathsat.smt2");
+  mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
+  mathsat_file << solver.to_smt2_decls_only();
+
+  mathsat_file << "(assert (! (and" << std::endl;
+  for(auto const & assertion : part_a.part_2)
+    mathsat_file << assertion << std::endl;
+  for(auto const & index : part_a.index_vars)
+    mathsat_file << (index >= 0) << std::endl;
+  mathsat_file << ") :interpolation-group part_a))" << std::endl;
+
+  mathsat_file << "(assert (! (and " << std::endl;
+  for(auto const & assertion : part_b.part_2)
+    mathsat_file << assertion << std::endl;
+  for(auto const & index : part_b.index_vars)
+    mathsat_file << (index >= 0) << std::endl;
+  mathsat_file << ") :interpolation-group part_b))" << std::endl;
+
+  mathsat_file << "(check-sat)" << std::endl;
+  mathsat_file << "(get-interpolant (part_a))" << std::endl;
+  mathsat_file << "(exit)" << std::endl;
+
+  system(("mathsat ./output/" + m_file_name + "_reduced_mathsat.smt2").c_str());
+}
+
+void AXDInterpolant::directComputation(){
+  z3::expr_vector part_a_vector(ctx);
+  z3::expr_vector part_b_vector(ctx);
+  setupPartA_B_Vectors(part_a_vector, part_b_vector);
+  z3::expr interpolant = computeInterpolant(part_a_vector, part_b_vector);
+  std::ofstream interpolant_file("./output/" + m_file_name + "_interpolant.smt2");
+  //interpolant_file << interpolant;
+  interpolant_file << liftInterpolant(interpolant);
+
+
+#if _TEST_OUTPUT_
+  testOutput(interpolant, part_a_vector, part_b_vector);
 #endif
+}
+
+void AXDInterpolant::setupPartA_B_Vectors(z3::expr_vector & part_a_vector, z3::expr_vector & part_b_vector){
+  for(auto const & assertion : part_a.part_2)
+    part_a_vector.push_back(assertion);
+  for(auto const & assertion : part_b.part_2)
+    part_b_vector.push_back(assertion);
+  for(auto const & index : part_a.index_vars)
+    part_a_vector.push_back(index >= 0);
+  for(auto const & index : part_b.index_vars)
+    part_b_vector.push_back(index >= 0);
 }

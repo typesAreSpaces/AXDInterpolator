@@ -26,6 +26,7 @@ struct AXDSignature {
     array_sort;
   z3::func_decl 
     diff,
+    diff_k,
     wr,
     rd;
   AXDSignature(z3::context &);

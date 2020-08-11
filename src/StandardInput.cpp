@@ -261,10 +261,10 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
   // The following adds (31) predicates for the 
   // previous quantifiers formulas effectively
   // updating them with _new_index
-  for(auto const & wr_entry : diff_map.m_map){
-    auto const & diff_a = wr_entry.first.first;
-    auto const & diff_b = wr_entry.first.second;
-    auto const & diff_seq = wr_entry.second.new_index_vars;
+  for(auto const & diff_entry : diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second.new_index_vars;
 
     unsigned _i = 0, _size = diff_seq.size();
     z3::expr_vector accum_k_(ctx);

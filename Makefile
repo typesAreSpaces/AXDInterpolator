@@ -39,11 +39,13 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) obj output
 tests/basic: $(OBJS)
 	$(CC) -g -c -o ./$@.o $(FLAGS) ./$@.cpp
 	$(CC) -g -o $@ $(OBJS) ./$@.o -lpthread -Wall
-	./$@ $(FILE_TEST)
-	#./$@ ./tests/smt2-files/example.smt2 
-	#./$@ ./tests/smt2-files/example1.smt2 
-	#./$@ ./tests/smt2-files/example2.smt2 
-	#./$@ ./tests/smt2-files/example3.smt2 
+	#./$@ $(FILE_TEST)
+	./$@ ./tests/smt2-files/example.smt2 
+	./$@ ./tests/smt2-files/example1.smt2 
+	./$@ ./tests/smt2-files/example2.smt2 
+	./$@ ./tests/smt2-files/example3.smt2 
+	./$@ ./tests/smt2-files/example4.smt2 
+	./$@ ./tests/smt2-files/example5.smt2 
 	rm -rf tests/*.o $@
 
 # ------------------------------------------------------------------------------------------
