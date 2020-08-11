@@ -270,6 +270,7 @@ void AXDInterpolant::z3OutputFile(){
   z3::expr interpolant_ = z3::mk_and(z3_parser.assertions());
   // --------------------------------------------------------------------
 
+  std::cout << "(Lifted) Interpolant:" << std::endl;
   std::cout << liftInterpolant(interpolant_).simplify() << std::endl;
 }
 
@@ -320,6 +321,7 @@ void AXDInterpolant::mathsatOutputFile(){
   z3::expr interpolant_ = z3::mk_and(z3_parser.assertions());
   // --------------------------------------------------------------------
 
+  std::cout << "(Lifted) Interpolant:" << std::endl;
   std::cout << liftInterpolant(interpolant_).simplify() << std::endl;
 
 }
