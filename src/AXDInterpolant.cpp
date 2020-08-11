@@ -226,52 +226,102 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
 }
 
 void AXDInterpolant::z3OutputFile(){
+  // --------------------------------------------------------------------
   std::ofstream z3_file("./output/" + m_file_name + "_reduced_z3.smt2" );
   z3_file << solver.to_smt2_decls_only();
-
   z3_file << "(define-fun part_a () Bool (and " << std::endl;
   for(auto const & assertion : part_a.part_2)
     z3_file << assertion << std::endl;
   for(auto const & index : part_a.index_vars)
     z3_file << (index >= 0) << std::endl;
   z3_file << "))" << std::endl;
-
   z3_file << "(define-fun part_b () Bool (and " << std::endl;
   for(auto const & assertion : part_b.part_2)
     z3_file << assertion << std::endl;
   for(auto const & index : part_b.index_vars)
     z3_file << (index >= 0) << std::endl;
   z3_file << "))" << std::endl;
-
   z3_file << "(compute-interpolant (interp part_a) part_b)" << std::endl;
+  // --------------------------------------------------------------------
 
-  system(("z3 ./output/" + m_file_name + "_reduced_z3.smt2").c_str());
+  // --------------------------------------------------------------------
+  system(("z3 ./output/" + m_file_name + "_reduced_z3.smt2 > ./output/temp.smt2").c_str());
+  // --------------------------------------------------------------------
+  
+  // --------------------------------------------------------------------
+  std::ifstream result("./output/temp.smt2");
+  std::string line;
+  std::getline(result, line);
+  std::getline(result, line);
+  std::ofstream z3_lift_interpolant("./output/" + m_file_name + "_reduced_z3_lifted.smt2" );
+  z3_lift_interpolant << solver.to_smt2_decls_only();
+  z3_lift_interpolant << "(assert (and" << std::endl;
+  while(std::getline(result, line)){
+    z3_lift_interpolant << line << std::endl;
+  }
+  z3_lift_interpolant << ")" << std::endl;
+  z3_lift_interpolant << "(check-sat)" << std::endl;
+  system("rm -rf ./output/temp.smt2");
+  // --------------------------------------------------------------------
+
+  // --------------------------------------------------------------------
+  z3::solver z3_parser(ctx);
+  z3_parser.from_file(("./output/" + m_file_name + "_reduced_z3_lifted.smt2" ).c_str());
+  z3::expr interpolant_ = z3::mk_and(z3_parser.assertions());
+  // --------------------------------------------------------------------
+
+  std::cout << liftInterpolant(interpolant_).simplify() << std::endl;
 }
 
 void AXDInterpolant::mathsatOutputFile(){
+  // --------------------------------------------------------------------
   std::ofstream mathsat_file("./output/" + m_file_name + "_reduced_mathsat.smt2");
   mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
   mathsat_file << solver.to_smt2_decls_only();
-
   mathsat_file << "(assert (! (and" << std::endl;
   for(auto const & assertion : part_a.part_2)
     mathsat_file << assertion << std::endl;
   for(auto const & index : part_a.index_vars)
     mathsat_file << (index >= 0) << std::endl;
   mathsat_file << ") :interpolation-group part_a))" << std::endl;
-
   mathsat_file << "(assert (! (and " << std::endl;
   for(auto const & assertion : part_b.part_2)
     mathsat_file << assertion << std::endl;
   for(auto const & index : part_b.index_vars)
     mathsat_file << (index >= 0) << std::endl;
   mathsat_file << ") :interpolation-group part_b))" << std::endl;
-
   mathsat_file << "(check-sat)" << std::endl;
   mathsat_file << "(get-interpolant (part_a))" << std::endl;
   mathsat_file << "(exit)" << std::endl;
+  // --------------------------------------------------------------------
 
-  system(("mathsat ./output/" + m_file_name + "_reduced_mathsat.smt2").c_str());
+  // --------------------------------------------------------------------
+  system(("mathsat ./output/" + m_file_name + "_reduced_mathsat.smt2 > ./output/temp.smt2").c_str());
+  // --------------------------------------------------------------------
+
+  // --------------------------------------------------------------------
+  std::ifstream result("./output/temp.smt2");
+  std::string line;
+  std::getline(result, line);
+  std::ofstream z3_lift_interpolant("./output/" + m_file_name + "_reduced_z3_lifted.smt2" );
+  z3_lift_interpolant << solver.to_smt2_decls_only();
+  z3_lift_interpolant << "(assert " << std::endl;
+  while(std::getline(result, line)){
+    z3_lift_interpolant << line << std::endl;
+  }
+  z3_lift_interpolant << ")" << std::endl;
+  z3_lift_interpolant << "(check-sat)" << std::endl;
+  system("rm -rf ./output/temp.smt2");
+  // --------------------------------------------------------------------
+
+  // --------------------------------------------------------------------
+  z3::solver z3_parser(ctx);
+  z3_parser.from_file(("./output/" + m_file_name + "_reduced_z3_lifted.smt2" ).c_str());
+  z3::expr interpolant_ = z3::mk_and(z3_parser.assertions());
+  // --------------------------------------------------------------------
+
+  std::cout << liftInterpolant(interpolant_).simplify() << std::endl;
+
 }
 
 void AXDInterpolant::directComputation(){

@@ -205,6 +205,7 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
         );
   else{
     diff_map.add(entry.first, entry.second, _new_index);
+    // old_dim > 0 guarantees having a previous index
     if(old_dim > 0){
       auto const & _previous_index = map_element->second.new_index_vars[old_dim - 1];
 
