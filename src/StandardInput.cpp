@@ -197,42 +197,41 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
   auto const & current_indices = map_element->second.new_index_vars;
   unsigned old_dim = current_indices.size();
 
+  index_vars.push_back(_new_index);
+
   if(min_dim < old_dim)
     part_2.push_back(
         _new_index == map_element->second.new_index_vars[min_dim]
         );
-  else
+  else{
     diff_map.add(entry.first, entry.second, _new_index);
+    if(old_dim > 0){
+      auto const & _previous_index = map_element->second.new_index_vars[old_dim - 1];
 
-  index_vars.push_back(_new_index);
+      // The following adds (27) predicates
+      part_2.push_back(
+          _previous_index >= _new_index
+          );
 
-  if(old_dim){
-    auto const & _previous_index = map_element->second.new_index_vars[old_dim - 1];
+      // The following adds (28) predicates
+      part_2.push_back(z3::implies(
+            _previous_index > _new_index,
+            rd(a, _previous_index) != rd(b, _previous_index)
+            ));
 
-    // The following adds (27) predicates
-    part_2.push_back(
-        _previous_index >= _new_index
-        );
-
-    // The following adds (28) predicates
+      // The following adds (29) predicates
+      part_2.push_back(z3::implies(
+            _previous_index == _new_index,
+            _previous_index == ctx.int_val(0)
+            ));
+    }
+    // The following adds (30) predicates
     part_2.push_back(z3::implies(
-          _previous_index > _new_index,
-          rd(a, _previous_index) != rd(b, _previous_index)
-          ));
-
-    // The following adds (29) predicates
-    part_2.push_back(z3::implies(
-          _previous_index == _new_index,
-          _previous_index == ctx.int_val(0)
+          rd(a, _new_index) == rd(b, _new_index),
+          _new_index == ctx.int_val(0)
           ));
   }
 
-  // The following adds (30) predicates
-  part_2.push_back(z3::implies(
-        rd(a, _new_index) == rd(b, _new_index),
-        _new_index == ctx.int_val(0)
-        ));
-  
   // The following adds (31) predicates
   for(auto const & h : index_vars){
     z3::expr_vector consequent_vector(ctx);
@@ -244,7 +243,7 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
           h > _new_index,
           z3::mk_or(consequent_vector)));
   }
-  
+
   // The following adds (24) predicates for the 
   // previous quantifiers formulas effectively
   // updating them with _new_index
@@ -257,7 +256,7 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
           rd(wr_a, _new_index) == rd(wr_b, _new_index)
           ));
   }
-  
+
   // The following adds (31) predicates for the 
   // previous quantifiers formulas effectively
   // updating them with _new_index
