@@ -304,26 +304,25 @@ void AXDInterpolant::mathsatOutputFile(){
   std::ifstream result("./output/temp.smt2");
   std::string line;
   std::getline(result, line);
-  std::ofstream z3_lift_interpolant("./output/" + m_file_name + "_reduced_z3_lifted.smt2" );
-  z3_lift_interpolant << solver.to_smt2_decls_only();
-  z3_lift_interpolant << "(assert " << std::endl;
+  std::ofstream mathsat_lift_interpolant("./output/" + m_file_name + "_reduced_mathsat_lifted.smt2" );
+  mathsat_lift_interpolant << solver.to_smt2_decls_only();
+  mathsat_lift_interpolant << "(assert " << std::endl;
   while(std::getline(result, line)){
-    z3_lift_interpolant << line << std::endl;
+    mathsat_lift_interpolant << line << std::endl;
   }
-  z3_lift_interpolant << ")" << std::endl;
-  z3_lift_interpolant << "(check-sat)" << std::endl;
+  mathsat_lift_interpolant << ")" << std::endl;
+  mathsat_lift_interpolant << "(check-sat)" << std::endl;
   system("rm -rf ./output/temp.smt2");
   // --------------------------------------------------------------------
 
   // --------------------------------------------------------------------
-  z3::solver z3_parser(ctx);
-  z3_parser.from_file(("./output/" + m_file_name + "_reduced_z3_lifted.smt2" ).c_str());
-  z3::expr interpolant_ = z3::mk_and(z3_parser.assertions());
+  z3::solver mathsat_parser(ctx);
+  mathsat_parser.from_file(("./output/" + m_file_name + "_reduced_mathsat_lifted.smt2" ).c_str());
+  z3::expr interpolant_ = z3::mk_and(mathsat_parser.assertions());
   // --------------------------------------------------------------------
 
   std::cout << "(Lifted) Interpolant:" << std::endl;
   std::cout << liftInterpolant(interpolant_).simplify() << std::endl;
-
 }
 
 void AXDInterpolant::directComputation(){
