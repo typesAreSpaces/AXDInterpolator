@@ -334,7 +334,6 @@ void AXDInterpolant::directComputation(){
   //interpolant_file << interpolant;
   interpolant_file << liftInterpolant(interpolant);
 
-
 #if _TEST_OUTPUT_
   testOutput(interpolant, part_a_vector, part_b_vector);
 #endif
