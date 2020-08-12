@@ -5,6 +5,8 @@ int main(int argc, char * argv[]){
 
   z3::set_param("proof", true);
   z3::context ctx;
+  ctx.set(":pp-min-alias-size", 1000000);
+  ctx.set(":pp-max-depth", 1000000);
 
   char const * file_name = "./tests/smt2-files/paper_example.smt2";
   unsigned allowed_attempts = 10;
