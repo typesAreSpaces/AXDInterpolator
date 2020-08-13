@@ -119,34 +119,6 @@ z3::expr AXDInterpolant::computeInterpolant(z3::expr_vector & part_a_vector, z3:
   return interpolant[0];
 }
 
-//z3::expr AXDInterpolant::liftInterpolant(z3::expr const & interpolant){
-  //z3::goal g(ctx);
-  //z3::solver s(ctx);
-
-  //for(auto const & diff_entry : part_a.diff_map.m_map){
-    //auto const & diff_a = diff_entry.first.first;
-    //auto const & diff_b = diff_entry.first.second;
-    //auto const & diff_seq = diff_entry.second.new_index_vars;
-    //unsigned _index = 1;
-    //for(auto const & k_ : diff_seq){
-      //g.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
-      //s.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
-      //_index++;
-    //}
-  //}
-
-  //g.add(interpolant);
-  //s.add(interpolant);
-
-  //std::cout << s.to_smt2_decls_only() << std::endl;
-  //std::cout << g << std::endl;
-  ////std::cout <<  z3::tactic(ctx, "solve-eqs")(g) << std::endl;
-  
-   ////
-  
-  //return interpolant;
-//}
-
 z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
 
   z3::expr_vector from(ctx);
@@ -205,6 +177,32 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
   test1.add(forall(x, y, z3::implies(x != y, rd(x, diff(x, y)) != rd(y, diff(x, y)))));
   test1.add(forall(x, y, i, z3::implies(i > diff(x, y), rd(x, i) == rd(y, i))));
   test1.add(forall(x, diff(x, x) == 0));
+  // Adding equations of new symbols
+  for(auto const & diff_entry : part_a.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second.new_index_vars;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+        test1.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
+
+  for(auto const & diff_entry : part_b.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second.new_index_vars;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+        test1.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
 #else
   test1.add(not(z3::implies(z3::mk_and(part_a_vector), interpolant)));
 #endif
@@ -219,6 +217,32 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
   test2.add(forall(x, y, z3::implies(x != y, rd(x, diff(x, y)) != rd(y, diff(x, y)))));
   test2.add(forall(x, y, i, z3::implies(i > diff(x, y), rd(x, i) == rd(y, i))));
   test2.add(forall(x, diff(x, x) == 0));
+  // Adding equations of new symbols
+  for(auto const & diff_entry : part_a.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second.new_index_vars;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+        test2.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
+
+  for(auto const & diff_entry : part_b.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second.new_index_vars;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+        test2.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
 #else
   test2.add(mk_and(part_b_vector) && interpolant);
 #endif
@@ -247,7 +271,7 @@ void AXDInterpolant::z3OutputFile(){
   // --------------------------------------------------------------------
   system(("z3 ./output/" + m_file_name + "_reduced_z3.smt2 > ./output/temp.smt2").c_str());
   // --------------------------------------------------------------------
-  
+
   // --------------------------------------------------------------------
   std::ifstream result("./output/temp.smt2");
   std::string line;
