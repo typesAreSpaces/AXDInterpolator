@@ -18,41 +18,42 @@ FILE_TEST = ./tests/smt2-files/example.smt2
 #FILE_TEST = ./tests/smt2-files/example4.smt2 
 #FILE_TEST = ./tests/smt2-files/example5.smt2 
 
-# --------------------------------
-#  Build
-
-all: tests/smt_file
+all: tests/one
 #all: tests/all
+
+# ----------------------------------------------------------
+#  Rules to build the project
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
 	@mkdir -p ./obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
-	
-# --------------------------------
-#
-# ----------------------------------------------------------
-#  Tests
 
-tests/smt_file: $(OBJS)
-	@mkdir -p output
+bin/axd_interpolator: $(OBJS)
+	@mkdir -p ./bin
 	$(CC) -g -o $@ $(OBJS) ./tests/main.cpp $(FLAGS) -lpthread
-	./$@ $(FILE_TEST)
+	
+# ----------------------------------------------------------
+#
+# -------------------------------------------
+#  Rules to test a single or many smt2 files
+
+tests/one: bin/axd_interpolator
+	./bin/axd_interpolator $(FILE_TEST)
 	rm -rf tests/*.o $@
 
-tests/all: $(OBJS) 
-	@mkdir -p output
-	$(CC) -g -o $@ $(OBJS) ./tests/main.cpp $(FLAGS) -lpthread
+tests/all: bin/axd_interpolator
 	for smt_file in ./tests/smt2-files/*; \
-		do ./$@ $${smt_file}; \
+		do ./bin/axd_interpolator $${smt_file}; \
 		done
 	rm -rf tests/*.o $@
 	
-# ----------------------------------------------------------
+# -------------------------------------------
 #
 # ------------------------------
 .PHONY: clean
 clean:
 	rm -rf $(ODIR)/* output/*.smt2
 	cd output && make clean
+	rm -rf /bin/axd_interpolator
 # ------------------------------
 

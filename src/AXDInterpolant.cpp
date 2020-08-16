@@ -159,6 +159,7 @@ z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
 // setupPart_A_B_Vectors
 void AXDInterpolant::testOutput(z3::expr const & interpolant, 
     z3::expr_vector & part_a_vector, z3::expr_vector & part_b_vector){
+  system("mkdir -p ./output");
   std::ofstream test1_file("./output/" + m_file_name + "_test1.smt2");
   std::ofstream test2_file("./output/" + m_file_name + "_test2.smt2");
 
@@ -251,6 +252,7 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
 
 void AXDInterpolant::z3OutputFile(){
   // --------------------------------------------------------------------
+  system("mkdir -p ./output");
   std::ofstream z3_file("./output/" + m_file_name + "_reduced_z3.smt2" );
   z3_file << solver.to_smt2_decls_only();
   z3_file << "(define-fun part_a () Bool (and " << std::endl;
@@ -300,6 +302,7 @@ void AXDInterpolant::z3OutputFile(){
 
 void AXDInterpolant::mathsatOutputFile(){
   // --------------------------------------------------------------------
+  system("mkdir -p ./output");
   std::ofstream mathsat_file("./output/" + m_file_name + "_reduced_mathsat.smt2");
   mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
   mathsat_file << solver.to_smt2_decls_only();
@@ -354,6 +357,7 @@ void AXDInterpolant::directComputation(){
   z3::expr_vector part_b_vector(ctx);
   setupPartA_B_Vectors(part_a_vector, part_b_vector);
   z3::expr interpolant = computeInterpolant(part_a_vector, part_b_vector);
+  system("mkdir -p ./output");
   std::ofstream interpolant_file("./output/" + m_file_name + "_interpolant.smt2");
   //interpolant_file << interpolant;
   interpolant_file << liftInterpolant(interpolant);
