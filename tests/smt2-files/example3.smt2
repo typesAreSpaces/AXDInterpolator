@@ -38,7 +38,6 @@
 (assert 
 (and
 (= a (wr (wr (wr (wr (wr (wr (wr b i7 e7) i6 e6) i5 e5) i4 e4) i3 e3) i2 e2) i1 e1))
-(= a (wr (wr (wr b i3 e3) i2 e2) i1 e1))
 (= (p1 i1) true)
 (= (p2 i2) true)
 (= (p3 i3) true)
