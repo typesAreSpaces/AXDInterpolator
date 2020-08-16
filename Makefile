@@ -43,8 +43,8 @@ tests/one: bin/axd_interpolator
 	rm -rf tests/*.o $@
 
 tests/all: bin/axd_interpolator
-	for smt_file in ./tests/smt2-files/*; \
-		do ./bin/axd_interpolator $${smt_file}; \
+	for smt_file in ./tests/smt2-files/*; do \
+		./bin/axd_interpolator $${smt_file} > $${smt_file}.txt; \
 		done
 	rm -rf tests/*.o $@
 	
@@ -54,6 +54,7 @@ tests/all: bin/axd_interpolator
 .PHONY: clean
 clean:
 	rm -rf $(ODIR)/* output/*.smt2
+	rm -rf tests/smt2-files/*.txt
 	cd output && make clean
 	rm -rf /bin/axd_interpolator
 # ------------------------------

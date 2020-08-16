@@ -44,6 +44,7 @@ AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file_name, unsign
   part_b(assertions[1], part_b_index_vars, part_b_array_vars),
   m_file_name(std::string(file_name))
 {
+  std::cout << "Solving file " << file_name << std::endl;
   m_file_name = 
     m_file_name
     .substr(0, m_file_name.find_last_of("."))
