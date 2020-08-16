@@ -10,7 +10,7 @@
 #include <utility>
 
 struct Z3ExprComparator {
-  bool operator() (z3::expr const & a, z3::expr const & b){
+  bool operator() (z3::expr const & a, z3::expr const & b) const {
     return a.id() > b.id();
   }
 };

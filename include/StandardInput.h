@@ -24,7 +24,7 @@ class StandardInput : public AXDSignature {
     typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
 
     struct Z3ExprExprComparator {
-      bool operator() (z3_expr_pair const & a, z3_expr_pair const & b){
+      bool operator() (z3_expr_pair const & a, z3_expr_pair const & b) const {
         return a.first.id() > b.first.id() 
           || (a.first.id() == b.first.id() && a.second.id() > b.second.id());
       }
