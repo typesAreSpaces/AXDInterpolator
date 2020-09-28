@@ -1,6 +1,6 @@
 [
  {
-  "directory": "/home/jose/axd_interpolant",
+  "directory": "/home/jose/Documents/GithubProjects/AXDInterpolator",
   "arguments": [
    "g++",
    "-g",
@@ -16,19 +16,72 @@
   "file": "src/AXDInterpolant.cpp"
  },
  {
-  "directory": "/home/jose/axd_interpolant",
+  "directory": "/home/jose/Documents/GithubProjects/AXDInterpolator",
   "arguments": [
    "g++",
    "-g",
    "-c",
    "-o",
-   "./tests/basic.o",
+   "obj/AXDSignature.o",
    "-I./src",
    "-I./include",
    "-std=c++11",
    "-Wall",
-   "./tests/basic.cpp"
+   "src/AXDSignature.cpp"
   ],
-  "file": "./tests/basic.cpp"
+  "file": "src/AXDSignature.cpp"
+ },
+ {
+  "directory": "/home/jose/Documents/GithubProjects/AXDInterpolator",
+  "arguments": [
+   "g++",
+   "-g",
+   "-c",
+   "-o",
+   "obj/Preprocessor.o",
+   "-I./src",
+   "-I./include",
+   "-std=c++11",
+   "-Wall",
+   "src/Preprocessor.cpp"
+  ],
+  "file": "src/Preprocessor.cpp"
+ },
+ {
+  "directory": "/home/jose/Documents/GithubProjects/AXDInterpolator",
+  "arguments": [
+   "g++",
+   "-g",
+   "-c",
+   "-o",
+   "obj/StandardInput.o",
+   "-I./src",
+   "-I./include",
+   "-std=c++11",
+   "-Wall",
+   "src/StandardInput.cpp"
+  ],
+  "file": "src/StandardInput.cpp"
+ },
+ {
+  "directory": "/home/jose/Documents/GithubProjects/AXDInterpolator",
+  "arguments": [
+   "g++",
+   "-g",
+   "-o",
+   "bin/axd_interpolator",
+   "./obj/AXDInterpolant.o",
+   "./obj/AXDSignature.o",
+   "./obj/Preprocessor.o",
+   "./obj/StandardInput.o",
+   "./lib/libz3.so",
+   "./tests/main.cpp",
+   "-I./src",
+   "-I./include",
+   "-std=c++11",
+   "-Wall",
+   "-lpthread"
+  ],
+  "file": "./tests/main.cpp"
  }
 ]
