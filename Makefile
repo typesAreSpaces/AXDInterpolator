@@ -1,15 +1,15 @@
-Z3DIR = /home/jose/Documents/GithubProjects/z3-interp-plus
 Z3EXT = so    # Linux extension
 #Z3EXT = dylib # macOS extension
 
 IDIR = ./include
 ODIR = ./obj
 SDIR = ./src
+LDIR = ./lib
 CC = g++
 FLAGS = -I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
 SRC  = $(wildcard $(SDIR)/*.cpp)
-OBJS = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC)) $(Z3DIR)/build/libz3.$(Z3EXT) 
+OBJS = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC)) $(LDIR)/libz3.$(Z3EXT)
 DEPS = $(wildcard $(IDIR)/*.h)
 
 FILE_TEST = ./tests/smt2-files/example.smt2 
