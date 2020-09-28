@@ -73,7 +73,6 @@ at the root of the project.
 `_reduced_z3` to the original name of the 
 query file. 
 
-
 ### Computing interpolants using Mathsat
 
 #### Requirements: 
