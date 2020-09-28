@@ -94,3 +94,7 @@ at the root of the project.
 - The file is named by suffixing 
 `_reduced_mathsat` to the original name of the 
 query file. 
+- The mathsat binary should be located in the bin folder
+from the root project. Either copy an existing version of
+mathsat into the bin folder or create a soft link using the
+command ``ln -s <mathsat-path> ./bin/mathsat``.
