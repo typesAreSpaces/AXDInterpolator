@@ -1,6 +1,3 @@
-Z3EXT = so    # Linux extension
-#Z3EXT = dylib # macOS extension
-
 IDIR = ./include
 ODIR = ./obj
 SDIR = ./src
@@ -9,8 +6,9 @@ CC = g++
 FLAGS = -I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
 SRC  = $(wildcard $(SDIR)/*.cpp)
-OBJS = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC)) $(LDIR)/libz3.$(Z3EXT)
+OBJS = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC)) $(LDIR)/libz3.so
 DEPS = $(wildcard $(IDIR)/*.h)
+OS = $(shell uname)
 
 FILE_TEST = ./tests/smt2-files/example.smt2 
 #FILE_TEST = ./tests/smt2-files/example1.smt2 
@@ -25,11 +23,20 @@ all: tests/one
 # ----------------------------------------------------------
 #  Rules to build the project
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
+$(LDIR)/libz3.so:
+ifeq ($(OS), Darwin)
+		cp ./lib/for_mac_libz3.so ./lib/libz3.so
+else
+ifeq ($(OS), Linux)
+		cp ./lib/for_linux_libz3.so ./lib/libz3.so
+endif
+endif
+
+$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.so
 	@mkdir -p ./obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
-bin/axd_interpolator: $(OBJS)
+bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.so
 	@mkdir -p ./bin
 	$(CC) -g -o $@ $(OBJS) ./tests/main.cpp $(FLAGS) -lpthread
 	
