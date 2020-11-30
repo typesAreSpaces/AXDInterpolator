@@ -61,8 +61,9 @@ tests/all: bin/axd_interpolator
 .PHONY: clean
 clean:
 	rm -rf $(ODIR)/* output/*.smt2
-	rm -rf tests/smt2-files/*.txt
+	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
-	rm -rf /bin/axd_interpolator
+	rm -rf ./bin/axd_interpolator
+	rm -rf ./lib/libz3.so
 # ------------------------------
 
