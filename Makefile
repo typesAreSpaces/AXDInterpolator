@@ -5,8 +5,8 @@ LDIR = ./lib
 CC = g++
 FLAGS = -I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-SRC  = $(wildcard $(SDIR)/*.cpp)
-OBJS = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC)) $(LDIR)/libz3.so
+SRC = $(wildcard $(SDIR)/*.cpp)
+OBJS = $(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.so
 DEPS = $(wildcard $(IDIR)/*.h)
 OS = $(shell uname)
 
@@ -61,7 +61,13 @@ tests/all: bin/axd_interpolator
 #  Check output
 
 check: 
-	make -C ./output
+	@make -C ./output
+
+mathsat_check: 
+	SMT_SOLVER=MATHSAT make check
+
+z3_check: 
+	SMT_SOLVER=Z3 make check
 
 # -------------------------------------------
 
@@ -74,4 +80,3 @@ clean:
 	rm -rf ./bin/axd_interpolator
 	rm -rf ./lib/libz3.so
 # ------------------------------
-
