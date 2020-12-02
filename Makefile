@@ -41,7 +41,7 @@ bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.so
 	$(CC) -g -o $@ $(OBJS) ./tests/main.cpp $(FLAGS) -lpthread
 	
 # ----------------------------------------------------------
-#
+
 # -------------------------------------------
 #  Rules to test a single or many smt2 files
 
@@ -56,7 +56,15 @@ tests/all: bin/axd_interpolator
 	rm -rf tests/*.o $@
 	
 # -------------------------------------------
-#
+
+# -------------------------------------------
+#  Check output
+
+check: 
+	make -C ./output
+
+# -------------------------------------------
+
 # ------------------------------
 .PHONY: clean
 clean:

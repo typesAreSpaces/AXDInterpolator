@@ -4,9 +4,9 @@ Z3_OUT_FILES=$(patsubst %z3.smt2, %z3_interpolant.txt, $(Z3_SMT_FILES))
 MATHSAT_SMT_FILES=$(wildcard *mathsat.smt2)
 MATHSAT_OUT_FILES=$(patsubst %mathsat.smt2, %mathsat_interpolant.txt, $(MATHSAT_SMT_FILES))
 
-SOLVER=$(MATHSAT_OUT_FILES)
+TEST=$(MATHSAT_OUT_FILES)
 
-all: $(SOLVER) 
+all: $(TEST) 
 
 %mathsat_interpolant.txt: %mathsat.smt2
 	mathsat $^ > $@
