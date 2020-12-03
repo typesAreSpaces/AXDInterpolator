@@ -24,10 +24,7 @@ class StandardInput : public AXDSignature {
     typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
 
     struct Z3ExprExprComparator {
-      bool operator() (z3_expr_pair const & a, z3_expr_pair const & b) const {
-        return a.first.id() > b.first.id() 
-          || (a.first.id() == b.first.id() && a.second.id() > b.second.id());
-      }
+      bool operator() (z3_expr_pair const & a, z3_expr_pair const & b) const;
     };
 
     std::map<z3_expr_pair, 
@@ -60,7 +57,7 @@ class StandardInput : public AXDSignature {
         z3::expr const &);
   };
 
-  DiffMap diff_map;
+  DiffMap     diff_map;
   WriteVector write_vector;
 
   // -) part_1 contains wr-equations and diff(k)-equations

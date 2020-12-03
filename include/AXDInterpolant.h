@@ -15,7 +15,6 @@
 #include "StandardInput.h"
 
 class AXDInterpolant : public Preprocessor {
-
   z3::solver solver;
   StandardInput part_a, part_b;
   std::string m_file_name;
@@ -35,9 +34,12 @@ class AXDInterpolant : public Preprocessor {
 
   class CircularPairIterator {
     friend class AXDInterpolant;
+
     z3_expr_set const & vars;
     z3_expr_set::iterator first, second;
+
     void avoidLowerDiagonal();
+
     public:
     CircularPairIterator(z3_expr_set const &);
     void next();
