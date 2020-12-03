@@ -15,6 +15,7 @@
 #include "StandardInput.h"
 
 class AXDInterpolant : public Preprocessor {
+
   z3::solver solver;
   StandardInput part_a, part_b;
   std::string m_file_name;

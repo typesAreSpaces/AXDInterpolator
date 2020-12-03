@@ -10,5 +10,7 @@ void StandardInput::WriteVector::add(
     z3::expr const & b, 
     z3::expr const & index,
     z3::expr const & element){
-  m_vector.push_back(std::make_tuple(a, b, index, element));
+  m_vector.push_back(
+      std::make_tuple(a, b, index, element)
+      );
 }

@@ -1,23 +1,20 @@
 #include "StandardInput.h"
 
-StandardInput::DiffMap::DiffMapEntry::DiffMapEntry(z3::context & ctx) : 
-  new_index_vars(ctx) {}
-
-  StandardInput::DiffMap::DiffMap(
-      z3::context & ctx,
-      z3_expr_set const & array_var_ids) : 
-    m_map()
+StandardInput::DiffMap::DiffMap(
+    z3::context & ctx,
+    z3_expr_set const & array_var_ids) : 
+  m_map()
 {
   for(auto const & x : array_var_ids)
     for(auto const & y : array_var_ids){
       if(x.id() > y.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(x, y), 
-              DiffMapEntry(ctx)));
-      else if(y.id() > x.id())
+              z3::expr_vector(ctx)));
+      if(y.id() > x.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(y, x), 
-              DiffMapEntry(ctx)));
+              z3::expr_vector(ctx)));
     }
 }
 
@@ -30,9 +27,11 @@ void StandardInput::DiffMap::add(
     z3::expr const & a, 
     z3::expr const & b, 
     z3::expr const & index){
-  if(a.id() > b.id())
+  if(a.id() > b.id()){
     add_aux(a, b, index);
-  else if(b.id() > a.id())
+    return;
+  }
+  if(b.id() > a.id())
     add_aux(b, a, index);
 }
 
@@ -45,9 +44,9 @@ void StandardInput::DiffMap::add_aux(
     throw "Problem @ StandardInput::DiffMap::add_aux."
       "Query a pair that should'nt be in the map";
   }
-  table_entry->second.new_index_vars.push_back(index);
+  table_entry->second.push_back(index);
 }
 
 unsigned StandardInput::DiffMap::size_of_entry(z3_expr_pair const & entry){
-  return m_map.find(entry)->second.new_index_vars.size();
+  return m_map.find(entry)->second.size();
 }

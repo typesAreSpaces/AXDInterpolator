@@ -112,8 +112,8 @@ void StandardInput::initSaturation(){
     auto const & b   = entry.first.second;
     auto const & seq = entry.second;
 
-    if(seq.new_index_vars.size() > 0){
-      auto const & index = seq.new_index_vars[0];
+    if(seq.size() > 0){
+      auto const & index = seq[0];
       for(auto const & h : index_vars)
         part_2.push_back(
             z3::implies(h > index,
@@ -133,20 +133,20 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
   auto const & a = entry.first;
   auto const & b = entry.second;
   auto const & map_element = diff_map.m_map.find(entry);
-  auto const & current_indices = map_element->second.new_index_vars;
+  auto const & current_indices = map_element->second;
   unsigned old_dim = current_indices.size();
 
   index_vars.push_back(_new_index);
 
   if(min_dim < old_dim)
     part_2.push_back(
-        _new_index == map_element->second.new_index_vars[min_dim]
+        _new_index == map_element->second[min_dim]
         );
   else{
     diff_map.add(entry.first, entry.second, _new_index);
     // old_dim > 0 guarantees having a previous index
     if(old_dim > 0){
-      auto const & _previous_index = map_element->second.new_index_vars[old_dim - 1];
+      auto const & _previous_index = map_element->second[old_dim - 1];
 
       // The following adds (27) predicates
       part_2.push_back(
@@ -203,7 +203,7 @@ void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
   for(auto const & diff_entry : diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second.new_index_vars;
+    auto const & diff_seq = diff_entry.second;
 
     unsigned _i = 0, _size = diff_seq.size();
     z3::expr_vector accum_k_(ctx);

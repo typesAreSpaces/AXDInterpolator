@@ -7,7 +7,8 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   assertions((really_a_parser.from_file(file), 
         really_a_parser.assertions())),
   part_a_index_vars(ctx), part_b_index_vars(ctx),
-  part_a_array_vars({}), part_b_array_vars({}), common_array_vars({})
+  part_a_array_vars({}), part_b_array_vars({}), 
+  common_array_vars({})
 {
   assert(assertions.size() == 2);
 
@@ -96,6 +97,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
 
     if(term.arg(2).num_args() > 0)
       cojoin(term.arg(2), fresh_element_constant(), side);
+    return;
   }
   if(f_name == "rd"){
     //std::cout << "-------A read function" << std::endl;
@@ -109,6 +111,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       cojoin(term.arg(1), fresh_index_constant(), side);
     else
       updateIndexVars(term.arg(1), side);
+    return;
   }
   if(f_name == "diff"){
     //std::cout << "-------A diff function" << std::endl;
@@ -122,6 +125,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       cojoin(term.arg(1), fresh_array_constant(), side);
     else
       updateArrayVars(term.arg(1), side);
+    return;
   }
 }
 

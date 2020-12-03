@@ -92,7 +92,7 @@ z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
   for(auto const & diff_entry : part_a.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second.new_index_vars;
+    auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
       if(k_.decl().name().str().rfind("fresh_", 0) == 0){
@@ -106,7 +106,7 @@ z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
   for(auto const & diff_entry : part_b.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second.new_index_vars;
+    auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
       if(k_.decl().name().str().rfind("fresh_", 0) == 0){

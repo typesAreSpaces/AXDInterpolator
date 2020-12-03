@@ -9,26 +9,28 @@
 #include <set>
 #include <utility>
 
-struct Z3ExprComparator {
-  bool operator() (z3::expr const & a, z3::expr const & b) const {
-    return a.id() > b.id();
-  }
-};
-
-typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
-
 struct AXDSignature {
+
+  struct Z3ExprComparator {
+    bool operator() (z3::expr const & a, z3::expr const & b) const;
+  };
+
+  typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
+
   z3::context & ctx;
+
   z3::sort 
     int_sort, 
     index_sort, 
     element_sort, 
     array_sort;
+
   z3::func_decl 
     diff,
     diff_k,
     wr,
     rd;
+
   AXDSignature(z3::context &);
 };
 
