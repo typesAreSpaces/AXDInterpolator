@@ -70,7 +70,7 @@ void Preprocessor::flattenPredicateAux(z3::expr const & term,
   if(term.num_args() > 0)
     flattenTerm(term, side);
   else{
-    auto sort_name = term.decl().range().name().str(); 
+    auto sort_name = sort_name(term);
     if(sort_name == "Int")
       updateIndexVars(term, side);
     if(sort_name == "ArraySort")
@@ -81,7 +81,7 @@ void Preprocessor::flattenPredicateAux(z3::expr const & term,
 void Preprocessor::flattenTerm(z3::expr const & term, 
     SideInterpolant side){
 
-  auto f_name = term.decl().name().str();
+  auto f_name = func_name(term);
   if(f_name == "wr"){
     //std::cout << "-------A write function" << std::endl;
     

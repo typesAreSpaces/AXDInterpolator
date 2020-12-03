@@ -9,13 +9,14 @@ StandardInput::StandardInput(z3::expr const & e,
   index_vars(initial_index_vars)
 {
   assert(e.decl().decl_kind() == Z3_OP_AND);
+
   for(unsigned i = 0; i < e.num_args(); i++){
     auto current_arg = e.arg(i);
     switch(current_arg.decl().decl_kind()){
       case Z3_OP_EQ: // ==
-        if(lhs(current_arg).decl().range().name().str() == "ArraySort" 
-            || lhs(current_arg).decl().name().str() == "diff" 
-            || rhs(current_arg).decl().name().str() == "diff")
+        if(sort_name(lhs(current_arg))     == "ArraySort" 
+            || func_name(lhs(current_arg)) == "diff" 
+            || func_name(rhs(current_arg)) == "diff")
           part_1.push_back(orientBinPredicate(current_arg));
         else
           part_2.push_back(orientBinPredicate(current_arg));
@@ -40,8 +41,12 @@ StandardInput::StandardInput(z3::expr const & e,
 #endif
 
   for(auto const & equation : part_1){
-    //std::cout << "Processing equation: " << equation << std::endl;
-    auto f_name = rhs(equation).decl().name().str();
+#if _DEBUG_STDINPUT_
+    std::cout << 
+      "Processing equation: " << equation 
+      << std::endl;
+#endif
+    auto f_name = func_name(rhs(equation));
     if(f_name == "wr"){
       write_vector.add(
           lhs(equation), 
@@ -50,7 +55,7 @@ StandardInput::StandardInput(z3::expr const & e,
           rhs(equation).arg(2)
           );
     }
-    else if(f_name == "diff"){
+    if(f_name == "diff"){
       diff_map.add(
           lhs(rhs(equation)), 
           rhs(rhs(equation)),
@@ -78,7 +83,8 @@ StandardInput::StandardInput(z3::expr const & e,
   initSaturation();
 }
 
-z3::expr StandardInput::orientBinPredicate(z3::expr const & eq){
+z3::expr StandardInput::orientBinPredicate(
+    z3::expr const & eq){
   if(lhs(eq).num_args() > rhs(eq).num_args())
     return rhs(eq) == lhs(eq);
   return eq;
@@ -127,8 +133,10 @@ void StandardInput::initSaturation(){
   }
 }
 
-void StandardInput::updateSaturation(DiffMap::z3_expr_pair const & entry,
-    z3::expr const & _new_index, unsigned min_dim){
+void StandardInput::updateSaturation(
+    DiffMap::z3_expr_pair const & entry,
+    z3::expr const & _new_index, 
+    unsigned min_dim){
 
   auto const & a = entry.first;
   auto const & b = entry.second;

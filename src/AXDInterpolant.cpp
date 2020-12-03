@@ -1,6 +1,9 @@
 #include "AXDInterpolant.h"
 
-AXDInterpolant::AXDInterpolant(z3::context & ctx, char const * file_name, unsigned allowed_attempts) : 
+AXDInterpolant::AXDInterpolant(
+    z3::context & ctx, 
+    char const * file_name, 
+    unsigned allowed_attempts) : 
   Preprocessor(ctx, file_name),
   //solver(ctx, "QF_LIA"), 
   solver(ctx), 
@@ -95,7 +98,7 @@ z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
     auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
-      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+      if(func_name(k_).rfind("fresh_", 0) == 0){
         from.push_back(k_);
         to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
       }
@@ -109,7 +112,7 @@ z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
     auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
-      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+      if(func_name(k_).rfind("fresh_", 0) == 0){
         from.push_back(k_);
         to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
       }
@@ -150,7 +153,7 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
     auto const & diff_seq = diff_entry.second.new_index_vars;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
-      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+      if(func_name(k_).rfind("fresh_", 0) == 0){
         test1.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
       }
       _index++;
@@ -163,7 +166,7 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
     auto const & diff_seq = diff_entry.second.new_index_vars;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
-      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+      if(func_name(k_).rfind("fresh_", 0) == 0){
         test1.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
       }
       _index++;
@@ -190,7 +193,7 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
     auto const & diff_seq = diff_entry.second.new_index_vars;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
-      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+      if(func_name(k_).rfind("fresh_", 0) == 0){
         test2.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
       }
       _index++;
@@ -203,7 +206,7 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
     auto const & diff_seq = diff_entry.second.new_index_vars;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
-      if(k_.decl().name().str().rfind("fresh_", 0) == 0){
+      if(func_name(k_).rfind("fresh_", 0) == 0){
         test2.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
       }
       _index++;

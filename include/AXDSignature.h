@@ -4,6 +4,8 @@
 #define inSet(element, set) (set.find(element) != set.end())
 #define lhs(x) x.arg(0)
 #define rhs(x) x.arg(1)
+#define func_name(x) x.decl().name().str()
+#define sort_name(x) x.decl().range().name().str()
 
 #include <z3++.h>
 #include <set>
