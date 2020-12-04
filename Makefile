@@ -17,8 +17,8 @@ FILE_TEST = ./tests/smt2-files/example.smt2
 #FILE_TEST = ./tests/smt2-files/example4.smt2 
 #FILE_TEST = ./tests/smt2-files/example5.smt2 
 
-all: tests/one
-#all: tests/all
+#all: tests/one
+all: tests/all
 
 # ----------------------------------------------------------
 #  Rules to build the project

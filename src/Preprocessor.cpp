@@ -130,15 +130,15 @@ void Preprocessor::flattenTerm(z3::expr const & term,
 }
 
 z3::expr Preprocessor::fresh_array_constant(){
-  return ctx.constant(("fresh_array_" + std::to_string(fresh_index++)).c_str(), array_sort);
+  return ctx.constant((FRESH_ARRAY_PREFIX + std::to_string(fresh_index++)).c_str(), array_sort);
 }
 
 z3::expr Preprocessor::fresh_element_constant(){
-  return ctx.constant(("fresh_element_" + std::to_string(fresh_index++)).c_str(), element_sort);
+  return ctx.constant((FRESH_ELEMENT_PREFIX + std::to_string(fresh_index++)).c_str(), element_sort);
 }
 
 z3::expr Preprocessor::fresh_index_constant(){
-  return ctx.constant(("fresh_index_" + std::to_string(fresh_index++)).c_str(), int_sort);
+  return ctx.constant((FRESH_INDEX_PREFIX + std::to_string(fresh_index++)).c_str(), int_sort);
 }
 
 

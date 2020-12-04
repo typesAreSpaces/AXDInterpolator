@@ -1,6 +1,11 @@
 #ifndef _AXD_SIG_
 #define _AXD_SIG_
 
+#define FRESH_ARRAY_PREFIX   "fresh_array_"
+#define FRESH_ELEMENT_PREFIX "fresh_element_"
+#define FRESH_INDEX_PREFIX   "fresh_index_"
+#define FRESH_COMMON_PREFIX  "fresh_"
+
 #define inSet(element, set) (set.find(element) != set.end())
 #define lhs(x) x.arg(0)
 #define rhs(x) x.arg(1)

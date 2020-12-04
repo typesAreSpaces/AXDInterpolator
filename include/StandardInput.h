@@ -1,5 +1,6 @@
 #ifndef _STANDARD_INPUT_
 #define _STANDARD_INPUT_
+
 #define _DEBUG_STDINPUT_ 0
 
 #include <set>
