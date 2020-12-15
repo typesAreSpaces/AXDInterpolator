@@ -14,7 +14,8 @@ class StandardInput : public AXDSignature {
 
   friend class AXDInterpolant;
 
-  // DiffMap : c_array_var.id() x c_array_var.id() -> sequence of diff_k
+  // DiffMap : 
+  // c_array_var.id() x c_array_var.id() -> sequence of diff_k
   struct DiffMap {
 
     typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
