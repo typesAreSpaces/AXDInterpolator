@@ -9,9 +9,12 @@ AXDInterpolant::AXDInterpolant(
   solver(ctx), 
   part_a(input_part_a, part_a_index_vars, part_a_array_vars),
   part_b(input_part_b, part_b_index_vars, part_b_array_vars),
-  m_file_name(std::string(file_name)){
+  m_file_name(std::string(file_name)),
+  interpolant_computed(false),
+  _interpolant(ctx.bool_val(true))
+{
 
-  std::cout 
+  m_out
     << "Solving file " << m_file_name 
     << std::endl;
   m_file_name = m_file_name
@@ -22,34 +25,28 @@ AXDInterpolant::AXDInterpolant(
 }
 
 void AXDInterpolant::loop(unsigned allowed_attempts){
+#if _DEBUG_AXD_INTER_
   unsigned const constant_allowed_attempts = allowed_attempts;
+#endif
   CircularPairIterator it(common_array_vars);
 
   while(--allowed_attempts){
     solver.push();
     SmtSolverSetup(solver);
-    
+
     if(solver.check() == z3::unsat){
-#if _Z3_OUTPUT_FILE_
-      z3OutputFile();
-#endif
-#if _MATHSAT5_OUTPUT_FILE_
-      mathsatOutputFile();
-#endif
-#if _DIRECT_INTERP_COMPUTATION_
-     directComputation();
-#endif
-      solver.pop();
-      std::cout << "Unsat after " 
+#if _DEBUG_AXD_INTER_
+      m_out << "Unsat after " 
         << constant_allowed_attempts - allowed_attempts 
         << " iterations" << std::endl;
+#endif
       return;
     }
 
     solver.pop();
 #if _DEBUG_AXD_INTER_ 
-    std::cout << "A-part part 2: " << part_a.part_2 << std::endl;
-    std::cout << "B-part part 2: " << part_b.part_2 << std::endl;
+    m_out << "A-part part 2: " << part_a.part_2 << std::endl;
+    m_out << "B-part part 2: " << part_b.part_2 << std::endl;
 #endif
     // Find pair of common array variables
     auto const & common_pair = *it;
@@ -64,13 +61,14 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     it.next();
   }
   if(!allowed_attempts)
-    std::cout << "Input formula is satisfiable / "
+    m_out << "Input formula is satisfiable / "
       "Or internal failure" << std::endl;
 }
 
 // Precondition: part_a_vector and part_b_vector should be updated using
 // setupPartA_B_Vectors
-void AXDInterpolant::testOutput(z3::expr const & interpolant, 
+void AXDInterpolant::testOutput(
+    z3::expr const & interpolant, 
     z3::expr_vector & part_a_vector, z3::expr_vector & part_b_vector){
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream test1_file(
@@ -165,6 +163,98 @@ void AXDInterpolant::testOutput(z3::expr const & interpolant,
   test2_file << test2.to_smt2();
 }
 
+// TODO: keep working here
+// Potentially remove positivity condition
+// for indexes
+void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
+  for(auto const & assertion : part_a.part_2)
+    solver.add(assertion);
+  for(auto const & assertion : part_b.part_2)
+    solver.add(assertion);
+  for(auto const & index : part_a.index_vars)
+    solver.add(index >= 0);
+  for(auto const & index : part_b.index_vars)
+    solver.add(index >= 0);
+}
+
+// TODO: keep working here
+// Potentially remove positivity condition
+// for indexes
+void AXDInterpolant::SmtSolverOutStreamSetup(
+    std::ostream & out, 
+    StandardInput const & form_pair){
+  for(auto const & assertion : form_pair.part_2)
+    out << assertion << std::endl;
+  for(auto const & index : form_pair.index_vars)
+    out << (index >= 0) << std::endl;
+}
+
+void AXDInterpolant::setupPartA_B_Vectors(
+    z3::expr_vector & part_a_vector, 
+    z3::expr_vector & part_b_vector){
+  for(auto const & assertion : part_a.part_2)
+    part_a_vector.push_back(assertion);
+  for(auto const & assertion : part_b.part_2)
+    part_b_vector.push_back(assertion);
+  for(auto const & index : part_a.index_vars)
+    part_a_vector.push_back(index >= 0);
+  for(auto const & index : part_b.index_vars)
+    part_b_vector.push_back(index >= 0);
+}
+
+// Precondition: part_a_vector and part_b_vector should be updated using
+// setupPartA_B_Vectors
+z3::expr AXDInterpolant::computeInterpolant(
+    z3::expr_vector const & part_a_vector, 
+    z3::expr_vector const & part_b_vector){
+  z3::expr marked_formula = 
+    interpolant(z3::mk_and(part_a_vector)) 
+    && z3::mk_and(part_b_vector);
+  z3::expr_vector interpolant = ctx.get_interpolant(
+      solver.proof(),
+      marked_formula,
+      z3::params(ctx));
+
+  return interpolant[0];
+}
+
+z3::expr AXDInterpolant::liftInterpolant(
+    z3::expr & interpolant){
+
+  z3::expr_vector from(ctx);
+  z3::expr_vector to(ctx);
+
+  for(auto const & diff_entry : part_a.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
+        from.push_back(k_);
+        to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
+
+  for(auto const & diff_entry : part_b.diff_map.m_map){
+    auto const & diff_a   = diff_entry.first.first;
+    auto const & diff_b   = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second;
+    unsigned _index = 1;
+    for(auto const & k_ : diff_seq){
+      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
+        from.push_back(k_);
+        to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
+      }
+      _index++;
+    }
+  }
+
+  return interpolant.substitute(from, to);
+}
+
 void AXDInterpolant::z3OutputFile(){
   // --------------------------------------------------------------------
   system(("mkdir -p " + OUTPUT_DIR).c_str());
@@ -205,7 +295,7 @@ void AXDInterpolant::z3OutputFile(){
     z3_lift_interpolant << line << std::endl;
   z3_lift_interpolant << ")" << std::endl;
   z3_lift_interpolant << "(check-sat)" << std::endl;
-  //system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
+  system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
   // --------------------------------------------------------------------
 
   // --------------------------------------------------------------------
@@ -215,8 +305,8 @@ void AXDInterpolant::z3OutputFile(){
   z3::expr interpolant_ = z3::mk_and(z3_parser.assertions());
   // --------------------------------------------------------------------
 
-  std::cout << "(Lifted) Interpolant:" << std::endl;
-  std::cout << liftInterpolant(interpolant_).simplify() << std::endl;
+  interpolant_computed = true;
+  _interpolant = liftInterpolant(interpolant_).simplify();
 }
 
 void AXDInterpolant::mathsatOutputFile(){
@@ -269,35 +359,9 @@ void AXDInterpolant::mathsatOutputFile(){
         + m_file_name + "_reduced_mathsat_lifted.smt2" ).c_str());
   z3::expr interpolant_ = z3::mk_and(mathsat_parser.assertions());
   // --------------------------------------------------------------------
-
-  std::cout << "(Lifted) Interpolant:" << std::endl;
-  std::cout << liftInterpolant(interpolant_).simplify() << std::endl;
-}
-
-// TODO: keep working here
-// Potentially remove positivity condition
-// for indexes
-void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
-  for(auto const & assertion : part_a.part_2)
-    solver.add(assertion);
-  for(auto const & assertion : part_b.part_2)
-    solver.add(assertion);
-  for(auto const & index : part_a.index_vars)
-    solver.add(index >= 0);
-  for(auto const & index : part_b.index_vars)
-    solver.add(index >= 0);
-}
-
-// TODO: keep working here
-// Potentially remove positivity condition
-// for indexes
-void AXDInterpolant::SmtSolverOutStreamSetup(
-    std::ostream & out, 
-    StandardInput const & form_pair){
-  for(auto const & assertion : form_pair.part_2)
-    out << assertion << std::endl;
-  for(auto const & index : form_pair.index_vars)
-    out << (index >= 0) << std::endl;
+  
+  interpolant_computed = true;
+  _interpolant = liftInterpolant(interpolant_).simplify();
 }
 
 void AXDInterpolant::directComputation(){
@@ -309,75 +373,24 @@ void AXDInterpolant::directComputation(){
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream interpolant_file(OUTPUT_DIR + "/" 
       + m_file_name + "_interpolant.smt2");
-  //interpolant_file << interpolant;
-  interpolant_file << liftInterpolant(interpolant);
 
+  interpolant_computed = true;
+  _interpolant = liftInterpolant(interpolant);
 #if _TEST_OUTPUT_
   testOutput(interpolant, part_a_vector, part_b_vector);
 #endif
 }
 
-void AXDInterpolant::setupPartA_B_Vectors(
-    z3::expr_vector & part_a_vector, 
-    z3::expr_vector & part_b_vector){
-  for(auto const & assertion : part_a.part_2)
-    part_a_vector.push_back(assertion);
-  for(auto const & assertion : part_b.part_2)
-    part_b_vector.push_back(assertion);
-  for(auto const & index : part_a.index_vars)
-    part_a_vector.push_back(index >= 0);
-  for(auto const & index : part_b.index_vars)
-    part_b_vector.push_back(index >= 0);
-}
-
-// Precondition: part_a_vector and part_b_vector should be updated using
-// setupPartA_B_Vectors
-z3::expr AXDInterpolant::computeInterpolant(
-    z3::expr_vector const & part_a_vector, 
-    z3::expr_vector const & part_b_vector){
-  z3::expr marked_formula = 
-    interpolant(z3::mk_and(part_a_vector)) 
-    && z3::mk_and(part_b_vector);
-  z3::expr_vector interpolant = ctx.get_interpolant(
-      solver.proof(),
-      marked_formula,
-      z3::params(ctx));
-
-  return interpolant[0];
-}
-
-z3::expr AXDInterpolant::liftInterpolant(z3::expr & interpolant){
-
-  z3::expr_vector from(ctx);
-  z3::expr_vector to(ctx);
-
-  for(auto const & diff_entry : part_a.diff_map.m_map){
-    auto const & diff_a = diff_entry.first.first;
-    auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-    unsigned _index = 1;
-    for(auto const & k_ : diff_seq){
-      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
-        from.push_back(k_);
-        to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
-      }
-      _index++;
-    }
-  }
-
-  for(auto const & diff_entry : part_b.diff_map.m_map){
-    auto const & diff_a = diff_entry.first.first;
-    auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-    unsigned _index = 1;
-    for(auto const & k_ : diff_seq){
-      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
-        from.push_back(k_);
-        to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
-      }
-      _index++;
-    }
-  }
-
-  return interpolant.substitute(from, to);
+std::ostream & operator << (std::ostream & os, AXDInterpolant const & axd){
+  if(axd.interpolant_computed)
+    return (os 
+        << "(Lifted) Interpolant:" << std::endl 
+        << axd._interpolant);
+  else
+    return (os << 
+        "Interpolant hasn't been computed."
+        "Use .z3OutputFile or .mathsatOutputFile "
+        "or .directComputation on a AXDInterpolant" 
+        "object to obtain an interpolant." 
+        << std::endl);
 }

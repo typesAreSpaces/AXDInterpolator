@@ -31,10 +31,10 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   current_conjs_in_input = 0;
   
 #if _DEBUG_PREPROCESS_
-  std::cout << "Arrays A-local" << std::endl;
-  std::cout << part_a_array_vars << std::endl;
-  std::cout << "Arrays B-local" << std::endl;
-  std::cout << part_b_array_vars << std::endl;
+  m_out << "Arrays A-local" << std::endl;
+  m_out << part_a_array_vars << std::endl;
+  m_out << "Arrays B-local" << std::endl;
+  m_out << part_b_array_vars << std::endl;
 #endif
    
   // Compute Common Array Var Ids
@@ -48,8 +48,8 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   removeDuplicates(part_b_index_vars);
 
 #if _DEBUG_PREPROCESS_
-  std::cout << part_a_index_vars << std::endl;
-  std::cout << part_b_index_vars << std::endl;
+  m_out << part_a_index_vars << std::endl;
+  m_out << part_b_index_vars << std::endl;
 #endif
 }
 

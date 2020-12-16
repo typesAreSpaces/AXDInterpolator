@@ -6,6 +6,9 @@
 #define FRESH_INDEX_PREFIX   "fresh_index_"
 #define FRESH_COMMON_PREFIX  "fresh_"
 
+#define m_out std::cerr
+//#define m_out std::cout
+
 #define inSet(element, set) (set.find(element) != set.end())
 #define lhs(x) x.arg(0)
 #define rhs(x) x.arg(1)

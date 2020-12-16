@@ -2,9 +2,6 @@
 #define _AXD_INTERPOLANT_
 
 #define _DEBUG_AXD_INTER_           0
-#define _Z3_OUTPUT_FILE_            0
-#define _MATHSAT5_OUTPUT_FILE_      1
-#define _DIRECT_INTERP_COMPUTATION_ 0
 #define _TEST_OUTPUT_               0
 #define _TEST_ORIGINAL_INPUT_       0
 
@@ -25,31 +22,38 @@
 
 class AXDInterpolant : public Preprocessor {
 
-  z3::solver solver;
+  z3::solver    solver;
   StandardInput part_a, part_b;
-  std::string m_file_name;
+  std::string   m_file_name;
+  bool          interpolant_computed;
+  z3::expr      _interpolant;
 
   void loop(unsigned);
   void testOutput(
       z3::expr const &, 
       z3::expr_vector &, 
       z3::expr_vector &);
-  void z3OutputFile();
-  void mathsatOutputFile();
   void SmtSolverSetup(z3::solver &);
-  void SmtSolverOutStreamSetup(std::ostream &, StandardInput const &);
-  void directComputation();
+  void SmtSolverOutStreamSetup(
+      std::ostream &, 
+      StandardInput const &);
   void setupPartA_B_Vectors(
       z3::expr_vector &, 
       z3::expr_vector &);
-
-  public: 
-  AXDInterpolant(z3::context &, char const *, unsigned);
 
   z3::expr computeInterpolant(
       z3::expr_vector const &, 
       z3::expr_vector const &);
   z3::expr liftInterpolant(z3::expr &); 
+
+  public: 
+  AXDInterpolant(z3::context &, char const *, unsigned);
+
+  void z3OutputFile();
+  void mathsatOutputFile();
+  void directComputation();
+
+  friend std::ostream & operator << (std::ostream &, AXDInterpolant const &);
 
   class CircularPairIterator {
     friend class AXDInterpolant;

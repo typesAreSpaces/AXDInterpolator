@@ -13,7 +13,7 @@ StandardInput::StandardInput(z3::expr const & e,
   for(unsigned i = 0; i < e.num_args(); i++){
     auto current_arg = e.arg(i);
     switch(current_arg.decl().decl_kind()){
-      case Z3_OP_EQ: // ==
+      case Z3_OP_EQ:       // ==
         if(sort_name(lhs(current_arg))     == "ArraySort" 
             || func_name(lhs(current_arg)) == "diff" 
             || func_name(rhs(current_arg)) == "diff")
@@ -29,20 +29,20 @@ StandardInput::StandardInput(z3::expr const & e,
         part_2.push_back(orientBinPredicate(current_arg));
         continue;
       default:
-        //part_2.push_back(current_arg);
+        // part_2.push_back(current_arg);
         throw "Problem @ StandardInput::StandardInput"
           "Invalid formula.";
     }
   }
 #if _DEBUG_STDINPUT_
-  std::cout << "Done" << std::endl;
-  std::cout << "Part 1: " << part_1 << std::endl;
-  std::cout << "Part 2: " << part_2 << std::endl;
+  m_out << "Done" << std::endl;
+  m_out << "Part 1: " << part_1 << std::endl;
+  m_out << "Part 2: " << part_2 << std::endl;
 #endif
 
   for(auto const & equation : part_1){
 #if _DEBUG_STDINPUT_
-    std::cout << 
+    m_out << 
       "Processing equation: " << equation 
       << std::endl;
 #endif
@@ -64,20 +64,20 @@ StandardInput::StandardInput(z3::expr const & e,
   }
 
 #if _DEBUG_STDINPUT_
-  std::cout << "Start DiffMap" << std::endl;
+  m_out << "Start DiffMap" << std::endl;
   for(auto const & x : diff_map.m_map){
-    std::cout << x.first.first << " " << x.first.second << " -> ";
-    std::cout << x.second.new_index_vars << std::endl;
+    m_out << x.first.first << " " << x.first.second << " -> ";
+    m_out << x.second.new_index_vars << std::endl;
   }
-  std::cout << "End DiffMap" << std::endl;
-  std::cout << "Start WriteVector" << std::endl;
+  m_out << "End DiffMap" << std::endl;
+  m_out << "Start WriteVector" << std::endl;
   for(auto const & x : write_vector.m_vector){
-    std::cout << std::get<0>(x) << ", " 
+    m_out << std::get<0>(x) << ", " 
     << std::get<1>(x) << ", "
     << std::get<2>(x) << std::endl;
   }
-  std::cout << "End WriteVector" << std::endl;
-  std::cout << std::endl;
+  m_out << "End WriteVector" << std::endl;
+  m_out << std::endl;
 #endif
 
   initSaturation();

@@ -1,5 +1,8 @@
 #include "AXDInterpolant.h"
 
+#define _Z3_OUTPUT_FILE_            1
+#define _MATHSAT5_OUTPUT_FILE_      0
+#define _DIRECT_INTERP_COMPUTATION_ 0
 
 int main(int argc, char * argv[]){
 
@@ -17,7 +20,20 @@ int main(int argc, char * argv[]){
   switch(argc){
     case 1:
       try {
-        AXDInterpolant(ctx, file_name, allowed_attempts);
+        AXDInterpolant axd(
+            ctx, file_name, allowed_attempts);
+#if _Z3_OUTPUT_FILE_
+        axd.z3OutputFile();
+        std::cout << axd << std::endl;
+#endif
+#if _MATHSAT5_OUTPUT_FILE_
+        axd.mathsatOutputFile();
+        std::cout << axd << std::endl;
+#endif
+#if _DIRECT_INTERP_COMPUTATION_
+        axd.directComputation();
+        std::cout << axd << std::endl;
+#endif
         return 0;
       }
       catch(char const * e){
@@ -26,7 +42,20 @@ int main(int argc, char * argv[]){
       }
     case 2:
       try {
-        AXDInterpolant(ctx, argv[1], allowed_attempts);
+        AXDInterpolant axd(
+            ctx, argv[1], allowed_attempts);
+#if _Z3_OUTPUT_FILE_
+        axd.z3OutputFile();
+        std::cout << axd << std::endl;
+#endif
+#if _MATHSAT5_OUTPUT_FILE_
+        axd.mathsatOutputFile();
+        std::cout << axd << std::endl;
+#endif
+#if _DIRECT_INTERP_COMPUTATION_
+        axd.directComputation();
+        std::cout << axd << std::endl;
+#endif
         return 0;
       }
       catch(char const * e){

@@ -50,8 +50,8 @@ tests/one: bin/axd_interpolator
 	rm -rf tests/*.o $@
 
 tests/all: bin/axd_interpolator
-	for smt_file in ./tests/smt2-files/*; do \
-		./bin/axd_interpolator $${smt_file} > $${smt_file}.txt; \
+	for smt_file in ./tests/smt2-files/*.smt2; do \
+		./bin/axd_interpolator $${smt_file} ; \
 		done
 	rm -rf tests/*.o $@
 	
