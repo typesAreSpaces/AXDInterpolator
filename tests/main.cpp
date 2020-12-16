@@ -21,7 +21,7 @@ int main(int argc, char * argv[]){
         return 0;
       }
       catch(char const * e){
-        std::cout << e << std::endl;
+        std::cerr << e << std::endl;
         return 1;
       }
     case 2:
@@ -30,10 +30,11 @@ int main(int argc, char * argv[]){
         return 0;
       }
       catch(char const * e){
-        std::cout << e << std::endl;
+        std::cerr << e << std::endl;
         return 1;
       }
     default:
+      std::cerr << "Not allowed option." << std::endl;
       return 1;
   }
 }

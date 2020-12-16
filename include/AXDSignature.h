@@ -16,6 +16,11 @@
 #include <set>
 #include <utility>
 
+// Notes:
+// The implementation considers
+// elements of any index theory 
+// to have int sort.
+
 struct AXDSignature {
 
   struct Z3ExprComparator {
@@ -33,12 +38,14 @@ struct AXDSignature {
     array_sort;
 
   z3::func_decl 
-    diff,
-    diff_k,
-    wr,
-    rd;
+    diff, diff_k,
+    wr, rd,
+    pred, succ, neg;
+
+  z3::expr undefined, empty_array;
 
   AXDSignature(z3::context &);
+  friend std::ostream & operator << (std::ostream &, z3_expr_set const &);
 };
 
 #endif

@@ -15,20 +15,21 @@ class Preprocessor : public AXDSignature {
 
   z3::solver really_a_parser;
 
-  unsigned fresh_index, num_args_aux;
+  unsigned fresh_index, current_conjs_in_input;
 
   void flattenPredicate(z3::expr const &, SideInterpolant);
-  void flattenPredicateAux(z3::expr const &, SideInterpolant);
   void flattenTerm(z3::expr const &, SideInterpolant);
-  
   void cojoin(z3::expr const &, z3::expr const &, SideInterpolant);
+  void cojoin_aux(z3::expr &, z3::expr const &, z3::expr const &);
   void updateArrayVars(z3::expr const &, SideInterpolant);
   void updateIndexVars(z3::expr const &, SideInterpolant);
+
   void removeDuplicates(z3::expr_vector &);
 
   protected:
+  z3::expr input_part_a, input_part_b;
+
   z3::expr_vector 
-    assertions,
     part_a_index_vars,
     part_b_index_vars;
 

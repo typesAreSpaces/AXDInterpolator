@@ -17,6 +17,12 @@
 #include "Preprocess.h"
 #include "StandardInput.h"
 
+// Notes:
+// The input file is a smt2 file
+// with two assertions.
+// Each assertion is 
+// of the form (and <pred_1> \dots <pred_n>).
+
 class AXDInterpolant : public Preprocessor {
 
   z3::solver solver;
@@ -24,19 +30,25 @@ class AXDInterpolant : public Preprocessor {
   std::string m_file_name;
 
   void loop(unsigned);
-  void testOutput(z3::expr const &, 
+  void testOutput(
+      z3::expr const &, 
       z3::expr_vector &, 
       z3::expr_vector &);
   void z3OutputFile();
   void mathsatOutputFile();
+  void SmtSolverSetup(z3::solver &);
+  void SmtSolverOutStreamSetup(std::ostream &, StandardInput const &);
   void directComputation();
-  void setupPartA_B_Vectors(z3::expr_vector &, 
+  void setupPartA_B_Vectors(
+      z3::expr_vector &, 
       z3::expr_vector &);
 
   public: 
   AXDInterpolant(z3::context &, char const *, unsigned);
 
-  z3::expr computeInterpolant(z3::expr_vector &, z3::expr_vector &);
+  z3::expr computeInterpolant(
+      z3::expr_vector const &, 
+      z3::expr_vector const &);
   z3::expr liftInterpolant(z3::expr &); 
 
   class CircularPairIterator {

@@ -22,10 +22,10 @@ StandardInput::StandardInput(z3::expr const & e,
           part_2.push_back(orientBinPredicate(current_arg));
         continue;
       case Z3_OP_DISTINCT: // !=
-      case Z3_OP_GE: // >=
-      case Z3_OP_LE: // <=
-      case Z3_OP_GT: // >
-      case Z3_OP_LT: // <
+      case Z3_OP_GE:       // >=
+      case Z3_OP_LE:       // <=
+      case Z3_OP_GT:       // >
+      case Z3_OP_LT:       // <
         part_2.push_back(orientBinPredicate(current_arg));
         continue;
       default:
