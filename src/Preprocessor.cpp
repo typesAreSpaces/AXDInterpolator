@@ -4,8 +4,8 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   AXDSignature(ctx),
   really_a_parser(ctx), 
   fresh_index(0), current_conjs_in_input(0),
-  input_part_a(ctx.bool_val(true)), 
-  input_part_b(ctx.bool_val(true)),
+  input_part_a(ctx), 
+  input_part_b(ctx),
   part_a_index_vars(ctx), part_b_index_vars(ctx),
   part_a_array_vars({}), part_b_array_vars({}), 
   common_array_vars({}){
@@ -13,18 +13,23 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   really_a_parser.from_file(file);
   z3::expr_vector assertions = really_a_parser.assertions();
   assert(assertions.size() == 2);
-  input_part_a = assertions[0];
-  input_part_b = assertions[1];
+
+  z3::expr const & conjunction_a = assertions[0];
+  for(unsigned i = 0; i < conjunction_a.num_args(); ++i)
+    input_part_a.push_back(conjunction_a.arg(i));
+  z3::expr const & conjunction_b = assertions[1];
+  for(unsigned i = 0; i < conjunction_b.num_args(); ++i)
+    input_part_b.push_back(conjunction_b.arg(i));
 
   // Processing Part-A
-  current_conjs_in_input = input_part_a.num_args();
+  current_conjs_in_input = input_part_a.size();
   for(unsigned i = 0; i < current_conjs_in_input; i++)
-    flattenPredicate(input_part_a.arg(i), PART_A);
+    flattenPredicate(input_part_a[i], PART_A);
 
   // Processing Part-B
-  current_conjs_in_input = input_part_b.num_args();
+  current_conjs_in_input = input_part_b.size();
   for(unsigned i = 0; i < current_conjs_in_input; i++)
-    flattenPredicate(input_part_b.arg(i), PART_B);
+    flattenPredicate(input_part_b[i], PART_B);
 
   // Set current_conjs_in_input to zero
   // because the variable is no longer needed
@@ -178,20 +183,20 @@ void Preprocessor::cojoin(
 }
 
 void Preprocessor::cojoin_aux(
-    z3::expr & predicate,
+    z3::expr_vector & predicates,
     z3::expr const & e, 
     z3::expr const & _new_const){
+
   z3::expr_vector from(ctx);
   z3::expr_vector to(ctx);
   from.push_back(e);
   to.push_back(_new_const);
 
-  z3::expr substitute = predicate.substitute(from, to);
-  z3::expr_vector args(ctx);
-  for(unsigned i = 0; i < substitute.num_args(); i++)
-    args.push_back(substitute.arg(i));
-  args.push_back(_new_const == e);
-  predicate = z3::mk_and(args);
+  z3::expr_vector temp_predicates(ctx);
+  for(unsigned i = 0; i < predicates.size(); i++)
+    temp_predicates.push_back(predicates[i].substitute(from, to));
+  temp_predicates.push_back(_new_const == e);
+  predicates = temp_predicates;
   current_conjs_in_input++;
   return;
 }

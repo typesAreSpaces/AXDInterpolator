@@ -1,4 +1,5 @@
 #include "AXDInterpolant.h"
+#include "z3++.h"
 
 AXDInterpolant::AXDInterpolant(
     z3::context & ctx, 
@@ -7,8 +8,8 @@ AXDInterpolant::AXDInterpolant(
   Preprocessor(ctx, file_name),
   //solver(ctx, "QF_LIA"), 
   solver(ctx), 
-  part_a(input_part_a, part_a_index_vars, part_a_array_vars),
-  part_b(input_part_b, part_b_index_vars, part_b_array_vars),
+  part_a(z3::mk_and(input_part_a), part_a_index_vars, part_a_array_vars),
+  part_b(z3::mk_and(input_part_b), part_b_index_vars, part_b_array_vars),
   m_file_name(std::string(file_name)),
   is_interpolant_computed(false),
   current_interpolant(ctx.bool_val(true))
@@ -88,7 +89,7 @@ void AXDInterpolant::testOutput(
 
   z3::solver test1(ctx);
 #if _TEST_ORIGINAL_INPUT_
-  test1.add(not(z3::implies(input_part_a, interpolant)));
+  test1.add(not(z3::implies(z3::mk_and(input_part_a), interpolant)));
   // Adding axiomatization
   test1.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
   test1.add(forall(y, i , j, e, z3::implies(i != j, rd(wr(y, i, e), j) == rd(y, j))));
@@ -128,7 +129,7 @@ void AXDInterpolant::testOutput(
 
   z3::solver test2(ctx);
 #if _TEST_ORIGINAL_INPUT_
-  test2.add(input_part_b && interpolant);
+  test2.add(z3::mk_and(input_part_b) && interpolant);
   // Adding axiomatization
   test2.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
   test2.add(forall(y, i , j, e, z3::implies(i != j, rd(wr(y, i, e), j) == rd(y, j))));

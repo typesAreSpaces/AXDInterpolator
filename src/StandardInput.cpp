@@ -66,7 +66,7 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   m_out << "Start DiffMap" << std::endl;
   for(auto const & x : diff_map.m_map){
     m_out << x.first.first << " " << x.first.second << " -> ";
-    m_out << x.second.new_index_vars << std::endl;
+    m_out << x.second << std::endl;
   }
   m_out << "End DiffMap" << std::endl;
   m_out << "Start WriteVector" << std::endl;
@@ -230,4 +230,9 @@ void StandardInput::updateSaturation(
       accum_k_.push_back(k_);
     }
   }
+}
+
+std::ostream & operator << (std::ostream & os, StandardInput const & si){
+  return (os << "Part 1: " << si.part_1 << std::endl 
+      << "Part 2: " << si.part_2);
 }
