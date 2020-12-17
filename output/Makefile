@@ -1,11 +1,11 @@
-Z3_SMT_FILES=$(wildcard *z3.smt2)
-MATHSAT_SMT_FILES=$(wildcard *mathsat.smt2)
+Z3_SMT_FILES=$(wildcard *reduced_z3.smt2)
+MATHSAT_SMT_FILES=$(wildcard *reduced_mathsat.smt2)
 
 ifeq ($(SMT_SOLVER), MATHSAT)
-	TEST=$(MATHSAT_SMT_FILES:%mathsat.smt2=%mathsat_interpolant.txt)
+	TEST=$(MATHSAT_SMT_FILES:%reduced_mathsat.smt2=%reduced_interpolant_mathsat.txt)
 else
 ifeq ($(SMT_SOLVER), Z3)
-	TEST=$(Z3_SMT_FILES:%z3.smt2=%z3_interpolant.txt)
+	TEST=$(Z3_SMT_FILES:%reduced_z3.smt2=%reduced_interpolant_z3.txt)
 else
 	TEST=undef
 endif
@@ -22,10 +22,10 @@ endif
 undef:
 	@echo "The smt-solver $(SMT_SOLVER) is not supported"
 
-%mathsat_interpolant.txt: %mathsat.smt2
+%reduced_interpolant_mathsat.txt: %reduced_mathsat.smt2
 	mathsat $^ > $@
 
-%z3_interpolant.txt: %z3.smt2
+%reduced_interpolant_z3.txt: %reduced_z3.smt2
 	z3 $^ > $@
 
 .PHONY: clean

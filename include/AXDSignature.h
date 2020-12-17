@@ -43,7 +43,7 @@ struct AXDSignature {
   z3::func_decl 
     diff, diff_k,
     wr, rd,
-    pred, succ, neg;
+    pred, succ, neg, add;
 
   z3::expr undefined, empty_array;
 

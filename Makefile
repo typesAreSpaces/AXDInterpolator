@@ -10,12 +10,10 @@ OBJS = $(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.so
 DEPS = $(wildcard $(IDIR)/*.h)
 OS = $(shell uname)
 
-FILE_TEST = ./tests/smt2-files/example.smt2 
-#FILE_TEST = ./tests/smt2-files/example1.smt2 
-#FILE_TEST = ./tests/smt2-files/example2.smt2 
-#FILE_TEST = ./tests/smt2-files/example3.smt2 
-#FILE_TEST = ./tests/smt2-files/example4.smt2 
-#FILE_TEST = ./tests/smt2-files/example5.smt2 
+#FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
+#FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
+FILE_TEST = ./tests/smt2-files/maxdiff_paper_example.smt2
+#FILE_TEST = ./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 
 #all: tests/one
 all: tests/all
@@ -38,7 +36,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.so
 
 bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.so
 	@mkdir -p ./bin
-	$(CC) -g -o $@ $(OBJS) ./tests/main.cpp $(FLAGS) -lpthread
+	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
 	
 # ----------------------------------------------------------
 

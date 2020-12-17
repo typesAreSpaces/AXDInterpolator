@@ -2,7 +2,7 @@
 #define _AXD_INTERPOLANT_
 
 #define _DEBUG_AXD_INTER_           0
-#define _TEST_OUTPUT_               1
+#define _TEST_OUTPUT_               0
 #define _TEST_ORIGINAL_INPUT_       0
 
 #define OUTPUT_DIR std::string("./output")
@@ -25,8 +25,8 @@ class AXDInterpolant : public Preprocessor {
   z3::solver    solver;
   StandardInput part_a, part_b;
   std::string   m_file_name;
-  bool          interpolant_computed;
-  z3::expr      _interpolant;
+  bool          is_interpolant_computed;
+  z3::expr      current_interpolant;
 
   void loop(unsigned);
   void testOutput(
@@ -41,7 +41,7 @@ class AXDInterpolant : public Preprocessor {
       z3::expr_vector &, 
       z3::expr_vector &);
 
-  z3::expr computeInterpolant(
+  z3::expr computeReducedInterpolant(
       z3::expr_vector const &, 
       z3::expr_vector const &);
   z3::expr liftInterpolant(z3::expr const &); 

@@ -10,8 +10,8 @@ AXDInterpolant::AXDInterpolant(
   part_a(input_part_a, part_a_index_vars, part_a_array_vars),
   part_b(input_part_b, part_b_index_vars, part_b_array_vars),
   m_file_name(std::string(file_name)),
-  interpolant_computed(false),
-  _interpolant(ctx.bool_val(true))
+  is_interpolant_computed(false),
+  current_interpolant(ctx.bool_val(true))
 {
 
   m_out
@@ -204,7 +204,7 @@ void AXDInterpolant::setupPartA_B_Vectors(
 
 // Precondition: part_a_vector and part_b_vector should be updated using
 // setupPartA_B_Vectors
-z3::expr AXDInterpolant::computeInterpolant(
+z3::expr AXDInterpolant::computeReducedInterpolant(
     z3::expr_vector const & part_a_vector, 
     z3::expr_vector const & part_b_vector){
   z3::expr marked_formula = 
@@ -256,7 +256,8 @@ z3::expr AXDInterpolant::liftInterpolant(
 }
 
 void AXDInterpolant::z3OutputFile(){
-  // --------------------------------------------------------------------
+  // Setup smt2 file with reduced formulas
+  // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream z3_file(
       OUTPUT_DIR + "/" + m_file_name + "_reduced_z3.smt2");
@@ -270,18 +271,21 @@ void AXDInterpolant::z3OutputFile(){
   z3_file << ") :named part_b))" << std::endl;
   z3_file << "(check-sat)" << std::endl;
   z3_file << "(get-interpolant part_a part_b)" << std::endl;
-  // --------------------------------------------------------------------
 
-  // --------------------------------------------------------------------
+  // Obtain reduced interpolant in temp.smt2
   system(("./bin/z3 " + OUTPUT_DIR 
         + "/" + m_file_name 
         + "_reduced_z3.smt2 > "
         + OUTPUT_DIR + "/temp.smt2").c_str());
-  // --------------------------------------------------------------------
 
-  // --------------------------------------------------------------------
+  // Setup *_reduced_interpolant_z3.smt2 file
+  // to parse reduced interpolant
   std::ifstream result(OUTPUT_DIR + "/temp.smt2");
   std::string line;
+  // We consume two lines because
+  // z3 outputs "check-sat" followed
+  // a line containing "(interpolants", followed
+  // by the interpolant
   std::getline(result, line);
   std::getline(result, line);
   std::ofstream z3_reduced_interpolant(OUTPUT_DIR + "/" 
@@ -293,24 +297,28 @@ void AXDInterpolant::z3OutputFile(){
   z3_reduced_interpolant << "(assert (and" << std::endl;
   while(std::getline(result, line))
     z3_reduced_interpolant << line << std::endl;
+  // Only one parenthesis is needed to close
+  // the above since the content of (interpolant *)
+  // includes an additional parenthesis
   z3_reduced_interpolant << ")" << std::endl;
   z3_reduced_interpolant << "(check-sat)" << std::endl;
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
-  // --------------------------------------------------------------------
 
-  // --------------------------------------------------------------------
+  // Lift interpolant to MaxDiff(Index Theory)
   z3::solver z3_parser(ctx);
   z3_parser.from_file((OUTPUT_DIR + "/" + m_file_name 
-        + "_reduced_interpolant_z3.smt2" ).c_str());
-  interpolant_computed = true;
-  _interpolant = liftInterpolant(
+        + "_reduced_interpolant_z3.smt2").c_str());
+  is_interpolant_computed = true;
+  current_interpolant = liftInterpolant(
       z3::mk_and(z3_parser.assertions()))
     .simplify();
-  // --------------------------------------------------------------------
+  system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
+        + "_reduced_interpolant_z3.smt2").c_str());
 }
 
 void AXDInterpolant::mathsatOutputFile(){
-  // --------------------------------------------------------------------
+  // Setup smt2 file with reduced formulas
+  // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream mathsat_file(OUTPUT_DIR + "/" 
       + m_file_name + "_reduced_mathsat.smt2");
@@ -325,18 +333,20 @@ void AXDInterpolant::mathsatOutputFile(){
   mathsat_file << "(check-sat)" << std::endl;
   mathsat_file << "(get-interpolant (part_a))" << std::endl;
   mathsat_file << "(exit)" << std::endl;
-  // --------------------------------------------------------------------
 
-  // --------------------------------------------------------------------
+  // Obtain reduced interpolant in temp.smt2
   system(("./bin/mathsat " + OUTPUT_DIR 
         + "/" + m_file_name 
         + "_reduced_mathsat.smt2 > " + OUTPUT_DIR 
         + "/temp.smt2").c_str());
-  // --------------------------------------------------------------------
 
-  // --------------------------------------------------------------------
+  // Setup *_reduced_interpolant_mathsat.smt2 file
+  // to parse reduced interpolant
   std::ifstream result(OUTPUT_DIR + "/temp.smt2");
   std::string line;
+  // We consume one line because
+  // mathsat outputs "check-sat" followed
+  // by the interpolant
   std::getline(result, line);
   std::ofstream mathsat_reduced_interpolant(
       OUTPUT_DIR + "/" 
@@ -351,37 +361,38 @@ void AXDInterpolant::mathsatOutputFile(){
   mathsat_reduced_interpolant << ")" << std::endl;
   mathsat_reduced_interpolant << "(check-sat)" << std::endl;
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
-  // --------------------------------------------------------------------
 
-  // --------------------------------------------------------------------
+  // Lift interpolant to MaxDiff(Index Theory)
   z3::solver mathsat_parser(ctx);
   mathsat_parser.from_file((OUTPUT_DIR + "/" + m_file_name 
-        + "_reduced_interpolant_mathsat.smt2" ).c_str());
-  interpolant_computed = true;
-  _interpolant = liftInterpolant(
+        + "_reduced_interpolant_mathsat.smt2").c_str());
+  is_interpolant_computed = true;
+  current_interpolant = liftInterpolant(
       z3::mk_and(mathsat_parser.assertions()))
     .simplify();
-  // --------------------------------------------------------------------
+  system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
+        + "_reduced_interpolant_mathsat.smt2").c_str());
 }
 
 void AXDInterpolant::directComputation(){
   z3::expr_vector part_a_vector(ctx);
   z3::expr_vector part_b_vector(ctx);
   setupPartA_B_Vectors(part_a_vector, part_b_vector);
-  interpolant_computed = true;
-  _interpolant = liftInterpolant(
-      computeInterpolant(part_a_vector, part_b_vector))
-    .simplify();
+  z3::expr reduced_interpolant = computeReducedInterpolant(
+      part_a_vector, part_b_vector);
+  is_interpolant_computed = true;
+  current_interpolant = liftInterpolant(reduced_interpolant).simplify();
 #if _TEST_OUTPUT_
-  testOutput(interpolant, part_a_vector, part_b_vector);
+  testOutput(reduced_interpolant, part_a_vector, part_b_vector);
 #endif
 }
 
-std::ostream & operator << (std::ostream & os, AXDInterpolant const & axd){
-  if(axd.interpolant_computed)
+std::ostream & operator << (std::ostream & os, 
+    AXDInterpolant const & axd){
+  if(axd.is_interpolant_computed)
     return (os 
         << "(Lifted) Interpolant:" << std::endl 
-        << axd._interpolant);
+        << axd.current_interpolant);
   else
     return (os << 
         "Interpolant hasn't been computed."

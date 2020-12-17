@@ -1,17 +1,17 @@
 #include "StandardInput.h"
 
-StandardInput::StandardInput(z3::expr const & e, 
+StandardInput::StandardInput(z3::expr const & conjunction, 
     z3::expr_vector & initial_index_vars,
     z3_expr_set const & array_var_ids) :
-  AXDSignature(e.ctx()),
-  diff_map(e.ctx(), array_var_ids),
-  part_1(e.ctx()), part_2(e.ctx()), 
+  AXDSignature(conjunction.ctx()),
+  diff_map(conjunction.ctx(), array_var_ids),
+  part_1(conjunction.ctx()), part_2(conjunction.ctx()), 
   index_vars(initial_index_vars)
 {
-  assert(e.decl().decl_kind() == Z3_OP_AND);
+  assert(conjunction.decl().decl_kind() == Z3_OP_AND);
 
-  for(unsigned i = 0; i < e.num_args(); i++){
-    auto current_arg = e.arg(i);
+  for(unsigned i = 0; i < conjunction.num_args(); i++){
+    auto current_arg = conjunction.arg(i);
     switch(current_arg.decl().decl_kind()){
       case Z3_OP_EQ:       // ==
         if(sort_name(lhs(current_arg))     == "ArraySort" 

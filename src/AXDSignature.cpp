@@ -15,6 +15,7 @@ AXDSignature::AXDSignature(z3::context & ctx) :
   pred(ctx.function("pred", index_sort, index_sort)),
   succ(ctx.function("succ", index_sort, index_sort)),
   neg(ctx.function("neg", index_sort, index_sort)),
+  add(ctx.function("add", index_sort, index_sort, index_sort)),
 
   undefined(ctx.constant("undefined", element_sort)),
   empty_array(ctx.constant("empty_array", array_sort)){
