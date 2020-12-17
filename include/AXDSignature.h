@@ -40,12 +40,14 @@ struct AXDSignature {
     element_sort, 
     array_sort;
 
+  z3::expr undefined, empty_array;
+
   z3::func_decl 
     diff, diff_k,
     wr, rd,
-    pred, succ, neg, add;
-
-  z3::expr undefined, empty_array;
+    pred, succ, 
+    neg, add, 
+    length;
 
   AXDSignature(z3::context &);
   friend std::ostream & operator << (std::ostream &, z3_expr_set const &);

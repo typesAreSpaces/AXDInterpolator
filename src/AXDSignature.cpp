@@ -8,6 +8,9 @@ AXDSignature::AXDSignature(z3::context & ctx) :
   element_sort(ctx.uninterpreted_sort("ElementSort")), 
   array_sort(ctx.uninterpreted_sort("ArraySort")),
 
+  undefined(ctx.constant("undefined", element_sort)),
+  empty_array(ctx.constant("empty_array", array_sort)),
+
   diff(ctx.function("diff", array_sort, array_sort, index_sort)),
   diff_k(ctx.function("diff_", int_sort, array_sort, array_sort, index_sort)),
   wr(ctx.function("wr", array_sort, index_sort, element_sort, array_sort)),
@@ -16,9 +19,10 @@ AXDSignature::AXDSignature(z3::context & ctx) :
   succ(ctx.function("succ", index_sort, index_sort)),
   neg(ctx.function("neg", index_sort, index_sort)),
   add(ctx.function("add", index_sort, index_sort, index_sort)),
-
-  undefined(ctx.constant("undefined", element_sort)),
-  empty_array(ctx.constant("empty_array", array_sort)){
+  // length is a conservative extension of any Th(T_I)
+  // because length(x) = diff(x, empty_array)
+  length(ctx.function("length", array_sort, index_sort))
+{
 }
 
 std::ostream & operator << (std::ostream & out, AXDSignature::z3_expr_set const & collection){

@@ -76,6 +76,17 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     SideInterpolant side){
   if(term.num_args() > 0){
     auto f_name = func_name(term);
+    if(f_name == "diff"){
+      if(term.arg(0).num_args() > 0)
+        cojoin(term.arg(0), fresh_array_constant(), side);
+      else
+        updateArrayVars(term.arg(0), side);
+      if(term.arg(1).num_args() > 0)
+        cojoin(term.arg(1), fresh_array_constant(), side);
+      else
+        updateArrayVars(term.arg(1), side);
+      return;
+    }
     if(f_name == "wr"){
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_array_constant(), side);
@@ -103,25 +114,45 @@ void Preprocessor::flattenTerm(z3::expr const & term,
         updateIndexVars(term.arg(1), side);
       return;
     }
-    if(f_name == "diff"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_array_constant(), side);
-      else
-        updateArrayVars(term.arg(0), side);
-      if(term.arg(1).num_args() > 0)
-        cojoin(term.arg(1), fresh_array_constant(), side);
-      else
-        updateArrayVars(term.arg(1), side);
-      return;
-    }
     if(f_name == "pred"){
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
+        updateIndexVars(term.arg(0), side);
+      return;
+    }
+    if(f_name == "succ"){
+      if(term.arg(0).num_args() > 0)
+        cojoin(term.arg(0), fresh_index_constant(), side);
+      else
+        updateIndexVars(term.arg(0), side);
+      return;
+    }
+    if(f_name == "neg"){
+      if(term.arg(0).num_args() > 0)
+        cojoin(term.arg(0), fresh_index_constant(), side);
+      else
+        updateIndexVars(term.arg(0), side);
+      return;
+    }
+    if(f_name == "add"){
+      if(term.arg(0).num_args() > 0)
+        cojoin(term.arg(0), fresh_index_constant(), side);
+      else
+        updateIndexVars(term.arg(0), side);
+      if(term.arg(1).num_args() > 0)
+        cojoin(term.arg(1), fresh_index_constant(), side);
+      else
         updateIndexVars(term.arg(1), side);
       return;
     }
-    // TODO: keep adding the rest of the signature
+    if(f_name == "length"){
+      if(term.arg(0).num_args() > 0)
+        cojoin(term.arg(0), fresh_array_constant(), side);
+      else
+        updateArrayVars(term.arg(0), side);
+      return;
+    }
   }
   else{
     auto sort_name = sort_name(term);

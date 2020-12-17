@@ -28,10 +28,13 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
 #if _DEBUG_AXD_INTER_
   unsigned const constant_allowed_attempts = allowed_attempts;
 #endif
-  CircularPairIterator it(common_array_vars);
+  CircularPairIterator search_common_pair(common_array_vars);
 
   while(--allowed_attempts){
     solver.push();
+    // The following uses a z3::solver 
+    // to check if part_a \land part_b
+    // is unsat
     SmtSolverSetup(solver);
 
     if(solver.check() == z3::unsat){
@@ -49,7 +52,7 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     m_out << "B-part part 2: " << part_b.part_2 << std::endl;
 #endif
     // Find pair of common array variables
-    auto const & common_pair = *it;
+    auto const & common_pair = *search_common_pair;
 
     unsigned part_a_dim = part_a.diff_map.size_of_entry(common_pair),
              part_b_dim = part_b.diff_map.size_of_entry(common_pair),
@@ -58,8 +61,9 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     part_a.updateSaturation(common_pair, _new_index, min_dim);
     part_b.updateSaturation(common_pair, _new_index, min_dim);
 
-    it.next();
+    search_common_pair.next();
   }
+
   if(!allowed_attempts)
     m_out << "Input formula is satisfiable / "
       "Or internal failure" << std::endl;
