@@ -146,11 +146,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 138 - ((2 * winheight(0) + 37) / 75)
+let s:l = 154 - ((18 * winheight(0) + 37) / 75)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-138
+154
 normal! 022|
 wincmd w
 argglobal
