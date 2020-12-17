@@ -8,13 +8,18 @@ AXDInterpolant::AXDInterpolant(
   Preprocessor(ctx, file_name),
   //solver(ctx, "QF_LIA"), 
   solver(ctx), 
-  part_a(z3::mk_and(input_part_a), part_a_index_vars, part_a_array_vars),
-  part_b(z3::mk_and(input_part_b), part_b_index_vars, part_b_array_vars),
+  part_a(
+      z3::mk_and(input_part_a), 
+      part_a_index_vars, 
+      part_a_array_vars),
+  part_b(
+      z3::mk_and(input_part_b), 
+      part_b_index_vars, 
+      part_b_array_vars),
   m_file_name(std::string(file_name)),
   is_interpolant_computed(false),
   current_interpolant(ctx.bool_val(true))
 {
-
   m_out
     << "Solving file " << m_file_name 
     << std::endl;

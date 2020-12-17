@@ -38,6 +38,12 @@ class Preprocessor : public AXDSignature {
     part_b_array_vars,
     common_array_vars;
 
+  bool are_there_preds,
+       are_there_succs,
+       are_there_negs,
+       are_there_adds,
+       are_there_lengths;
+
   z3::expr fresh_array_constant();
   z3::expr fresh_element_constant();
   z3::expr fresh_index_constant();

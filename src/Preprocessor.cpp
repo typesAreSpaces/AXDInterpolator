@@ -8,7 +8,11 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   input_part_b(ctx),
   part_a_index_vars(ctx), part_b_index_vars(ctx),
   part_a_array_vars({}), part_b_array_vars({}), 
-  common_array_vars({}){
+  common_array_vars({}),
+  are_there_preds(false), are_there_succs(false),
+  are_there_negs(false), are_there_adds(false),
+  are_there_lengths(false)
+{
 
   really_a_parser.from_file(file);
   z3::expr_vector assertions = really_a_parser.assertions();
@@ -120,6 +124,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "pred"){
+      are_there_preds = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -127,6 +132,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "succ"){
+      are_there_succs = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -134,6 +140,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "neg"){
+      are_there_negs = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -141,6 +148,7 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "add"){
+      are_there_adds = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -151,7 +159,9 @@ void Preprocessor::flattenTerm(z3::expr const & term,
         updateIndexVars(term.arg(1), side);
       return;
     }
+    // TODO: replace length(x) by diff(x, emepty_array)
     if(f_name == "length"){
+      are_there_lengths = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_array_constant(), side);
       else
