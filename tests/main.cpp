@@ -1,8 +1,8 @@
 #include "AXDInterpolant.h"
 
-#define _Z3_OUTPUT_FILE_            1
+#define _Z3_OUTPUT_FILE_            0
 #define _MATHSAT5_OUTPUT_FILE_      0
-#define _DIRECT_INTERP_COMPUTATION_ 0
+#define _DIRECT_INTERP_COMPUTATION_ 1
 
 int main(int argc, char * argv[]){
 

@@ -84,7 +84,7 @@ void AXDInterpolant::testOutput(
 
   z3::solver test1(ctx);
 #if _TEST_ORIGINAL_INPUT_
-  test1.add(not(z3::implies(assertions[0], interpolant)));
+  test1.add(not(z3::implies(input_part_a, interpolant)));
   // Adding axiomatization
   test1.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
   test1.add(forall(y, i , j, e, z3::implies(i != j, rd(wr(y, i, e), j) == rd(y, j))));
@@ -95,7 +95,7 @@ void AXDInterpolant::testOutput(
   for(auto const & diff_entry : part_a.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second.new_index_vars;
+    auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
@@ -108,7 +108,7 @@ void AXDInterpolant::testOutput(
   for(auto const & diff_entry : part_b.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second.new_index_vars;
+    auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
@@ -124,7 +124,7 @@ void AXDInterpolant::testOutput(
 
   z3::solver test2(ctx);
 #if _TEST_ORIGINAL_INPUT_
-  test2.add(assertions[1] && interpolant);
+  test2.add(input_part_b && interpolant);
   // Adding axiomatization
   test2.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
   test2.add(forall(y, i , j, e, z3::implies(i != j, rd(wr(y, i, e), j) == rd(y, j))));
@@ -135,7 +135,7 @@ void AXDInterpolant::testOutput(
   for(auto const & diff_entry : part_a.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second.new_index_vars;
+    auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
@@ -148,7 +148,7 @@ void AXDInterpolant::testOutput(
   for(auto const & diff_entry : part_b.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second.new_index_vars;
+    auto const & diff_seq = diff_entry.second;
     unsigned _index = 1;
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
@@ -219,7 +219,7 @@ z3::expr AXDInterpolant::computeInterpolant(
 }
 
 z3::expr AXDInterpolant::liftInterpolant(
-    z3::expr & interpolant){
+    z3::expr const & interpolant){
 
   z3::expr_vector from(ctx);
   z3::expr_vector to(ctx);
@@ -252,7 +252,7 @@ z3::expr AXDInterpolant::liftInterpolant(
     }
   }
 
-  return interpolant.substitute(from, to);
+  return ((z3::expr)interpolant).substitute(from, to);
 }
 
 void AXDInterpolant::z3OutputFile(){
@@ -284,29 +284,29 @@ void AXDInterpolant::z3OutputFile(){
   std::string line;
   std::getline(result, line);
   std::getline(result, line);
-  std::ofstream z3_lift_interpolant(OUTPUT_DIR + "/" 
-      + m_file_name + "_reduced_z3_lifted.smt2" );
+  std::ofstream z3_reduced_interpolant(OUTPUT_DIR + "/" 
+      + m_file_name + "_reduced_interpolant_z3.smt2" );
   // It is necessary to include declarations
   // in *_reduced_mathsat_lifted.smt2 because the
   // file will be parsed again
-  z3_lift_interpolant << solver.to_smt2_decls_only();
-  z3_lift_interpolant << "(assert (and" << std::endl;
+  z3_reduced_interpolant << solver.to_smt2_decls_only();
+  z3_reduced_interpolant << "(assert (and" << std::endl;
   while(std::getline(result, line))
-    z3_lift_interpolant << line << std::endl;
-  z3_lift_interpolant << ")" << std::endl;
-  z3_lift_interpolant << "(check-sat)" << std::endl;
+    z3_reduced_interpolant << line << std::endl;
+  z3_reduced_interpolant << ")" << std::endl;
+  z3_reduced_interpolant << "(check-sat)" << std::endl;
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
   // --------------------------------------------------------------------
 
   // --------------------------------------------------------------------
   z3::solver z3_parser(ctx);
   z3_parser.from_file((OUTPUT_DIR + "/" + m_file_name 
-        + "_reduced_z3_lifted.smt2" ).c_str());
-  z3::expr interpolant_ = z3::mk_and(z3_parser.assertions());
-  // --------------------------------------------------------------------
-
+        + "_reduced_interpolant_z3.smt2" ).c_str());
   interpolant_computed = true;
-  _interpolant = liftInterpolant(interpolant_).simplify();
+  _interpolant = liftInterpolant(
+      z3::mk_and(z3_parser.assertions()))
+    .simplify();
+  // --------------------------------------------------------------------
 }
 
 void AXDInterpolant::mathsatOutputFile(){
@@ -338,44 +338,40 @@ void AXDInterpolant::mathsatOutputFile(){
   std::ifstream result(OUTPUT_DIR + "/temp.smt2");
   std::string line;
   std::getline(result, line);
-  std::ofstream mathsat_lift_interpolant(
+  std::ofstream mathsat_reduced_interpolant(
       OUTPUT_DIR + "/" 
-      + m_file_name + "_reduced_mathsat_lifted.smt2" );
+      + m_file_name + "_reduced_interpolant_mathsat.smt2" );
   // It is necessary to include declarations
   // in *_reduced_mathsat_lifted.smt2 because the
   // file will be parsed again
-  mathsat_lift_interpolant << solver.to_smt2_decls_only();
-  mathsat_lift_interpolant << "(assert " << std::endl;
+  mathsat_reduced_interpolant << solver.to_smt2_decls_only();
+  mathsat_reduced_interpolant << "(assert " << std::endl;
   while(std::getline(result, line))
-    mathsat_lift_interpolant << line << std::endl;
-  mathsat_lift_interpolant << ")" << std::endl;
-  mathsat_lift_interpolant << "(check-sat)" << std::endl;
+    mathsat_reduced_interpolant << line << std::endl;
+  mathsat_reduced_interpolant << ")" << std::endl;
+  mathsat_reduced_interpolant << "(check-sat)" << std::endl;
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
   // --------------------------------------------------------------------
 
   // --------------------------------------------------------------------
   z3::solver mathsat_parser(ctx);
-  mathsat_parser.from_file((OUTPUT_DIR + "/" 
-        + m_file_name + "_reduced_mathsat_lifted.smt2" ).c_str());
-  z3::expr interpolant_ = z3::mk_and(mathsat_parser.assertions());
-  // --------------------------------------------------------------------
-  
+  mathsat_parser.from_file((OUTPUT_DIR + "/" + m_file_name 
+        + "_reduced_interpolant_mathsat.smt2" ).c_str());
   interpolant_computed = true;
-  _interpolant = liftInterpolant(interpolant_).simplify();
+  _interpolant = liftInterpolant(
+      z3::mk_and(mathsat_parser.assertions()))
+    .simplify();
+  // --------------------------------------------------------------------
 }
 
 void AXDInterpolant::directComputation(){
   z3::expr_vector part_a_vector(ctx);
   z3::expr_vector part_b_vector(ctx);
   setupPartA_B_Vectors(part_a_vector, part_b_vector);
-  z3::expr interpolant = computeInterpolant(
-      part_a_vector, part_b_vector);
-  system(("mkdir -p " + OUTPUT_DIR).c_str());
-  std::ofstream interpolant_file(OUTPUT_DIR + "/" 
-      + m_file_name + "_interpolant.smt2");
-
   interpolant_computed = true;
-  _interpolant = liftInterpolant(interpolant);
+  _interpolant = liftInterpolant(
+      computeInterpolant(part_a_vector, part_b_vector))
+    .simplify();
 #if _TEST_OUTPUT_
   testOutput(interpolant, part_a_vector, part_b_vector);
 #endif

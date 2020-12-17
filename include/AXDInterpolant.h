@@ -2,7 +2,7 @@
 #define _AXD_INTERPOLANT_
 
 #define _DEBUG_AXD_INTER_           0
-#define _TEST_OUTPUT_               0
+#define _TEST_OUTPUT_               1
 #define _TEST_ORIGINAL_INPUT_       0
 
 #define OUTPUT_DIR std::string("./output")
@@ -44,7 +44,7 @@ class AXDInterpolant : public Preprocessor {
   z3::expr computeInterpolant(
       z3::expr_vector const &, 
       z3::expr_vector const &);
-  z3::expr liftInterpolant(z3::expr &); 
+  z3::expr liftInterpolant(z3::expr const &); 
 
   public: 
   AXDInterpolant(z3::context &, char const *, unsigned);
