@@ -8,20 +8,23 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   input_part_b(ctx),
   part_a_index_vars(ctx), part_b_index_vars(ctx),
   part_a_array_vars({}), part_b_array_vars({}), 
-  common_array_vars({}),
-  are_there_preds(false), are_there_succs(false),
-  are_there_negs(false), are_there_adds(false),
-  are_there_lengths(false)
+  common_array_vars({})
 {
 
   really_a_parser.from_file(file);
   z3::expr_vector assertions = really_a_parser.assertions();
   assert(assertions.size() == 2);
 
-  z3::expr const & conjunction_a = assertions[0];
+  // conjunction_a doesn't contain length
+  // applications
+  z3::expr const & conjunction_a = 
+    removeLengthApplications(assertions[0]);
   for(unsigned i = 0; i < conjunction_a.num_args(); ++i)
     input_part_a.push_back(conjunction_a.arg(i));
-  z3::expr const & conjunction_b = assertions[1];
+  // conjunction_b doesn't contain length
+  // applications
+  z3::expr const & conjunction_b = 
+    removeLengthApplications(assertions[1]);
   for(unsigned i = 0; i < conjunction_b.num_args(); ++i)
     input_part_b.push_back(conjunction_b.arg(i));
 
@@ -62,6 +65,17 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
 #endif
 }
 
+z3::expr Preprocessor::removeLengthApplications(z3::expr const & e){
+  if(e.is_app()){
+    if(e.num_args() > 0 && func_name(e) == "length")
+      return diff(removeLengthApplications(e.arg(0)), empty_array);
+    return e;
+  }
+  throw "Problem @ "
+    "Preprocessor::removeLengthApplications" 
+    "Not an application";
+}
+
 void Preprocessor::flattenPredicate(z3::expr const & formula, 
     SideInterpolant side){
   switch(formula.decl().decl_kind()){
@@ -71,8 +85,8 @@ void Preprocessor::flattenPredicate(z3::expr const & formula,
     case Z3_OP_LE:       // <=
     case Z3_OP_GT:       // >
     case Z3_OP_LT:       // <
-      flattenTerm(formula.arg(0), side);
-      flattenTerm(formula.arg(1), side);
+      flattenTerm(lhs(formula), side);
+      flattenTerm(rhs(formula), side);
       return;
     default:
       throw "Error at "
@@ -124,7 +138,6 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "pred"){
-      are_there_preds = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -132,7 +145,6 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "succ"){
-      are_there_succs = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -140,7 +152,6 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "neg"){
-      are_there_negs = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -148,7 +159,6 @@ void Preprocessor::flattenTerm(z3::expr const & term,
       return;
     }
     if(f_name == "add"){
-      are_there_adds = true;
       if(term.arg(0).num_args() > 0)
         cojoin(term.arg(0), fresh_index_constant(), side);
       else
@@ -157,15 +167,6 @@ void Preprocessor::flattenTerm(z3::expr const & term,
         cojoin(term.arg(1), fresh_index_constant(), side);
       else
         updateIndexVars(term.arg(1), side);
-      return;
-    }
-    // TODO: replace length(x) by diff(x, emepty_array)
-    if(f_name == "length"){
-      are_there_lengths = true;
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_array_constant(), side);
-      else
-        updateArrayVars(term.arg(0), side);
       return;
     }
   }
@@ -179,33 +180,34 @@ void Preprocessor::flattenTerm(z3::expr const & term,
 }
 
 void Preprocessor::cojoin(
-    z3::expr const & e, 
-    z3::expr const & _new_const, 
+    z3::expr const & old_term, 
+    z3::expr const & new_const, 
     SideInterpolant side){
   switch(side){
     case PART_A:
-      cojoin_aux(input_part_a, e, _new_const);
+      cojoin_aux(input_part_a, old_term, new_const);
       return;
     case PART_B:
-      cojoin_aux(input_part_b, e, _new_const);
+      cojoin_aux(input_part_b, old_term, new_const);
       return;
   }
 }
 
 void Preprocessor::cojoin_aux(
     z3::expr_vector & predicates,
-    z3::expr const & e, 
-    z3::expr const & _new_const){
+    z3::expr const & old_term, 
+    z3::expr const & new_const){
 
   z3::expr_vector from(ctx);
   z3::expr_vector to(ctx);
-  from.push_back(e);
-  to.push_back(_new_const);
+  from.push_back(old_term);
+  to.push_back(new_const);
 
   z3::expr_vector temp_predicates(ctx);
   for(unsigned i = 0; i < predicates.size(); i++)
-    temp_predicates.push_back(predicates[i].substitute(from, to));
-  temp_predicates.push_back(_new_const == e);
+    temp_predicates.push_back(
+        predicates[i].substitute(from, to));
+  temp_predicates.push_back(new_const == old_term);
   predicates = temp_predicates;
   current_conjs_in_input++;
   return;

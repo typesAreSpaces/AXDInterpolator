@@ -20,7 +20,9 @@ class StandardInput : public AXDSignature {
 
     typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
     struct Z3ExprExprComparator {
-      bool operator() (z3_expr_pair const & a, z3_expr_pair const & b) const;
+      bool operator() (
+          z3_expr_pair const & a, 
+          z3_expr_pair const & b) const;
     };
 
     std::map<z3_expr_pair, 
@@ -78,7 +80,8 @@ class StandardInput : public AXDSignature {
       DiffMap::z3_expr_pair const &, 
       z3::expr const &, 
       unsigned min_dim); 
-  friend std::ostream & operator << (std::ostream &, StandardInput const &);
+  friend std::ostream & operator << (std::ostream &, 
+      StandardInput const &);
 };
 
 #endif

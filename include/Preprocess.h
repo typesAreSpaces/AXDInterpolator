@@ -17,10 +17,13 @@ class Preprocessor : public AXDSignature {
 
   unsigned fresh_index, current_conjs_in_input;
 
+  z3::expr removeLengthApplications(z3::expr const &);
+
   void flattenPredicate(z3::expr const &, SideInterpolant);
   void flattenTerm(z3::expr const &, SideInterpolant);
   void cojoin(z3::expr const &, z3::expr const &, SideInterpolant);
-  void cojoin_aux(z3::expr_vector &, z3::expr const &, z3::expr const &);
+  void cojoin_aux(z3::expr_vector &, 
+      z3::expr const &, z3::expr const &);
   void updateArrayVars(z3::expr const &, SideInterpolant);
   void updateIndexVars(z3::expr const &, SideInterpolant);
 
@@ -37,12 +40,6 @@ class Preprocessor : public AXDSignature {
     part_a_array_vars, 
     part_b_array_vars,
     common_array_vars;
-
-  bool are_there_preds,
-       are_there_succs,
-       are_there_negs,
-       are_there_adds,
-       are_there_lengths;
 
   z3::expr fresh_array_constant();
   z3::expr fresh_element_constant();

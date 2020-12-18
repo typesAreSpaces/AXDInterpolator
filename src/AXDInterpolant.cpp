@@ -272,7 +272,8 @@ void AXDInterpolant::z3OutputFile(){
   std::ofstream z3_file(
       OUTPUT_DIR + "/" + m_file_name + "_reduced_z3.smt2");
   z3_file << "(set-option :produce-interpolants true)" << std::endl;
-  z3_file << solver.to_smt2_decls_only();
+  // TODO: test is needed
+  z3_file << defineDeclarations(solver.to_smt2_decls_only());
   z3_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(z3_file, part_a);
   z3_file << ") :named part_a))" << std::endl;
@@ -333,7 +334,8 @@ void AXDInterpolant::mathsatOutputFile(){
   std::ofstream mathsat_file(OUTPUT_DIR + "/" 
       + m_file_name + "_reduced_mathsat.smt2");
   mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
-  mathsat_file << solver.to_smt2_decls_only();
+  // TODO: test is needed
+  mathsat_file << defineDeclarations(solver.to_smt2_decls_only());
   mathsat_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(mathsat_file, part_a);
   mathsat_file << ") :interpolation-group part_a))" << std::endl;
@@ -385,9 +387,17 @@ void AXDInterpolant::mathsatOutputFile(){
 }
 
 void AXDInterpolant::directComputation(){
+  z3::expr_vector _part_a_vector(ctx);
+  z3::expr_vector _part_b_vector(ctx);
+  setupPartA_B_Vectors(_part_a_vector, _part_b_vector);
+
   z3::expr_vector part_a_vector(ctx);
   z3::expr_vector part_b_vector(ctx);
-  setupPartA_B_Vectors(part_a_vector, part_b_vector);
+  for(unsigned i = 0; i < _part_a_vector.size(); i++)
+    part_a_vector.push_back(defineDeclarations(_part_a_vector[i]));
+  for(unsigned i = 0; i < _part_b_vector.size(); i++)
+    part_b_vector.push_back(defineDeclarations(_part_b_vector[i]));
+
   z3::expr reduced_interpolant = computeReducedInterpolant(
       part_a_vector, part_b_vector);
   is_interpolant_computed = true;
@@ -395,6 +405,54 @@ void AXDInterpolant::directComputation(){
 #if _TEST_OUTPUT_
   testOutput(reduced_interpolant, part_a_vector, part_b_vector);
 #endif
+}
+
+std::string AXDInterpolant::defineDeclarations(std::string decls) const {
+  std::string pred_decl = "(declare-fun pred (Int) Int)";
+  std::string succ_decl = "(declare-fun succ (Int) Int)";
+  std::string neg_decl = "(declare-fun neg (Int) Int)";
+  std::string add_decl = "(declare-fun add (Int Int) Int)";
+  std::string result = decls;
+
+  auto position = decls.find(pred_decl);
+  if(position != std::string::npos)
+    result = result.replace(position, pred_decl.size(), "(define pred ((x Int)) Int (- x 1))");
+
+  position = decls.find(succ_decl);
+  if(position != std::string::npos)
+    result = result.replace(position, succ_decl.size(), "(define succ ((x Int)) Int (+ x 1))");
+
+  position = decls.find(neg_decl);
+  if(position != std::string::npos)
+    result = result.replace(position, neg_decl.size(), "(define neg ((x Int)) Int (- x))");
+
+  position = decls.find(add_decl);
+  if(position != std::string::npos)
+    result = result.replace(position, add_decl.size(), "(define add ((x Int) (y Int)) Int (+ x y))");
+
+  return result;
+}
+
+z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
+  if(e.is_app()){
+    if(e.num_args() > 0){
+      auto const & func_name = func_name(e);
+      if(func_name == "pred")
+        return (defineDeclarations(e.arg(0)) - 1);
+      if(func_name == "succ")
+        return (defineDeclarations(e.arg(0)) + 1);
+      if(func_name == "neg")
+        return (-defineDeclarations(e.arg(0)));
+      if(func_name == "add")
+        return (defineDeclarations(e.arg(0)) 
+            + defineDeclarations(e.arg(1)));
+      return e;
+    }
+    return e;
+  }
+  throw "Problem @ "
+    "AXDInterpolant::defineDeclarations"
+    "Not an application";
 }
 
 std::ostream & operator << (std::ostream & os, 

@@ -53,6 +53,9 @@ class AXDInterpolant : public Preprocessor {
   void mathsatOutputFile();
   void directComputation();
 
+  std::string defineDeclarations(std::string) const;
+  z3::expr defineDeclarations(z3::expr const &) const;
+
   friend std::ostream & operator << (std::ostream &, AXDInterpolant const &);
 
   class CircularPairIterator {

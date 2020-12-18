@@ -8,24 +8,25 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +1 src/AXDSignature.cpp
-badd +65 src/AXDInterpolant.cpp
+badd +411 src/AXDInterpolant.cpp
 badd +1 bin/mathsat
 badd +4 tests/main.cpp
-badd +5 include/AXDInterpolant.h
+badd +56 include/AXDInterpolant.h
 badd +22 src/AXDInterpolantCircularPairIterator.cpp
 badd +41 Makefile
-badd +45 include/Preprocess.h
-badd +3 include/StandardInput.h
-badd +162 src/Preprocessor.cpp
-badd +85 src/StandardInput.cpp
+badd +20 include/Preprocess.h
+badd +26 include/StandardInput.h
+badd +70 src/Preprocessor.cpp
+badd +12 src/StandardInput.cpp
 badd +34 src/StandardInputDiffMap.cpp
 badd +4 StandardInputWriterVector.cpp
-badd +51 include/AXDSignature.h
+badd +10 include/AXDSignature.h
 badd +3 src/AXDSignatureZ3ExprComparator.cpp
 badd +1 src/StandardInputWriterVector.cpp
 badd +2470 /usr/include/c++/10.2.0/bits/basic_string.h
 badd +2054 include/z3++.h
 badd +16 src/main.cpp
+badd +9 ~/b.cpp
 argglobal
 %argdel
 $argadd src/AXDSignature.cpp
@@ -37,15 +38,12 @@ wincmd _ | wincmd |
 vsplit
 wincmd _ | wincmd |
 vsplit
-wincmd _ | wincmd |
-vsplit
-4wincmd h
+3wincmd h
 wincmd _ | wincmd |
 split
 wincmd _ | wincmd |
 split
 2wincmd k
-wincmd w
 wincmd w
 wincmd w
 wincmd w
@@ -58,16 +56,15 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 24 + 38) / 77)
-exe 'vert 1resize ' . ((&columns * 68 + 171) / 342)
-exe '2resize ' . ((&lines * 25 + 38) / 77)
-exe 'vert 2resize ' . ((&columns * 68 + 171) / 342)
-exe '3resize ' . ((&lines * 24 + 38) / 77)
-exe 'vert 3resize ' . ((&columns * 68 + 171) / 342)
-exe 'vert 4resize ' . ((&columns * 68 + 171) / 342)
-exe 'vert 5resize ' . ((&columns * 67 + 171) / 342)
-exe 'vert 6resize ' . ((&columns * 68 + 171) / 342)
-exe 'vert 7resize ' . ((&columns * 67 + 171) / 342)
+exe '1resize ' . ((&lines * 26 + 40) / 81)
+exe 'vert 1resize ' . ((&columns * 93 + 188) / 376)
+exe '2resize ' . ((&lines * 26 + 40) / 81)
+exe 'vert 2resize ' . ((&columns * 93 + 188) / 376)
+exe '3resize ' . ((&lines * 25 + 40) / 81)
+exe 'vert 3resize ' . ((&columns * 93 + 188) / 376)
+exe 'vert 4resize ' . ((&columns * 93 + 188) / 376)
+exe 'vert 5resize ' . ((&columns * 94 + 188) / 376)
+exe 'vert 6resize ' . ((&columns * 93 + 188) / 376)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -78,11 +75,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 30 - ((19 * winheight(0) + 12) / 24)
+let s:l = 1 - ((0 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-30
+1
 normal! 0
 wincmd w
 argglobal
@@ -96,11 +93,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 31 - ((2 * winheight(0) + 12) / 25)
+let s:l = 26 - ((7 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-31
+26
 normal! 09|
 wincmd w
 argglobal
@@ -114,11 +111,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 24 - ((0 * winheight(0) + 12) / 24)
+let s:l = 26 - ((0 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-24
+26
 normal! 05|
 wincmd w
 argglobal
@@ -132,30 +129,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 65 - ((44 * winheight(0) + 37) / 75)
+let s:l = 418 - ((48 * winheight(0) + 39) / 79)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-65
-normal! 018|
-wincmd w
-argglobal
-if bufexists("src/Preprocessor.cpp") | buffer src/Preprocessor.cpp | else | edit src/Preprocessor.cpp | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 163 - ((54 * winheight(0) + 37) / 75)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-163
-normal! 027|
+418
+normal! 015|
 wincmd w
 argglobal
 if bufexists("include/StandardInput.h") | buffer include/StandardInput.h | else | edit include/StandardInput.h | endif
@@ -168,12 +147,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 30 - ((20 * winheight(0) + 37) / 75)
+let s:l = 26 - ((18 * winheight(0) + 39) / 79)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-30
-normal! 05|
+26
+normal! 06|
 wincmd w
 argglobal
 if bufexists("src/StandardInput.cpp") | buffer src/StandardInput.cpp | else | edit src/StandardInput.cpp | endif
@@ -186,24 +165,23 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 11 - ((10 * winheight(0) + 37) / 75)
+let s:l = 12 - ((11 * winheight(0) + 39) / 79)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-11
-normal! 018|
+12
+normal! 0
 wincmd w
 5wincmd w
-exe '1resize ' . ((&lines * 24 + 38) / 77)
-exe 'vert 1resize ' . ((&columns * 68 + 171) / 342)
-exe '2resize ' . ((&lines * 25 + 38) / 77)
-exe 'vert 2resize ' . ((&columns * 68 + 171) / 342)
-exe '3resize ' . ((&lines * 24 + 38) / 77)
-exe 'vert 3resize ' . ((&columns * 68 + 171) / 342)
-exe 'vert 4resize ' . ((&columns * 68 + 171) / 342)
-exe 'vert 5resize ' . ((&columns * 67 + 171) / 342)
-exe 'vert 6resize ' . ((&columns * 68 + 171) / 342)
-exe 'vert 7resize ' . ((&columns * 67 + 171) / 342)
+exe '1resize ' . ((&lines * 26 + 40) / 81)
+exe 'vert 1resize ' . ((&columns * 93 + 188) / 376)
+exe '2resize ' . ((&lines * 26 + 40) / 81)
+exe 'vert 2resize ' . ((&columns * 93 + 188) / 376)
+exe '3resize ' . ((&lines * 25 + 40) / 81)
+exe 'vert 3resize ' . ((&columns * 93 + 188) / 376)
+exe 'vert 4resize ' . ((&columns * 93 + 188) / 376)
+exe 'vert 5resize ' . ((&columns * 94 + 188) / 376)
+exe 'vert 6resize ' . ((&columns * 93 + 188) / 376)
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
