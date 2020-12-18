@@ -174,11 +174,10 @@ void StandardInput::updateSaturation(
 
   index_vars.push_back(_new_index);
 
-  // TODO: 
-  // - Implement heuristic to upgrade
-  // N for the N-instantiations
+  // TODO: - Implement heuristic to upgrade
+  // N for the N-instantiations.
   // - Implement N-instantations using
-  // current_instantiated_index_terms
+  // current_instantiated_index_terms.
 
   // ---------------------------------------------------
   // Processing equations of the form diff_1(a, b) = k_1 
