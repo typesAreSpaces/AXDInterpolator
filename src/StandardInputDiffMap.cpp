@@ -17,9 +17,11 @@ StandardInput::DiffMap::DiffMap(
     }
 }
 
-bool StandardInput::DiffMap::Z3ExprExprComparator::operator () (z3_expr_pair const & a, z3_expr_pair const & b) const {
+bool StandardInput::DiffMap::Z3ExprExprComparator::operator () (
+    z3_expr_pair const & a, z3_expr_pair const & b) const {
   return a.first.id() > b.first.id() 
-    || (a.first.id() == b.first.id() && a.second.id() > b.second.id());
+    || (a.first.id() == b.first.id() 
+        && a.second.id() > b.second.id());
 }
 
 void StandardInput::DiffMap::add(
@@ -51,9 +53,12 @@ unsigned StandardInput::DiffMap::size_of_entry(z3_expr_pair const & entry){
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput::DiffMap const & dm){
+
   for(auto const & x : dm.m_map){
-    os << x.first.first << " " << x.first.second << " -> ";
-    os << x.second << std::endl;
+    os 
+      << x.first.first << " " << x.first.second 
+      << " -> " << x.second 
+      << std::endl;
   }
   return os;
 }

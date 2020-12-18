@@ -7,7 +7,7 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +5 src/AXDSignature.cpp
+badd +7 src/AXDSignature.cpp
 badd +11 src/AXDInterpolant.cpp
 badd +1 bin/mathsat
 badd +4 tests/main.cpp
@@ -17,7 +17,7 @@ badd +41 Makefile
 badd +20 include/Preprocess.h
 badd +66 include/StandardInput.h
 badd +70 src/Preprocessor.cpp
-badd +28 src/StandardInput.cpp
+badd +115 src/StandardInput.cpp
 badd +55 src/StandardInputDiffMap.cpp
 badd +4 StandardInputWriterVector.cpp
 badd +10 include/AXDSignature.h
@@ -39,7 +39,10 @@ vsplit
 2wincmd h
 wincmd _ | wincmd |
 split
-1wincmd k
+wincmd _ | wincmd |
+split
+2wincmd k
+wincmd w
 wincmd w
 wincmd w
 wincmd _ | wincmd |
@@ -54,15 +57,17 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 30 + 31) / 62)
+exe '1resize ' . ((&lines * 17 + 28) / 56)
 exe 'vert 1resize ' . ((&columns * 96 + 144) / 289)
-exe '2resize ' . ((&lines * 29 + 31) / 62)
+exe '2resize ' . ((&lines * 18 + 28) / 56)
 exe 'vert 2resize ' . ((&columns * 96 + 144) / 289)
-exe '3resize ' . ((&lines * 30 + 31) / 62)
+exe '3resize ' . ((&lines * 17 + 28) / 56)
 exe 'vert 3resize ' . ((&columns * 96 + 144) / 289)
-exe '4resize ' . ((&lines * 29 + 31) / 62)
+exe '4resize ' . ((&lines * 27 + 28) / 56)
 exe 'vert 4resize ' . ((&columns * 96 + 144) / 289)
-exe 'vert 5resize ' . ((&columns * 95 + 144) / 289)
+exe '5resize ' . ((&lines * 26 + 28) / 56)
+exe 'vert 5resize ' . ((&columns * 96 + 144) / 289)
+exe 'vert 6resize ' . ((&columns * 95 + 144) / 289)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -73,12 +78,30 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 5 - ((1 * winheight(0) + 15) / 30)
+let s:l = 7 - ((1 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-5
+7
 normal! 0
+wincmd w
+argglobal
+if bufexists("src/AXDInterpolant.cpp") | buffer src/AXDInterpolant.cpp | else | edit src/AXDInterpolant.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 277 - ((8 * winheight(0) + 9) / 18)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+277
+normal! 03|
 wincmd w
 argglobal
 if bufexists("include/StandardInput.h") | buffer include/StandardInput.h | else | edit include/StandardInput.h | endif
@@ -91,12 +114,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 26 - ((14 * winheight(0) + 14) / 29)
+let s:l = 74 - ((11 * winheight(0) + 8) / 17)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-26
-normal! 05|
+74
+normal! 023|
 wincmd w
 argglobal
 if bufexists("src/StandardInputWriterVector.cpp") | buffer src/StandardInputWriterVector.cpp | else | edit src/StandardInputWriterVector.cpp | endif
@@ -109,11 +132,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 5 - ((3 * winheight(0) + 15) / 30)
+let s:l = 2 - ((1 * winheight(0) + 13) / 27)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-5
+2
 normal! 0
 wincmd w
 argglobal
@@ -127,11 +150,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 25 - ((17 * winheight(0) + 14) / 29)
+let s:l = 4 - ((2 * winheight(0) + 13) / 26)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-25
+4
 normal! 0
 wincmd w
 argglobal
@@ -145,23 +168,25 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 17 - ((14 * winheight(0) + 30) / 60)
+let s:l = 184 - ((50 * winheight(0) + 27) / 54)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-17
+184
 normal! 03|
 wincmd w
-3wincmd w
-exe '1resize ' . ((&lines * 30 + 31) / 62)
+6wincmd w
+exe '1resize ' . ((&lines * 17 + 28) / 56)
 exe 'vert 1resize ' . ((&columns * 96 + 144) / 289)
-exe '2resize ' . ((&lines * 29 + 31) / 62)
+exe '2resize ' . ((&lines * 18 + 28) / 56)
 exe 'vert 2resize ' . ((&columns * 96 + 144) / 289)
-exe '3resize ' . ((&lines * 30 + 31) / 62)
+exe '3resize ' . ((&lines * 17 + 28) / 56)
 exe 'vert 3resize ' . ((&columns * 96 + 144) / 289)
-exe '4resize ' . ((&lines * 29 + 31) / 62)
+exe '4resize ' . ((&lines * 27 + 28) / 56)
 exe 'vert 4resize ' . ((&columns * 96 + 144) / 289)
-exe 'vert 5resize ' . ((&columns * 95 + 144) / 289)
+exe '5resize ' . ((&lines * 26 + 28) / 56)
+exe 'vert 5resize ' . ((&columns * 96 + 144) / 289)
+exe 'vert 6resize ' . ((&columns * 95 + 144) / 289)
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
