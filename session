@@ -7,25 +7,25 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +1 src/AXDSignature.cpp
-badd +411 src/AXDInterpolant.cpp
+badd +5 src/AXDSignature.cpp
+badd +11 src/AXDInterpolant.cpp
 badd +1 bin/mathsat
 badd +4 tests/main.cpp
-badd +56 include/AXDInterpolant.h
+badd +48 include/AXDInterpolant.h
 badd +22 src/AXDInterpolantCircularPairIterator.cpp
 badd +41 Makefile
 badd +20 include/Preprocess.h
-badd +26 include/StandardInput.h
+badd +66 include/StandardInput.h
 badd +70 src/Preprocessor.cpp
-badd +12 src/StandardInput.cpp
-badd +34 src/StandardInputDiffMap.cpp
+badd +28 src/StandardInput.cpp
+badd +55 src/StandardInputDiffMap.cpp
 badd +4 StandardInputWriterVector.cpp
 badd +10 include/AXDSignature.h
 badd +3 src/AXDSignatureZ3ExprComparator.cpp
-badd +1 src/StandardInputWriterVector.cpp
+badd +17 src/StandardInputWriterVector.cpp
 badd +2470 /usr/include/c++/10.2.0/bits/basic_string.h
 badd +2054 include/z3++.h
-badd +16 src/main.cpp
+badd +14 src/main.cpp
 badd +9 ~/b.cpp
 argglobal
 %argdel
@@ -36,17 +36,15 @@ wincmd _ | wincmd |
 vsplit
 wincmd _ | wincmd |
 vsplit
-wincmd _ | wincmd |
-vsplit
-3wincmd h
+2wincmd h
 wincmd _ | wincmd |
 split
+1wincmd k
+wincmd w
+wincmd w
 wincmd _ | wincmd |
 split
-2wincmd k
-wincmd w
-wincmd w
-wincmd w
+1wincmd k
 wincmd w
 wincmd w
 set nosplitbelow
@@ -56,15 +54,15 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 26 + 40) / 81)
-exe 'vert 1resize ' . ((&columns * 93 + 188) / 376)
-exe '2resize ' . ((&lines * 26 + 40) / 81)
-exe 'vert 2resize ' . ((&columns * 93 + 188) / 376)
-exe '3resize ' . ((&lines * 25 + 40) / 81)
-exe 'vert 3resize ' . ((&columns * 93 + 188) / 376)
-exe 'vert 4resize ' . ((&columns * 93 + 188) / 376)
-exe 'vert 5resize ' . ((&columns * 94 + 188) / 376)
-exe 'vert 6resize ' . ((&columns * 93 + 188) / 376)
+exe '1resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 1resize ' . ((&columns * 96 + 144) / 289)
+exe '2resize ' . ((&lines * 29 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 96 + 144) / 289)
+exe '3resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 3resize ' . ((&columns * 96 + 144) / 289)
+exe '4resize ' . ((&lines * 29 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 96 + 144) / 289)
+exe 'vert 5resize ' . ((&columns * 95 + 144) / 289)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -75,30 +73,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 1 - ((0 * winheight(0) + 13) / 26)
+let s:l = 5 - ((1 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1
+5
 normal! 0
-wincmd w
-argglobal
-if bufexists("src/main.cpp") | buffer src/main.cpp | else | edit src/main.cpp | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 26 - ((7 * winheight(0) + 13) / 26)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-26
-normal! 09|
 wincmd w
 argglobal
 if bufexists("include/StandardInput.h") | buffer include/StandardInput.h | else | edit include/StandardInput.h | endif
@@ -111,7 +91,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 26 - ((0 * winheight(0) + 12) / 25)
+let s:l = 26 - ((14 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -119,7 +99,7 @@ normal! zt
 normal! 05|
 wincmd w
 argglobal
-if bufexists("src/AXDInterpolant.cpp") | buffer src/AXDInterpolant.cpp | else | edit src/AXDInterpolant.cpp | endif
+if bufexists("src/StandardInputWriterVector.cpp") | buffer src/StandardInputWriterVector.cpp | else | edit src/StandardInputWriterVector.cpp | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -129,15 +109,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 418 - ((48 * winheight(0) + 39) / 79)
+let s:l = 5 - ((3 * winheight(0) + 15) / 30)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-418
-normal! 015|
+5
+normal! 0
 wincmd w
 argglobal
-if bufexists("include/StandardInput.h") | buffer include/StandardInput.h | else | edit include/StandardInput.h | endif
+if bufexists("src/StandardInputDiffMap.cpp") | buffer src/StandardInputDiffMap.cpp | else | edit src/StandardInputDiffMap.cpp | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -147,12 +127,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 26 - ((18 * winheight(0) + 39) / 79)
+let s:l = 25 - ((17 * winheight(0) + 14) / 29)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-26
-normal! 06|
+25
+normal! 0
 wincmd w
 argglobal
 if bufexists("src/StandardInput.cpp") | buffer src/StandardInput.cpp | else | edit src/StandardInput.cpp | endif
@@ -165,23 +145,23 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 12 - ((11 * winheight(0) + 39) / 79)
+let s:l = 17 - ((14 * winheight(0) + 30) / 60)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-12
-normal! 0
+17
+normal! 03|
 wincmd w
-5wincmd w
-exe '1resize ' . ((&lines * 26 + 40) / 81)
-exe 'vert 1resize ' . ((&columns * 93 + 188) / 376)
-exe '2resize ' . ((&lines * 26 + 40) / 81)
-exe 'vert 2resize ' . ((&columns * 93 + 188) / 376)
-exe '3resize ' . ((&lines * 25 + 40) / 81)
-exe 'vert 3resize ' . ((&columns * 93 + 188) / 376)
-exe 'vert 4resize ' . ((&columns * 93 + 188) / 376)
-exe 'vert 5resize ' . ((&columns * 94 + 188) / 376)
-exe 'vert 6resize ' . ((&columns * 93 + 188) / 376)
+3wincmd w
+exe '1resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 1resize ' . ((&columns * 96 + 144) / 289)
+exe '2resize ' . ((&lines * 29 + 31) / 62)
+exe 'vert 2resize ' . ((&columns * 96 + 144) / 289)
+exe '3resize ' . ((&lines * 30 + 31) / 62)
+exe 'vert 3resize ' . ((&columns * 96 + 144) / 289)
+exe '4resize ' . ((&lines * 29 + 31) / 62)
+exe 'vert 4resize ' . ((&columns * 96 + 144) / 289)
+exe 'vert 5resize ' . ((&columns * 95 + 144) / 289)
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
