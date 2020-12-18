@@ -41,8 +41,13 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   // Set current_conjs_in_input to zero
   // because the variable is no longer needed
   current_conjs_in_input = 0;
-  
+
 #if _DEBUG_PREPROCESS_
+  m_out << "Assertions " << assertions << std::endl;
+  m_out << "Part a " << conjunction_a << std::endl;
+  m_out << "Part b " << conjunction_b << std::endl;
+  m_out << "Part a " << input_part_a << std::endl;
+  m_out << "Part b " << input_part_b << std::endl;
   m_out << "Arrays A-local" << std::endl;
   m_out << part_a_array_vars << std::endl;
   m_out << "Arrays B-local" << std::endl;
@@ -56,10 +61,17 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
       common_array_vars.insert(*iterator_a);
   }
 
+#if _DEBUG_PREPROCESS_
+  m_out << "Before" << std::endl;
+  m_out << part_a_index_vars << std::endl;
+  m_out << part_b_index_vars << std::endl;
+#endif
+
   removeDuplicates(part_a_index_vars);
   removeDuplicates(part_b_index_vars);
 
 #if _DEBUG_PREPROCESS_
+  m_out << "After" << std::endl;
   m_out << part_a_index_vars << std::endl;
   m_out << part_b_index_vars << std::endl;
 #endif
@@ -67,9 +79,14 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
 
 z3::expr Preprocessor::removeLengthApplications(z3::expr const & e){
   if(e.is_app()){
-    if(e.num_args() > 0 && func_name(e) == "length")
+    if(e.num_args() > 0 && func_name(e) == "length"){
       return diff(removeLengthApplications(e.arg(0)), empty_array);
-    return e;
+    }
+    z3::func_decl f_name = e.decl();
+    z3::expr_vector args(ctx);
+    for(unsigned i = 0; i < e.num_args(); ++i)
+      args.push_back(removeLengthApplications(e.arg(i)));
+    return f_name(args);
   }
   throw "Problem @ "
     "Preprocessor::removeLengthApplications" 

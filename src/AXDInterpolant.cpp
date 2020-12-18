@@ -175,9 +175,8 @@ void AXDInterpolant::testOutput(
   test2_file << test2.to_smt2();
 }
 
-// TODO: keep working here
-// Potentially remove positivity condition
-// for indexes
+// TODO: It might be needed to remove 
+// positivity condition for indexes
 void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
   for(auto const & assertion : part_a.part_2)
     solver.add(assertion);
@@ -189,9 +188,8 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
     solver.add(index >= 0);
 }
 
-// TODO: keep working here
-// Potentially remove positivity condition
-// for indexes
+// TODO: It might be needed to remove 
+// positivity condition for indexes
 void AXDInterpolant::SmtSolverOutStreamSetup(
     std::ostream & out, 
     StandardInput const & form_pair){
@@ -268,13 +266,18 @@ z3::expr AXDInterpolant::liftInterpolant(
 }
 
 void AXDInterpolant::z3OutputFile(){
+  if(!is_interpolant_computed){
+    m_out 
+      << "Interpolant hasn't been computed" 
+      << std::endl;
+    return;
+  }
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream z3_file(
       OUTPUT_DIR + "/" + m_file_name + "_reduced_z3.smt2");
   z3_file << "(set-option :produce-interpolants true)" << std::endl;
-  // TODO: test is needed
   z3_file << defineDeclarations(solver.to_smt2_decls_only());
   z3_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(z3_file, part_a);
@@ -330,13 +333,18 @@ void AXDInterpolant::z3OutputFile(){
 }
 
 void AXDInterpolant::mathsatOutputFile(){
+  if(!is_interpolant_computed){
+    m_out 
+      << "Interpolant hasn't been computed" 
+      << std::endl;
+    return;
+  }
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream mathsat_file(OUTPUT_DIR + "/" 
       + m_file_name + "_reduced_mathsat.smt2");
   mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
-  // TODO: test is needed
   mathsat_file << defineDeclarations(solver.to_smt2_decls_only());
   mathsat_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(mathsat_file, part_a);
@@ -389,6 +397,12 @@ void AXDInterpolant::mathsatOutputFile(){
 }
 
 void AXDInterpolant::directComputation(){
+  if(!is_interpolant_computed){
+    m_out 
+      << "Interpolant hasn't been computed" 
+      << std::endl;
+    return;
+  }
   z3::expr_vector _part_a_vector(ctx);
   z3::expr_vector _part_b_vector(ctx);
   setupPartA_B_Vectors(_part_a_vector, _part_b_vector);
@@ -420,15 +434,15 @@ std::string AXDInterpolant::defineDeclarations(std::string decls) const {
   if(position != std::string::npos)
     result = result.replace(position, pred_decl.size(), "(define pred ((x Int)) Int (- x 1))");
 
-  position = decls.find(succ_decl);
+  position = result.find(succ_decl);
   if(position != std::string::npos)
     result = result.replace(position, succ_decl.size(), "(define succ ((x Int)) Int (+ x 1))");
 
-  position = decls.find(neg_decl);
+  position = result.find(neg_decl);
   if(position != std::string::npos)
     result = result.replace(position, neg_decl.size(), "(define neg ((x Int)) Int (- x))");
 
-  position = decls.find(add_decl);
+  position = result.find(add_decl);
   if(position != std::string::npos)
     result = result.replace(position, add_decl.size(), "(define add ((x Int) (y Int)) Int (+ x y))");
 
@@ -448,7 +462,11 @@ z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
       if(func_name == "add")
         return (defineDeclarations(e.arg(0)) 
             + defineDeclarations(e.arg(1)));
-      return e;
+      z3::func_decl f_name = e.decl();
+      z3::expr_vector args(ctx);
+      for(unsigned i = 0; i < e.num_args(); ++i)
+        args.push_back(defineDeclarations(e.arg(i)));
+      return f_name(args);
     }
     return e;
   }
@@ -465,9 +483,9 @@ std::ostream & operator << (std::ostream & os,
         << axd.current_interpolant);
   else
     return (os << 
-        "Interpolant hasn't been computed."
-        "Use .z3OutputFile or .mathsatOutputFile "
-        "or .directComputation on a AXDInterpolant" 
+        "Interpolant hasn't been computed.\n"
+        "Use .z3OutputFile or .mathsatOutputFile\n"
+        "or .directComputation on a AXDInterpolant\n" 
         "object to obtain an interpolant." 
         << std::endl);
 }
