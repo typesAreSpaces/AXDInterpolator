@@ -3,8 +3,7 @@
 StandardInput::DiffMap::DiffMap(
     z3::context & ctx,
     z3_expr_set const & array_var_ids) : 
-  m_map()
-{
+  m_map(){
   for(auto const & x : array_var_ids)
     for(auto const & y : array_var_ids){
       if(x.id() > y.id())
@@ -49,4 +48,12 @@ void StandardInput::DiffMap::add_aux(
 
 unsigned StandardInput::DiffMap::size_of_entry(z3_expr_pair const & entry){
   return m_map.find(entry)->second.size();
+}
+
+std::ostream & operator << (std::ostream & os, StandardInput::DiffMap const & dm){
+  for(auto const & x : dm.m_map){
+    os << x.first.first << " " << x.first.second << " -> ";
+    os << x.second << std::endl;
+  }
+  return os;
 }

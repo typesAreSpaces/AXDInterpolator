@@ -14,3 +14,12 @@ void StandardInput::WriteVector::add(
       std::make_tuple(a, b, index, element)
       );
 }
+
+std::ostream & operator << (std::ostream & os, StandardInput::WriteVector const & wv){
+  for(auto const & x : wv.m_vector)
+    os 
+      << std::get<0>(x) << ", "
+      << std::get<1>(x) << ", "
+      << std::get<2>(x) << std::endl;
+  return os;
+}

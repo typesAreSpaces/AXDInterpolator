@@ -10,6 +10,17 @@ OBJS = $(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.so
 DEPS = $(wildcard $(IDIR)/*.h)
 OS = $(shell uname)
 
+#METHOD = 0 # Z3
+#METHOD = 1 # MATHSAT
+METHOD = 2 # DIRECT COMPUTATION
+
+ALLOWED_ATTEMPS = 10
+
+THEORY = TO
+#THEORY = QF_IDL
+#THEORY = QF_UTVPI
+#THEORY = QF_LIA
+
 #FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
 FILE_TEST = ./tests/smt2-files/maxdiff_paper_example.smt2
@@ -44,12 +55,12 @@ bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.so
 #  Rules to test a single or many smt2 files
 
 tests/one: bin/axd_interpolator
-	./bin/axd_interpolator $(FILE_TEST)
+	./bin/axd_interpolator $(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
 	rm -rf tests/*.o $@
 
 tests/all: bin/axd_interpolator
 	for smt_file in ./tests/smt2-files/*.smt2; do \
-		./bin/axd_interpolator $${smt_file} ; \
+		./bin/axd_interpolator $(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) ; \
 		done
 	rm -rf tests/*.o $@
 	

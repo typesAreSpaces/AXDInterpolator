@@ -1,6 +1,7 @@
 #ifndef _STANDARD_INPUT_
 #define _STANDARD_INPUT_
 
+#include "z3++.h"
 #define _DEBUG_STDINPUT_ 0
 
 #include <set>
@@ -13,7 +14,6 @@
 class StandardInput : public AXDSignature {
 
   friend class AXDInterpolant;
-
   // DiffMap : 
   // c_array_var.id() x c_array_var.id() -> sequence of diff_k
   struct DiffMap {
@@ -28,7 +28,7 @@ class StandardInput : public AXDSignature {
     std::map<z3_expr_pair, 
       z3::expr_vector, 
       Z3ExprExprComparator> m_map;
-    
+
     DiffMap(z3::context &, z3_expr_set const &);
 
     void add(
@@ -62,6 +62,9 @@ class StandardInput : public AXDSignature {
 
   DiffMap     diff_map;
   WriteVector write_vector;
+
+  z3::func_decl_vector local_signature;
+
   // -) part_1 contains wr-equations and diff(k)-equations
   // of the original input
   // -) part_2 contains the rest
@@ -70,11 +73,12 @@ class StandardInput : public AXDSignature {
 
   z3::expr orientBinPredicate(z3::expr const &);
 
-  public:
+    public:
   StandardInput(
       z3::expr const &, 
       z3::expr_vector &,
-      z3_expr_set const &);
+      z3_expr_set const &,
+      char const *);
   void initSaturation(); 
   void updateSaturation(
       DiffMap::z3_expr_pair const &, 
@@ -82,6 +86,10 @@ class StandardInput : public AXDSignature {
       unsigned min_dim); 
   friend std::ostream & operator << (std::ostream &, 
       StandardInput const &);
-};
+  friend std::ostream & operator << (std::ostream &,
+      StandardInput::DiffMap const &);
+  friend std::ostream & operator << (std::ostream &,
+      StandardInput::WriteVector const &);
+  };
 
 #endif

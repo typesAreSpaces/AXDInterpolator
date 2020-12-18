@@ -2,13 +2,35 @@
 
 StandardInput::StandardInput(z3::expr const & conjunction, 
     z3::expr_vector & initial_index_vars,
-    z3_expr_set const & array_var_ids) :
+    z3_expr_set const & array_var_ids,
+    char const * theory) :
   AXDSignature(conjunction.ctx()),
   diff_map(conjunction.ctx(), array_var_ids),
+  write_vector(),
+  local_signature(ctx),
   part_1(conjunction.ctx()), part_2(conjunction.ctx()), 
   index_vars(initial_index_vars)
 {
   assert(conjunction.decl().decl_kind() == Z3_OP_AND);
+
+  std::string theory_signature(theory);
+  if(theory_signature == "TO"){
+  }
+  if(theory_signature == "QF_IDL"){
+    local_signature.push_back(pred);
+    local_signature.push_back(succ);
+  }
+  if(theory_signature == "QF_UTVPI"){
+    local_signature.push_back(pred);
+    local_signature.push_back(succ);
+    local_signature.push_back(neg);
+  }
+  if(theory_signature == "QF_LIA"){
+    local_signature.push_back(pred);
+    local_signature.push_back(succ);
+    local_signature.push_back(neg);
+    local_signature.push_back(add);
+  }
 
   for(unsigned i = 0; i < conjunction.num_args(); i++){
     auto current_arg = conjunction.arg(i);
@@ -33,6 +55,7 @@ StandardInput::StandardInput(z3::expr const & conjunction,
           "Invalid formula.";
     }
   }
+
 #if _DEBUG_STDINPUT_
   m_out << "Done" << std::endl;
   m_out << "Part 1: " << part_1 << std::endl;
@@ -64,17 +87,10 @@ StandardInput::StandardInput(z3::expr const & conjunction,
 
 #if _DEBUG_STDINPUT_
   m_out << "Start DiffMap" << std::endl;
-  for(auto const & x : diff_map.m_map){
-    m_out << x.first.first << " " << x.first.second << " -> ";
-    m_out << x.second << std::endl;
-  }
+  m_out << diff_map << std::endl;
   m_out << "End DiffMap" << std::endl;
   m_out << "Start WriteVector" << std::endl;
-  for(auto const & x : write_vector.m_vector){
-    m_out << std::get<0>(x) << ", " 
-    << std::get<1>(x) << ", "
-    << std::get<2>(x) << std::endl;
-  }
+  m_out << write_vector << std::endl;
   m_out << "End WriteVector" << std::endl;
   m_out << std::endl;
 #endif
@@ -233,6 +249,8 @@ void StandardInput::updateSaturation(
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput const & si){
-  return (os << "Part 1: " << si.part_1 << std::endl 
+  return (os 
+      << "Part 1: " << si.part_1 
+      << std::endl 
       << "Part 2: " << si.part_2);
 }

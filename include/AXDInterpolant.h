@@ -47,7 +47,7 @@ class AXDInterpolant : public Preprocessor {
   z3::expr liftInterpolant(z3::expr const &); 
 
   public: 
-  AXDInterpolant(z3::context &, char const *, unsigned);
+  AXDInterpolant(z3::context &, char const *, char const *, unsigned);
 
   void z3OutputFile();
   void mathsatOutputFile();

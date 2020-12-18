@@ -3,19 +3,21 @@
 
 AXDInterpolant::AXDInterpolant(
     z3::context & ctx, 
-    char const * file_name, 
+    char const * file_name,
+    char const * theory,
     unsigned allowed_attempts) : 
   Preprocessor(ctx, file_name),
-  //solver(ctx, "QF_LIA"), 
   solver(ctx), 
   part_a(
       z3::mk_and(input_part_a), 
       part_a_index_vars, 
-      part_a_array_vars),
+      part_a_array_vars, 
+      theory),
   part_b(
       z3::mk_and(input_part_b), 
       part_b_index_vars, 
-      part_b_array_vars),
+      part_b_array_vars,
+      theory),
   m_file_name(std::string(file_name)),
   is_interpolant_computed(false),
   current_interpolant(ctx.bool_val(true))
@@ -410,8 +412,8 @@ void AXDInterpolant::directComputation(){
 std::string AXDInterpolant::defineDeclarations(std::string decls) const {
   std::string pred_decl = "(declare-fun pred (Int) Int)";
   std::string succ_decl = "(declare-fun succ (Int) Int)";
-  std::string neg_decl = "(declare-fun neg (Int) Int)";
-  std::string add_decl = "(declare-fun add (Int Int) Int)";
+  std::string neg_decl  = "(declare-fun neg (Int) Int)";
+  std::string add_decl  = "(declare-fun add (Int Int) Int)";
   std::string result = decls;
 
   auto position = decls.find(pred_decl);
