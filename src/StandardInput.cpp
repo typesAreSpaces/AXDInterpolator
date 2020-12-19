@@ -130,7 +130,7 @@ z3::expr StandardInput::orientBinPredicate(z3::expr const & eq){
 void StandardInput::initSaturation(){
   // ------------------------------------------------
   // Processing equations of the form a = wr(b, i, e)
-  // The following adds (11) predicates
+  // The following adds [11] predicates
   for(auto const & _4tuple : write_vector.m_vector){
     auto const & a = std::get<0>(_4tuple);
     auto const & b = std::get<1>(_4tuple);
@@ -161,7 +161,7 @@ void StandardInput::initSaturation(){
 
   // -----------------------------------------------
   // Processing equations of the form diff(a, b) = i
-  // The following adds (12) predicates
+  // The following adds [12] predicates
   for(auto const & entry : diff_map.m_map){
     auto const & a   = entry.first.first;
     auto const & b   = entry.first.second;
@@ -219,8 +219,7 @@ void StandardInput::updateSaturation(
 
   // ---------------------------------------------------
   // Processing equations of the form diff_1(a, b) = k_1 
-  // \land \dots \land diff_l(a, b) = k_l
-  // The following adds (13) predicates
+  // \land \dots \land diff_l(a, b) = k_l [13]
   if(min_dim < old_dim)
     part_2.push_back(
         _new_index == map_element->second[min_dim]
@@ -231,70 +230,50 @@ void StandardInput::updateSaturation(
     if(old_dim > 0){
       auto const & _previous_index = map_element->second[old_dim - 1];
 
-      // The following adds (14) predicates
+      // The following adds [14] predicates
       part_2.push_back(
           _previous_index >= _new_index
           );
+      part_2.push_back(
+          _new_index >= ctx.int_val(0)
+          );
 
-      // The following adds (15) predicates
+      // The following adds [15] predicates
       part_2.push_back(z3::implies(
             _previous_index > _new_index,
             rd(a, _previous_index) != rd(b, _previous_index)
             ));
 
-      // The following adds (16) predicates
+      // The following adds [16] predicates
       part_2.push_back(z3::implies(
             _previous_index == _new_index,
             _previous_index == ctx.int_val(0)
             ));
     }
-    // The following adds (17) predicates
+    // The following adds [17] predicates
     part_2.push_back(z3::implies(
           rd(a, _new_index) == rd(b, _new_index),
           _new_index == ctx.int_val(0)
           ));
   }
 
-  // The following adds (18) predicates
+  // ----------------------------------
+  // TODO: rework this implementation
+  // using pseudo quantified formulas
+  // The following adds [18] predicates
   for(auto const & h : index_vars){
     z3::expr_vector consequent_vector(ctx);
     consequent_vector.push_back(rd(a, h) == rd(b, h));
     for(auto const & k_ : current_indices)
       consequent_vector.push_back(h == k_);
 
-    part_2.push_back(z3::implies(
+    part_2.push_back(
+        z3::implies(
           h > _new_index,
-          z3::mk_or(consequent_vector)));
+          z3::mk_or(consequent_vector)
+          ));
   }
-
-  // The following adds (18) predicates for the 
-  // previous quantifiers formulas effectively
-  // updating them with _new_index
-  for(auto const & diff_entry : diff_map.m_map){
-    auto const & diff_a = diff_entry.first.first;
-    auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-
-    unsigned _i = 0, _size = diff_seq.size();
-    z3::expr_vector accum_k_(ctx);
-    for(; _i < _size; ++_i){
-      auto const & k_ = diff_seq[_i];
-
-      z3::expr_vector equalities_k(ctx);
-      equalities_k.push_back(
-          rd(diff_a, _new_index) == rd(diff_b, _new_index));
-      for(unsigned _j = 0; _j < _i; ++_j)
-        equalities_k.push_back(_new_index == accum_k_[_j]);
-
-      part_2.push_back(z3::implies(
-            _new_index > k_, 
-            z3::mk_or(equalities_k)));
-
-      accum_k_.push_back(k_);
-    }
-  }
-  // ---------------------------------------------------
-
+  // ----------------------------------
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput const & si){
