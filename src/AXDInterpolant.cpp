@@ -184,16 +184,22 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
   for(auto const & assertion : part_b.part_2)
     solver.add(assertion);
 
-  // TODO: instantiate index_var in axiom_8
-  // with elements from 
+  // Instantiate the TODO's with elements from 
   // StandardInput::current_instantiated_index_terms
   // and add these formulas to solver
   
-  // TODO: instantiate index_var in axiom_9
-  // with elements from 
-  // StandardInput::current_instantiated_index_terms
-  // and add these formulas to solver
-  
+  // axiom_8
+  // TODO: instantiate the following
+  // expression
+  part_a.axiom_8;
+  part_b.axiom_8;
+
+  // axiom_9
+  // TODO: instantiate the following
+  // expression
+  part_a.axiom_9;
+  part_b.axiom_9;
+
   // axiom_11_2 [WriteVector: a, b, i],
   // A-Part
   for(auto const & _4tuple : part_a.write_vector.m_vector){
@@ -203,7 +209,7 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
 
     // TODO: instantiate the following
     // expression
-    z3::expr axiom_11_2 = 
+    z3::expr part_a_axiom_11_2 = 
       z3::implies(
           part_a.index_var != i,
           rd(a, part_a.index_var) == rd(b, part_a.index_var)
@@ -219,20 +225,58 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
 
     // TODO: instantiate the following
     // expression
-    z3::expr axiom_11_2 = 
+    z3::expr part_b_axiom_11_2 = 
       z3::implies(
           part_b.index_var != i,
           rd(a, part_b.index_var) == rd(b, part_b.index_var)
           );
   }
 
-  // TODO: instantiate index_var in 
-  // axiom_18 (axiom_12_1) [DiffMap: a, b, l]
-  // with elements from 
-  // StandardInput::current_instantiated_index_terms
-  // and add these formulas to solver
+  // axiom_18 (axiom_12_2) [DiffMap: a, b, l]
+  // A-Part
+  for(auto const & diff_entry : part_a.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second;
 
-  // Previous approach
+    unsigned last_one = diff_seq.size() - 1;
+    z3::expr_vector disj_equalities(ctx);
+    disj_equalities.push_back(
+        rd(diff_a, part_a.index_var) 
+        == rd(diff_b, part_a.index_var));
+    for(unsigned i = 0; i < last_one; i++)
+      disj_equalities.push_back(
+          part_a.index_var == diff_seq[i]);
+    // TODO: instantiate the following
+    // expression
+    z3::expr part_a_axiom_18 = z3::implies(
+        part_a.index_var > diff_seq[last_one], 
+        z3::mk_or(disj_equalities));
+  }
+
+  // axiom_18 (axiom_12_2) [DiffMap: a, b, l]
+  // B-Part
+  for(auto const & diff_entry : part_b.diff_map.m_map){
+    auto const & diff_a = diff_entry.first.first;
+    auto const & diff_b = diff_entry.first.second;
+    auto const & diff_seq = diff_entry.second;
+
+    unsigned last_one = diff_seq.size() - 1;
+    z3::expr_vector disj_equalities(ctx);
+    disj_equalities.push_back(
+        rd(diff_a, part_b.index_var) 
+        == rd(diff_b, part_b.index_var));
+    for(unsigned i = 0; i < last_one; i++)
+      disj_equalities.push_back(
+          part_b.index_var == diff_seq[i]);
+    // TODO: instantiate the following
+    // expression
+    z3::expr part_b_axiom_18 = z3::implies(
+        part_b.index_var > diff_seq[last_one], 
+        z3::mk_or(disj_equalities));
+  }
+
+
   //for(auto const & index : part_a.index_vars)
   //solver.add(index >= 0);
   //for(auto const & index : part_b.index_vars)

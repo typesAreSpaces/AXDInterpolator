@@ -144,18 +144,8 @@ void StandardInput::initSaturation(){
           rd(a, i) == e) 
         );
 
-    // TODO: rework this implementation
-    // using pseudo quantified formulas
-    // The following instantiates 
-    // the quantified formula 
-    // \forall h . h \neq i \rightarrow rd(a, b) = rd(b, h)
-    for(auto const & h : index_vars){
-      part_2.push_back(
-          z3::implies(
-            h != i, 
-            rd(a, h) == rd(b, h))
-          );
-    }
+    // [11] predicates are processed in 
+    // AXDInterpolant::SmtSolverSetup(z3::solver &);
   }
   // ------------------------------------------------
 
@@ -174,17 +164,9 @@ void StandardInput::initSaturation(){
       // i >= 0
       part_2.push_back(i >= 0);
 
-      // TODO: rework this implementation
-      // using pseudo quantified formulas
-      // The following instantiates
-      // \forall h . h > i \rightarrow rd(a, h) = rd(b, h)
-      for(auto const & h : index_vars)
-        part_2.push_back(
-            z3::implies(
-              h > i, 
-              rd(a, h) == rd(b, h))
-            );
-
+      // [18] predicates are processed in 
+      // AXDInterpolant::SmtSolverSetup(z3::solver &);
+      
       // The following adds
       // i > 0 \rightarrow rd(a, i) \neq rd(b, i) 
       part_2.push_back(
@@ -216,8 +198,10 @@ void StandardInput::updateSaturation(
   // N for the N-instantiations.
   // - Implement N-instantations using
   // current_instantiated_index_terms.
+  
+  // [11] predicates are processed in 
+  // AXDInterpolant::SmtSolverSetup(z3::solver &);
 
-  // ---------------------------------------------------
   // Processing equations of the form diff_1(a, b) = k_1 
   // \land \dots \land diff_l(a, b) = k_l [13]
   if(min_dim < old_dim)
@@ -257,23 +241,8 @@ void StandardInput::updateSaturation(
           ));
   }
 
-  // ----------------------------------
-  // TODO: rework this implementation
-  // using pseudo quantified formulas
-  // The following adds [18] predicates
-  for(auto const & h : index_vars){
-    z3::expr_vector consequent_vector(ctx);
-    consequent_vector.push_back(rd(a, h) == rd(b, h));
-    for(auto const & k_ : current_indices)
-      consequent_vector.push_back(h == k_);
-
-    part_2.push_back(
-        z3::implies(
-          h > _new_index,
-          z3::mk_or(consequent_vector)
-          ));
-  }
-  // ----------------------------------
+  // [18] predicates are processed in 
+  // AXDInterpolant::SmtSolverSetup(z3::solver &);
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput const & si){
