@@ -239,6 +239,9 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
     auto const & diff_b = diff_entry.first.second;
     auto const & diff_seq = diff_entry.second;
 
+    if(diff_seq.size() == 0)
+      continue;
+
     unsigned last_one = diff_seq.size() - 1;
     z3::expr_vector disj_equalities(ctx);
     disj_equalities.push_back(
@@ -261,6 +264,9 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
     auto const & diff_b = diff_entry.first.second;
     auto const & diff_seq = diff_entry.second;
 
+    if(diff_seq.size() == 0)
+      continue;
+
     unsigned last_one = diff_seq.size() - 1;
     z3::expr_vector disj_equalities(ctx);
     disj_equalities.push_back(
@@ -275,7 +281,6 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
         part_b.index_var > diff_seq[last_one], 
         z3::mk_or(disj_equalities));
   }
-
 
   //for(auto const & index : part_a.index_vars)
   //solver.add(index >= 0);
