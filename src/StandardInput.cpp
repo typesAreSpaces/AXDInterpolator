@@ -12,7 +12,8 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   index_vars(initial_index_vars),
   // TODO: keep working with current_instantiated_index_terms
   current_instantiated_index_terms(ctx),
-  index_var_h(ctx.constant("index_var_h", index_sort))
+  index_var(ctx.constant("index_var", index_sort)),
+  axiom_8(ctx), axiom_9(ctx)
 {
   assert(conjunction.decl().decl_kind() == Z3_OP_AND);
 

@@ -25,7 +25,8 @@ class AXDInterpolant : public Preprocessor {
   z3::solver    solver;
   StandardInput part_a, part_b;
   std::string   m_file_name;
-  bool          is_interpolant_computed;
+  bool          is_interpolant_computed,
+                is_unsat;
   z3::expr      current_interpolant;
 
   void loop(unsigned);

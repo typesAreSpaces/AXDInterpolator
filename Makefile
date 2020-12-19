@@ -27,8 +27,8 @@ THEORY = TO
 #FILE_TEST = ./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 FILE_TEST = ./tests/smt2-files/length_test_bad_example.smt2
 
-all: tests/one
-#all: tests/all
+#all: tests/one
+all: tests/all
 
 # ----------------------------------------------------------
 #  Rules to build the project

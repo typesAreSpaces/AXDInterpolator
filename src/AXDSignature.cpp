@@ -20,7 +20,7 @@ AXDSignature::AXDSignature(z3::context & ctx) :
   neg(ctx.function("neg", index_sort, index_sort)),
   add(ctx.function("add", index_sort, index_sort, index_sort)),
   // length is a conservative extension of any Th(T_I)
-  // because length(x) = diff(x, empty_array)
+  // because \forall x . length(x) = diff(x, empty_array)
   length(ctx.function("length", array_sort, index_sort))
 {
 }

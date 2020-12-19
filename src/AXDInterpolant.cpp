@@ -19,7 +19,7 @@ AXDInterpolant::AXDInterpolant(
       part_b_array_vars,
       theory),
   m_file_name(std::string(file_name)),
-  is_interpolant_computed(false),
+  is_interpolant_computed(false), is_unsat(false),
   current_interpolant(ctx.bool_val(true))
 {
   m_out
@@ -46,6 +46,7 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     SmtSolverSetup(solver);
 
     if(solver.check() == z3::unsat){
+      is_unsat = true;
 #if _DEBUG_AXD_INTER_
       m_out << "Unsat after " 
         << constant_allowed_attempts - allowed_attempts 
@@ -266,12 +267,8 @@ z3::expr AXDInterpolant::liftInterpolant(
 }
 
 void AXDInterpolant::z3OutputFile(){
-  if(!is_interpolant_computed){
-    m_out 
-      << "Interpolant hasn't been computed" 
-      << std::endl;
+  if(!is_unsat)
     return;
-  }
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
@@ -333,12 +330,8 @@ void AXDInterpolant::z3OutputFile(){
 }
 
 void AXDInterpolant::mathsatOutputFile(){
-  if(!is_interpolant_computed){
-    m_out 
-      << "Interpolant hasn't been computed" 
-      << std::endl;
+  if(!is_unsat)
     return;
-  }
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
@@ -397,12 +390,8 @@ void AXDInterpolant::mathsatOutputFile(){
 }
 
 void AXDInterpolant::directComputation(){
-  if(!is_interpolant_computed){
-    m_out 
-      << "Interpolant hasn't been computed" 
-      << std::endl;
+  if(!is_unsat)
     return;
-  }
   z3::expr_vector _part_a_vector(ctx);
   z3::expr_vector _part_b_vector(ctx);
   setupPartA_B_Vectors(_part_a_vector, _part_b_vector);
@@ -477,6 +466,9 @@ z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
 
 std::ostream & operator << (std::ostream & os, 
     AXDInterpolant const & axd){
+  if(!axd.is_unsat)
+    return os 
+      << "No interpolant available.";
   if(axd.is_interpolant_computed)
     return (os 
         << "(Lifted) Interpolant:" << std::endl 
@@ -486,6 +478,5 @@ std::ostream & operator << (std::ostream & os,
         "Interpolant hasn't been computed.\n"
         "Use .z3OutputFile or .mathsatOutputFile\n"
         "or .directComputation on a AXDInterpolant\n" 
-        "object to obtain an interpolant." 
-        << std::endl);
+        "object to obtain an interpolant.");
 }

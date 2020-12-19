@@ -71,7 +71,7 @@ class StandardInput : public AXDSignature {
   z3::expr_vector part_1, part_2;
   z3::expr_vector & index_vars;
   z3::expr_vector current_instantiated_index_terms;
-  z3::expr index_var_h;
+  z3::expr index_var, axiom_8, axiom_9;
 
   z3::expr orientBinPredicate(z3::expr const &);
 
