@@ -13,10 +13,10 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   // TODO: keep working with current_instantiated_index_terms
   current_instantiated_index_terms(ctx),
   index_var(ctx.constant("index_var", index_sort)),
-  axiom_8(ctx), axiom_9(ctx)
+  axiom_8(ctx), axiom_9(rd(empty_array, index_var) == undefined)
 {
   assert(conjunction.decl().decl_kind() == Z3_OP_AND);
-
+  
   std::string theory_signature(theory);
   if(theory_signature == "TO"){
   }
@@ -103,6 +103,21 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   m_out << std::endl;
 #endif
 
+  for(auto const & x : index_vars)
+    current_instantiated_index_terms.push_back(x);
+
+  // Setup axiom 8
+  // Instantiate will all the current array elements
+  // since this won't change
+  z3::expr_vector instances_axiom_8(ctx);
+  for(auto const & array_element : array_var_ids)
+    instances_axiom_8.push_back(
+        z3::implies(
+          index_var < 0, 
+          rd(array_element, index_var) == undefined)
+        );
+  axiom_8 = z3::mk_and(instances_axiom_8);
+
   initSaturation();
 }
 
@@ -112,52 +127,74 @@ z3::expr StandardInput::orientBinPredicate(z3::expr const & eq){
   return eq;
 }
 
-// TODO: rework this implementation
-// using pseudo quantified formulas
 void StandardInput::initSaturation(){
   // ------------------------------------------------
   // Processing equations of the form a = wr(b, i, e)
-  // The following adds (24) predicates
+  // The following adds (11) predicates
   for(auto const & _4tuple : write_vector.m_vector){
     auto const & a = std::get<0>(_4tuple);
     auto const & b = std::get<1>(_4tuple);
     auto const & i = std::get<2>(_4tuple);
     auto const & e = std::get<3>(_4tuple);
-    // The following adds rd(a, i) = e
-    part_2.push_back(rd(a, i) == e);
+
+    // The following adds i >=0 \rightarrow rd(a, i) = e
+    part_2.push_back(
+        z3::implies(
+          i >= 0, 
+          rd(a, i) == e) 
+        );
+
+    // TODO: rework this implementation
+    // using pseudo quantified formulas
     // The following instantiates 
     // the quantified formula 
     // \forall h . h \neq i \rightarrow rd(a, b) = rd(b, h)
     for(auto const & h : index_vars){
       part_2.push_back(
-          z3::implies(h != i, rd(a, h) == rd(b, h))
+          z3::implies(
+            h != i, 
+            rd(a, h) == rd(b, h))
           );
     }
   }
   // ------------------------------------------------
 
+  // -----------------------------------------------
   // Processing equations of the form diff(a, b) = i
-  // The following adds (25) predicates
+  // The following adds (12) predicates
   for(auto const & entry : diff_map.m_map){
     auto const & a   = entry.first.first;
     auto const & b   = entry.first.second;
     auto const & seq = entry.second;
 
     if(seq.size() > 0){
-      auto const & index = seq[0];
+      auto const & i = seq[0];
+
+      // The following adds
+      // i >= 0
+      part_2.push_back(i >= 0);
+
+      // TODO: rework this implementation
+      // using pseudo quantified formulas
       // The following instantiates
       // \forall h . h > i \rightarrow rd(a, h) = rd(b, h)
       for(auto const & h : index_vars)
         part_2.push_back(
-            z3::implies(h > index, rd(a, h) == rd(b, h))
+            z3::implies(
+              h > i, 
+              rd(a, h) == rd(b, h))
             );
+
       // The following adds
-      // rd(a, i) = rd(b, i) \rightarrow i = 0
+      // i > 0 \rightarrow rd(a, i) \neq rd(b, i) 
       part_2.push_back(
-          z3::implies(rd(a, index) == rd(b, index), index == ctx.int_val(0))
+          z3::implies(
+            i > ctx.int_val(0), 
+            rd(a, i) != rd(b, i))
           );
     }
   }
+  // -----------------------------------------------
 }
 
 // TODO: rework this implementation
@@ -183,7 +220,7 @@ void StandardInput::updateSaturation(
   // ---------------------------------------------------
   // Processing equations of the form diff_1(a, b) = k_1 
   // \land \dots \land diff_l(a, b) = k_l
-  // The following adds (26) predicates
+  // The following adds (13) predicates
   if(min_dim < old_dim)
     part_2.push_back(
         _new_index == map_element->second[min_dim]
@@ -194,31 +231,31 @@ void StandardInput::updateSaturation(
     if(old_dim > 0){
       auto const & _previous_index = map_element->second[old_dim - 1];
 
-      // The following adds (27) predicates
+      // The following adds (14) predicates
       part_2.push_back(
           _previous_index >= _new_index
           );
 
-      // The following adds (28) predicates
+      // The following adds (15) predicates
       part_2.push_back(z3::implies(
             _previous_index > _new_index,
             rd(a, _previous_index) != rd(b, _previous_index)
             ));
 
-      // The following adds (29) predicates
+      // The following adds (16) predicates
       part_2.push_back(z3::implies(
             _previous_index == _new_index,
             _previous_index == ctx.int_val(0)
             ));
     }
-    // The following adds (30) predicates
+    // The following adds (17) predicates
     part_2.push_back(z3::implies(
           rd(a, _new_index) == rd(b, _new_index),
           _new_index == ctx.int_val(0)
           ));
   }
 
-  // The following adds (31) predicates
+  // The following adds (18) predicates
   for(auto const & h : index_vars){
     z3::expr_vector consequent_vector(ctx);
     consequent_vector.push_back(rd(a, h) == rd(b, h));
@@ -229,8 +266,8 @@ void StandardInput::updateSaturation(
           h > _new_index,
           z3::mk_or(consequent_vector)));
   }
-  
-  // The following adds (31) predicates for the 
+
+  // The following adds (18) predicates for the 
   // previous quantifiers formulas effectively
   // updating them with _new_index
   for(auto const & diff_entry : diff_map.m_map){
@@ -258,18 +295,6 @@ void StandardInput::updateSaturation(
   }
   // ---------------------------------------------------
 
-  // The following adds (24) predicates for the 
-  // previous quantifiers formulas effectively
-  // updating them with _new_index
-  for(auto const & _4tuple : write_vector.m_vector){
-    auto const & wr_a = std::get<0>(_4tuple);
-    auto const & wr_b = std::get<1>(_4tuple);
-    auto const & wr_i = std::get<2>(_4tuple);
-    part_2.push_back(z3::implies(
-          _new_index != wr_i,
-          rd(wr_a, _new_index) == rd(wr_b, _new_index)
-          ));
-  }
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput const & si){

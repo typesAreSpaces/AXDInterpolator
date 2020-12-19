@@ -183,10 +183,60 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
     solver.add(assertion);
   for(auto const & assertion : part_b.part_2)
     solver.add(assertion);
-  for(auto const & index : part_a.index_vars)
-    solver.add(index >= 0);
-  for(auto const & index : part_b.index_vars)
-    solver.add(index >= 0);
+
+  // TODO: instantiate index_var in axiom_8
+  // with elements from 
+  // StandardInput::current_instantiated_index_terms
+  // and add these formulas to solver
+  
+  // TODO: instantiate index_var in axiom_9
+  // with elements from 
+  // StandardInput::current_instantiated_index_terms
+  // and add these formulas to solver
+  
+  // axiom_11_2 [WriteVector: a, b, i],
+  // A-Part
+  for(auto const & _4tuple : part_a.write_vector.m_vector){
+    auto const & a = std::get<0>(_4tuple);
+    auto const & b = std::get<1>(_4tuple);
+    auto const & i = std::get<2>(_4tuple);
+
+    // TODO: instantiate the following
+    // expression
+    z3::expr axiom_11_2 = 
+      z3::implies(
+          part_a.index_var != i,
+          rd(a, part_a.index_var) == rd(b, part_a.index_var)
+          );
+  }
+
+  // axiom_11_2 [WriteVector: a, b, i],
+  // B-Part
+  for(auto const & _4tuple : part_b.write_vector.m_vector){
+    auto const & a = std::get<0>(_4tuple);
+    auto const & b = std::get<1>(_4tuple);
+    auto const & i = std::get<2>(_4tuple);
+
+    // TODO: instantiate the following
+    // expression
+    z3::expr axiom_11_2 = 
+      z3::implies(
+          part_b.index_var != i,
+          rd(a, part_b.index_var) == rd(b, part_b.index_var)
+          );
+  }
+
+  // TODO: instantiate index_var in 
+  // axiom_18 (axiom_12_1) [DiffMap: a, b, l]
+  // with elements from 
+  // StandardInput::current_instantiated_index_terms
+  // and add these formulas to solver
+
+  // Previous approach
+  //for(auto const & index : part_a.index_vars)
+  //solver.add(index >= 0);
+  //for(auto const & index : part_b.index_vars)
+  //solver.add(index >= 0);
 }
 
 // TODO: It might be needed to remove 
@@ -196,8 +246,10 @@ void AXDInterpolant::SmtSolverOutStreamSetup(
     StandardInput const & form_pair){
   for(auto const & assertion : form_pair.part_2)
     out << assertion << std::endl;
-  for(auto const & index : form_pair.index_vars)
-    out << (index >= 0) << std::endl;
+
+  // Previous approach
+  //for(auto const & index : form_pair.index_vars)
+  //out << (index >= 0) << std::endl;
 }
 
 void AXDInterpolant::setupPartA_B_Vectors(
