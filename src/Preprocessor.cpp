@@ -45,9 +45,6 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   for(unsigned i = 0; i < current_conjs_in_input; i++)
     flattenPredicate(input_part_b[i], PART_B);
 
-  // DEBUGGING
-  m_out << "WTF?" << std::endl;
-
   // Set current_conjs_in_input to zero
   // because the variable is no longer needed
   current_conjs_in_input = 0;
@@ -128,7 +125,9 @@ void Preprocessor::flattenPredicate(
 void Preprocessor::flattenPredicateAux(
     z3::expr const & formula, SideInterpolant side){
 
-  z3::expr_vector from(ctx), to(ctx), temp_predicates(ctx);
+  z3::expr_vector from(ctx); 
+  z3::expr_vector to(ctx);
+  z3::expr_vector temp_predicates(ctx);
 
   if(lhs(formula).num_args() == 0){
     if(rhs(formula).num_args() == 0){
@@ -169,10 +168,11 @@ void Preprocessor::flattenPredicateAux(
       }
     case PART_B:
       {
-        for(unsigned i = 0; i < input_part_b.size(); i++)
+        for(unsigned i = 0; i < input_part_b.size(); i++){
           temp_predicates.push_back(
               input_part_b[i].substitute(from, to)
               );
+        }
 
         unsigned j = from.size();
         while(j--)
@@ -354,12 +354,14 @@ z3::expr Preprocessor::fresh_index_constant(){
 
 z3::expr Preprocessor::fresh_constant(z3::sort const & s){
   auto const & s_name = s.to_string();
+
   if(s_name == array_sort.to_string())
     return fresh_array_constant();
   if(s_name == element_sort.to_string())
-    return fresh_index_constant();
+    return fresh_element_constant();
   if(s_name == index_sort.to_string())
     return fresh_index_constant();
+
   throw "Problem @ Preprocessor::fresh_constant."
     "Given sort is not in the language";
 }

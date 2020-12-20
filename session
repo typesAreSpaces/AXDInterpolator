@@ -16,11 +16,11 @@ badd +22 src/AXDInterpolantCircularPairIterator.cpp
 badd +41 Makefile
 badd +2 include/Preprocess.h
 badd +1 include/StandardInput.h
-badd +290 src/Preprocessor.cpp
+badd +370 src/Preprocessor.cpp
 badd +196 src/StandardInput.cpp
 badd +24 src/StandardInputDiffMap.cpp
 badd +4 StandardInputWriterVector.cpp
-badd +11 include/AXDSignature.h
+badd +1 include/AXDSignature.h
 badd +3 src/AXDSignatureZ3ExprComparator.cpp
 badd +2 src/StandardInputWriterVector.cpp
 badd +2470 /usr/include/c++/10.2.0/bits/basic_string.h
@@ -191,7 +191,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 42 - ((5 * winheight(0) + 17) / 34)
+let s:l = 42 - ((33 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -209,7 +209,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 196 - ((16 * winheight(0) + 17) / 34)
+let s:l = 196 - ((33 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -227,12 +227,12 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 106 - ((16 * winheight(0) + 17) / 34)
+let s:l = 129 - ((10 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-106
-normal! 020|
+129
+normal! 03|
 wincmd w
 argglobal
 if bufexists("src/StandardInput.cpp") | buffer src/StandardInput.cpp | else | edit src/StandardInput.cpp | endif
@@ -245,7 +245,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 57 - ((16 * winheight(0) + 17) / 34)
+let s:l = 57 - ((0 * winheight(0) + 17) / 34)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
