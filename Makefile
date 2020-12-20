@@ -5,20 +5,31 @@ LDIR = ./lib
 CC = g++
 FLAGS = -I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-SRC  = $(wildcard $(SDIR)/*.cpp)
-OBJS = $(patsubst $(SDIR)/%.cpp, $(ODIR)/%.o, $(SRC)) $(LDIR)/libz3.so
+SRC = $(wildcard $(SDIR)/*.cpp)
+OBJS = $(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.so
 DEPS = $(wildcard $(IDIR)/*.h)
 OS = $(shell uname)
 
-FILE_TEST = ./tests/smt2-files/example.smt2 
-#FILE_TEST = ./tests/smt2-files/example1.smt2 
-#FILE_TEST = ./tests/smt2-files/example2.smt2 
-#FILE_TEST = ./tests/smt2-files/example3.smt2 
-#FILE_TEST = ./tests/smt2-files/example4.smt2 
-#FILE_TEST = ./tests/smt2-files/example5.smt2 
+#METHOD = 0 # Z3
+METHOD = 1 # MATHSAT
+#METHOD = 2 # DIRECT COMPUTATION
 
-all: tests/one
-#all: tests/all
+ALLOWED_ATTEMPS = 10
+
+#THEORY = QF_TO
+THEORY = QF_IDL
+#THEORY = QF_UTVPI
+#THEORY = QF_LIA
+
+#FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
+#FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
+#FILE_TEST = ./tests/smt2-files/maxdiff_paper_example.smt2
+#FILE_TEST = ./tests/smt2-files/maxdiff_paper_example_another_another.smt2
+FILE_TEST = ./tests/smt2-files/length_example.smt2
+
+#all: tests/one
+all: tests/all
+#all: tests/print_all
 
 # ----------------------------------------------------------
 #  Rules to build the project
@@ -38,25 +49,49 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.so
 
 bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.so
 	@mkdir -p ./bin
-	$(CC) -g -o $@ $(OBJS) ./tests/main.cpp $(FLAGS) -lpthread
+	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
 	
 # ----------------------------------------------------------
-#
+
 # -------------------------------------------
 #  Rules to test a single or many smt2 files
 
 tests/one: bin/axd_interpolator
-	./bin/axd_interpolator $(FILE_TEST)
+	./bin/axd_interpolator \
+		$(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
 	rm -rf tests/*.o $@
 
 tests/all: bin/axd_interpolator
-	for smt_file in ./tests/smt2-files/*; do \
-		./bin/axd_interpolator $${smt_file} > $${smt_file}.txt; \
+	for smt_file in ./tests/smt2-files/*.smt2; do \
+		./bin/axd_interpolator \
+		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) ; \
+		done
+	rm -rf tests/*.o $@
+
+tests/print_all: bin/axd_interpolator
+	for smt_file in ./tests/smt2-files/*.smt2; do \
+		./bin/axd_interpolator \
+		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) \
+		>> $${smt_file}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
 	
 # -------------------------------------------
-#
+
+# -------------------------------------------
+#  Check output
+
+check: 
+	@make -C ./output
+
+mathsat_check: 
+	SMT_SOLVER=MATHSAT make check
+
+z3_check: 
+	SMT_SOLVER=Z3 make check
+
+# -------------------------------------------
+
 # ------------------------------
 .PHONY: clean
 clean:
@@ -66,4 +101,3 @@ clean:
 	rm -rf ./bin/axd_interpolator
 	rm -rf ./lib/libz3.so
 # ------------------------------
-
