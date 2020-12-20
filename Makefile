@@ -28,8 +28,8 @@ THEORY = QF_IDL
 FILE_TEST = ./tests/smt2-files/length_example.smt2
 
 #all: tests/one
-#all: tests/all
-all: tests/print_all
+all: tests/all
+#all: tests/print_all
 
 # ----------------------------------------------------------
 #  Rules to build the project

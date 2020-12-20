@@ -105,7 +105,7 @@ StandardInput::StandardInput(z3::expr const & conjunction,
 
   for(auto const & x : initial_index_vars)
     index_vars.push_back(x);
-  N_instantiation++;
+  N_instantiate();
 
   // Setup axiom 8
   // Instantiate will all the current array elements
@@ -131,10 +131,15 @@ z3::expr StandardInput::orientBinPredicate(
 }
 
 void StandardInput::N_instantiate(){
+  // Reset current_instantiated_index_terms
   current_instantiated_index_terms.resize(0);
+
+  // Add current set of index vars to 
+  // current_instantiated_index_terms
   for(unsigned i = 0; i < index_vars.size(); i++)
     current_instantiated_index_terms.push_back(index_vars[i]);
 
+  // Perform instantiations "N_instiation" times
   for(unsigned i = 0; i < N_instantiation; i++){
     for(unsigned j = 0; j < local_signature.size(); j++){
       auto const & current_signature = local_signature[j];
