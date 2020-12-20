@@ -87,6 +87,7 @@ class StandardInput : public AXDSignature {
       DiffMap::z3_expr_pair const &, 
       z3::expr const &, 
       unsigned min_dim); 
+  void instantiate(z3::solver &, z3::expr &) const;
 
   friend std::ostream & operator << (std::ostream &, 
       StandardInput const &);

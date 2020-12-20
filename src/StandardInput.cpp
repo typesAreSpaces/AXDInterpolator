@@ -133,7 +133,6 @@ void StandardInput::initSaturation(){
   // The following adds [11] predicates
   for(auto const & _4tuple : write_vector.m_vector){
     auto const & a = std::get<0>(_4tuple);
-    auto const & b = std::get<1>(_4tuple);
     auto const & i = std::get<2>(_4tuple);
     auto const & e = std::get<3>(_4tuple);
 
@@ -179,8 +178,6 @@ void StandardInput::initSaturation(){
   // -----------------------------------------------
 }
 
-// TODO: rework this implementation
-// using pseudo quantified formulas
 void StandardInput::updateSaturation(
     DiffMap::z3_expr_pair const & entry,
     z3::expr const & _new_index, 
@@ -209,6 +206,8 @@ void StandardInput::updateSaturation(
         _new_index == map_element->second[min_dim]
         );
   else{
+    current_instantiated_index_terms.push_back(_new_index);
+
     diff_map.add(entry.first, entry.second, _new_index);
     // old_dim > 0 guarantees having a previous index
     if(old_dim > 0){
@@ -243,6 +242,15 @@ void StandardInput::updateSaturation(
 
   // [18] predicates are processed in 
   // AXDInterpolant::SmtSolverSetup(z3::solver &);
+}
+
+void StandardInput::instantiate(z3::solver & s, z3::expr & e) const {
+  for(auto const & index_term : current_instantiated_index_terms){
+    z3::expr_vector from(ctx), to(ctx);
+    from.push_back(index_var);
+    to.push_back(index_term);
+    s.add(e.substitute(from, to));
+  }
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput const & si){

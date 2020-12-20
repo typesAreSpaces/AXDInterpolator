@@ -43,7 +43,8 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
     // The following uses a z3::solver 
     // to check if part_a \land part_b
     // is unsat
-    SmtSolverSetup(solver);
+    SmtSolverSetup(solver, part_a);
+    SmtSolverSetup(solver, part_b);
 
     if(solver.check() == z3::unsat){
       is_unsat = true;
@@ -176,67 +177,37 @@ void AXDInterpolant::testOutput(
   test2_file << test2.to_smt2();
 }
 
-// TODO: It might be needed to remove 
-// positivity condition for indexes
-void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
-  for(auto const & assertion : part_a.part_2)
-    solver.add(assertion);
-  for(auto const & assertion : part_b.part_2)
+void AXDInterpolant::SmtSolverSetup(z3::solver & solver, StandardInput const & side_part){
+
+  for(auto const & assertion : side_part.part_2)
     solver.add(assertion);
 
-  // Instantiate the TODO's with elements from 
-  // StandardInput::current_instantiated_index_terms
-  // and add these formulas to solver
-  
   // axiom_8
-  // TODO: instantiate the following
-  // expression
-  part_a.axiom_8;
-  part_b.axiom_8;
+  side_part.instantiate(solver, (z3::expr &) side_part.axiom_8);
 
   // axiom_9
-  // TODO: instantiate the following
-  // expression
-  part_a.axiom_9;
-  part_b.axiom_9;
+  side_part.instantiate(solver, (z3::expr &) side_part.axiom_9);
 
   // axiom_11_2 [WriteVector: a, b, i],
-  // A-Part
-  for(auto const & _4tuple : part_a.write_vector.m_vector){
+  for(auto const & _4tuple 
+      : side_part.write_vector.m_vector){
     auto const & a = std::get<0>(_4tuple);
     auto const & b = std::get<1>(_4tuple);
     auto const & i = std::get<2>(_4tuple);
 
-    // TODO: instantiate the following
-    // expression
-    z3::expr part_a_axiom_11_2 = 
+    z3::expr axiom_11_2 = 
       z3::implies(
-          part_a.index_var != i,
-          rd(a, part_a.index_var) == rd(b, part_a.index_var)
+          side_part.index_var != i,
+          rd(a, side_part.index_var) == rd(b, side_part.index_var)
           );
-  }
-
-  // axiom_11_2 [WriteVector: a, b, i],
-  // B-Part
-  for(auto const & _4tuple : part_b.write_vector.m_vector){
-    auto const & a = std::get<0>(_4tuple);
-    auto const & b = std::get<1>(_4tuple);
-    auto const & i = std::get<2>(_4tuple);
-
-    // TODO: instantiate the following
-    // expression
-    z3::expr part_b_axiom_11_2 = 
-      z3::implies(
-          part_b.index_var != i,
-          rd(a, part_b.index_var) == rd(b, part_b.index_var)
-          );
+    side_part.instantiate(solver, axiom_11_2);
   }
 
   // axiom_18 (axiom_12_2) [DiffMap: a, b, l]
-  // A-Part
-  for(auto const & diff_entry : part_a.diff_map.m_map){
-    auto const & diff_a = diff_entry.first.first;
-    auto const & diff_b = diff_entry.first.second;
+  for(auto const & diff_entry 
+      : side_part.diff_map.m_map){
+    auto const & a = diff_entry.first.first;
+    auto const & b = diff_entry.first.second;
     auto const & diff_seq = diff_entry.second;
 
     if(diff_seq.size() == 0)
@@ -245,60 +216,25 @@ void AXDInterpolant::SmtSolverSetup(z3::solver & solver){
     unsigned last_one = diff_seq.size() - 1;
     z3::expr_vector disj_equalities(ctx);
     disj_equalities.push_back(
-        rd(diff_a, part_a.index_var) 
-        == rd(diff_b, part_a.index_var));
+        rd(a, side_part.index_var) 
+        == rd(b, side_part.index_var));
     for(unsigned i = 0; i < last_one; i++)
       disj_equalities.push_back(
-          part_a.index_var == diff_seq[i]);
-    // TODO: instantiate the following
-    // expression
-    z3::expr part_a_axiom_18 = z3::implies(
-        part_a.index_var > diff_seq[last_one], 
+          side_part.index_var == diff_seq[i]);
+
+    z3::expr axiom_18 = z3::implies(
+        side_part.index_var > diff_seq[last_one], 
         z3::mk_or(disj_equalities));
+    side_part.instantiate(solver, axiom_18);
   }
-
-  // axiom_18 (axiom_12_2) [DiffMap: a, b, l]
-  // B-Part
-  for(auto const & diff_entry : part_b.diff_map.m_map){
-    auto const & diff_a = diff_entry.first.first;
-    auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-
-    if(diff_seq.size() == 0)
-      continue;
-
-    unsigned last_one = diff_seq.size() - 1;
-    z3::expr_vector disj_equalities(ctx);
-    disj_equalities.push_back(
-        rd(diff_a, part_b.index_var) 
-        == rd(diff_b, part_b.index_var));
-    for(unsigned i = 0; i < last_one; i++)
-      disj_equalities.push_back(
-          part_b.index_var == diff_seq[i]);
-    // TODO: instantiate the following
-    // expression
-    z3::expr part_b_axiom_18 = z3::implies(
-        part_b.index_var > diff_seq[last_one], 
-        z3::mk_or(disj_equalities));
-  }
-
-  //for(auto const & index : part_a.index_vars)
-  //solver.add(index >= 0);
-  //for(auto const & index : part_b.index_vars)
-  //solver.add(index >= 0);
 }
 
-// TODO: It might be needed to remove 
-// positivity condition for indexes
+// TODO: include instantiated formulas
 void AXDInterpolant::SmtSolverOutStreamSetup(
     std::ostream & out, 
     StandardInput const & form_pair){
   for(auto const & assertion : form_pair.part_2)
     out << assertion << std::endl;
-
-  // Previous approach
-  //for(auto const & index : form_pair.index_vars)
-  //out << (index >= 0) << std::endl;
 }
 
 void AXDInterpolant::setupPartA_B_Vectors(

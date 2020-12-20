@@ -34,7 +34,7 @@ class AXDInterpolant : public Preprocessor {
       z3::expr const &, 
       z3::expr_vector &, 
       z3::expr_vector &);
-  void SmtSolverSetup(z3::solver &);
+  void SmtSolverSetup(z3::solver &, StandardInput const &);
   void SmtSolverOutStreamSetup(
       std::ostream &, 
       StandardInput const &);
