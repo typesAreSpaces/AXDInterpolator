@@ -14,8 +14,10 @@
 
 (declare-fun a () ArraySort)
 (declare-fun e0 () ElementSort)
+(declare-fun e1 () ElementSort)
 (declare-fun i0 () Int)
+(declare-fun i1 () Int)
 
-(assert (and (= a (wr empty_array i0 e0)) (= a a)))
-(assert (and (= (length a) 0) (= i0 (pred (succ 0)))))
+(assert (and (= a (wr (wr empty_array i0 e0) i1 e1)) (>= i0 0)))
+(assert (and (< (length a) i0) (> i1 i0) (distinct e0 undefined) (distinct e1 undefined)))
 (check-sat)

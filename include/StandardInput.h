@@ -2,7 +2,7 @@
 #define _STANDARD_INPUT_
 
 #include "z3++.h"
-#define _DEBUG_STDINPUT_ 0
+#define _DEBUG_STDINPUT_ 1
 
 #include <set>
 #include <utility>
@@ -88,6 +88,7 @@ class StandardInput : public AXDSignature {
       z3::expr const &, 
       unsigned min_dim); 
   void instantiate(z3::solver &, z3::expr &) const;
+  void instantiate(std::ostream &, z3::expr &) const;
 
   friend std::ostream & operator << (std::ostream &, 
       StandardInput const &);

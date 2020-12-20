@@ -121,10 +121,12 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   initSaturation();
 }
 
-z3::expr StandardInput::orientBinPredicate(z3::expr const & eq){
-  if(lhs(eq).num_args() > rhs(eq).num_args())
-    return rhs(eq) == lhs(eq);
-  return eq;
+z3::expr StandardInput::orientBinPredicate(
+    z3::expr const & bin_predicate){
+  z3::func_decl predicate = bin_predicate.decl();
+  if(lhs(bin_predicate).num_args() > rhs(bin_predicate).num_args())
+    return predicate(rhs(bin_predicate), lhs(bin_predicate));
+  return bin_predicate;
 }
 
 void StandardInput::initSaturation(){
@@ -250,6 +252,15 @@ void StandardInput::instantiate(z3::solver & s, z3::expr & e) const {
     from.push_back(index_var);
     to.push_back(index_term);
     s.add(e.substitute(from, to));
+  }
+}
+
+void StandardInput::instantiate(std::ostream & os, z3::expr & e) const {
+  for(auto const & index_term : current_instantiated_index_terms){
+    z3::expr_vector from(ctx), to(ctx);
+    from.push_back(index_var);
+    to.push_back(index_term);
+    os << (e.substitute(from, to)) << std::endl;
   }
 }
 

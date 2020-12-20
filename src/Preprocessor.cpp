@@ -28,6 +28,13 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   for(unsigned i = 0; i < conjunction_b.num_args(); ++i)
     input_part_b.push_back(conjunction_b.arg(i));
 
+#if _DEBUG_PREPROCESS_
+  m_out << "Conjunction a" << std::endl;
+  m_out << conjunction_a << std::endl;
+  m_out << "Conjunction b" << std::endl;
+  m_out << conjunction_b << std::endl;
+#endif
+
   // Processing Part-A
   current_conjs_in_input = input_part_a.size();
   for(unsigned i = 0; i < current_conjs_in_input; i++)
@@ -37,6 +44,9 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   current_conjs_in_input = input_part_b.size();
   for(unsigned i = 0; i < current_conjs_in_input; i++)
     flattenPredicate(input_part_b[i], PART_B);
+
+  // DEBUGGING
+  m_out << "WTF?" << std::endl;
 
   // Set current_conjs_in_input to zero
   // because the variable is no longer needed
@@ -79,9 +89,9 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
 
 z3::expr Preprocessor::removeLengthApplications(z3::expr const & e){
   if(e.is_app()){
-    if(e.num_args() > 0 && func_name(e) == "length"){
+    if(e.num_args() > 0 && func_name(e) == "length")
       return diff(removeLengthApplications(e.arg(0)), empty_array);
-    }
+
     z3::func_decl f_name = e.decl();
     z3::expr_vector args(ctx);
     for(unsigned i = 0; i < e.num_args(); ++i)
@@ -93,22 +103,85 @@ z3::expr Preprocessor::removeLengthApplications(z3::expr const & e){
     "Not an application";
 }
 
-void Preprocessor::flattenPredicate(z3::expr const & formula, 
+void Preprocessor::flattenPredicate(
+    z3::expr const & formula, 
     SideInterpolant side){
   switch(formula.decl().decl_kind()){
     case Z3_OP_EQ:       // ==
+      flattenTerm(lhs(formula), side);
+      flattenTerm(rhs(formula), side);
+      return;
     case Z3_OP_DISTINCT: // !=
     case Z3_OP_GE:       // >=
     case Z3_OP_LE:       // <=
     case Z3_OP_GT:       // >
     case Z3_OP_LT:       // <
-      flattenTerm(lhs(formula), side);
-      flattenTerm(rhs(formula), side);
+      flattenPredicateAux(formula, side);
       return;
     default:
       throw "Error at "
         "Preprocessor::flattenPredicate(z3::expr const &)." 
         "Formula not in AXD";
+  }
+}
+
+void Preprocessor::flattenPredicateAux(
+    z3::expr const & formula, SideInterpolant side){
+
+  z3::expr_vector from(ctx), to(ctx), temp_predicates(ctx);
+
+  if(lhs(formula).num_args() == 0){
+    if(rhs(formula).num_args() == 0){
+    }
+    else{
+      from.push_back(rhs(formula));
+      to.push_back(fresh_constant(rhs(formula).decl().range()));
+    }
+  }
+  else{
+    if(rhs(formula).num_args() == 0){
+      from.push_back(lhs(formula));
+      to.push_back(fresh_constant(lhs(formula).decl().range()));
+    }
+    else{
+      from.push_back(lhs(formula));
+      to.push_back(fresh_constant(lhs(formula).decl().range()));
+      from.push_back(rhs(formula));
+      to.push_back(fresh_constant(rhs(formula).decl().range()));
+    }
+  }
+
+  switch(side){
+    case PART_A:
+      {
+        for(unsigned i = 0; i < input_part_a.size(); i++)
+          temp_predicates.push_back(
+              input_part_a[i].substitute(from, to)
+              );
+
+        unsigned j = from.size();
+        while(j--)
+          temp_predicates.push_back(from[j] == to[j]);
+
+        input_part_a = temp_predicates;
+        current_conjs_in_input += from.size();
+        return;
+      }
+    case PART_B:
+      {
+        for(unsigned i = 0; i < input_part_b.size(); i++)
+          temp_predicates.push_back(
+              input_part_b[i].substitute(from, to)
+              );
+
+        unsigned j = from.size();
+        while(j--)
+          temp_predicates.push_back(from[j] == to[j]);
+
+        input_part_b = temp_predicates;
+        current_conjs_in_input += from.size();
+      }
+      return;
   }
 }
 
@@ -215,8 +288,7 @@ void Preprocessor::cojoin_aux(
     z3::expr const & old_term, 
     z3::expr const & new_const){
 
-  z3::expr_vector from(ctx);
-  z3::expr_vector to(ctx);
+  z3::expr_vector from(ctx), to(ctx);
   from.push_back(old_term);
   to.push_back(new_const);
 
@@ -278,4 +350,16 @@ z3::expr Preprocessor::fresh_element_constant(){
 z3::expr Preprocessor::fresh_index_constant(){
   return ctx.constant((FRESH_INDEX_PREFIX 
         + std::to_string(fresh_index++)).c_str(), int_sort);
+}
+
+z3::expr Preprocessor::fresh_constant(z3::sort const & s){
+  auto const & s_name = s.to_string();
+  if(s_name == array_sort.to_string())
+    return fresh_array_constant();
+  if(s_name == element_sort.to_string())
+    return fresh_index_constant();
+  if(s_name == index_sort.to_string())
+    return fresh_index_constant();
+  throw "Problem @ Preprocessor::fresh_constant."
+    "Given sort is not in the language";
 }
