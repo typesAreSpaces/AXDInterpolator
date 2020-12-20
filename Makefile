@@ -25,7 +25,7 @@ THEORY = TO
 #FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
 #FILE_TEST = ./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST = ./tests/smt2-files/maxdiff_paper_example_another_another.smt2
-FILE_TEST = ./tests/smt2-files/length_test_bad_example.smt2
+FILE_TEST = ./tests/smt2-files/length_example.smt2
 
 #all: tests/one
 all: tests/all
@@ -61,7 +61,7 @@ tests/one: bin/axd_interpolator
 
 tests/all: bin/axd_interpolator
 	for smt_file in ./tests/smt2-files/*.smt2; do \
-		./bin/axd_interpolator $(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) ; \
+		./bin/axd_interpolator $(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) >> $${smt_file}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
 	
