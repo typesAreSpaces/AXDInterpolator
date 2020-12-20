@@ -19,6 +19,7 @@ AXDInterpolant::AXDInterpolant(
       part_b_array_vars,
       theory),
   m_file_name(std::string(file_name)),
+  num_attempts(allowed_attempts),
   is_interpolant_computed(false), is_unsat(false),
   current_interpolant(ctx.bool_val(true))
 {
@@ -29,16 +30,16 @@ AXDInterpolant::AXDInterpolant(
     .substr(0, m_file_name.find_last_of("."))
     .substr(m_file_name.find_last_of("\\/") + 1);
 
-  loop(allowed_attempts);
+  loop();
 }
 
-void AXDInterpolant::loop(unsigned allowed_attempts){
+void AXDInterpolant::loop(){
 #if _DEBUG_AXD_INTER_
   unsigned const constant_allowed_attempts = allowed_attempts;
 #endif
   CircularPairIterator search_common_pair(common_array_vars);
 
-  while(--allowed_attempts){
+  while(--num_attempts){
     solver.push();
     // The following uses a z3::solver 
     // to check if part_a \land part_b
@@ -73,10 +74,6 @@ void AXDInterpolant::loop(unsigned allowed_attempts){
 
     search_common_pair.next();
   }
-
-  if(!allowed_attempts)
-    m_out << "Input formula is satisfiable / "
-      "Or internal failure" << std::endl;
 }
 
 // Precondition: part_a_vector and part_b_vector should be updated using
@@ -550,12 +547,17 @@ z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
 
 std::ostream & operator << (std::ostream & os, 
     AXDInterpolant const & axd){
+
+  if(!axd.num_attempts)
+    return os 
+      << "Unknown: Input formula might be satisfiable or unsatisfiable."
+      << std::endl;
   if(!axd.is_unsat)
     return os 
-      << "No interpolant available.";
+      << "Satisfiable: No interpolant available.";
   if(axd.is_interpolant_computed)
     return (os 
-        << "(Lifted) Interpolant:" << std::endl 
+        << "Unsatisfiable: " << std::endl
         << axd.current_interpolant);
   else
     return (os << 

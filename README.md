@@ -2,9 +2,10 @@
 
 This project implements an interpolation algorithm
 for the theory of arrays extended with the diff 
-operator by computing a reduction from the AXDiff
-theory to the theory of EUF with total order and 
-calling an interpolation engine to process the 
+operator equipped with an index theory T_I. 
+The approach computes a reduction from the AXDiff(T_I)
+theory to the theory of EUF + T_I and 
+calls an interpolation engine to process the 
 reduced formula. Currently, the software supports 
 iZ3 and Mathsat as such engines.
 
@@ -19,81 +20,50 @@ declarations:
 ; Sorts
 (declare-sort ElementSort 0)
 (declare-sort ArraySort 0)
+(declare-sort ArraySort 0)
 
 ; Function declarartions
 (declare-fun diff (ArraySort ArraySort) Int)
 (declare-fun wr (ArraySort Int ElementSort) ArraySort)
 (declare-fun rd (ArraySort Int) ElementSort)
+(declare-fun pred (Int) Int)
+(declare-fun succ (Int) Int)
+(declare-fun neg (Int) Int)
+(declare-fun add (Int Int) Int)
+(declare-fun length (ArraySort) Int)
 ```
 
 followed by additional function declarations as needed. 
 The rest of the smt2 should specify two assertions. 
 The first one encodes the A-part and the second one the B-part. 
-Additionally the location of the smt2 file should be 
-edited in the Makefile under the variable ``FILE_TEST``.
 
 ## Building the project
 
-The project supports three workflows to compute interpolants:
+In the root directory, execute the command:
 
-### Computing interpolants directly
+```
+make bin/axd_interpolator
+```
 
-#### Requirements: 
-- Set ``_DIRECT_INTERP_COMPUTATION_`` to 1
-in the header file ./include/AXDInterpolant.h. 
+If the above is successful, then binary file _axd_interpolator_
+will be located inside the _bin_ directory.
 
-#### Workflow:
-1. Execute the ``make`` command from
-terminal to produce a file in the ./output 
-directory containing the interpolant.
+## Using the implementation
 
-#### Notes: 
-- The file is named by suffixing 
-`_interpolant` to the original name of the 
-query file. 
+The _axd_interpolator_ binaries receives 4 arguments:
 
-### Computing interpolants using iZ3 
+* The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality (UTVPI), and linear arithmetic logic. The user should specify ``QF_TO`` to use the total order logic, ``QF_IDL`` for integer difference logic, ``QF_UTVPI`` for UTVPI, and ``QF_LIA`` for the linear arithmetic logic option.
+* The second argument specifies the path of the smt2 file to work with.
+* The third argument specifies the engine/method to be used. For the latter there are three options: 0, 1, 2. The option 0 generates a smt2 file with the reduced formula in the theory EUF + T_I and calls ``Z3`` as the interpolating engine. The option 1 behaves the same as option 0, but calls ``MATHSAT`` as the interpolating engine instead. Option 2 uses iZ3 directly in the implementation.
+* The fourth argument specifies a number of attempts, i.e. a number that bounds the number of executions of the main loop of the implementation.
 
-#### Requirements: 
-- Set ``_Z3_OUTPUT_FILE_`` to 1
-in the header file ./include/AXDInterpolant.h. 
+The following is an example of an execution of the _axd_interpolator_ binary:
 
-#### Workflow:
-1. Execute the ``make`` command from
-terminal to produce a smt2 file in the ./output 
-directory with the reduced formulas
-in the theory of EUF with total order. 
+```
+./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 10
+```
 
-2. Execute the z3 binary on the file produced 
-from the bin folder 
-at the root of the project.
+The binary ``axd_interpolator`` outputs to the standard output any of the following:
 
-#### Notes: 
-- The file is named by suffixing 
-`_reduced_z3` to the original name of the 
-query file. 
-
-### Computing interpolants using Mathsat
-
-#### Requirements: 
-- Set ``_MATHSAT5_OUTPUT_FILE_`` to 1
-in the header file ./include/AXDInterpolant.h. 
-
-#### Workflow:
-1. Execute the ``make`` command from 
-terminal to produce a smt2 file in the ./output 
-directory with the reduced formulas
-in the theory of EUF with total order.
-
-2. Execute the mathsat binary on the file produced
-from the bin folder 
-at the root of the project.
-
-#### Notes: 
-- The file is named by suffixing 
-`_reduced_mathsat` to the original name of the 
-query file. 
-- The mathsat binary should be located in the bin folder
-from the root project. Either copy an existing version of
-mathsat into the bin folder or create a soft link using the
-command ``ln -s <mathsat-path> ./bin/mathsat``.
+* If the formula is unsatisfiable, then it outputs *Unsatisfiable:* followed by the interpolant obtained.
+* If the formula is satisfiable, then the implementation outputs either *Satisfiable:* or *Unknown:*. The last option happens when the internal variable ``num_attempts`` reaches 0.
