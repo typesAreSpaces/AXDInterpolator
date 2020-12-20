@@ -9,8 +9,8 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   write_vector(),
   local_signature(ctx),
   part_1(conjunction.ctx()), part_2(conjunction.ctx()), 
-  index_vars(initial_index_vars),
-  // TODO: keep working with current_instantiated_index_terms
+  index_vars(ctx),
+  N_instantiation(0),
   current_instantiated_index_terms(ctx),
   index_var(ctx.constant("index_var", index_sort)),
   axiom_8(ctx), axiom_9(rd(empty_array, index_var) == undefined)
@@ -103,8 +103,9 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   m_out << std::endl;
 #endif
 
-  for(auto const & x : index_vars)
-    current_instantiated_index_terms.push_back(x);
+  for(auto const & x : initial_index_vars)
+    index_vars.push_back(x);
+  N_instantiate();
 
   // Setup axiom 8
   // Instantiate will all the current array elements
@@ -127,6 +128,19 @@ z3::expr StandardInput::orientBinPredicate(
   if(lhs(bin_predicate).num_args() > rhs(bin_predicate).num_args())
     return predicate(rhs(bin_predicate), lhs(bin_predicate));
   return bin_predicate;
+}
+
+void StandardInput::N_instantiate(){
+  current_instantiated_index_terms.resize(0);
+  for(unsigned i = 0; i < index_vars.size(); i++)
+    current_instantiated_index_terms.push_back(index_vars[i]);
+
+  for(unsigned i = 0; i < N_instantiation; i++){
+    // TODO: implement this
+
+  }
+
+  return;
 }
 
 void StandardInput::initSaturation(){
@@ -193,11 +207,15 @@ void StandardInput::updateSaturation(
 
   index_vars.push_back(_new_index);
 
-  // TODO: - Implement heuristic to upgrade
-  // N for the N-instantiations.
-  // - Implement N-instantations using
-  // current_instantiated_index_terms.
-  
+  // TODO: implement/compare more heuristics
+  // to increase N_instantiation
+
+  // Heuristic # 1
+  if(index_vars.size() % 5 == 0){
+    N_instantiation++;
+    N_instantiate();
+  }
+
   // [11] predicates are processed in 
   // AXDInterpolant::SmtSolverSetup(z3::solver &);
 
