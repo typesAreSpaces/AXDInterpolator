@@ -231,7 +231,6 @@ void AXDInterpolant::SmtSolverSetup(
   }
 }
 
-// TODO: include instantiated formulas
 void AXDInterpolant::SmtSolverOutStreamSetup(
     std::ostream & out, 
     StandardInput const & side_part){
