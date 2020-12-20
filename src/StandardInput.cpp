@@ -105,7 +105,7 @@ StandardInput::StandardInput(z3::expr const & conjunction,
 
   for(auto const & x : initial_index_vars)
     index_vars.push_back(x);
-  N_instantiate();
+  N_instantiation++;
 
   // Setup axiom 8
   // Instantiate will all the current array elements
@@ -136,12 +136,45 @@ void StandardInput::N_instantiate(){
     current_instantiated_index_terms.push_back(index_vars[i]);
 
   for(unsigned i = 0; i < N_instantiation; i++){
-    // TODO: implement this
-    for(unsigned j = 0; j < local_signature.size(); j++)
-      m_out << local_signature[j] << std::endl;
+    for(unsigned j = 0; j < local_signature.size(); j++){
+      auto const & current_signature = local_signature[j];
+      switch(current_signature.arity()){
+        case 1:
+          unaryInstantiationExtension(current_signature);
+          break;
+        case 2:
+          binaryInstantiationExtension(current_signature);
+          break;
+        default:
+          throw "Error @ N_instantiate. Function arity cannot"
+            "be different to 1 or 2.";
+      }
+    }
   }
 
   return;
+}
+
+void StandardInput::unaryInstantiationExtension(z3::func_decl const & f_1){
+  z3::expr_vector temp(ctx);
+  for(unsigned i = 0; i < current_instantiated_index_terms.size(); i++)
+    temp.push_back(
+        f_1(current_instantiated_index_terms[i]));
+
+  for(unsigned i = 0; i < temp.size(); i++)
+    current_instantiated_index_terms.push_back(temp[i]);
+}
+
+void StandardInput::binaryInstantiationExtension(z3::func_decl const & f_2){
+  z3::expr_vector temp(ctx);
+  for(unsigned i = 0; i < current_instantiated_index_terms.size(); i++)
+    for(unsigned j = 0; j < current_instantiated_index_terms.size(); j++)
+      temp.push_back(
+          f_2(current_instantiated_index_terms[i], 
+            current_instantiated_index_terms[j]));
+
+  for(unsigned i = 0; i < temp.size(); i++)
+    current_instantiated_index_terms.push_back(temp[i]);
 }
 
 void StandardInput::initSaturation(){
@@ -182,7 +215,7 @@ void StandardInput::initSaturation(){
 
       // [18] predicates are processed in 
       // AXDInterpolant::SmtSolverSetup(z3::solver &);
-      
+
       // The following adds
       // i > 0 \rightarrow rd(a, i) \neq rd(b, i) 
       part_2.push_back(

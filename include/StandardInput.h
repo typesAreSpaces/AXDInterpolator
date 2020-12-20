@@ -76,6 +76,8 @@ class StandardInput : public AXDSignature {
 
   z3::expr orientBinPredicate(z3::expr const &);
   void     N_instantiate();
+  void     unaryInstantiationExtension(z3::func_decl const &);
+  void     binaryInstantiationExtension(z3::func_decl const &);
 
   public:
   StandardInput(

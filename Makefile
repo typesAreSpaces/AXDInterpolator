@@ -16,8 +16,8 @@ METHOD = 1 # MATHSAT
 
 ALLOWED_ATTEMPS = 10
 
-THEORY = QF_TO
-#THEORY = QF_IDL
+#THEORY = QF_TO
+THEORY = QF_IDL
 #THEORY = QF_UTVPI
 #THEORY = QF_LIA
 
@@ -28,8 +28,8 @@ THEORY = QF_TO
 FILE_TEST = ./tests/smt2-files/length_example.smt2
 
 #all: tests/one
-all: tests/all
-#all: tests/print_all
+#all: tests/all
+all: tests/print_all
 
 # ----------------------------------------------------------
 #  Rules to build the project
