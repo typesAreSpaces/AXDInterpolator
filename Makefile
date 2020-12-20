@@ -16,7 +16,7 @@ METHOD = 1 # MATHSAT
 
 ALLOWED_ATTEMPS = 10
 
-THEORY = TO
+THEORY = QF_TO
 #THEORY = QF_IDL
 #THEORY = QF_UTVPI
 #THEORY = QF_LIA
@@ -29,6 +29,7 @@ FILE_TEST = ./tests/smt2-files/length_example.smt2
 
 #all: tests/one
 all: tests/all
+#all: tests/print_all
 
 # ----------------------------------------------------------
 #  Rules to build the project
@@ -56,12 +57,22 @@ bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.so
 #  Rules to test a single or many smt2 files
 
 tests/one: bin/axd_interpolator
-	./bin/axd_interpolator $(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
+	./bin/axd_interpolator \
+		$(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
 	rm -rf tests/*.o $@
 
 tests/all: bin/axd_interpolator
 	for smt_file in ./tests/smt2-files/*.smt2; do \
-		./bin/axd_interpolator $(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) >> $${smt_file}_output.txt ; \
+		./bin/axd_interpolator \
+		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) ; \
+		done
+	rm -rf tests/*.o $@
+
+tests/print_all: bin/axd_interpolator
+	for smt_file in ./tests/smt2-files/*.smt2; do \
+		./bin/axd_interpolator \
+		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) \
+		>> $${smt_file}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
 	

@@ -18,7 +18,7 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   assert(conjunction.decl().decl_kind() == Z3_OP_AND);
   
   std::string theory_signature(theory);
-  if(theory_signature == "TO"){
+  if(theory_signature == "QF_TO"){
   }
   if(theory_signature == "QF_IDL"){
     local_signature.push_back(pred);
@@ -137,7 +137,8 @@ void StandardInput::N_instantiate(){
 
   for(unsigned i = 0; i < N_instantiation; i++){
     // TODO: implement this
-
+    for(unsigned j = 0; j < local_signature.size(); j++)
+      m_out << local_signature[j] << std::endl;
   }
 
   return;
