@@ -39,6 +39,14 @@ The first one encodes the A-part and the second one the B-part.
 
 ## Building the project
 
+If the user wants to use the MATHSAT SMT solver, the 
+implementation requires a soft link inside the ``bin``
+directory. For the latter, use the following command:
+
+```
+ln -s <mathsat-path> ./bin/mathsat
+```
+
 In the root directory, execute the command:
 
 ```
