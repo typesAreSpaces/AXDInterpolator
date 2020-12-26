@@ -16,19 +16,19 @@ METHOD = 1 # MATHSAT
 
 ALLOWED_ATTEMPS = 10
 
-#THEORY = QF_TO
-THEORY = QF_IDL
+THEORY = QF_TO
+#THEORY = QF_IDL
 #THEORY = QF_UTVPI
 #THEORY = QF_LIA
 
 #FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST = ./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
-#FILE_TEST = ./tests/smt2-files/maxdiff_paper_example.smt2
+FILE_TEST = ./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST = ./tests/smt2-files/maxdiff_paper_example_another_another.smt2
-FILE_TEST = ./tests/smt2-files/length_example.smt2
+#FILE_TEST = ./tests/smt2-files/length_example.smt2
 
-#all: tests/one
-all: tests/all
+all: tests/one
+#all: tests/all
 #all: tests/print_all
 
 # ----------------------------------------------------------
@@ -72,7 +72,7 @@ tests/print_all: bin/axd_interpolator
 	for smt_file in ./tests/smt2-files/*.smt2; do \
 		./bin/axd_interpolator \
 		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) \
-		>> $${smt_file}_output.txt ; \
+		>> $${smt_file}_${THEORY}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
 	
