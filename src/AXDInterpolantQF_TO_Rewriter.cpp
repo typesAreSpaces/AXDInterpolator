@@ -5,12 +5,36 @@ z3::expr AXDInterpolant::QF_TO_Rewriter(z3::expr const & e){
     if(e.num_args() > 0){
       switch(e.decl().decl_kind()){
         case Z3_OP_GE:
+#if _DEBUG_QF_TO_REWRITER
+          std::cout << "Testing 1" << std::endl;
+          std::cout << e << std::endl;
+          std::cout << ((e.arg(0) - e.arg(1)).simplify()) << std::endl;
+          std::cout << QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify()) << std::endl;
+#endif
           return QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify());
         case Z3_OP_LE:
+#if _DEBUG_QF_TO_REWRITER
+          std::cout << "Testing 2" << std::endl;
+          std::cout << e << std::endl;
+          std::cout << ((e.arg(1) - e.arg(0)).simplify()) << std::endl;
+          std::cout << QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify()) << std::endl;
+#endif
           return QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify());
         case Z3_OP_GT:
+#if _DEBUG_QF_TO_REWRITER
+          std::cout << "Testing 3" << std::endl;
+          std::cout << e << std::endl;
+          std::cout << ((e.arg(0) - e.arg(1) - 1).simplify()) << std::endl;
+          std::cout << QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify()) << std::endl;
+#endif
           return QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify());
         case Z3_OP_LT:
+#if _DEBUG_QF_TO_REWRITER
+          std::cout << "Testing 4" << std::endl;
+          std::cout << e << std::endl;
+          std::cout << ((e.arg(1) - e.arg(0) - 1).simplify()) << std::endl;
+          std::cout << QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify()) << std::endl;
+#endif
           return QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify());
         default: 
           {
@@ -35,7 +59,11 @@ z3::expr AXDInterpolant::QF_TO_Rewriter(z3::expr const & e){
 // and returns an expression in the language of
 // QF_TO
 z3::expr AXDInterpolant::QF_TO_RewriterAux(z3::expr const & normal_rhs){
-  //auto const & normal_rhs = (e.arg(1) - e.arg(0)).simplify();
+  if(normal_rhs.decl().decl_kind() != Z3_OP_ADD){
+    if(normal_rhs.num_args() == 0)
+      return 0 <= normal_rhs;
+    return normal_rhs.arg(1) <= 0;
+  }
   auto const & n_rhs_num_args = normal_rhs.num_args();
   bool is_def_pos_term = false, 
        is_def_neg_term = false, 
@@ -47,22 +75,23 @@ z3::expr AXDInterpolant::QF_TO_RewriterAux(z3::expr const & normal_rhs){
       "The normal right hand side has more than "
       "three terms";
   for(unsigned i = 0; i < normal_rhs.num_args(); ++i){
-    if(normal_rhs.arg(i).num_args() == 0){
+    auto const & curr_arg = normal_rhs.arg(i);
+    if(curr_arg.num_args() == 0 && !curr_arg.is_numeral()){
       is_def_pos_term = true;
-      pos_term = normal_rhs.arg(i);
+      pos_term = curr_arg;
     }
     // A negative variable -x
     // is normalized to the product 
     // of -1 and x
-    if(normal_rhs.arg(i).decl().decl_kind() == Z3_OP_MUL){
+    if(curr_arg.decl().decl_kind() == Z3_OP_MUL){
       is_def_neg_term = true;
-      neg_term = normal_rhs.arg(i).arg(1);
+      neg_term = curr_arg.arg(1);
     }
-    if(normal_rhs.arg(i).is_numeral()){
+    if(curr_arg.is_numeral()){
       // If the constant term is zero 
       // the simplify command should have ignored it
       // Hence we just check positivity
-      if(normal_rhs.arg(i).get_numeral_int() > 0)
+      if(curr_arg.get_numeral_int() > 0)
         throw "Error @ AXDInterpolant::QF_TO_Rewriter"
           "The constant term is not negative";
       is_def_const_term = true;
@@ -71,39 +100,71 @@ z3::expr AXDInterpolant::QF_TO_RewriterAux(z3::expr const & normal_rhs){
 
   if(is_def_pos_term){
     if(is_def_neg_term){
-      if(is_def_const_term)
+      if(is_def_const_term){
         // 111
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 111" << std::endl;
+#endif
         return neg_term < pos_term;
+      }
 
-      else
+      else{
         // 110
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 110" << std::endl;
+#endif
         return neg_term <= pos_term;
+      }
     }
     else{
-      if(is_def_const_term)
+      if(is_def_const_term){
         // 101
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 101" << std::endl;
+#endif
         return 0 < pos_term;
-      else
+      }
+      else{
         // 100
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 100" << std::endl;
+#endif
         return 0 <= pos_term;
+      }
     }
   }
   else{
     if(is_def_neg_term){
-      if(is_def_const_term)
+      if(is_def_const_term){
         // 011
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 011" << std::endl;
+#endif
         return neg_term < 0;
-      else
+      }
+      else{
         // 010
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 010" << std::endl;
+#endif
         return neg_term <= 0;
+      }
     }
     else{
-      if(is_def_const_term)
+      if(is_def_const_term){
         // 001
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 001" << std::endl;
+#endif
         return ctx.bool_val(false);
-      else
+      }
+      else{
         // 000
+#if _DEBUG_QF_TO_REWRITER
+        std::cout << "Processed as 000" << std::endl;
+#endif
         return ctx.bool_val(true);
+      }
     }
   }
 }

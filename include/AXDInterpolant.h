@@ -1,6 +1,7 @@
 #ifndef _AXD_INTERPOLANT_
 #define _AXD_INTERPOLANT_
 
+#define _DEBUG_QF_TO_REWRITER       0
 #define _DEBUG_AXD_INTER_           0
 #define _TEST_OUTPUT_               0
 #define _TEST_ORIGINAL_INPUT_       0

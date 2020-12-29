@@ -220,9 +220,11 @@ z3::expr AXDInterpolant::liftInterpolant(
 
   // TODO: this might need some optimization
   if(strcmp(theory_name, "QF_TO") == 0)
-    for(auto const & x : interpolant)
+    for(auto const & x : interpolant){
+      //std::cout << "Hmm " << x << std::endl;
       //_interpolant.push_back(x);
       _interpolant.push_back(QF_TO_Rewriter(x));
+    }
   else
     for(auto const & x : interpolant)
       _interpolant.push_back(x);
@@ -314,7 +316,8 @@ void AXDInterpolant::z3OutputFile(){
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
       z3_parser.assertions())
-    .simplify();
+    //.simplify()
+    ;
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_interpolant_z3.smt2").c_str());
@@ -376,7 +379,8 @@ void AXDInterpolant::mathsatOutputFile(){
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
       mathsat_parser.assertions())
-    .simplify();
+    //.simplify()
+    ;
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_interpolant_mathsat.smt2").c_str());
@@ -401,7 +405,8 @@ void AXDInterpolant::directComputation(){
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(reduced_interpolant)
-    .simplify();
+    //.simplify()
+    ;
 
 #if _TEST_OUTPUT_
   testOutput(reduced_interpolant, part_a_vector, part_b_vector);
