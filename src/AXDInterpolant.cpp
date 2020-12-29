@@ -77,70 +77,6 @@ void AXDInterpolant::loop(){
   }
 }
 
-// Precondition: part_a_vector and part_b_vector should be updated using
-// setupPartA_B_Vectors
-void AXDInterpolant::testOutput(
-    z3::expr const & interpolant, 
-    z3::expr_vector & part_a_vector, z3::expr_vector & part_b_vector){
-  system(("mkdir -p " + OUTPUT_DIR).c_str());
-  std::ofstream test1_file(
-      OUTPUT_DIR + "/" + m_file_name + "_test1.smt2");
-  std::ofstream test2_file(
-      OUTPUT_DIR + "/" + m_file_name + "_test2.smt2");
-
-  z3::solver test1(ctx);
-#if _TEST_ORIGINAL_INPUT_
-  test1.add(not(z3::implies(z3::mk_and(input_part_a), interpolant)));
-  testOutputArrayAxiomatization(test1);
-  testOutputDiffLifting(test1, part_a);
-  testOutputDiffLifting(test1, part_b);
-#else
-  test1.add(not(z3::implies(z3::mk_and(part_a_vector), interpolant)));
-#endif
-  test1_file << test1.to_smt2();
-
-  z3::solver test2(ctx);
-#if _TEST_ORIGINAL_INPUT_
-  test2.add(z3::mk_and(input_part_b) && interpolant);
-  testOutputArrayAxiomatization(test2);
-  testOutputDiffLifting(test2, part_a);
-  testOutputDiffLifting(test2, part_b);
-#else
-  test2.add(mk_and(part_b_vector) && interpolant);
-#endif
-  test2_file << test2.to_smt2();
-}
-
-void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
-  z3::expr x = ctx.constant("x", this->array_sort);
-  z3::expr y = ctx.constant("y", this->array_sort);
-  z3::expr e = ctx.constant("e", this->element_sort);
-  z3::expr i = ctx.constant("i", this->int_sort);
-  z3::expr j = ctx.constant("j", this->int_sort);
-  // Adding axiomatization
-  s.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
-  s.add(forall(y, i , j, e, z3::implies(i != j, rd(wr(y, i, e), j) == rd(y, j))));
-  s.add(forall(x, y, z3::implies(x != y, rd(x, diff(x, y)) != rd(y, diff(x, y)))));
-  s.add(forall(x, y, i, z3::implies(i > diff(x, y), rd(x, i) == rd(y, i))));
-  s.add(forall(x, diff(x, x) == 0));
-  return ;
-}
-
-void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const & input){
-  // Adding equations of new symbols
-  for(auto const & diff_entry : input.diff_map.m_map){
-    auto const & diff_a = diff_entry.first.first;
-    auto const & diff_b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-    unsigned _index = 1;
-    for(auto const & k_ : diff_seq){
-      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0)
-        s.add(k_ == diff_k(ctx.int_val(_index), diff_a, diff_b));
-      _index++;
-    }
-  }
-}
-
 void AXDInterpolant::SmtSolverSetup(
     z3::solver & solver, 
     StandardInput const & side_part){
@@ -263,7 +199,7 @@ void AXDInterpolant::setupPartA_B_Vectors(
 
 // Precondition: part_a_vector and part_b_vector should be updated using
 // setupPartA_B_Vectors
-z3::expr AXDInterpolant::computeReducedInterpolant(
+z3::expr_vector AXDInterpolant::computeReducedInterpolant(
     z3::expr_vector const & part_a_vector, 
     z3::expr_vector const & part_b_vector){
   z3::expr marked_formula = 
@@ -274,19 +210,30 @@ z3::expr AXDInterpolant::computeReducedInterpolant(
       marked_formula,
       z3::params(ctx));
 
-  return interpolant[0];
+  return interpolant;
 }
 
 z3::expr AXDInterpolant::liftInterpolant(
-    z3::expr const & interpolant){
+    z3::expr_vector const & interpolant){
+
+  z3::expr_vector _interpolant(ctx);
+
+  // TODO: this might need some optimization
+  if(strcmp(theory_name, "QF_TO") == 0)
+    for(auto const & x : interpolant)
+      //_interpolant.push_back(x);
+      _interpolant.push_back(QF_TO_Rewriter(x));
+  else
+    for(auto const & x : interpolant)
+      _interpolant.push_back(x);
 
   z3::expr_vector from(ctx);
   z3::expr_vector to(ctx);
 
   liftInterpolantDiffSubs(from, to, part_a);
   liftInterpolantDiffSubs(from, to, part_b);
-  
-  return ((z3::expr)interpolant).substitute(from, to);
+
+  return z3::mk_and(_interpolant).substitute(from, to);
 }
 
 void AXDInterpolant::liftInterpolantDiffSubs(
@@ -298,13 +245,12 @@ void AXDInterpolant::liftInterpolantDiffSubs(
     auto const & diff_a   = diff_entry.first.first;
     auto const & diff_b   = diff_entry.first.second;
     auto const & diff_seq = diff_entry.second;
-    unsigned _index = 1;
+    unsigned diff_iteration = 1;
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
         from.push_back(k_);
-        to.push_back(diff_k(ctx.int_val(_index), diff_a, diff_b));
+        to.push_back(diff_k(ctx.int_val(diff_iteration++), diff_a, diff_b));
       }
-      _index++;
     }
   }
 }
@@ -367,7 +313,7 @@ void AXDInterpolant::z3OutputFile(){
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      z3::mk_and(z3_parser.assertions()))
+      z3_parser.assertions())
     .simplify();
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
@@ -429,7 +375,7 @@ void AXDInterpolant::mathsatOutputFile(){
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      z3::mk_and(mathsat_parser.assertions()))
+      mathsat_parser.assertions())
     .simplify();
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
@@ -450,7 +396,7 @@ void AXDInterpolant::directComputation(){
   for(unsigned i = 0; i < _part_b_vector.size(); i++)
     part_b_vector.push_back(defineDeclarations(_part_b_vector[i]));
 
-  z3::expr reduced_interpolant = computeReducedInterpolant(
+  z3::expr_vector reduced_interpolant = computeReducedInterpolant(
       part_a_vector, part_b_vector);
 
   is_interpolant_computed = true;
@@ -460,58 +406,6 @@ void AXDInterpolant::directComputation(){
 #if _TEST_OUTPUT_
   testOutput(reduced_interpolant, part_a_vector, part_b_vector);
 #endif
-}
-
-std::string AXDInterpolant::defineDeclarations(std::string decls) const {
-  std::string pred_decl = "(declare-fun pred (Int) Int)";
-  std::string succ_decl = "(declare-fun succ (Int) Int)";
-  std::string neg_decl  = "(declare-fun neg (Int) Int)";
-  std::string add_decl  = "(declare-fun add (Int Int) Int)";
-  std::string result = decls;
-
-  auto position = decls.find(pred_decl);
-  if(position != std::string::npos)
-    result = result.replace(position, pred_decl.size(), "(define-fun pred ((x Int)) Int (- x 1))");
-
-  position = result.find(succ_decl);
-  if(position != std::string::npos)
-    result = result.replace(position, succ_decl.size(), "(define-fun succ ((x Int)) Int (+ x 1))");
-
-  position = result.find(neg_decl);
-  if(position != std::string::npos)
-    result = result.replace(position, neg_decl.size(), "(define-fun neg ((x Int)) Int (- x))");
-
-  position = result.find(add_decl);
-  if(position != std::string::npos)
-    result = result.replace(position, add_decl.size(), "(define-fun add ((x Int) (y Int)) Int (+ x y))");
-
-  return result;
-}
-
-z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
-  if(e.is_app()){
-    if(e.num_args() > 0){
-      auto const & func_name = func_name(e);
-      if(func_name == "pred")
-        return (defineDeclarations(e.arg(0)) - 1);
-      if(func_name == "succ")
-        return (defineDeclarations(e.arg(0)) + 1);
-      if(func_name == "neg")
-        return (-defineDeclarations(e.arg(0)));
-      if(func_name == "add")
-        return (defineDeclarations(e.arg(0)) 
-            + defineDeclarations(e.arg(1)));
-      z3::func_decl f_name = e.decl();
-      z3::expr_vector args(ctx);
-      for(unsigned i = 0; i < e.num_args(); ++i)
-        args.push_back(defineDeclarations(e.arg(i)));
-      return f_name(args);
-    }
-    return e;
-  }
-  throw "Problem @ "
-    "AXDInterpolant::defineDeclarations"
-    "Not an application";
 }
 
 std::ostream & operator << (std::ostream & os, 

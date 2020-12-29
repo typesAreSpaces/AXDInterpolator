@@ -8,25 +8,28 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
 endif
 set shortmess=aoO
 badd +1 src/AXDSignature.cpp
-badd +131 src/AXDInterpolant.cpp
+badd +427 src/AXDInterpolant.cpp
 badd +1 bin/mathsat
 badd +4 tests/main.cpp
-badd +26 include/AXDInterpolant.h
-badd +22 src/AXDInterpolantCircularPairIterator.cpp
+badd +1 include/AXDInterpolant.h
+badd +1 src/AXDInterpolantCircularPairIterator.cpp
 badd +41 Makefile
 badd +2 include/Preprocess.h
 badd +5 include/StandardInput.h
-badd +130 src/Preprocessor.cpp
-badd +196 src/StandardInput.cpp
+badd +1 src/Preprocessor.cpp
+badd +44 src/StandardInput.cpp
 badd +24 src/StandardInputDiffMap.cpp
 badd +4 StandardInputWriterVector.cpp
-badd +12 include/AXDSignature.h
+badd +7 include/AXDSignature.h
 badd +3 src/AXDSignatureZ3ExprComparator.cpp
 badd +2 src/StandardInputWriterVector.cpp
 badd +2470 /usr/include/c++/10.2.0/bits/basic_string.h
 badd +2054 include/z3++.h
 badd +40 src/main.cpp
 badd +9 ~/b.cpp
+badd +14 src/AXDInterpolantQF_TO_Rewriter.cpp
+badd +3 src/AXDInterpolantDefineDeclarations.cpp
+badd +3 src/AXDInterpolantTest.cpp
 argglobal
 %argdel
 $argadd src/AXDSignature.cpp
@@ -38,11 +41,19 @@ vsplit
 wincmd _ | wincmd |
 split
 1wincmd k
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
 wincmd w
 wincmd _ | wincmd |
 vsplit
 1wincmd h
 wincmd w
+wincmd w
+wincmd _ | wincmd |
+split
+1wincmd k
 wincmd w
 set nosplitbelow
 set nosplitright
@@ -51,13 +62,18 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 30 + 32) / 64)
-exe 'vert 1resize ' . ((&columns * 228 + 171) / 342)
-exe '2resize ' . ((&lines * 31 + 32) / 64)
-exe 'vert 2resize ' . ((&columns * 114 + 171) / 342)
-exe '3resize ' . ((&lines * 31 + 32) / 64)
-exe 'vert 3resize ' . ((&columns * 113 + 171) / 342)
-exe 'vert 4resize ' . ((&columns * 113 + 171) / 342)
+exe '1resize ' . ((&lines * 43 + 32) / 64)
+exe 'vert 1resize ' . ((&columns * 105 + 171) / 342)
+exe '2resize ' . ((&lines * 43 + 32) / 64)
+exe 'vert 2resize ' . ((&columns * 105 + 171) / 342)
+exe '3resize ' . ((&lines * 18 + 32) / 64)
+exe 'vert 3resize ' . ((&columns * 105 + 171) / 342)
+exe '4resize ' . ((&lines * 18 + 32) / 64)
+exe 'vert 4resize ' . ((&columns * 105 + 171) / 342)
+exe '5resize ' . ((&lines * 43 + 32) / 64)
+exe 'vert 5resize ' . ((&columns * 130 + 171) / 342)
+exe '6resize ' . ((&lines * 18 + 32) / 64)
+exe 'vert 6resize ' . ((&columns * 130 + 171) / 342)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -68,15 +84,15 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 40 - ((4 * winheight(0) + 15) / 30)
+let s:l = 50 - ((16 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-40
-normal! 045|
+50
+normal! 08|
 wincmd w
 argglobal
-if bufexists("src/AXDInterpolant.cpp") | buffer src/AXDInterpolant.cpp | else | edit src/AXDInterpolant.cpp | endif
+if bufexists("src/Preprocessor.cpp") | buffer src/Preprocessor.cpp | else | edit src/Preprocessor.cpp | endif
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -86,29 +102,11 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 85 - ((9 * winheight(0) + 15) / 31)
+let s:l = 17 - ((16 * winheight(0) + 21) / 43)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-85
-normal! 039|
-wincmd w
-argglobal
-if bufexists("src/AXDInterpolant.cpp") | buffer src/AXDInterpolant.cpp | else | edit src/AXDInterpolant.cpp | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 142 - ((27 * winheight(0) + 15) / 31)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-142
+17
 normal! 0
 wincmd w
 argglobal
@@ -122,21 +120,80 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 299 - ((46 * winheight(0) + 31) / 62)
+let s:l = 80 - ((17 * winheight(0) + 9) / 18)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-299
+80
 normal! 0
 wincmd w
-2wincmd w
-exe '1resize ' . ((&lines * 30 + 32) / 64)
-exe 'vert 1resize ' . ((&columns * 228 + 171) / 342)
-exe '2resize ' . ((&lines * 31 + 32) / 64)
-exe 'vert 2resize ' . ((&columns * 114 + 171) / 342)
-exe '3resize ' . ((&lines * 31 + 32) / 64)
-exe 'vert 3resize ' . ((&columns * 113 + 171) / 342)
-exe 'vert 4resize ' . ((&columns * 113 + 171) / 342)
+argglobal
+if bufexists("src/AXDInterpolant.cpp") | buffer src/AXDInterpolant.cpp | else | edit src/AXDInterpolant.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 404 - ((9 * winheight(0) + 9) / 18)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+404
+normal! 08|
+wincmd w
+argglobal
+if bufexists("src/AXDInterpolantQF_TO_Rewriter.cpp") | buffer src/AXDInterpolantQF_TO_Rewriter.cpp | else | edit src/AXDInterpolantQF_TO_Rewriter.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 7 - ((6 * winheight(0) + 21) / 43)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+7
+normal! 0
+wincmd w
+argglobal
+if bufexists("src/AXDInterpolant.cpp") | buffer src/AXDInterpolant.cpp | else | edit src/AXDInterpolant.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 222 - ((9 * winheight(0) + 9) / 18)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+222
+normal! 03|
+wincmd w
+6wincmd w
+exe '1resize ' . ((&lines * 43 + 32) / 64)
+exe 'vert 1resize ' . ((&columns * 105 + 171) / 342)
+exe '2resize ' . ((&lines * 43 + 32) / 64)
+exe 'vert 2resize ' . ((&columns * 105 + 171) / 342)
+exe '3resize ' . ((&lines * 18 + 32) / 64)
+exe 'vert 3resize ' . ((&columns * 105 + 171) / 342)
+exe '4resize ' . ((&lines * 18 + 32) / 64)
+exe 'vert 4resize ' . ((&columns * 105 + 171) / 342)
+exe '5resize ' . ((&lines * 43 + 32) / 64)
+exe 'vert 5resize ' . ((&columns * 130 + 171) / 342)
+exe '6resize ' . ((&lines * 18 + 32) / 64)
+exe 'vert 6resize ' . ((&columns * 130 + 171) / 342)
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
