@@ -29,12 +29,17 @@ class AXDInterpolant : public Preprocessor {
   bool          is_interpolant_computed,
                 is_unsat;
   z3::expr      current_interpolant;
+  char const *  theory_name;
 
   void loop();
   void testOutput(
       z3::expr const &, 
       z3::expr_vector &, 
       z3::expr_vector &);
+  void testOutputArrayAxiomatization(z3::solver &);
+  void testOutputDiffLifting(
+      z3::solver & s, 
+      StandardInput const &);
   void SmtSolverSetup(z3::solver &, StandardInput const &);
   void SmtSolverOutStreamSetup(
       std::ostream &, 
@@ -47,6 +52,10 @@ class AXDInterpolant : public Preprocessor {
       z3::expr_vector const &, 
       z3::expr_vector const &);
   z3::expr liftInterpolant(z3::expr const &); 
+  void liftInterpolantDiffSubs(
+      z3::expr_vector &, 
+      z3::expr_vector &, 
+      StandardInput const &); 
 
   public: 
   AXDInterpolant(z3::context &, char const *, char const *, unsigned);
