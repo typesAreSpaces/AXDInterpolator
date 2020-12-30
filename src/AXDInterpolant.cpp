@@ -77,134 +77,18 @@ void AXDInterpolant::loop(){
   }
 }
 
-void AXDInterpolant::SmtSolverSetup(
-    z3::solver & solver, 
-    StandardInput const & side_part){
-
-  for(auto const & assertion : side_part.part_2)
-    solver.add(assertion);
-
-  // axiom_8
-  side_part.instantiate(solver, (z3::expr &) side_part.axiom_8);
-
-  // axiom_9
-  side_part.instantiate(solver, (z3::expr &) side_part.axiom_9);
-
-  // axiom_11_2 [WriteVector: a, b, i],
-  for(auto const & _4tuple 
-      : side_part.write_vector.m_vector){
-    auto const & a = std::get<0>(_4tuple);
-    auto const & b = std::get<1>(_4tuple);
-    auto const & i = std::get<2>(_4tuple);
-
-    z3::expr axiom_11_2 = 
-      z3::implies(
-          side_part.index_var != i,
-          rd(a, side_part.index_var) == rd(b, side_part.index_var)
-          );
-    side_part.instantiate(solver, axiom_11_2);
-  }
-
-  // axiom_18 (axiom_12_2) [DiffMap: a, b, l]
-  for(auto const & diff_entry 
-      : side_part.diff_map.m_map){
-    auto const & a = diff_entry.first.first;
-    auto const & b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-
-    if(diff_seq.size() == 0)
-      continue;
-
-    unsigned last_one = diff_seq.size() - 1;
-    z3::expr_vector disj_equalities(ctx);
-    disj_equalities.push_back(
-        rd(a, side_part.index_var) 
-        == rd(b, side_part.index_var));
-    for(unsigned i = 0; i < last_one; i++)
-      disj_equalities.push_back(
-          side_part.index_var == diff_seq[i]);
-
-    z3::expr axiom_18 = z3::implies(
-        side_part.index_var > diff_seq[last_one], 
-        z3::mk_or(disj_equalities));
-    side_part.instantiate(solver, axiom_18);
-  }
-}
-
-void AXDInterpolant::SmtSolverOutStreamSetup(
-    std::ostream & out, 
-    StandardInput const & side_part){
-  for(auto const & assertion : side_part.part_2)
-    out << assertion << std::endl;
-
-  // axiom_8
-  side_part.instantiate(out, (z3::expr &) side_part.axiom_8);
-
-  // axiom_9
-  side_part.instantiate(out, (z3::expr &) side_part.axiom_9);
-
-  // axiom_11_2 [WriteVector: a, b, i],
-  for(auto const & _4tuple 
-      : side_part.write_vector.m_vector){
-    auto const & a = std::get<0>(_4tuple);
-    auto const & b = std::get<1>(_4tuple);
-    auto const & i = std::get<2>(_4tuple);
-
-    z3::expr axiom_11_2 = 
-      z3::implies(
-          side_part.index_var != i,
-          rd(a, side_part.index_var) == rd(b, side_part.index_var)
-          );
-    side_part.instantiate(out, axiom_11_2);
-  }
-
-  // axiom_18 (axiom_12_2) [DiffMap: a, b, l]
-  for(auto const & diff_entry 
-      : side_part.diff_map.m_map){
-    auto const & a = diff_entry.first.first;
-    auto const & b = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-
-    if(diff_seq.size() == 0)
-      continue;
-
-    unsigned last_one = diff_seq.size() - 1;
-    z3::expr_vector disj_equalities(ctx);
-    disj_equalities.push_back(
-        rd(a, side_part.index_var) 
-        == rd(b, side_part.index_var));
-    for(unsigned i = 0; i < last_one; i++)
-      disj_equalities.push_back(
-          side_part.index_var == diff_seq[i]);
-
-    z3::expr axiom_18 = z3::implies(
-        side_part.index_var > diff_seq[last_one], 
-        z3::mk_or(disj_equalities));
-    side_part.instantiate(out, axiom_18);
-  }
-}
-
-void AXDInterpolant::setupPartA_B_Vectors(
-    z3::expr_vector & part_a_vector, 
-    z3::expr_vector & part_b_vector){
-  for(auto const & assertion : part_a.part_2)
-    part_a_vector.push_back(assertion);
-  for(auto const & assertion : part_b.part_2)
-    part_b_vector.push_back(assertion);
-  for(auto const & index : part_a.index_vars)
-    part_a_vector.push_back(index >= 0);
-  for(auto const & index : part_b.index_vars)
-    part_b_vector.push_back(index >= 0);
-}
-
-// Precondition: part_a_vector and part_b_vector should be updated using
-// setupPartA_B_Vectors
+// Precondition: 
+// part_a_vector and part_b_vector 
+// should have been updated using
+// AB_VectorsSetup
 z3::expr_vector AXDInterpolant::computeReducedInterpolant(
     z3::expr_vector const & part_a_vector, 
     z3::expr_vector const & part_b_vector){
+
   z3::expr marked_formula = 
     interpolant(z3::mk_and(part_a_vector)) 
     && z3::mk_and(part_b_vector);
+
   z3::expr_vector interpolant = ctx.get_interpolant(
       solver.proof(),
       marked_formula,
@@ -220,11 +104,9 @@ z3::expr AXDInterpolant::liftInterpolant(
 
   // TODO: this might need some optimization
   if(strcmp(theory_name, "QF_TO") == 0)
-    for(auto const & x : interpolant){
-      //std::cout << "Hmm " << x << std::endl;
+    for(auto const & x : interpolant)
       //_interpolant.push_back(x);
       _interpolant.push_back(QF_TO_Rewriter(x));
-    }
   else
     for(auto const & x : interpolant)
       _interpolant.push_back(x);
@@ -316,8 +198,36 @@ void AXDInterpolant::z3OutputFile(){
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
       z3_parser.assertions())
-    //.simplify()
+#if _SIMPLIFY_OUTPUT
+    .simplify()
+#endif
     ;
+
+#if _TEST_OUTPUT_
+  z3::expr_vector _part_a_vector(ctx);
+  z3::expr_vector _part_b_vector(ctx);
+  AB_VectorsSetup(_part_a_vector, part_a);
+  AB_VectorsSetup(_part_b_vector, part_b);
+
+  z3::expr_vector part_a_vector(ctx);
+  z3::expr_vector part_b_vector(ctx);
+  for(unsigned i = 0; i < _part_a_vector.size(); i++)
+    part_a_vector.push_back(defineDeclarations(_part_a_vector[i]));
+  for(unsigned i = 0; i < _part_b_vector.size(); i++)
+    part_b_vector.push_back(defineDeclarations(_part_b_vector[i]));
+
+  if(testOutput(
+        z3_parser.assertions(), 
+        part_a_vector, part_b_vector)
+    )
+    std::cout 
+      << "Successful Test: formula is an interpolant" 
+      << std::endl;
+  else
+    std::cout 
+      << "Unsuccessful Test: formula isn't an interpolant" 
+      << std::endl;
+#endif
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_interpolant_z3.smt2").c_str());
@@ -379,8 +289,36 @@ void AXDInterpolant::mathsatOutputFile(){
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
       mathsat_parser.assertions())
-    //.simplify()
+#if _SIMPLIFY_OUTPUT
+    .simplify()
+#endif
     ;
+
+#if _TEST_OUTPUT_
+  z3::expr_vector _part_a_vector(ctx);
+  z3::expr_vector _part_b_vector(ctx);
+  AB_VectorsSetup(_part_a_vector, part_a);
+  AB_VectorsSetup(_part_b_vector, part_b);
+
+  z3::expr_vector part_a_vector(ctx);
+  z3::expr_vector part_b_vector(ctx);
+  for(unsigned i = 0; i < _part_a_vector.size(); i++)
+    part_a_vector.push_back(defineDeclarations(_part_a_vector[i]));
+  for(unsigned i = 0; i < _part_b_vector.size(); i++)
+    part_b_vector.push_back(defineDeclarations(_part_b_vector[i]));
+
+  if(testOutput(
+        mathsat_parser.assertions(), 
+        part_a_vector, part_b_vector)
+    )
+    std::cout 
+      << "Successful Test: formula is an interpolant" 
+      << std::endl;
+  else
+    std::cout 
+      << "Unsuccessful Test: formula isn't an interpolant" 
+      << std::endl;
+#endif
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_interpolant_mathsat.smt2").c_str());
@@ -391,7 +329,8 @@ void AXDInterpolant::directComputation(){
     return;
   z3::expr_vector _part_a_vector(ctx);
   z3::expr_vector _part_b_vector(ctx);
-  setupPartA_B_Vectors(_part_a_vector, _part_b_vector);
+  AB_VectorsSetup(_part_a_vector, part_a);
+  AB_VectorsSetup(_part_b_vector, part_b);
 
   z3::expr_vector part_a_vector(ctx);
   z3::expr_vector part_b_vector(ctx);
@@ -405,11 +344,23 @@ void AXDInterpolant::directComputation(){
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(reduced_interpolant)
-    //.simplify()
+#if _SIMPLIFY_OUTPUT
+    .simplify()
+#endif
     ;
 
 #if _TEST_OUTPUT_
-  testOutput(reduced_interpolant, part_a_vector, part_b_vector);
+  if(testOutput(
+        reduced_interpolant, 
+        part_a_vector, part_b_vector)
+    )
+    std::cout 
+      << "Successful Test: formula is an interpolant" 
+      << std::endl;
+  else
+    std::cout 
+      << "Unsuccessful Test: formula isn't an interpolant" 
+      << std::endl;
 #endif
 }
 

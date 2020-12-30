@@ -303,24 +303,6 @@ void StandardInput::updateSaturation(
   // AXDInterpolant::SmtSolverSetup(z3::solver &);
 }
 
-void StandardInput::instantiate(z3::solver & s, z3::expr & e) const {
-  for(auto const & index_term : current_instantiated_index_terms){
-    z3::expr_vector from(ctx), to(ctx);
-    from.push_back(index_var);
-    to.push_back(index_term);
-    s.add(e.substitute(from, to));
-  }
-}
-
-void StandardInput::instantiate(std::ostream & os, z3::expr & e) const {
-  for(auto const & index_term : current_instantiated_index_terms){
-    z3::expr_vector from(ctx), to(ctx);
-    from.push_back(index_var);
-    to.push_back(index_term);
-    os << (e.substitute(from, to)) << std::endl;
-  }
-}
-
 std::ostream & operator << (std::ostream & os, StandardInput const & si){
   return (os 
       << "Part 1: " << si.part_1 

@@ -1,10 +1,11 @@
 #ifndef _AXD_INTERPOLANT_
 #define _AXD_INTERPOLANT_
 
-#define _DEBUG_QF_TO_REWRITER       0
-#define _DEBUG_AXD_INTER_           0
-#define _TEST_OUTPUT_               0
-#define _TEST_ORIGINAL_INPUT_       0
+#define _SIMPLIFY_OUTPUT      0
+#define _DEBUG_QF_TO_REWRITER 0
+#define _DEBUG_AXD_INTER_     0
+#define _TEST_OUTPUT_         1
+#define _TEST_ORIGINAL_INPUT_ 0
 
 #define OUTPUT_DIR std::string("./output")
 
@@ -34,25 +35,28 @@ class AXDInterpolant : public Preprocessor {
   char const *  theory_name;
 
   void loop();
-  void testOutput(
-      z3::expr const &, 
+
+  bool testOutput(
+      z3::expr_vector const &, 
       z3::expr_vector &, 
       z3::expr_vector &);
   void testOutputArrayAxiomatization(z3::solver &);
   void testOutputDiffLifting(
       z3::solver & s, 
       StandardInput const &);
+
   void SmtSolverSetup(z3::solver &, StandardInput const &);
   void SmtSolverOutStreamSetup(
       std::ostream &, 
       StandardInput const &);
-  void setupPartA_B_Vectors(
+  void AB_VectorsSetup(
       z3::expr_vector &, 
-      z3::expr_vector &);
+      StandardInput const &);
 
   z3::expr_vector computeReducedInterpolant(
       z3::expr_vector const &, 
       z3::expr_vector const &);
+
   z3::expr QF_TO_Rewriter(z3::expr const &);
   z3::expr QF_TO_RewriterAux(z3::expr const &);
   z3::expr liftInterpolant(z3::expr_vector const &); 
@@ -71,7 +75,8 @@ class AXDInterpolant : public Preprocessor {
   std::string defineDeclarations(std::string) const;
   z3::expr defineDeclarations(z3::expr const &) const;
 
-  friend std::ostream & operator << (std::ostream &, AXDInterpolant const &);
+  friend std::ostream & operator << (
+      std::ostream &, AXDInterpolant const &);
 
   class CircularPairIterator {
     friend class AXDInterpolant;
@@ -86,7 +91,8 @@ class AXDInterpolant : public Preprocessor {
     void next();
     StandardInput::DiffMap::z3_expr_pair operator *() const;
 
-    friend std::ostream & operator << (std::ostream &, CircularPairIterator const &);
+    friend std::ostream & operator << (
+        std::ostream &, CircularPairIterator const &);
   };
 };
 

@@ -93,6 +93,7 @@ class StandardInput : public AXDSignature {
       unsigned min_dim); 
   void instantiate(z3::solver &, z3::expr &) const;
   void instantiate(std::ostream &, z3::expr &) const;
+  void instantiate(z3::expr_vector &, z3::expr &) const;
 
   friend std::ostream & operator << (std::ostream &, 
       StandardInput const &);

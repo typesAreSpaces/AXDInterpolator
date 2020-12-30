@@ -1,37 +1,47 @@
 #include "AXDInterpolant.h"
+#include "z3++.h"
 
-// Precondition: part_a_vector and part_b_vector should be updated using
+// Precondition: 
+// part_a_vector and part_b_vector 
+// should have been updated using
 // setupPartA_B_Vectors
-void AXDInterpolant::testOutput(
-    z3::expr const & interpolant, 
-    z3::expr_vector & part_a_vector, z3::expr_vector & part_b_vector){
-  system(("mkdir -p " + OUTPUT_DIR).c_str());
-  std::ofstream test1_file(
-      OUTPUT_DIR + "/" + m_file_name + "_test1.smt2");
-  std::ofstream test2_file(
-      OUTPUT_DIR + "/" + m_file_name + "_test2.smt2");
+bool AXDInterpolant::testOutput(
+    z3::expr_vector const & interpolant, 
+    z3::expr_vector & part_a_vector, 
+    z3::expr_vector & part_b_vector){
 
-  z3::solver test1(ctx);
+  z3::solver test1(ctx), test2(ctx);
+
 #if _TEST_ORIGINAL_INPUT_
-  test1.add(not(z3::implies(z3::mk_and(input_part_a), interpolant)));
+  test1.add(
+      not(z3::implies(
+          z3::mk_and(input_part_a), 
+          z3::mk_and(interpolant))));
   testOutputArrayAxiomatization(test1);
   testOutputDiffLifting(test1, part_a);
   testOutputDiffLifting(test1, part_b);
 #else
-  test1.add(not(z3::implies(z3::mk_and(part_a_vector), interpolant)));
+  test1.add(
+      not(z3::implies(
+          z3::mk_and(part_a_vector), 
+          z3::mk_and(interpolant))));
 #endif
-  test1_file << test1.to_smt2();
 
-  z3::solver test2(ctx);
 #if _TEST_ORIGINAL_INPUT_
-  test2.add(z3::mk_and(input_part_b) && interpolant);
+  test2.add(
+      z3::mk_and(input_part_b) 
+      && z3::mk_and(interpolant));
   testOutputArrayAxiomatization(test2);
   testOutputDiffLifting(test2, part_a);
   testOutputDiffLifting(test2, part_b);
 #else
-  test2.add(mk_and(part_b_vector) && interpolant);
+  test2.add(
+      mk_and(part_b_vector) 
+      && z3::mk_and(interpolant));
 #endif
-  test2_file << test2.to_smt2();
+
+  return (test1.check() == z3::unsat 
+      && test2.check() == z3::unsat);
 }
 
 void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
@@ -61,5 +71,3 @@ void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const &
         s.add(k_ == diff_k(ctx.int_val(diff_iteration++), diff_a, diff_b));
   }
 }
-
-
