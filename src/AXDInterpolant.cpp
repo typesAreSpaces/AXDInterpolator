@@ -35,8 +35,8 @@ AXDInterpolant::AXDInterpolant(
 }
 
 void AXDInterpolant::loop(){
-#if _DEBUG_AXD_INTER_
-  unsigned const constant_allowed_attempts = allowed_attempts;
+#if _DEBUG_AXD_LOOP_
+  unsigned const constant_allowed_attempts = num_attempts;
 #endif
   CircularPairIterator search_common_pair(common_array_vars);
 
@@ -59,9 +59,12 @@ void AXDInterpolant::loop(){
     }
 
     solver.pop();
-#if _DEBUG_AXD_INTER_ 
-    m_out << "A-part part 2: " << part_a.part_2 << std::endl;
-    m_out << "B-part part 2: " << part_b.part_2 << std::endl;
+#if _DEBUG_AXD_LOOP_ 
+    m_out << "Iteration #" << (constant_allowed_attempts - num_attempts) << std::endl;
+    m_out << "Current A-part part 2: " << std::endl
+      << part_a.part_2 << std::endl;
+    m_out << "Current B-part part 2: " << std::endl
+      << part_b.part_2 << std::endl;
 #endif
     // Find pair of common array variables
     auto const & common_pair = *search_common_pair;
@@ -366,22 +369,37 @@ void AXDInterpolant::directComputation(){
 
 std::ostream & operator << (std::ostream & os, 
     AXDInterpolant const & axd){
+#if _DEBUG_AXD_LOOP_
+  os << "Output:" << std::endl;
+#endif
 
   if(!axd.num_attempts)
     return os 
+#if _DEBUG_AXD_INTER_
       << "Unknown: Input formula might be satisfiable or unsatisfiable."
-      << std::endl;
+      << std::endl
+#endif
+      ;
   if(!axd.is_unsat)
     return os 
-      << "Satisfiable: No interpolant available.";
+#if _DEBUG_AXD_INTER_
+      << "Satisfiable: No interpolant available."
+#endif
+      ;
   if(axd.is_interpolant_computed)
     return (os 
+#if _DEBUG_AXD_INTER_
         << "Unsatisfiable: " << std::endl
-        << axd.current_interpolant);
+#endif
+        << axd.current_interpolant
+        );
   else
-    return (os << 
-        "Interpolant hasn't been computed.\n"
+    return (os 
+#if _DEBUG_AXD_INTER_
+        << "Interpolant hasn't been computed.\n"
         "Use .z3OutputFile or .mathsatOutputFile\n"
         "or .directComputation on a AXDInterpolant\n" 
-        "object to obtain an interpolant.");
+        "object to obtain an interpolant."
+#endif
+        );
 }

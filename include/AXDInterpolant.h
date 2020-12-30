@@ -4,7 +4,8 @@
 #define _SIMPLIFY_OUTPUT      0
 #define _DEBUG_QF_TO_REWRITER 0
 #define _DEBUG_AXD_INTER_     0
-#define _TEST_OUTPUT_         1
+#define _DEBUG_AXD_LOOP_      1
+#define _TEST_OUTPUT_         0
 #define _TEST_ORIGINAL_INPUT_ 0
 
 #define OUTPUT_DIR std::string("./output")
