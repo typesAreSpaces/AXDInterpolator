@@ -151,6 +151,11 @@ void AXDInterpolant::z3OutputFile(){
   std::ofstream z3_file(
       OUTPUT_DIR + "/" + m_file_name + "_reduced_z3.smt2");
   z3_file << "(set-option :produce-interpolants true)" << std::endl;
+  // TODO: define the following more precisely
+  z3_file << "(set-logic " << (
+        (strcmp(theory_name, "QF_TO") == 0 || 
+         strcmp(theory_name, "QF_IDL") == 0) ? 
+        "QF_IDL" : "QF_LIA") << ")" << std::endl;
   z3_file << defineDeclarations(solver.to_smt2_decls_only());
   z3_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(z3_file, part_a);
@@ -245,6 +250,11 @@ void AXDInterpolant::mathsatOutputFile(){
   std::ofstream mathsat_file(OUTPUT_DIR + "/" 
       + m_file_name + "_reduced_mathsat.smt2");
   mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
+  // TODO: define the following more precisely
+  mathsat_file << "(set-logic " << (
+        (strcmp(theory_name, "QF_TO") == 0 || 
+         strcmp(theory_name, "QF_IDL") == 0) ? 
+        "QF_IDL" : "QF_LIA") << ")" << std::endl;
   mathsat_file << defineDeclarations(solver.to_smt2_decls_only());
   mathsat_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(mathsat_file, part_a);
