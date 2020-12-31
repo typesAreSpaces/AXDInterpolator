@@ -70,10 +70,8 @@ tests/all: bin/axd_interpolator
 		done
 	rm -rf tests/*.o $@
 
-
 tests/print_all: bin/axd_interpolator
 	for smt_file in ./tests/smt2-files/*.smt2; do \
-		rm -rf $${smt_file}_${THEORY}_output.txt; \
 		./bin/axd_interpolator \
 		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) \
 		>> $${smt_file}_${THEORY}_output.txt ; \
