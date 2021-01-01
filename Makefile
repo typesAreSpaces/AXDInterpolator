@@ -18,8 +18,8 @@ METHOD=1# MATHSAT
 
 ALLOWED_ATTEMPS=10
 
-#THEORY=QF_TO
-THEORY=QF_IDL
+THEORY=QF_TO
+#THEORY=QF_IDL
 #THEORY=QF_UTVPI
 #THEORY=QF_LIA
 
@@ -29,9 +29,9 @@ FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
-#all: tests/one
+all: tests/one
 #all: tests/all
-all: tests/print_all
+#all: tests/print_all
 
 # ----------------------------------------------------------
 #  Rules to build the project
