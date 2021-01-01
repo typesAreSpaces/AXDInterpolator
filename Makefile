@@ -12,14 +12,14 @@ OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.so
 DEPS=$(wildcard $(IDIR)/*.h)
 OS=$(shell uname)
 
-#METHOD=0 # Z3
-METHOD=1 # MATHSAT
-#METHOD=2 # DIRECT COMPUTATION
+#METHOD=0# Z3
+METHOD=1# MATHSAT
+#METHOD=2# DIRECT COMPUTATION
 
 ALLOWED_ATTEMPS=10
 
-THEORY=QF_TO
-#THEORY=QF_IDL
+#THEORY=QF_TO
+THEORY=QF_IDL
 #THEORY=QF_UTVPI
 #THEORY=QF_LIA
 
@@ -29,13 +29,14 @@ FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
-all: tests/one
+#all: tests/one
 #all: tests/all
-#all: tests/print_all
+all: tests/print_all
 
 # ----------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.so:
+	CURRENT_DIR=$$(pwd); sed -i "s|replace_once|$${CURRENT_DIR}|g" ./include/AXDInterpolant.h
 ifeq ($(OS), Darwin)
 	cp ./lib/for_mac_libz3.so ./lib/libz3.so
 else
@@ -70,13 +71,19 @@ tests/all: bin/axd_interpolator
 		done
 	rm -rf tests/*.o $@
 
-
 tests/print_all: bin/axd_interpolator
 	for smt_file in ./tests/smt2-files/*.smt2; do \
-		rm -rf $${smt_file}_${THEORY}_output.txt; \
+		if [ "${METHOD}" = "0" ]; \
+		then METHOD_NAME="Z3"; \
+		else \
+		if [ "${METHOD}" = "1" ]; \
+		then METHOD_NAME="MATHSAT"; \
+		else METHOD_NAME="DIRECT"; \
+		fi \
+		fi; \
 		./bin/axd_interpolator \
 		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) \
-		>> $${smt_file}_${THEORY}_output.txt ; \
+		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
 # -------------------------------------------
@@ -96,6 +103,7 @@ z3_check:
 # ------------------------------
 .PHONY: clean
 clean:
+	CURRENT_DIR=$$(pwd); sed -i "s|$${CURRENT_DIR}|replace_once|g" ./include/AXDInterpolant.h
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean

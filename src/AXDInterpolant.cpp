@@ -60,10 +60,14 @@ void AXDInterpolant::loop(){
 
     solver.pop();
 #if _DEBUG_AXD_LOOP_ 
-    m_out << "Iteration #" << (constant_allowed_attempts - num_attempts) << std::endl;
-    m_out << "Current A-part part 2: " << std::endl
+    m_out 
+      << "Iteration #" 
+      << (constant_allowed_attempts - num_attempts) << std::endl;
+    m_out 
+      << "Current A-part part 2: " << std::endl
       << part_a.part_2 << std::endl;
-    m_out << "Current B-part part 2: " << std::endl
+    m_out 
+      << "Current B-part part 2: " << std::endl
       << part_b.part_2 << std::endl;
 #endif
     // Find pair of common array variables
@@ -150,12 +154,15 @@ void AXDInterpolant::z3OutputFile(){
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream z3_file(
       OUTPUT_DIR + "/" + m_file_name + "_reduced_z3.smt2");
-  z3_file << "(set-option :produce-interpolants true)" << std::endl;
+
+  z3_file 
+    << "(set-option :produce-interpolants true)" 
+    << std::endl;
   // TODO: define the following more precisely
   z3_file << "(set-logic " << (
         (strcmp(theory_name, "QF_TO") == 0 || 
          strcmp(theory_name, "QF_IDL") == 0) ? 
-        "QF_IDL" : "QF_LIA") << ")" << std::endl;
+        "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
   z3_file << defineDeclarations(solver.to_smt2_decls_only());
   z3_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(z3_file, part_a);
@@ -167,7 +174,7 @@ void AXDInterpolant::z3OutputFile(){
   z3_file << "(get-interpolant part_a part_b)" << std::endl;
 
   // Obtain reduced interpolant in temp.smt2
-  system(("./bin/z3 " + OUTPUT_DIR 
+  system((CURRENT_DIR + "/bin/z3 " + OUTPUT_DIR 
         + "/" + m_file_name 
         + "_reduced_z3.smt2 > "
         + OUTPUT_DIR + "/temp.smt2").c_str());
@@ -182,8 +189,9 @@ void AXDInterpolant::z3OutputFile(){
   // by the interpolant
   std::getline(result, line);
   std::getline(result, line);
-  std::ofstream z3_reduced_interpolant(OUTPUT_DIR + "/" 
-      + m_file_name + "_reduced_interpolant_z3.smt2" );
+  std::ofstream z3_reduced_interpolant(
+      OUTPUT_DIR + "/" + m_file_name 
+      + "_reduced_interpolant_z3.smt2" );
   // It is necessary to include declarations
   // in *_reduced_mathsat_lifted.smt2 because the
   // file will be parsed again
@@ -219,20 +227,21 @@ void AXDInterpolant::z3OutputFile(){
 
   z3::expr_vector part_a_vector(ctx);
   z3::expr_vector part_b_vector(ctx);
-  for(unsigned i = 0; i < _part_a_vector.size(); i++)
-    part_a_vector.push_back(defineDeclarations(_part_a_vector[i]));
-  for(unsigned i = 0; i < _part_b_vector.size(); i++)
-    part_b_vector.push_back(defineDeclarations(_part_b_vector[i]));
 
+  for(auto const & x : _part_a_vector)
+    part_a_vector.push_back(defineDeclarations(x));
+  for(auto const & x : _part_b_vector)
+    part_b_vector.push_back(defineDeclarations(x));
+  
   if(testOutput(
         z3_parser.assertions(), 
         part_a_vector, part_b_vector)
     )
-    std::cout 
+    std::cerr
       << "Successful Test: formula is an interpolant" 
       << std::endl;
   else
-    std::cout 
+    std::cerr
       << "Unsuccessful Test: formula isn't an interpolant" 
       << std::endl;
 #endif
@@ -249,12 +258,14 @@ void AXDInterpolant::mathsatOutputFile(){
   system(("mkdir -p " + OUTPUT_DIR).c_str());
   std::ofstream mathsat_file(OUTPUT_DIR + "/" 
       + m_file_name + "_reduced_mathsat.smt2");
-  mathsat_file << "(set-option :produce-interpolants true)" << std::endl;
+  mathsat_file 
+    << "(set-option :produce-interpolants true)" 
+    << std::endl;
   // TODO: define the following more precisely
   mathsat_file << "(set-logic " << (
         (strcmp(theory_name, "QF_TO") == 0 || 
          strcmp(theory_name, "QF_IDL") == 0) ? 
-        "QF_IDL" : "QF_LIA") << ")" << std::endl;
+        "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
   mathsat_file << defineDeclarations(solver.to_smt2_decls_only());
   mathsat_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(mathsat_file, part_a);
@@ -267,7 +278,7 @@ void AXDInterpolant::mathsatOutputFile(){
   mathsat_file << "(exit)" << std::endl;
 
   // Obtain reduced interpolant in temp.smt2
-  system(("./bin/mathsat " + OUTPUT_DIR 
+  system((CURRENT_DIR + "/bin/mathsat " + OUTPUT_DIR 
         + "/" + m_file_name 
         + "_reduced_mathsat.smt2 > " + OUTPUT_DIR 
         + "/temp.smt2").c_str());
@@ -281,8 +292,8 @@ void AXDInterpolant::mathsatOutputFile(){
   // by the interpolant
   std::getline(result, line);
   std::ofstream mathsat_reduced_interpolant(
-      OUTPUT_DIR + "/" 
-      + m_file_name + "_reduced_interpolant_mathsat.smt2" );
+      OUTPUT_DIR + "/" + m_file_name 
+      + "_reduced_interpolant_mathsat.smt2" );
   // It is necessary to include declarations
   // in *_reduced_mathsat_lifted.smt2 because the
   // file will be parsed again
@@ -315,20 +326,20 @@ void AXDInterpolant::mathsatOutputFile(){
 
   z3::expr_vector part_a_vector(ctx);
   z3::expr_vector part_b_vector(ctx);
-  for(unsigned i = 0; i < _part_a_vector.size(); i++)
-    part_a_vector.push_back(defineDeclarations(_part_a_vector[i]));
-  for(unsigned i = 0; i < _part_b_vector.size(); i++)
-    part_b_vector.push_back(defineDeclarations(_part_b_vector[i]));
+  for(auto const & x : _part_a_vector)
+    part_a_vector.push_back(defineDeclarations(x));
+  for(auto const & x : _part_b_vector)
+    part_b_vector.push_back(defineDeclarations(x));
 
   if(testOutput(
         mathsat_parser.assertions(), 
         part_a_vector, part_b_vector)
     )
-    std::cout 
+    std::cerr
       << "Successful Test: formula is an interpolant" 
       << std::endl;
   else
-    std::cout 
+    std::cerr
       << "Unsuccessful Test: formula isn't an interpolant" 
       << std::endl;
 #endif
@@ -347,13 +358,15 @@ void AXDInterpolant::directComputation(){
 
   z3::expr_vector part_a_vector(ctx);
   z3::expr_vector part_b_vector(ctx);
-  for(unsigned i = 0; i < _part_a_vector.size(); i++)
-    part_a_vector.push_back(defineDeclarations(_part_a_vector[i]));
-  for(unsigned i = 0; i < _part_b_vector.size(); i++)
-    part_b_vector.push_back(defineDeclarations(_part_b_vector[i]));
 
-  z3::expr_vector reduced_interpolant = computeReducedInterpolant(
-      part_a_vector, part_b_vector);
+  for(auto const & x : _part_a_vector)
+    part_a_vector.push_back(defineDeclarations(x));
+  for(auto const & x : _part_b_vector)
+    part_b_vector.push_back(defineDeclarations(x));
+
+  z3::expr_vector reduced_interpolant = 
+    computeReducedInterpolant(
+        part_a_vector, part_b_vector);
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(reduced_interpolant)
@@ -367,11 +380,11 @@ void AXDInterpolant::directComputation(){
         reduced_interpolant, 
         part_a_vector, part_b_vector)
     )
-    std::cout 
+    std::cerr
       << "Successful Test: formula is an interpolant" 
       << std::endl;
   else
-    std::cout 
+    std::cerr
       << "Unsuccessful Test: formula isn't an interpolant" 
       << std::endl;
 #endif
