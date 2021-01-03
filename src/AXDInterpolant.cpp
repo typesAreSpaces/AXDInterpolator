@@ -47,8 +47,20 @@ void AXDInterpolant::loop(){
     // is unsat
     SmtSolverSetup(solver, part_a);
     SmtSolverSetup(solver, part_b);
-    
+
     if(solver.check() == z3::unsat){
+#if _DEBUG_AXD_LOOP_ 
+      m_out 
+        << "Iteration #" 
+        << (constant_allowed_attempts - num_attempts) << std::endl;
+      m_out 
+        << "Current A-part part 2: " << std::endl;
+      SmtSolverOutStreamSetup(m_out, part_a);
+      m_out 
+        << "Current B-part part 2: " << std::endl;
+      SmtSolverOutStreamSetup(m_out, part_b);
+#endif
+
       is_unsat = true;
 #if _DEBUG_AXD_INTER_
       m_out << "Unsat after " 
@@ -64,11 +76,11 @@ void AXDInterpolant::loop(){
       << "Iteration #" 
       << (constant_allowed_attempts - num_attempts) << std::endl;
     m_out 
-      << "Current A-part part 2: " << std::endl
-      << part_a.part_2 << std::endl;
+      << "Current A-part part 2: " << std::endl;
+    SmtSolverOutStreamSetup(m_out, part_a);
     m_out 
-      << "Current B-part part 2: " << std::endl
-      << part_b.part_2 << std::endl;
+      << "Current B-part part 2: " << std::endl;
+    SmtSolverOutStreamSetup(m_out, part_b);
 #endif
     // Find pair of common array variables
     auto const & common_pair = *search_common_pair;
@@ -232,7 +244,7 @@ void AXDInterpolant::z3OutputFile(){
     part_a_vector.push_back(defineDeclarations(x));
   for(auto const & x : _part_b_vector)
     part_b_vector.push_back(defineDeclarations(x));
-  
+
   if(testOutput(
         z3_parser.assertions(), 
         part_a_vector, part_b_vector)
