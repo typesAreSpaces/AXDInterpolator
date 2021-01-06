@@ -15,6 +15,10 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   z3::expr_vector assertions = really_a_parser.assertions();
   assert(assertions.size() == 2);
 
+  // empty_array is a common symbol
+  part_a_array_vars.insert(empty_array);
+  part_b_array_vars.insert(empty_array);
+
   // conjunction_a doesn't contain length
   // applications
   z3::expr const & conjunction_a = 

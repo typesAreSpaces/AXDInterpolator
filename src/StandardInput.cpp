@@ -85,11 +85,16 @@ StandardInput::StandardInput(z3::expr const & conjunction,
           rhs(equation).arg(2)
           );
     }
-    if(f_name == "diff"){
+    else if(f_name == "diff"){
       diff_map.add(
           lhs(rhs(equation)), 
           rhs(rhs(equation)),
           lhs(equation));
+    }
+    else{
+      std::cout << 
+        "TODO: implement equality" 
+        "between var-arrays" << std::endl;
     }
   }
 

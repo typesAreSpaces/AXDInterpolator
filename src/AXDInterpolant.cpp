@@ -62,9 +62,9 @@ void AXDInterpolant::loop(){
 #endif
 
       is_unsat = true;
-#if _DEBUG_AXD_INTER_
+#if _DEBUG_AXD_LOOP_
       m_out << "Unsat after " 
-        << constant_allowed_attempts - allowed_attempts 
+        << constant_allowed_attempts - num_attempts 
         << " iterations" << std::endl;
 #endif
       return;
