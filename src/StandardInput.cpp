@@ -1,6 +1,6 @@
 #include "StandardInput.h"
 
-StandardInput::StandardInput(z3::expr const & conjunction, 
+StandardInput::StandardInput(z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
     z3_expr_set const & array_var_ids,
     char const * theory) :
@@ -15,7 +15,6 @@ StandardInput::StandardInput(z3::expr const & conjunction,
   index_var(ctx.constant("index_var", index_sort)),
   axiom_8(ctx), axiom_9(rd(empty_array, index_var) == undefined)
 {
-  assert(conjunction.decl().decl_kind() == Z3_OP_AND);
   
   std::string theory_signature(theory);
   if(theory_signature == "QF_TO"){
@@ -38,8 +37,7 @@ StandardInput::StandardInput(z3::expr const & conjunction,
 
   // Splitting input into part_1 and part_2
   // following the rules for "separated pairs".
-  for(unsigned i = 0; i < conjunction.num_args(); i++){
-    auto current_arg = conjunction.arg(i);
+  for(auto const & current_arg : conjunction){
     switch(current_arg.decl().decl_kind()){
       case Z3_OP_EQ:       // ==
         if(sort_name(lhs(current_arg))     == "ArraySort" 
@@ -92,6 +90,7 @@ StandardInput::StandardInput(z3::expr const & conjunction,
           lhs(equation));
     }
     else{
+      // KEEP: working here
       std::cout << 
         "TODO: implement equality" 
         "between var-arrays" << std::endl;

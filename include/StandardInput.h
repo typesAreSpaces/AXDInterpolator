@@ -81,7 +81,7 @@ class StandardInput : public AXDSignature {
 
   public:
   StandardInput(
-      z3::expr const &, 
+      z3::expr_vector const &, 
       z3::expr_vector &,
       z3_expr_set const &,
       char const *);

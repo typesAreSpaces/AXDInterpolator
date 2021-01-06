@@ -9,12 +9,12 @@ AXDInterpolant::AXDInterpolant(
   Preprocessor(ctx, file_name),
   solver(ctx), 
   part_a(
-      z3::mk_and(input_part_a), 
+      input_part_a,
       part_a_index_vars, 
       part_a_array_vars, 
       _theory_name),
   part_b(
-      z3::mk_and(input_part_b), 
+      input_part_b,
       part_b_index_vars, 
       part_b_array_vars,
       _theory_name),
@@ -404,37 +404,28 @@ void AXDInterpolant::directComputation(){
 
 std::ostream & operator << (std::ostream & os, 
     AXDInterpolant const & axd){
-#if _DEBUG_AXD_LOOP_
   os << "Output:" << std::endl;
-#endif
 
   if(!axd.num_attempts)
     return os 
-#if _DEBUG_AXD_INTER_
-      << "Unknown: Input formula might be satisfiable or unsatisfiable."
+      << "Unknown: Input formula might be "
+      "satisfiable or unsatisfiable."
       << std::endl
-#endif
       ;
   if(!axd.is_unsat)
     return os 
-#if _DEBUG_AXD_INTER_
       << "Satisfiable: No interpolant available."
-#endif
       ;
   if(axd.is_interpolant_computed)
     return (os 
-#if _DEBUG_AXD_INTER_
         << "Unsatisfiable: " << std::endl
-#endif
         << axd.current_interpolant
         );
   else
     return (os 
-#if _DEBUG_AXD_INTER_
         << "Interpolant hasn't been computed.\n"
         "Use .z3OutputFile or .mathsatOutputFile\n"
         "or .directComputation on a AXDInterpolant\n" 
         "object to obtain an interpolant."
-#endif
         );
 }
