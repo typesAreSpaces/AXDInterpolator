@@ -25,9 +25,9 @@ int main(int argc, char * argv[]){
           case '1':
             axd.mathsatOutputFile();
             break;
-          case '2':
-            axd.directComputation();
-            break;
+          //case '2':
+            //axd.directComputation();
+            //break;
           default:
             std::cerr 
               << "Not valid SMT solver option."
