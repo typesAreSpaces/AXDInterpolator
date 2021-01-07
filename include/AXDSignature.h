@@ -34,15 +34,17 @@ struct AXDSignature {
 
   z3::context & ctx;
 
-  z3::sort 
+  z3::sort const
     int_sort, 
     index_sort, 
     element_sort, 
     array_sort;
 
-  z3::expr undefined, empty_array;
+  z3::expr const 
+    undefined, 
+    empty_array;
 
-  z3::func_decl 
+  z3::func_decl const
     diff, diff_k,
     wr, rd,
     pred, succ, 

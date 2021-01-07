@@ -3,6 +3,7 @@
 
 #include "z3++.h"
 #define _DEBUG_STDINPUT_ 0
+#define _CHECK_PREPROCESS_INV_ 0
 
 #include <set>
 #include <utility>

@@ -126,31 +126,37 @@ void Preprocessor::flattenPredicate(
   }
 }
 
+// Takes an atomic predicate, except equality, 
+// i.e. B(a, b) and updates the correspondant
+// input side with fresh constants x, y if a 
+// and b arent constants (respectively) obtaining
+// input[side](x/a)(y/t) \land x = a \land y = b
 void Preprocessor::flattenPredicateAux(
-    z3::expr const & formula, SideInterpolant side){
+    z3::expr const & atomic_predicate, SideInterpolant side){
 
-  z3::expr_vector from(ctx); 
-  z3::expr_vector to(ctx);
+  z3::expr_vector old_terms(ctx); 
+  z3::expr_vector fresh_consts(ctx);
   z3::expr_vector temp_predicates(ctx);
 
-  if(lhs(formula).num_args() == 0){
-    if(rhs(formula).num_args() == 0){
+  if(lhs(atomic_predicate).num_args() == 0){
+    if(rhs(atomic_predicate).num_args() == 0){
+      // Nothing to do
     }
     else{
-      from.push_back(rhs(formula));
-      to.push_back(fresh_constant(rhs(formula).decl().range()));
+      old_terms.push_back(rhs(atomic_predicate));
+      fresh_consts.push_back(fresh_constant(rhs(atomic_predicate).decl().range()));
     }
   }
   else{
-    if(rhs(formula).num_args() == 0){
-      from.push_back(lhs(formula));
-      to.push_back(fresh_constant(lhs(formula).decl().range()));
+    if(rhs(atomic_predicate).num_args() == 0){
+      old_terms.push_back(lhs(atomic_predicate));
+      fresh_consts.push_back(fresh_constant(lhs(atomic_predicate).decl().range()));
     }
     else{
-      from.push_back(lhs(formula));
-      to.push_back(fresh_constant(lhs(formula).decl().range()));
-      from.push_back(rhs(formula));
-      to.push_back(fresh_constant(rhs(formula).decl().range()));
+      old_terms.push_back(lhs(atomic_predicate));
+      fresh_consts.push_back(fresh_constant(lhs(atomic_predicate).decl().range()));
+      old_terms.push_back(rhs(atomic_predicate));
+      fresh_consts.push_back(fresh_constant(rhs(atomic_predicate).decl().range()));
     }
   }
 
@@ -159,31 +165,31 @@ void Preprocessor::flattenPredicateAux(
       {
         for(unsigned i = 0; i < input_part_a.size(); i++)
           temp_predicates.push_back(
-              input_part_a[i].substitute(from, to)
+              input_part_a[i].substitute(old_terms, fresh_consts)
               );
 
-        unsigned j = from.size();
+        unsigned j = old_terms.size();
         while(j--)
-          temp_predicates.push_back(from[j] == to[j]);
+          temp_predicates.push_back(fresh_consts[j] == old_terms[j]);
 
         input_part_a = temp_predicates;
-        current_conjs_in_input += from.size();
+        current_conjs_in_input += old_terms.size();
         return;
       }
     case PART_B:
       {
         for(unsigned i = 0; i < input_part_b.size(); i++){
           temp_predicates.push_back(
-              input_part_b[i].substitute(from, to)
+              input_part_b[i].substitute(old_terms, fresh_consts)
               );
         }
 
-        unsigned j = from.size();
+        unsigned j = old_terms.size();
         while(j--)
-          temp_predicates.push_back(from[j] == to[j]);
+          temp_predicates.push_back(fresh_consts[j] == old_terms[j]);
 
         input_part_b = temp_predicates;
-        current_conjs_in_input += from.size();
+        current_conjs_in_input += old_terms.size();
       }
       return;
   }
@@ -193,84 +199,17 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     SideInterpolant side){
   if(term.num_args() > 0){
     auto f_name = func_name(term);
-    if(f_name == "diff"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_array_constant(), side);
+    for(unsigned i = 0; i < term.num_args(); i++){
+      auto const & curr_arg = term.arg(i);
+      auto const & type_arg = curr_arg.decl().range();
+      if(curr_arg.num_args() > 0)
+        cojoin(curr_arg, fresh_constant(type_arg), side);
       else
-        updateArrayVars(term.arg(0), side);
-      if(term.arg(1).num_args() > 0)
-        cojoin(term.arg(1), fresh_array_constant(), side);
-      else
-        updateArrayVars(term.arg(1), side);
-      return;
-    }
-    if(f_name == "wr"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_array_constant(), side);
-      else
-        updateArrayVars(term.arg(0), side);
-
-      if(term.arg(1).num_args() > 0)
-        cojoin(term.arg(1), fresh_index_constant(), side);
-      else
-        updateIndexVars(term.arg(1), side);
-
-      if(term.arg(2).num_args() > 0)
-        cojoin(term.arg(2), fresh_element_constant(), side);
-      return;
-    }
-    if(f_name == "rd"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_array_constant(), side);
-      else
-        updateArrayVars(term.arg(0), side);
-
-      if(term.arg(1).num_args() > 0)
-        cojoin(term.arg(1), fresh_index_constant(), side);
-      else
-        updateIndexVars(term.arg(1), side);
-      return;
-    }
-    if(f_name == "pred"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_index_constant(), side);
-      else
-        updateIndexVars(term.arg(0), side);
-      return;
-    }
-    if(f_name == "succ"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_index_constant(), side);
-      else
-        updateIndexVars(term.arg(0), side);
-      return;
-    }
-    if(f_name == "neg"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_index_constant(), side);
-      else
-        updateIndexVars(term.arg(0), side);
-      return;
-    }
-    if(f_name == "add"){
-      if(term.arg(0).num_args() > 0)
-        cojoin(term.arg(0), fresh_index_constant(), side);
-      else
-        updateIndexVars(term.arg(0), side);
-      if(term.arg(1).num_args() > 0)
-        cojoin(term.arg(1), fresh_index_constant(), side);
-      else
-        updateIndexVars(term.arg(1), side);
-      return;
+        updateVarsDB(curr_arg, type_arg, side); 
     }
   }
-  else{
-    auto sort_name = sort_name(term);
-    if(sort_name == "Int")
-      updateIndexVars(term, side);
-    if(sort_name == "ArraySort")
-      updateArrayVars(term, side);
-  }
+  else
+    updateVarsDB(term, term.decl().range(), side);
 }
 
 void Preprocessor::cojoin(
@@ -327,6 +266,19 @@ void Preprocessor::updateIndexVars(z3::expr const & e,
     case PART_B:
       part_b_index_vars.push_back(e);
       return;
+  }
+}
+
+void Preprocessor::updateVarsDB(z3::expr const & e, 
+    z3::sort const & s, SideInterpolant side){
+  auto const & s_name = s.name().str();
+  if(s_name == array_sort.name().str()){
+    updateArrayVars(e, side);
+    return;
+  }
+  if(s_name == index_sort.name().str()){
+    updateIndexVars(e, side);
+    return;
   }
 }
 

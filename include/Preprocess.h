@@ -22,11 +22,15 @@ class Preprocessor : public AXDSignature {
   void flattenPredicate(z3::expr const &, SideInterpolant);
   void flattenPredicateAux(z3::expr const &, SideInterpolant);
   void flattenTerm(z3::expr const &, SideInterpolant);
-  void cojoin(z3::expr const &, z3::expr const &, SideInterpolant);
+
+  void cojoin(z3::expr const &, 
+      z3::expr const &, SideInterpolant);
   void cojoin_aux(z3::expr_vector &, 
       z3::expr const &, z3::expr const &);
+
   void updateArrayVars(z3::expr const &, SideInterpolant);
   void updateIndexVars(z3::expr const &, SideInterpolant);
+  void updateVarsDB(z3::expr const &, z3::sort const &, SideInterpolant);
 
   void removeDuplicates(z3::expr_vector &);
 
