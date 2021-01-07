@@ -1,21 +1,25 @@
 #include "StandardInput.h"
 
-StandardInput::StandardInput(z3::expr_vector const & conjunction, 
+StandardInput::StandardInput(
+    z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
     z3_expr_set const & array_var_ids,
-    char const * theory) :
+    char const * theory, 
+    unsigned _fresh_index) :
   AXDSignature(conjunction.ctx()),
+  s_fresh_index(_fresh_index),
   diff_map(conjunction.ctx(), array_var_ids),
   write_vector(),
   local_signature(ctx),
-  part_1(conjunction.ctx()), part_2(conjunction.ctx()), 
+  part_1(conjunction.ctx()),
+  part_2(conjunction.ctx()), 
   index_vars(ctx),
   N_instantiation(0),
   current_instantiated_index_terms(ctx),
   index_var(ctx.constant("index_var", index_sort)),
-  axiom_8(ctx), axiom_9(rd(empty_array, index_var) == undefined)
+  axiom_8(ctx), 
+  axiom_9(rd(empty_array, index_var) == undefined)
 {
-  
   std::string theory_signature(theory);
   if(theory_signature == "QF_TO"){
   }
@@ -38,25 +42,73 @@ StandardInput::StandardInput(z3::expr_vector const & conjunction,
   // Splitting input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
+    // Invariant from Preprocess.cpp
+    assert(
+        lhs(current_arg).num_args() <= 
+        rhs(current_arg).num_args());
     switch(current_arg.decl().decl_kind()){
       case Z3_OP_EQ:       // ==
-        if(sort_name(lhs(current_arg))     == "ArraySort" 
-            || func_name(lhs(current_arg)) == "diff" 
-            || func_name(rhs(current_arg)) == "diff")
-          part_1.push_back(orientBinPredicate(current_arg));
-        else
-          part_2.push_back(orientBinPredicate(current_arg));
-        continue;
+        {     
+          auto const & _lhs = lhs(current_arg);
+          auto const & _rhs = rhs(current_arg);
+          auto const & lhs_sort = sort_name(_lhs);
+          if( // Covers equations of the form 
+              // a = wr(b, i, e) or a = b 
+              // when a is an array var
+              lhs_sort == "ArraySort"  
+              // Covers equations of the
+              // form i = diff(a, b)
+              || func_name(_lhs) == "diff" 
+              || func_name(_rhs) == "diff"){
+
+            // [10] predicates are added here
+            if(_lhs.num_args() == 0 && _rhs.num_args() == 0){
+              part_1.push_back(0 == diff(_lhs, _rhs));
+              part_2.push_back(
+                  current_arg
+                  && rd(_lhs, 0) == rd(_rhs, 0));
+            }
+            // Equations of the form i = diff(a, b), 
+            // a = wr(b, i, e) will be processed 
+            // in the for loop (*)
+            else 
+              part_1.push_back(current_arg);
+          }
+          else
+            part_2.push_back(current_arg);
+          break;
+        }
       case Z3_OP_DISTINCT: // !=
+        // Invariant from Preprocess.cpp
+        assert(lhs(current_arg).num_args() == 0
+            && rhs(current_arg).num_args() == 0);
+        //auto const & _lhs = lhs(current_arg);
+        //auto const & _rhs = rhs(current_arg);
+        //auto const & lhs_sort = sort_name(_lhs);
+        if(sort_name(lhs(current_arg)) == "ArraySort"){
+          auto const & f_index = fresh_index_constant();
+          auto const & f_element1 = fresh_element_constant();
+          auto const & f_element2 = fresh_element_constant();
+          auto const & __lhs = lhs(current_arg);
+          auto const & __rhs = rhs(current_arg);
+
+          // [10] predicates are added here
+          part_1.push_back(f_index 
+              == diff(__lhs, __rhs));
+          part_1.push_back(f_element1 == rd(__lhs, 0));
+          part_1.push_back(f_element2 == rd(__rhs, 0));
+          part_2.push_back(f_index != 0 
+              || f_element1 != f_element2);
+        }
       case Z3_OP_GE:       // >=
       case Z3_OP_LE:       // <=
       case Z3_OP_GT:       // >
       case Z3_OP_LT:       // <
-        part_2.push_back(orientBinPredicate(current_arg));
-        continue;
+          part_2.push_back(current_arg);
+          break;
       default:
-        throw "Problem @ StandardInput::StandardInput"
-          "Invalid formula.";
+          throw "Problem @ StandardInput::StandardInput"
+            "Invalid formula.";
     }
   }
 
@@ -65,6 +117,7 @@ StandardInput::StandardInput(z3::expr_vector const & conjunction,
   m_out << "Part 2: " << part_2 << std::endl;
 #endif
 
+  // (*)
   // Setting up internal data structures
   // WriteVector and DiffMap
   for(auto const & equation : part_1){
@@ -83,17 +136,11 @@ StandardInput::StandardInput(z3::expr_vector const & conjunction,
           rhs(equation).arg(2)
           );
     }
-    else if(f_name == "diff"){
+    if(f_name == "diff"){
       diff_map.add(
           lhs(rhs(equation)), 
           rhs(rhs(equation)),
           lhs(equation));
-    }
-    else{
-      // KEEP: working here
-      std::cout << 
-        "TODO: implement equality" 
-        "between var-arrays" << std::endl;
     }
   }
 
@@ -124,14 +171,6 @@ StandardInput::StandardInput(z3::expr_vector const & conjunction,
   axiom_8 = z3::mk_and(instances_axiom_8);
 
   initSaturation();
-}
-
-z3::expr StandardInput::orientBinPredicate(
-    z3::expr const & bin_predicate){
-  z3::func_decl predicate = bin_predicate.decl();
-  if(lhs(bin_predicate).num_args() > rhs(bin_predicate).num_args())
-    return predicate(rhs(bin_predicate), lhs(bin_predicate));
-  return bin_predicate;
 }
 
 void StandardInput::N_instantiate(){
@@ -184,6 +223,16 @@ void StandardInput::binaryInstantiationExtension(z3::func_decl const & f_2){
 
   for(unsigned i = 0; i < temp.size(); i++)
     current_instantiated_index_terms.push_back(temp[i]);
+}
+
+z3::expr StandardInput::fresh_index_constant(){
+  return ctx.constant((FRESH_INDEX_PREFIX 
+        + std::to_string(s_fresh_index++)).c_str(), int_sort);
+}
+
+z3::expr StandardInput::fresh_element_constant(){
+  return ctx.constant((FRESH_ELEMENT_PREFIX 
+        + std::to_string(s_fresh_index++)).c_str(), element_sort);
 }
 
 void StandardInput::initSaturation(){
@@ -305,6 +354,10 @@ void StandardInput::updateSaturation(
 
   // [18] predicates are processed in 
   // AXDInterpolant::SmtSolverSetup(z3::solver &);
+}
+
+unsigned StandardInput::get_fresh_index() const {
+  return s_fresh_index;
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput const & si){

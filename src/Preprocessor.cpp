@@ -1,9 +1,11 @@
 #include "Preprocess.h"
 
-Preprocessor::Preprocessor(z3::context & ctx, char const * file):
+Preprocessor::Preprocessor(
+    z3::context & ctx, 
+    char const * file):
   AXDSignature(ctx),
-  really_a_parser(ctx), 
-  fresh_index(0), current_conjs_in_input(0),
+  current_conjs_in_input(0),
+  fresh_index(0), 
   input_part_a(ctx), 
   input_part_b(ctx),
   part_a_index_vars(ctx), part_b_index_vars(ctx),
@@ -11,8 +13,15 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   common_array_vars({})
 {
 
+  z3::solver really_a_parser(ctx);
   really_a_parser.from_file(file);
   z3::expr_vector assertions = really_a_parser.assertions();
+
+  // NOTE:
+  // For now, it is assumed that
+  // assertions is a conjunction of two 
+  // conjunctions i.e. Part-A and Part-B
+  // are both conjunctions
   assert(assertions.size() == 2);
 
   // empty_array is a common symbol
@@ -23,14 +32,28 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
   // applications
   z3::expr const & conjunction_a = 
     removeLengthApplications(assertions[0]);
-  for(unsigned i = 0; i < conjunction_a.num_args(); ++i)
-    input_part_a.push_back(conjunction_a.arg(i));
+  for(unsigned i = 0; i < conjunction_a.num_args(); ++i){
+    //input_part_a.push_back(conjunction_a.arg(i));
+    auto const & curr_arg = conjunction_a.arg(i);
+    if(curr_arg.decl().decl_kind() == Z3_OP_EQ
+        && rhs(curr_arg).num_args() == 0)
+      input_part_a.push_back(rhs(curr_arg) == lhs(curr_arg));
+    else
+      input_part_a.push_back(curr_arg);
+  }
   // conjunction_b doesn't contain length
   // applications
   z3::expr const & conjunction_b = 
     removeLengthApplications(assertions[1]);
-  for(unsigned i = 0; i < conjunction_b.num_args(); ++i)
-    input_part_b.push_back(conjunction_b.arg(i));
+  for(unsigned i = 0; i < conjunction_b.num_args(); ++i){
+    //input_part_b.push_back(conjunction_b.arg(i));
+    auto const & curr_arg = conjunction_b.arg(i);
+    if(curr_arg.decl().decl_kind() == Z3_OP_EQ
+        && rhs(curr_arg).num_args() == 0)
+      input_part_b.push_back(rhs(curr_arg) == lhs(curr_arg));
+    else
+      input_part_b.push_back(curr_arg);
+  }
 
 #if _DEBUG_PREPROCESS_
   m_out << "Conjunction a" << std::endl;
@@ -55,8 +78,6 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
 
 #if _DEBUG_PREPROCESS_
   m_out << "Assertions " << assertions << std::endl;
-  m_out << "Part a " << conjunction_a << std::endl;
-  m_out << "Part b " << conjunction_b << std::endl;
   m_out << "Part a " << input_part_a << std::endl;
   m_out << "Part b " << input_part_b << std::endl;
   m_out << "Arrays A-local" << std::endl;
@@ -91,7 +112,9 @@ Preprocessor::Preprocessor(z3::context & ctx, char const * file):
 z3::expr Preprocessor::removeLengthApplications(z3::expr const & e){
   if(e.is_app()){
     if(e.num_args() > 0 && func_name(e) == "length")
-      return diff(removeLengthApplications(e.arg(0)), empty_array);
+      return diff(
+          removeLengthApplications(e.arg(0)), 
+          empty_array);
 
     z3::func_decl f_name = e.decl();
     z3::expr_vector args(ctx);
@@ -109,8 +132,17 @@ void Preprocessor::flattenPredicate(
     SideInterpolant side){
   switch(formula.decl().decl_kind()){
     case Z3_OP_EQ:       // ==
-      flattenTerm(lhs(formula), side);
-      flattenTerm(rhs(formula), side);
+      {
+        auto const & lhs_form = lhs(formula);
+        if(lhs_form.num_args() == 0){
+          updateVarsDB(lhs_form, 
+              lhs_form.decl().range(), 
+              side);
+          flattenTerm(rhs(formula), side);
+        }
+        else
+          flattenPredicateAux(formula, side);
+      }
       return;
     case Z3_OP_DISTINCT: // !=
     case Z3_OP_GE:       // >=
@@ -138,26 +170,17 @@ void Preprocessor::flattenPredicateAux(
   z3::expr_vector fresh_consts(ctx);
   z3::expr_vector temp_predicates(ctx);
 
-  if(lhs(atomic_predicate).num_args() == 0){
-    if(rhs(atomic_predicate).num_args() == 0){
-      // Nothing to do
-    }
-    else{
-      old_terms.push_back(rhs(atomic_predicate));
-      fresh_consts.push_back(fresh_constant(rhs(atomic_predicate).decl().range()));
-    }
+  auto const & lhs_atom = lhs(atomic_predicate);
+  if(lhs_atom.num_args() > 0){
+    old_terms.push_back(lhs_atom);
+    fresh_consts.push_back(
+        fresh_constant(lhs_atom.decl().range()));
   }
-  else{
-    if(rhs(atomic_predicate).num_args() == 0){
-      old_terms.push_back(lhs(atomic_predicate));
-      fresh_consts.push_back(fresh_constant(lhs(atomic_predicate).decl().range()));
-    }
-    else{
-      old_terms.push_back(lhs(atomic_predicate));
-      fresh_consts.push_back(fresh_constant(lhs(atomic_predicate).decl().range()));
-      old_terms.push_back(rhs(atomic_predicate));
-      fresh_consts.push_back(fresh_constant(rhs(atomic_predicate).decl().range()));
-    }
+  auto const & rhs_atom = rhs(atomic_predicate);
+  if(rhs_atom.num_args() > 0){
+    old_terms.push_back(rhs_atom);
+    fresh_consts.push_back(
+        fresh_constant(rhs_atom.decl().range()));
   }
 
   switch(side){
@@ -293,14 +316,9 @@ void Preprocessor::removeDuplicates(z3::expr_vector & terms){
   terms = aux;
 }
 
-z3::expr Preprocessor::fresh_array_constant(){
-  return ctx.constant((FRESH_ARRAY_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), array_sort);
-}
-
-z3::expr Preprocessor::fresh_element_constant(){
-  return ctx.constant((FRESH_ELEMENT_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), element_sort);
+z3::expr Preprocessor::fresh_bool_constant(){
+  return ctx.constant((FRESH_INDEX_PREFIX 
+        + std::to_string(fresh_index++)).c_str(), bool_sort);
 }
 
 z3::expr Preprocessor::fresh_index_constant(){
@@ -308,9 +326,21 @@ z3::expr Preprocessor::fresh_index_constant(){
         + std::to_string(fresh_index++)).c_str(), int_sort);
 }
 
+z3::expr Preprocessor::fresh_element_constant(){
+  return ctx.constant((FRESH_ELEMENT_PREFIX 
+        + std::to_string(fresh_index++)).c_str(), element_sort);
+}
+
+z3::expr Preprocessor::fresh_array_constant(){
+  return ctx.constant((FRESH_ARRAY_PREFIX 
+        + std::to_string(fresh_index++)).c_str(), array_sort);
+}
+
 z3::expr Preprocessor::fresh_constant(z3::sort const & s){
   auto const & s_name = s.to_string();
 
+  if(s_name == bool_sort.to_string())
+    return fresh_bool_constant();
   if(s_name == array_sort.to_string())
     return fresh_array_constant();
   if(s_name == element_sort.to_string())

@@ -47,7 +47,9 @@ class AXDInterpolant : public Preprocessor {
       z3::solver & s, 
       StandardInput const &);
 
-  void SmtSolverSetup(z3::solver &, StandardInput const &);
+  void SmtSolverSetup(
+      z3::solver &, 
+      StandardInput const &);
   void SmtSolverOutStreamSetup(
       std::ostream &, 
       StandardInput const &);
@@ -68,14 +70,18 @@ class AXDInterpolant : public Preprocessor {
       StandardInput const &); 
 
   public: 
-  AXDInterpolant(z3::context &, char const *, char const *, unsigned);
+  AXDInterpolant(
+      z3::context &, 
+      char const *, 
+      char const *, 
+      unsigned);
 
   void z3OutputFile();
   void mathsatOutputFile();
   void directComputation();
 
   std::string defineDeclarations(std::string) const;
-  z3::expr defineDeclarations(z3::expr const &) const;
+  z3::expr    defineDeclarations(z3::expr const &) const;
 
   friend std::ostream & operator << (
       std::ostream &, AXDInterpolant const &);

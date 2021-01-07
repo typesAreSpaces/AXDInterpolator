@@ -12,12 +12,15 @@ AXDInterpolant::AXDInterpolant(
       input_part_a,
       part_a_index_vars, 
       part_a_array_vars, 
-      _theory_name),
+      _theory_name,
+      fresh_index
+      ),
   part_b(
       input_part_b,
       part_b_index_vars, 
       part_b_array_vars,
-      _theory_name),
+      _theory_name,
+      part_a.get_fresh_index()),
   m_file_name(std::string(file_name)),
   num_attempts(allowed_attempts),
   is_interpolant_computed(false), is_unsat(false),
@@ -152,7 +155,9 @@ void AXDInterpolant::liftInterpolantDiffSubs(
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
         from.push_back(k_);
-        to.push_back(diff_k(ctx.int_val(diff_iteration++), diff_a, diff_b));
+        to.push_back(diff_k(
+              ctx.int_val(diff_iteration++), 
+              diff_a, diff_b));
       }
     }
   }

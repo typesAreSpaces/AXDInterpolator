@@ -3,7 +3,6 @@
 
 #include "z3++.h"
 #define _DEBUG_STDINPUT_ 0
-#define _CHECK_PREPROCESS_INV_ 0
 
 #include <set>
 #include <utility>
@@ -13,6 +12,8 @@
 #include "AXDSignature.h"
 
 class StandardInput : public AXDSignature {
+
+  unsigned s_fresh_index;
 
   friend class AXDInterpolant;
   // DiffMap : 
@@ -75,17 +76,19 @@ class StandardInput : public AXDSignature {
   z3::expr_vector current_instantiated_index_terms;
   z3::expr index_var, axiom_8, axiom_9;
 
-  z3::expr orientBinPredicate(z3::expr const &);
   void     N_instantiate();
   void     unaryInstantiationExtension(z3::func_decl const &);
   void     binaryInstantiationExtension(z3::func_decl const &);
+
+  z3::expr fresh_index_constant();
+  z3::expr fresh_element_constant();
 
   public:
   StandardInput(
       z3::expr_vector const &, 
       z3::expr_vector &,
       z3_expr_set const &,
-      char const *);
+      char const *, unsigned);
 
   void initSaturation(); 
   void updateSaturation(
@@ -95,6 +98,8 @@ class StandardInput : public AXDSignature {
   void instantiate(z3::solver &, z3::expr &) const;
   void instantiate(std::ostream &, z3::expr &) const;
   void instantiate(z3::expr_vector &, z3::expr &) const;
+
+  unsigned get_fresh_index() const;
 
   friend std::ostream & operator << (std::ostream &, 
       StandardInput const &);

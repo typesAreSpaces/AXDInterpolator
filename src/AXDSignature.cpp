@@ -3,6 +3,7 @@
 AXDSignature::AXDSignature(z3::context & ctx) :
   ctx(ctx),
 
+  bool_sort(ctx.bool_sort()), 
   int_sort(ctx.int_sort()), 
   index_sort(ctx.int_sort()), 
   element_sort(ctx.uninterpreted_sort("ElementSort")), 

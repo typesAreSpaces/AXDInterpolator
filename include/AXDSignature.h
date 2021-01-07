@@ -35,6 +35,7 @@ struct AXDSignature {
   z3::context & ctx;
 
   z3::sort const
+    bool_sort, 
     int_sort, 
     index_sort, 
     element_sort, 
