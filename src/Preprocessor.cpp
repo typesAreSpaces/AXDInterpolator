@@ -2,7 +2,7 @@
 
 Preprocessor::Preprocessor(
     z3::context & ctx, 
-    z3::expr_vector const & assertions):
+    z3::expr const & assertions):
   AXDSignature(ctx),
   current_conjs_in_input(0),
   fresh_index(0), 
@@ -17,7 +17,7 @@ Preprocessor::Preprocessor(
   // assertions is a conjunction of two 
   // conjunctions i.e. Part-A and Part-B
   // are both conjunctions
-  assert(assertions.size() == 2);
+  assert(assertions.num_args() == 2);
 
   // empty_array is a common symbol
   part_a_array_vars.insert(empty_array);
@@ -26,7 +26,7 @@ Preprocessor::Preprocessor(
   // conjunction_a doesn't contain length
   // applications
   z3::expr const & conjunction_a = 
-    removeLengthApplications(assertions[0]);
+    removeLengthApplications(assertions.arg(0));
   for(unsigned i = 0; i < conjunction_a.num_args(); ++i){
     //input_part_a.push_back(conjunction_a.arg(i));
     auto const & curr_arg = conjunction_a.arg(i);
@@ -39,7 +39,7 @@ Preprocessor::Preprocessor(
   // conjunction_b doesn't contain length
   // applications
   z3::expr const & conjunction_b = 
-    removeLengthApplications(assertions[1]);
+    removeLengthApplications(assertions.arg(1));
   for(unsigned i = 0; i < conjunction_b.num_args(); ++i){
     //input_part_b.push_back(conjunction_b.arg(i));
     auto const & curr_arg = conjunction_b.arg(i);

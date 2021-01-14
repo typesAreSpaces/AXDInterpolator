@@ -3,7 +3,7 @@
 
 AXDInterpolant::AXDInterpolant(
     z3::context & ctx, 
-    z3::expr_vector const & assertions,
+    z3::expr const & assertions,
     char const * file_name,
     char const * _theory_name,
     unsigned allowed_attempts) : 
@@ -144,9 +144,9 @@ void AXDInterpolant::liftInterpolantDiffSubs(
   }
 }
 
-void AXDInterpolant::z3OutputFile(){
+z3::expr const & AXDInterpolant::z3OutputFile(){
   if(!is_unsat)
-    return;
+    throw "Input problem is not unsatisfiable.";
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
@@ -246,11 +246,13 @@ void AXDInterpolant::z3OutputFile(){
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_interpolant_z3.smt2").c_str());
+
+  return current_interpolant;
 }
 
-void AXDInterpolant::mathsatOutputFile(){
+z3::expr const & AXDInterpolant::mathsatOutputFile(){
   if(!is_unsat)
-    return;
+    throw "Input problem is not unsatisfiable.";
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
@@ -344,6 +346,8 @@ void AXDInterpolant::mathsatOutputFile(){
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_interpolant_mathsat.smt2").c_str());
+
+  return current_interpolant;
 }
 
 std::ostream & operator << (std::ostream & os, 

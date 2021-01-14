@@ -87,13 +87,13 @@ class AXDInterpolant : public Preprocessor {
   public: 
   AXDInterpolant(
       z3::context &, 
-      z3::expr_vector const &,
+      z3::expr const &,
       char const *, 
       char const *, 
       unsigned);
 
-  void z3OutputFile();
-  void mathsatOutputFile();
+  z3::expr const & z3OutputFile();
+  z3::expr const & mathsatOutputFile();
 
   friend std::ostream & operator << (
       std::ostream &, AXDInterpolant const &);
