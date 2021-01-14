@@ -99,26 +99,6 @@ void AXDInterpolant::loop(){
   }
 }
 
-// Precondition: 
-// part_a_vector and part_b_vector 
-// should have been updated using
-// AB_VectorsSetup
-z3::expr_vector AXDInterpolant::computeReducedInterpolant(
-    z3::expr_vector const & part_a_vector, 
-    z3::expr_vector const & part_b_vector){
-
-  z3::expr marked_formula = 
-    interpolant(z3::mk_and(part_a_vector)) 
-    && z3::mk_and(part_b_vector);
-
-  z3::expr_vector interpolant = ctx.get_interpolant(
-      solver.proof(),
-      marked_formula,
-      z3::params(ctx));
-
-  return interpolant;
-}
-
 z3::expr AXDInterpolant::liftInterpolant(
     z3::expr_vector const & interpolant){
 
@@ -363,48 +343,6 @@ void AXDInterpolant::mathsatOutputFile(){
 
   system(("rm -rf " + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_interpolant_mathsat.smt2").c_str());
-}
-
-void AXDInterpolant::directComputation(){
-  if(!is_unsat)
-    return;
-  z3::expr_vector _part_a_vector(ctx);
-  z3::expr_vector _part_b_vector(ctx);
-  AB_VectorsSetup(_part_a_vector, part_a);
-  AB_VectorsSetup(_part_b_vector, part_b);
-
-  z3::expr_vector part_a_vector(ctx);
-  z3::expr_vector part_b_vector(ctx);
-
-  for(auto const & x : _part_a_vector)
-    part_a_vector.push_back(defineDeclarations(x));
-  for(auto const & x : _part_b_vector)
-    part_b_vector.push_back(defineDeclarations(x));
-
-  z3::expr_vector reduced_interpolant = 
-    computeReducedInterpolant(
-        part_a_vector, part_b_vector);
-
-  is_interpolant_computed = true;
-  current_interpolant = liftInterpolant(reduced_interpolant)
-#if _SIMPLIFY_OUTPUT
-    .simplify()
-#endif
-    ;
-
-#if _TEST_OUTPUT_
-  if(testOutput(
-        reduced_interpolant, 
-        part_a_vector, part_b_vector)
-    )
-    std::cerr
-      << "Successful Test: formula is an interpolant" 
-      << std::endl;
-  else
-    std::cerr
-      << "Unsuccessful Test: formula isn't an interpolant" 
-      << std::endl;
-#endif
 }
 
 std::ostream & operator << (std::ostream & os, 

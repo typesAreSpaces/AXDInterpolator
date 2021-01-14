@@ -27,6 +27,21 @@
 
 class AXDInterpolant : public Preprocessor {
 
+  class CircularPairIterator {
+    friend class AXDInterpolant;
+
+    z3_expr_set const & vars;
+    z3_expr_set::iterator first, second;
+
+    void avoidLowerDiagonal();
+
+    public:
+    CircularPairIterator(z3_expr_set const &);
+    void next();
+    StandardInput::DiffMap::z3_expr_pair operator *() const;
+  };
+
+
   z3::solver    solver;
   StandardInput part_a, part_b;
   std::string   m_file_name;
@@ -57,17 +72,16 @@ class AXDInterpolant : public Preprocessor {
       z3::expr_vector &, 
       StandardInput const &);
 
-  z3::expr_vector computeReducedInterpolant(
-      z3::expr_vector const &, 
-      z3::expr_vector const &);
-
   z3::expr QF_TO_Rewriter(z3::expr const &);
   z3::expr QF_TO_RewriterAux(z3::expr const &);
+
   z3::expr liftInterpolant(z3::expr_vector const &); 
   void liftInterpolantDiffSubs(
       z3::expr_vector &, 
       z3::expr_vector &, 
       StandardInput const &); 
+
+  std::string defineDeclarations(std::string) const;
 
   public: 
   AXDInterpolant(
@@ -78,30 +92,9 @@ class AXDInterpolant : public Preprocessor {
 
   void z3OutputFile();
   void mathsatOutputFile();
-  void directComputation();
-
-  std::string defineDeclarations(std::string) const;
-  z3::expr    defineDeclarations(z3::expr const &) const;
 
   friend std::ostream & operator << (
       std::ostream &, AXDInterpolant const &);
-
-  class CircularPairIterator {
-    friend class AXDInterpolant;
-
-    z3_expr_set const & vars;
-    z3_expr_set::iterator first, second;
-
-    void avoidLowerDiagonal();
-
-    public:
-    CircularPairIterator(z3_expr_set const &);
-    void next();
-    StandardInput::DiffMap::z3_expr_pair operator *() const;
-
-    friend std::ostream & operator << (
-        std::ostream &, CircularPairIterator const &);
-  };
 };
 
 #endif

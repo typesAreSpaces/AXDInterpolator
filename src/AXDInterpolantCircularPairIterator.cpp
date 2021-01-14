@@ -25,9 +25,3 @@ void AXDInterpolant::CircularPairIterator::avoidLowerDiagonal(){
   while(!Z3ExprComparator()(*first, *second)) 
     next();
 }
-
-std::ostream & operator << (std::ostream & os, 
-    AXDInterpolant::CircularPairIterator const & cpi){
-  return os << *cpi.first << ", " << *cpi.second;
-}
-
