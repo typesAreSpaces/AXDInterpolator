@@ -2,7 +2,7 @@
 
 Preprocessor::Preprocessor(
     z3::context & ctx, 
-    char const * file):
+    z3::expr_vector const & assertions):
   AXDSignature(ctx),
   current_conjs_in_input(0),
   fresh_index(0), 
@@ -12,11 +12,6 @@ Preprocessor::Preprocessor(
   part_a_array_vars({}), part_b_array_vars({}), 
   common_array_vars({})
 {
-
-  z3::solver really_a_parser(ctx);
-  really_a_parser.from_file(file);
-  z3::expr_vector assertions = really_a_parser.assertions();
-
   // NOTE:
   // For now, it is assumed that
   // assertions is a conjunction of two 

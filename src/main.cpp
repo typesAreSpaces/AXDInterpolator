@@ -7,11 +7,15 @@ int main(int argc, char * argv[]){
   z3::context ctx;
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
+  z3::solver input_parser(ctx);
+  input_parser.from_file(argv[2]);
 
   switch(argc){
     case 5:
       try {
         AXDInterpolant axd(ctx, 
+            // Input formula
+            input_parser.assertions(),
             // Smt2 file name
             argv[2], 
             // Theory

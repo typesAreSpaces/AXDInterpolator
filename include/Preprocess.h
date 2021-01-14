@@ -52,7 +52,7 @@ class Preprocessor : public AXDSignature {
   z3::expr fresh_constant(z3::sort const &);
 
   public:
-  Preprocessor(z3::context &, char const *);
+  Preprocessor(z3::context &, z3::expr_vector const &);
 };
 
 #endif

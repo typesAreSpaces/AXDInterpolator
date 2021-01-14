@@ -3,10 +3,11 @@
 
 AXDInterpolant::AXDInterpolant(
     z3::context & ctx, 
+    z3::expr_vector const & assertions,
     char const * file_name,
     char const * _theory_name,
     unsigned allowed_attempts) : 
-  Preprocessor(ctx, file_name),
+  Preprocessor(ctx, assertions),
   solver(ctx), 
   part_a(
       input_part_a,
@@ -155,7 +156,7 @@ void AXDInterpolant::z3OutputFile(){
   z3_file 
     << "(set-option :produce-interpolants true)" 
     << std::endl;
-  // TODO: define the following more precisely
+  // Setup logic engine
   z3_file << "(set-logic " << (
         (strcmp(theory_name, "QF_TO") == 0 || 
          strcmp(theory_name, "QF_IDL") == 0) ? 
@@ -258,7 +259,7 @@ void AXDInterpolant::mathsatOutputFile(){
   mathsat_file 
     << "(set-option :produce-interpolants true)" 
     << std::endl;
-  // TODO: define the following more precisely
+  // Setup logic engine
   mathsat_file << "(set-logic " << (
         (strcmp(theory_name, "QF_TO") == 0 || 
          strcmp(theory_name, "QF_IDL") == 0) ? 

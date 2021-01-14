@@ -1,6 +1,7 @@
 #ifndef _AXD_INTERPOLANT_
 #define _AXD_INTERPOLANT_
 
+#include "z3++.h"
 #define _SIMPLIFY_OUTPUT      0
 #define _DEBUG_QF_TO_REWRITER 0
 #define _DEBUG_AXD_INTER_     0
@@ -86,6 +87,7 @@ class AXDInterpolant : public Preprocessor {
   public: 
   AXDInterpolant(
       z3::context &, 
+      z3::expr_vector const &,
       char const *, 
       char const *, 
       unsigned);
