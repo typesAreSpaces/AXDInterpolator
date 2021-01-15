@@ -29,9 +29,6 @@ int main(int argc, char * argv[]){
   auto const & part_a = my_tactic(goal_a);
   auto const & part_b = my_tactic(goal_b);
 
-  //for(unsigned i = 0; i < output.size(); i++)
-  //std::cout << output[i].as_expr() << std::endl;
-
   switch(argc){
     case 5:
       try {
@@ -39,8 +36,8 @@ int main(int argc, char * argv[]){
           for(unsigned j = 0; j < part_b.size(); j++){
             AXDInterpolant axd(ctx, 
                 // Input formula
-                // TODO: Fix/Extend language elements
-                part_a[i].as_expr() && part_b[j].as_expr(),
+                part_a[i].as_expr() 
+                && part_b[j].as_expr(),
                 // Smt2 file name
                 argv[2], 
                 // Theory

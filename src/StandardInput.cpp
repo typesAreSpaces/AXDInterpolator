@@ -42,6 +42,12 @@ StandardInput::StandardInput(
   // Splitting input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
+    if(current_arg.decl().decl_kind() == Z3_OP_UNINTERPRETED
+        && current_arg.get_sort().to_string() == bool_sort.to_string()){
+      part_2.push_back(current_arg);
+      continue;
+    }
+
     // Invariant from Preprocess.cpp
     assert(
         lhs(current_arg).num_args() <= 
@@ -71,11 +77,12 @@ StandardInput::StandardInput(
             // Equations of the form i = diff(a, b), 
             // a = wr(b, i, e) will be processed 
             // in the for loop (*)
-            else 
+            else
               part_1.push_back(current_arg);
           }
           else
             part_2.push_back(current_arg);
+
           break;
         }
       case Z3_OP_DISTINCT: // !=
