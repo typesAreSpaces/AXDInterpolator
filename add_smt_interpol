@@ -7,9 +7,10 @@ if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +97 include/AXDInterpolant.h
+badd +1 include/AXDInterpolant.h
 badd +149 src/AXDInterpolant.cpp
-badd +185 src/AXDInterpolantOutputFile.cpp
+badd +248 src/AXDInterpolantOutputFile.cpp
+badd +55 src/main.cpp
 argglobal
 %argdel
 edit include/AXDInterpolant.h
@@ -31,10 +32,10 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 64 + 130) / 260)
-exe 'vert 2resize ' . ((&columns * 65 + 130) / 260)
-exe 'vert 3resize ' . ((&columns * 64 + 130) / 260)
-exe 'vert 4resize ' . ((&columns * 64 + 130) / 260)
+exe 'vert 1resize ' . ((&columns * 71 + 144) / 288)
+exe 'vert 2resize ' . ((&columns * 71 + 144) / 288)
+exe 'vert 3resize ' . ((&columns * 71 + 144) / 288)
+exe 'vert 4resize ' . ((&columns * 72 + 144) / 288)
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -45,7 +46,7 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 97 - ((37 * winheight(0) + 20) / 40)
+let s:l = 97 - ((34 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
@@ -63,54 +64,54 @@ setlocal fml=1
 setlocal fdn=20
 setlocal fen
 silent! normal! zE
-let s:l = 52 - ((21 * winheight(0) + 20) / 40)
+let s:l = 65 - ((18 * winheight(0) + 18) / 37)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-52
-normal! 017|
-wincmd w
-argglobal
-if bufexists("src/AXDInterpolantOutputFile.cpp") | buffer src/AXDInterpolantOutputFile.cpp | else | edit src/AXDInterpolantOutputFile.cpp | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 156 - ((6 * winheight(0) + 20) / 40)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-156
-normal! 05|
-wincmd w
-argglobal
-if bufexists("src/AXDInterpolantOutputFile.cpp") | buffer src/AXDInterpolantOutputFile.cpp | else | edit src/AXDInterpolantOutputFile.cpp | endif
-setlocal fdm=manual
-setlocal fde=0
-setlocal fmr={{{,}}}
-setlocal fdi=#
-setlocal fdl=0
-setlocal fml=1
-setlocal fdn=20
-setlocal fen
-silent! normal! zE
-let s:l = 267 - ((2 * winheight(0) + 20) / 40)
-if s:l < 1 | let s:l = 1 | endif
-exe s:l
-normal! zt
-267
+65
 normal! 0
 wincmd w
-3wincmd w
-exe 'vert 1resize ' . ((&columns * 64 + 130) / 260)
-exe 'vert 2resize ' . ((&columns * 65 + 130) / 260)
-exe 'vert 3resize ' . ((&columns * 64 + 130) / 260)
-exe 'vert 4resize ' . ((&columns * 64 + 130) / 260)
+argglobal
+if bufexists("src/AXDInterpolantOutputFile.cpp") | buffer src/AXDInterpolantOutputFile.cpp | else | edit src/AXDInterpolantOutputFile.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 155 - ((23 * winheight(0) + 18) / 37)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+155
+normal! 04|
+wincmd w
+argglobal
+if bufexists("src/AXDInterpolantOutputFile.cpp") | buffer src/AXDInterpolantOutputFile.cpp | else | edit src/AXDInterpolantOutputFile.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 251 - ((16 * winheight(0) + 18) / 37)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+251
+normal! 03|
+wincmd w
+4wincmd w
+exe 'vert 1resize ' . ((&columns * 71 + 144) / 288)
+exe 'vert 2resize ' . ((&columns * 71 + 144) / 288)
+exe 'vert 3resize ' . ((&columns * 71 + 144) / 288)
+exe 'vert 4resize ' . ((&columns * 72 + 144) / 288)
 tabnext 1
 if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
