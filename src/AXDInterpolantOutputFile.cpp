@@ -1,5 +1,30 @@
 #include "AXDInterpolant.h"
 
+#define TEST_OUTPUT_CODE(SOLVER) \
+  z3::expr_vector _part_a_vector(ctx); \
+  z3::expr_vector _part_b_vector(ctx); \
+  AB_VectorsSetup(_part_a_vector, part_a); \
+  AB_VectorsSetup(_part_b_vector, part_b); \
+ \
+  z3::expr_vector part_a_vector(ctx); \
+  z3::expr_vector part_b_vector(ctx); \
+  for(auto const & x : _part_a_vector) \
+    part_a_vector.push_back(defineDeclarations(x)); \
+  for(auto const & x : _part_b_vector) \
+    part_b_vector.push_back(defineDeclarations(x)); \
+ \
+  if(testOutput( \
+        SOLVER_parser.assertions(),  \
+        part_a_vector, part_b_vector) \
+    ) \
+    std::cerr \
+      << "Successful Test: formula is an interpolant"  \
+      << std::endl; \
+  else \
+    std::cerr \
+      << "Unsuccessful Test: formula isn't an interpolant"  \
+      << std::endl; \
+
 z3::expr const & AXDInterpolant::z3OutputFile(){
   if(!is_unsat)
     throw "Input problem is not unsatisfiable.";
@@ -72,30 +97,7 @@ z3::expr const & AXDInterpolant::z3OutputFile(){
     ;
 
 #if _TEST_OUTPUT_
-  z3::expr_vector _part_a_vector(ctx);
-  z3::expr_vector _part_b_vector(ctx);
-  AB_VectorsSetup(_part_a_vector, part_a);
-  AB_VectorsSetup(_part_b_vector, part_b);
-
-  z3::expr_vector part_a_vector(ctx);
-  z3::expr_vector part_b_vector(ctx);
-
-  for(auto const & x : _part_a_vector)
-    part_a_vector.push_back(defineDeclarations(x));
-  for(auto const & x : _part_b_vector)
-    part_b_vector.push_back(defineDeclarations(x));
-
-  if(testOutput(
-        z3_parser.assertions(), 
-        part_a_vector, part_b_vector)
-    )
-    std::cerr
-      << "Successful Test: formula is an interpolant" 
-      << std::endl;
-  else
-    std::cerr
-      << "Unsuccessful Test: formula isn't an interpolant" 
-      << std::endl;
+  TEST_OUTPUT_CODE(z3);
 #endif
 
   return current_interpolant;
@@ -168,29 +170,7 @@ z3::expr const & AXDInterpolant::mathsatOutputFile(){
     ;
 
 #if _TEST_OUTPUT_
-  z3::expr_vector _part_a_vector(ctx);
-  z3::expr_vector _part_b_vector(ctx);
-  AB_VectorsSetup(_part_a_vector, part_a);
-  AB_VectorsSetup(_part_b_vector, part_b);
-
-  z3::expr_vector part_a_vector(ctx);
-  z3::expr_vector part_b_vector(ctx);
-  for(auto const & x : _part_a_vector)
-    part_a_vector.push_back(defineDeclarations(x));
-  for(auto const & x : _part_b_vector)
-    part_b_vector.push_back(defineDeclarations(x));
-
-  if(testOutput(
-        mathsat_parser.assertions(), 
-        part_a_vector, part_b_vector)
-    )
-    std::cerr
-      << "Successful Test: formula is an interpolant" 
-      << std::endl;
-  else
-    std::cerr
-      << "Unsuccessful Test: formula isn't an interpolant" 
-      << std::endl;
+  TEST_OUTPUT_CODE(mathsat);
 #endif
 
   return current_interpolant;
@@ -246,14 +226,19 @@ z3::expr const & AXDInterpolant::smtInterpolOutputFile(){
   std::getline(result, line);
   interpolant_from_file += solver.to_smt2_decls_only();
   interpolant_from_file += "(assert \n";
-  std::getline(result, line);
   // SMTINTERPOL returns a single
   // line containing a list
-  // of all the sequence interpolants
+  // of sequence interpolants
   // Thus, we remove the initial and
   // last character which are '(' and ')' 
   // respectively
-  interpolant_from_file += line.substr(1, line.size() - 2) + "\n";
+  std::getline(result, line);
+  interpolant_from_file += line.erase(0, 1) + "\n";
+  while(std::getline(result, line))
+    interpolant_from_file += line + "\n";
+  // The following removes the last parenthesis 
+  // and the extra '\n'
+  interpolant_from_file.erase(interpolant_from_file.size() - 2, 2);
   // Only one parenthesis is needed to close
   // the above since the content of (interpolant *)
   // includes an additional parenthesis
@@ -274,30 +259,7 @@ z3::expr const & AXDInterpolant::smtInterpolOutputFile(){
     ;
 
 #if _TEST_OUTPUT_
-  z3::expr_vector _part_a_vector(ctx);
-  z3::expr_vector _part_b_vector(ctx);
-  AB_VectorsSetup(_part_a_vector, part_a);
-  AB_VectorsSetup(_part_b_vector, part_b);
-
-  z3::expr_vector part_a_vector(ctx);
-  z3::expr_vector part_b_vector(ctx);
-
-  for(auto const & x : _part_a_vector)
-    part_a_vector.push_back(defineDeclarations(x));
-  for(auto const & x : _part_b_vector)
-    part_b_vector.push_back(defineDeclarations(x));
-
-  if(testOutput(
-        smtinterpol_parser.assertions(), 
-        part_a_vector, part_b_vector)
-    )
-    std::cerr
-      << "Successful Test: formula is an interpolant" 
-      << std::endl;
-  else
-    std::cerr
-      << "Unsuccessful Test: formula isn't an interpolant" 
-      << std::endl;
+  TEST_OUTPUT_CODE(smtinterpol);
 #endif
 
   return current_interpolant;
