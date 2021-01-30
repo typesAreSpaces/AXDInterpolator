@@ -51,6 +51,9 @@ int main(int argc, char * argv[]){
               case '1':
                 std::cout << axd.mathsatOutputFile() << std::endl;
                 break;
+              case '2':
+                std::cout << axd.smtInterpolOutputFile() << std::endl;
+                break;
               default:
                 std::cerr 
                   << "Not valid SMT solver option."

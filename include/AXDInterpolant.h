@@ -94,6 +94,7 @@ class AXDInterpolant : public Preprocessor {
 
   z3::expr const & z3OutputFile();
   z3::expr const & mathsatOutputFile();
+  z3::expr const & smtInterpolOutputFile();
 
   friend std::ostream & operator << (
       std::ostream &, AXDInterpolant const &);
