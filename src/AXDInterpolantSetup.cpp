@@ -1,4 +1,5 @@
 #include "AXDInterpolant.h"
+#include "z3++.h"
 
 #define SETUP(VAR, COMMAND) \
   for(auto const & assertion : side_part.part_2) \
@@ -45,7 +46,7 @@
     \
     z3::expr axiom_18 = z3::implies( \
         side_part.index_var > diff_seq[last_one],  \
-        z3::mk_or(disj_equalities)); \
+        (disj_equalities.size() == 1 ? (disj_equalities[0]) : (z3::mk_or(disj_equalities)))); \
     side_part.instantiate(VAR, axiom_18); \
   } \
 

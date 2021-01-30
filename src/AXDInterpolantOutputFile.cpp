@@ -227,7 +227,7 @@ z3::expr const & AXDInterpolant::smtInterpolOutputFile(){
   SmtSolverOutStreamSetup(smtinterpol_file, part_b);
   smtinterpol_file << ") :named part_b))" << std::endl;
   smtinterpol_file << "(check-sat)" << std::endl;
-  smtinterpol_file << "(get-interpolant part_a part_b)" << std::endl;
+  smtinterpol_file << "(get-interpolants part_a part_b)" << std::endl;
 
   // Obtain reduced interpolant in temp.smt2
   system(("java -jar " + CURRENT_DIR 
@@ -246,8 +246,14 @@ z3::expr const & AXDInterpolant::smtInterpolOutputFile(){
   std::getline(result, line);
   interpolant_from_file += solver.to_smt2_decls_only();
   interpolant_from_file += "(assert \n";
-  while(std::getline(result, line))
-    interpolant_from_file += line + "\n";
+  std::getline(result, line);
+  // SMTINTERPOL returns a single
+  // line containing a list
+  // of all the sequence interpolants
+  // Thus, we remove the initial and
+  // last character which are '(' and ')' 
+  // respectively
+  interpolant_from_file += line.substr(1, line.size() - 2) + "\n";
   // Only one parenthesis is needed to close
   // the above since the content of (interpolant *)
   // includes an additional parenthesis
@@ -257,9 +263,7 @@ z3::expr const & AXDInterpolant::smtInterpolOutputFile(){
 
   // Lift interpolant to MaxDiff(Index Theory)
   z3::solver smtinterpol_parser(ctx);
-  smtinterpol_parser.from_file((
-        OUTPUT_DIR + "/" + m_file_name 
-        + "_reduced_interpolant_smtinterpol.smt2").c_str());
+  smtinterpol_parser.from_string(interpolant_from_file.c_str());
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
