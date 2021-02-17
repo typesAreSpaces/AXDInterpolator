@@ -2,16 +2,6 @@
 #define _AXD_INTERPOLANT_
 
 #include "z3++.h"
-#define _SIMPLIFY_OUTPUT      0
-#define _DEBUG_QF_TO_REWRITER 0
-#define _DEBUG_AXD_INTER_     0
-#define _DEBUG_AXD_LOOP_      1
-#define _TEST_OUTPUT_         0
-#define _TEST_ORIGINAL_INPUT_ 0
-
-#define CURRENT_DIR std::string("replace_once")
-#define OUTPUT_DIR CURRENT_DIR + std::string("/output")
-
 #include <iostream>
 #include <utility>
 #include <set>
@@ -19,6 +9,16 @@
 #include <fstream>
 #include "Preprocess.h"
 #include "StandardInput.h"
+
+#define _SIMPLIFY_OUTPUT      0
+#define _DEBUG_QF_TO_REWRITER 0
+#define _DEBUG_AXD_INTER_     0
+#define _DEBUG_AXD_LOOP_      0
+#define _TEST_OUTPUT_         0
+#define _TEST_ORIGINAL_INPUT_ 0
+
+#define CURRENT_DIR std::string("replace_once")
+#define OUTPUT_DIR CURRENT_DIR + std::string("/output")
 
 // Notes:
 // The input file is a smt2 file
