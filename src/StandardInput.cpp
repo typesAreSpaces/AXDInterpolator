@@ -111,11 +111,11 @@ StandardInput::StandardInput(
       case Z3_OP_LE:       // <=
       case Z3_OP_GT:       // >
       case Z3_OP_LT:       // <
-          part_2.push_back(current_arg);
-          break;
+        part_2.push_back(current_arg);
+        break;
       default:
-          throw "Problem @ StandardInput::StandardInput"
-            "Invalid formula.";
+        throw "Problem @ StandardInput::StandardInput"
+          "Invalid formula.";
     }
   }
 

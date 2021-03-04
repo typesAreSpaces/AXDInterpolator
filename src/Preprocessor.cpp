@@ -26,7 +26,7 @@ Preprocessor::Preprocessor(
   // conjunction_a doesn't contain length
   // applications
   z3::expr const & conjunction_a = 
-     remove_Not_Length_Apps(assertions.arg(0));
+    remove_Not_Length_Apps(assertions.arg(0));
   for(unsigned i = 0; i < conjunction_a.num_args(); ++i){
     auto const & curr_arg = conjunction_a.arg(i);
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ
@@ -78,7 +78,7 @@ Preprocessor::Preprocessor(
   m_out << "Arrays B-local" << std::endl;
   m_out << part_b_array_vars << std::endl;
 #endif
-   
+
   // Compute Common Array Var Ids
   for(auto iterator_a = part_a_array_vars.begin(); 
       iterator_a != part_a_array_vars.end(); ++iterator_a){
@@ -144,7 +144,7 @@ z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
 
     if(e.num_args() == 0)
       return e;
-    
+
     z3::func_decl f_name = e.decl();
     z3::expr_vector args(ctx);
     for(unsigned i = 0; i < e.num_args(); ++i)
