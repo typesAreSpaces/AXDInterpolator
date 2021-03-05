@@ -36,8 +36,7 @@ all: tests/one
 # ----------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.so:
-	CURRENT_DIR=$$(pwd) \
-							&& perl -i -pe"s|replace_once|$$CURRENT_DIR|g" ./include/AXDInterpolant.h
+	CURRENT_DIR=$$(pwd); perl -i -pe"s|replace_once|$${CURRENT_DIR}|g" ./include/AXDInterpolant.h
 ifeq ($(OS), Darwin)
 	cp ./lib/for_mac_libz3.so ./lib/libz3.so
 else
@@ -104,8 +103,7 @@ z3_check:
 # ------------------------------
 .PHONY: clean
 clean:
-	CURRENT_DIR=$$(pwd) \
-							&& perl -i -pe"s|$${CURRENT_DIR}|replace_once|g" ./include/AXDInterpolant.h
+	CURRENT_DIR=$$(pwd); perl -i -pe"s|$${CURRENT_DIR}|replace_once|g" ./include/AXDInterpolant.h
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
