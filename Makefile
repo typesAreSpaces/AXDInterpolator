@@ -23,9 +23,9 @@ THEORY=QF_TO
 #THEORY=QF_UTVPI
 #THEORY=QF_LIA
 
-#FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
+FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
-FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
+#FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
@@ -36,7 +36,7 @@ all: tests/one
 # ----------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.so:
-	CURRENT_DIR=$$(pwd); sed -i "s|replace_once|$${CURRENT_DIR}|g" ./include/AXDInterpolant.h
+	CURRENT_DIR=$$(pwd); perl -i -pe"s|replace_once|$${CURRENT_DIR}|g" ./include/AXDInterpolant.h
 ifeq ($(OS), Darwin)
 	cp ./lib/for_mac_libz3.so ./lib/libz3.so
 else
@@ -103,7 +103,7 @@ z3_check:
 # ------------------------------
 .PHONY: clean
 clean:
-	CURRENT_DIR=$$(pwd); sed -i "s|$${CURRENT_DIR}|replace_once|g" ./include/AXDInterpolant.h
+	CURRENT_DIR=$$(pwd); perl -i -pe"s|$${CURRENT_DIR}|replace_once|g" ./include/AXDInterpolant.h
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
