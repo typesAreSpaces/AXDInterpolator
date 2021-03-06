@@ -1,0 +1,427 @@
+./bin/axd_interpolator \
+	QF_TO ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2 0 100
+Solving file ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
+(let ((a!1 (= (rd b (diff_ 4 b a)) (rd a (diff_ 4 b a))))
+      (a!2 (+ (diff_ 2 b a) (* (- 1) (diff_ 3 b a))))
+      (a!3 (or (not (<= (diff_ 2 b a) 0)) (not (>= (diff_ 2 b a) 0))))
+      (a!5 (= (rd b (diff_ 2 b a)) (rd a (diff_ 2 b a))))
+      (a!6 (+ (diff_ 3 b a) (* (- 1) (diff_ 4 b a))))
+      (a!7 (= (rd b (diff_ 3 b a)) (rd a (diff_ 3 b a))))
+      (a!8 (or (not (<= (diff_ 3 b a) 0)) (not (>= (diff_ 3 b a) 0))))
+      (a!9 (<= 0 (+ (* (- 1) (diff_ 3 b a)) (diff_ 4 b a))))
+      (a!19 (or (<= (diff_ 4 b a) 0) (not (<= (diff_ 3 b a) 0))))
+      (a!22 (or (not (<= (diff_ 4 b a) 0)) (not (>= (diff_ 4 b a) 0))))
+      (a!23 (= (rd a (diff_ 4 b a)) (rd b (diff_ 4 b a))))
+      (a!40 (+ (diff_ 1 b a) (* (- 1) (diff_ 2 b a))))
+      (a!41 (or (not (<= (diff_ 1 b a) 0)) (not (>= (diff_ 1 b a) 0))))
+      (a!43 (= (rd a (diff_ 3 b a)) (rd b (diff_ 3 b a))))
+      (a!44 (= (rd b (diff_ 1 b a)) (rd a (diff_ 1 b a))))
+      (a!49 (<= 0 (+ (* (- 1) (diff_ 2 b a)) (diff_ 3 b a))))
+      (a!86 (not (= (rd a (diff_ 2 b a)) (rd b (diff_ 2 b a)))))
+      (a!97 (<= 0 (+ (* (- 1) (diff_ 2 b a)) (diff_ 1 b a))))
+      (a!98 (<= 0 (+ (diff_ 2 b a) (* (- 1) (diff_ 1 b a)))))
+      (a!105 (not (= (rd a (diff_ 1 b a)) (rd b (diff_ 1 b a))))))
+(let ((a!4 (or (not (<= (diff_ 1 b a) 0)) (<= a!2 0)))
+      (a!10 (and (or (not a!9) (p3 (diff_ 3 b a))) (<= 0 a!6)))
+      (a!11 (and a!1 (or (<= (diff_ 4 b a) 0) (not a!1))))
+      (a!12 (and (p1 (diff_ 3 b a)) (or (<= (diff_ 3 b a) 0) a!1)))
+      (a!24 (or a!1
+                (<= a!6 0)
+                (p2 (diff_ 3 b a))
+                (and a!7 (or (<= a!6 0) (not a!7)))
+                (= (not a!23) a!1)))
+      (a!28 (and a!5
+                 (or (not a!5) (not a!3))
+                 (>= (diff_ 4 b a) 0)
+                 (>= a!2 0)
+                 (>= a!6 0)))
+      (a!29 (and (or (not (<= a!2 0)) (not a!3))
+                 (>= (diff_ 4 b a) 0)
+                 (>= a!2 0)
+                 (>= a!6 0)
+                 (<= a!2 0)))
+      (a!42 (and (or (not (<= a!40 0)) (not a!41))
+                 (>= (diff_ 4 b a) 0)
+                 (<= a!40 0)))
+      (a!45 (and a!43
+                 (= 0 (diff_ 3 b a))
+                 (<= (diff_ 3 b a) 0)
+                 (>= (diff_ 3 b a) 0)
+                 (>= a!6 0)))
+      (a!47 (and (or (<= (diff_ 4 b a) 0) (not a!1)) (or (<= a!6 0) a!1)))
+      (a!50 (and (or (not (<= a!6 0)) (not a!8))
+                 (p1 (diff_ 3 b a))
+                 (or (<= a!6 0) a!1)))
+      (a!52 (and (or (not (<= a!2 0)) (not a!3))
+                 (or (not a!49) (p1 (diff_ 2 b a)))
+                 (<= 0 a!2)
+                 (<= a!2 0)))
+      (a!56 (and a!43
+                 (= 0 (diff_ 3 b a))
+                 (<= (diff_ 3 b a) 0)
+                 (>= (diff_ 3 b a) 0)))
+      (a!99 (and (or (not a!97) (p2 (diff_ 2 b a))) a!98)))
+(let ((a!13 (or a!12 (<= a!2 0) a!1 (not (<= (diff_ 3 b a) 0))))
+      (a!25 (and (not (<= (diff_ 4 b a) 0)) (or (not a!1) (not a!22)) a!24))
+      (a!30 (and (or (p2 (diff_ 2 b a)) a!28 a!29) (>= a!2 0) (>= a!6 0)))
+      (a!46 (and (or (not (>= a!6 0)) a!45) (>= a!6 0)))
+      (a!51 (and (or (not (<= a!2 0)) (not a!3))
+                 (or (not a!49) (p1 (diff_ 2 b a)))
+                 (<= 0 a!2)
+                 (or (<= a!2 0) a!50)))
+      (a!53 (and (or (not (<= a!2 0)) (not a!3))
+                 (or (not a!49) (p1 (diff_ 2 b a)))
+                 (<= 0 a!2)
+                 (or (<= a!2 0) a!52))))
+(let ((a!14 (or (and (or (not a!7) (not a!8)) a!13 (or a!7 a!12 (<= a!2 0) a!1))
+                (<= a!2 0)))
+      (a!26 (or (p3 a!6)
+                a!25
+                (p2 (diff_ 3 b a))
+                (and a!7 (or (<= a!6 0) (not a!7)))))
+      (a!31 (and (p1 (diff_ 3 b a)) (or a!30 a!28 a!29)))
+      (a!48 (and (or a!10 a!46)
+                 a!19
+                 (or (not (<= a!6 0)) (not a!8))
+                 (or a!47 a!45)))
+      (a!54 (and (or (not (<= a!2 0)) (not a!3))
+                 (or (not a!49) (p1 (diff_ 2 b a)))
+                 (<= 0 a!2)
+                 (or (<= a!2 0) a!51 a!52 a!53))))
+(let ((a!15 (and (or (<= (diff_ 4 b a) 0) (not a!1)) a!14 (>= a!6 0)))
+      (a!27 (and a!26 (>= (diff_ 4 b a) 0) (or (not a!1) (not a!22)) a!24))
+      (a!32 (or (p2 (diff_ 3 b a)) (and a!7 (or (<= a!6 0) (not a!7))) a!31))
+      (a!36 (and (or (p3 (diff_ 2 b a)) a!31) (>= a!2 0) (>= a!6 0)))
+      (a!55 (and (or (<= (diff_ 4 b a) 0) (not a!1))
+                 (or (not (<= a!2 0)) (not a!3))
+                 (or (not a!49) (p1 (diff_ 2 b a)))
+                 (<= 0 a!2)
+                 (>= (diff_ 3 b a) 0)
+                 (>= a!40 0)
+                 (or (not a!44) (not a!41))
+                 (or a!44 a!54 a!52)
+                 (>= a!6 0)))
+      (a!57 (and (or (not (<= a!2 0)) (not a!3))
+                 (or (not a!49) (p1 (diff_ 2 b a)))
+                 (<= 0 a!2)
+                 (>= (diff_ 3 b a) 0)
+                 (>= a!40 0)
+                 (or (not a!44) (not a!41))
+                 (or a!44 a!54 a!52))))
+(let ((a!16 (or (<= a!2 0)
+                (and a!5 (or (not a!5) (<= a!2 0)))
+                a!15
+                (not (>= a!6 0))))
+      (a!33 (and (p1 (diff_ 2 b a)) a!32 (>= a!2 0) (>= a!6 0)))
+      (a!37 (or (p2 (diff_ 3 b a))
+                (and a!7 (or (<= a!6 0) (not a!7)))
+                (and (p1 (diff_ 3 b a)) (or a!36 a!31))))
+      (a!58 (and (or (p2 (diff_ 3 b a)) a!56 (<= a!2 0) a!57)
+                 (or (not (<= a!6 0)) (not a!8))
+                 (or (<= a!6 0) a!1 (<= a!2 0) a!57))))
+(let ((a!17 (and (or (<= (diff_ 4 b a) 0) (not a!1))
+                 (or a!10 a!11 (and a!16 (>= a!6 0)) (<= a!2 0))
+                 (or (<= (diff_ 3 b a) 0) a!1)))
+      (a!34 (and (or (p2 (diff_ 2 b a)) a!28 a!33) a!32))
+      (a!59 (and (or (<= (diff_ 4 b a) 0) (not a!1))
+                 (or a!58 a!56 (<= a!2 0) a!57)
+                 (>= a!6 0))))
+(let ((a!18 (or a!7 a!17 (<= a!2 0) (and a!5 (or (not a!5) (<= a!2 0))) a!15))
+      (a!35 (and (or a!34 a!28 a!33) (>= a!2 0) (>= a!6 0)))
+      (a!60 (or (<= a!6 0)
+                a!1
+                (<= a!2 0)
+                (and a!44 (or (not a!44) (<= a!2 0)))
+                a!48
+                a!45
+                a!55
+                a!59))
+      (a!62 (and (not (<= (diff_ 3 b a) 0))
+                 (or (not a!7) (not a!8))
+                 (or a!7 (<= a!2 0) a!59 a!55)))
+      (a!63 (and (or (<= a!2 0) a!59 (not (>= a!6 0))) (>= a!6 0)))
+      (a!64 (and (not (<= (diff_ 4 b a) 0))
+                 a!19
+                 (or (not a!7) (not a!8))
+                 (or a!7 (<= a!2 0) a!59 a!55)))
+      (a!67 (or (not (>= a!2 0))
+                (and a!44 (or (not a!44) (<= a!2 0)))
+                a!48
+                a!45
+                (<= a!2 0)
+                a!55
+                a!59)))
+(let ((a!20 (and (not (<= (diff_ 4 b a) 0)) a!19 (or (not a!7) (not a!8)) a!18))
+      (a!38 (and (or (p3 (diff_ 2 b a)) a!35) (>= a!2 0) (>= a!6 0) a!37))
+      (a!61 (and (or (<= (diff_ 4 b a) 0) (not a!1)) a!60))
+      (a!65 (or (and a!23
+                     (or (not a!7) (not a!8))
+                     (or a!7 (<= a!2 0) a!59 a!55)
+                     (>= a!6 0))
+                a!62
+                a!63
+                (<= a!2 0)
+                a!64)))
+(let ((a!21 (or (and (not (<= a!6 0)) (or (not a!7) (not a!8)) a!18)
+                a!11
+                (and a!16 (>= a!6 0))
+                (<= a!2 0)
+                a!20
+                a!17
+                (and a!5 (or (not a!5) (<= a!2 0)))
+                a!15))
+      (a!39 (and (or (not (<= a!2 0)) (not a!3))
+                 (>= (diff_ 4 b a) 0)
+                 (>= a!2 0)
+                 (>= a!6 0)
+                 (or (<= a!2 0) a!38 a!35)))
+      (a!66 (and a!65
+                 (or (not a!7) (not a!8))
+                 (or a!7 (<= a!2 0) a!59 a!55)
+                 (>= a!6 0)))
+      (a!79 (and (or (not (<= a!2 0)) (not a!3))
+                 (>= (diff_ 4 b a) 0)
+                 (>= a!2 0)
+                 (>= a!6 0)
+                 (or (not a!44) (not a!41))
+                 (or a!38 a!35 a!44 (<= a!2 0)))))
+(let ((a!68 (and (= (diff_ 4 b a) (diff_ 3 b a))
+                 (or (not (<= a!6 0)) (not a!8))
+                 (or a!61 a!55 a!66 (and a!67 (>= a!2 0)))
+                 (>= a!6 0)))
+      (a!69 (and (not (<= (diff_ 4 b a) 0))
+                 a!19
+                 (or (not (<= a!6 0)) (not a!8))
+                 (or a!61 a!55 a!66 (and a!67 (>= a!2 0)))))
+      (a!70 (and (not (<= (diff_ 3 b a) 0))
+                 (or (not (<= a!6 0)) (not a!8))
+                 (or a!61 a!55 a!66 (and a!67 (>= a!2 0)))))
+      (a!72 (and (or a!66 a!55 (not (>= a!6 0))) (>= a!6 0)))
+      (a!76 (or (<= a!40 0)
+                (and a!44 (or (not a!44) (not a!41)) (>= (diff_ 4 b a) 0))
+                a!39)))
+(let ((a!71 (or a!68
+                a!69
+                (and a!44 (or (not a!44) (<= a!2 0)))
+                a!48
+                a!45
+                (<= a!2 0)
+                a!55
+                a!59
+                a!70))
+      (a!73 (or (not (>= a!6 0))
+                a!11
+                a!72
+                (<= a!2 0)
+                (and a!44 (or (not a!44) (<= a!2 0)))
+                a!48
+                a!45
+                a!55
+                a!59
+                a!69
+                (= (not a!23) a!1)))
+      (a!77 (and (or (not (<= a!40 0)) (not a!41)) (>= (diff_ 4 b a) 0) a!76)))
+(let ((a!74 (and (or (p2 (diff_ 3 b a)) (and a!73 (>= a!6 0)))
+                 (or (not (<= a!6 0)) (not a!8))
+                 (or a!61 a!55 a!66 (and a!67 (>= a!2 0)))
+                 (>= a!6 0)))
+      (a!78 (and (or (not (<= a!2 0)) (not a!3))
+                 (>= (diff_ 4 b a) 0)
+                 (>= a!2 0)
+                 (>= a!6 0)
+                 (or (<= a!2 0) a!77))))
+(let ((a!75 (or (and a!43 a!71)
+                a!55
+                a!74
+                (<= a!2 0)
+                (and a!44 (or (not a!44) (<= a!2 0)))
+                a!48
+                a!45
+                a!59))
+      (a!80 (or a!27 a!78 a!39 (and (p1 (diff_ 3 b a)) (or a!36 a!31)) a!79)))
+(let ((a!81 (and (or (p2 (diff_ 2 b a)) a!28 a!39 a!77) a!80)))
+(let ((a!82 (and (p2 (diff_ 2 b a))
+                 (>= a!2 0)
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!75
+                 a!71
+                 (or a!81 a!28 a!39 a!77)
+                 (>= a!6 0)
+                 a!19
+                 (or (not (<= a!6 0)) (not a!8))
+                 (>= (diff_ 4 b a) 0)
+                 (>= (diff_ 2 b a) 0)))
+      (a!83 (and a!5
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!75
+                 a!71
+                 (or a!81 a!28 a!39 a!77)
+                 (>= a!2 0)
+                 (>= a!6 0)
+                 (>= (diff_ 2 b a) 0)
+                 a!19
+                 (or (not (<= a!6 0)) (not a!8))
+                 (>= (diff_ 4 b a) 0)))
+      (a!84 (and (p1 (diff_ 2 b a))
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!75
+                 a!71
+                 (or a!81 a!28 a!39 a!77)
+                 (>= a!2 0)
+                 (>= a!6 0)))
+      (a!85 (and (p3 (diff_ 2 b a))
+                 (>= a!2 0)
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!75
+                 a!71
+                 (or a!81 a!28 a!39 a!77)
+                 (>= a!6 0)
+                 a!19
+                 (or (not (<= a!6 0)) (not a!8))
+                 (>= (diff_ 4 b a) 0)
+                 (>= (diff_ 2 b a) 0))))
+(let ((a!87 (and (or (not (<= a!2 0)) (not a!3))
+                 (>= (diff_ 4 b a) 0)
+                 (>= a!2 0)
+                 (>= a!6 0)
+                 (or (<= a!2 0) a!28 a!39 a!42 a!82 a!83 a!84 a!85 (= a!86 a!5))))
+      (a!89 (and (or (not (>= a!40 0))
+                     (not (>= a!2 0))
+                     a!82
+                     a!83
+                     a!84
+                     a!85
+                     (= a!86 a!5))
+                 (>= a!2 0)
+                 (>= a!40 0))))
+(let ((a!88 (and (or a!27 a!87)
+                 (or a!28
+                     a!39
+                     a!42
+                     a!82
+                     a!83
+                     a!84
+                     a!85
+                     (= a!86 a!5)
+                     (p1 (diff_ 2 b a)))
+                 (>= a!2 0)
+                 (>= a!6 0))))
+(let ((a!90 (or a!88 a!89 (and (p1 (diff_ 3 b a)) (or a!36 a!31)))))
+(let ((a!91 (or (and a!21 a!90) a!82 a!83 a!84 a!85 (= a!86 a!5))))
+(let ((a!92 (and (= (diff_ 4 b a) (diff_ 2 b a))
+                 (>= a!2 0)
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!91
+                 (>= a!6 0)
+                 a!90))
+      (a!93 (and (not (<= (diff_ 4 b a) 0))
+                 a!19
+                 (or (not (<= a!6 0)) (not a!8))
+                 (>= a!2 0)
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!91
+                 a!90))
+      (a!94 (and (not (<= (diff_ 2 b a) 0))
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!91))
+      (a!100 (and (or a!99 a!82 a!83 a!84 a!85 (= a!86 a!5))
+                  (or (not (<= a!2 0)) (not a!3))
+                  a!91))
+      (a!101 (and (p1 (diff_ 2 b a))
+                  (or (not (<= a!2 0)) (not a!3))
+                  a!91
+                  (>= a!2 0)
+                  (>= a!6 0))))
+(let ((a!95 (or a!92 a!93 a!82 a!83 a!84 a!85 (= a!86 a!5) a!94)))
+(let ((a!96 (and a!5
+                 a!95
+                 (or (= (diff_ 2 b a) (diff_ 4 b a))
+                     a!94
+                     a!82
+                     a!83
+                     a!84
+                     a!85
+                     (= a!86 a!5)
+                     a!93)
+                 (>= a!2 0)
+                 (or (not (<= a!2 0)) (not a!3))
+                 a!91
+                 (>= a!6 0)
+                 a!90)))
+(let ((a!102 (or a!96 a!100 a!101 (= a!86 a!5) (and (p3 (diff_ 2 b a)) a!95))))
+(let ((a!103 (and (p2 (diff_ 1 b a))
+                  a!102
+                  (or (not (<= a!40 0)) (not a!41))
+                  (>= a!2 0)
+                  (>= a!40 0)
+                  (>= a!6 0)))
+      (a!104 (and (p3 (diff_ 1 b a))
+                  a!102
+                  (or (not (<= a!40 0)) (not a!41))
+                  (>= a!2 0)
+                  (>= a!40 0)
+                  (>= a!6 0))))
+(let ((a!106 (or (and (p1 (diff_ 1 b a)) a!102)
+                 (and a!44 (or (not a!44) (not a!41)))
+                 a!103
+                 a!104
+                 (= a!105 a!44))))
+(let ((a!107 (and (p3 (diff_ 1 b a))
+                  a!102
+                  (>= a!2 0)
+                  (>= a!40 0)
+                  (>= a!6 0)
+                  (>= (diff_ 4 b a) 0)
+                  (or (not (<= a!2 0)) (not a!3))
+                  a!4
+                  a!106
+                  (or (not (<= a!40 0)) (not a!41))))
+      (a!108 (and (p2 (diff_ 1 b a))
+                  a!102
+                  (>= a!2 0)
+                  (>= a!40 0)
+                  (>= a!6 0)
+                  (>= (diff_ 4 b a) 0)
+                  (or (not (<= a!2 0)) (not a!3))
+                  a!4
+                  a!106
+                  (or (not (<= a!40 0)) (not a!41))))
+      (a!109 (and (not (= (diff_ 2 b a) (diff_ 1 b a)))
+                  a!106
+                  (or (not (<= a!40 0)) (not a!41))
+                  (>= a!2 0)
+                  (>= a!40 0)
+                  (>= a!6 0)
+                  (>= (diff_ 2 b a) 0)
+                  (>= (diff_ 1 b a) 0)
+                  (or (not (<= a!2 0)) (not a!3))
+                  a!4))
+      (a!110 (and (p1 (diff_ 2 b a))
+                  a!102
+                  (>= a!40 0)
+                  (>= a!2 0)
+                  (>= a!6 0)
+                  (>= (diff_ 4 b a) 0)
+                  (or (not (<= a!2 0)) (not a!3))
+                  a!4
+                  a!106
+                  (or (not (<= a!40 0)) (not a!41)))))
+(let ((a!111 (or (= (rd b (diff_ 1 b a)) (rd a (diff_ 2 b a)))
+                 a!107
+                 a!108
+                 a!109
+                 a!110)))
+  (and (or (<= (diff_ 4 b a) 0) (not a!1))
+       (>= (diff_ 4 b a) 0)
+       (or (not (<= a!2 0)) (not a!3))
+       a!4
+       a!106
+       (or (not (<= a!40 0)) (not a!41))
+       (>= a!2 0)
+       (>= a!40 0)
+       (>= a!6 0)
+       (>= (diff_ 1 b a) 0)
+       a!19
+       a!111
+       (>= (diff_ 2 b a) 0))))))))))))))))))))))))))))))
+rm -rf tests/*.o tests/one

@@ -1,0 +1,33 @@
+./bin/axd_interpolator \
+	QF_TO ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2 2 100
+Solving file ./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
+(let ((a!1 (or (= (p1 (diff_ 2 b a)) true)
+               (= (rd a (diff_ 2 b a)) (rd b (diff_ 2 b a)))
+               (= (p2 (diff_ 2 b a)) true)
+               (= (p3 (diff_ 2 b a)) true)))
+      (a!2 (or (= (p1 (diff_ 1 b a)) true)
+               (= (rd a (diff_ 1 b a)) (rd b (diff_ 1 b a)))
+               (= (p3 (diff_ 1 b a)) true)
+               (= (p2 (diff_ 1 b a)) true)))
+      (a!3 (or (= (p1 (diff_ 3 b a)) true)
+               (= (rd a (diff_ 3 b a)) (rd b (diff_ 3 b a)))
+               (= (p2 (diff_ 3 b a)) true)
+               (= (p3 (diff_ 3 b a)) true))))
+(let ((a!4 (and (= (rd a (diff_ 4 b a)) (rd b (diff_ 4 b a)))
+                (<= (diff_ 4 b a) 0)
+                a!1
+                a!2
+                a!3)))
+(let ((a!5 (or (and (<= (diff_ 3 b a) 0)
+                    (<= (diff_ 4 b a) (diff_ 3 b a))
+                    a!1
+                    a!2
+                    a!3)
+               (and (<= (diff_ 2 b a) (diff_ 3 b a))
+                    (<= (diff_ 4 b a) (diff_ 3 b a))
+                    (<= (diff_ 3 b a) 0)
+                    a!2
+                    a!3)
+               a!4)))
+  (and a!5))))
+rm -rf tests/*.o tests/one

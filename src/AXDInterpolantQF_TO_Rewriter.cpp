@@ -5,37 +5,44 @@ z3::expr AXDInterpolant::QF_TO_Rewriter(z3::expr const & e){
     if(e.num_args() > 0){
       switch(e.decl().decl_kind()){
         case Z3_OP_GE:
-#if _DEBUG_QF_TO_REWRITER
-          std::cout << "Testing 1" << std::endl;
-          std::cout << e << std::endl;
-          std::cout << ((e.arg(0) - e.arg(1)).simplify()) << std::endl;
-          std::cout << QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify()) << std::endl;
+          {
+#if 1
+            auto const & temp = QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify());
+            std::cout << temp << std::endl;
+            return temp;
 #endif
-          return QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify());
+            //return QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify());
+          }
         case Z3_OP_LE:
-#if _DEBUG_QF_TO_REWRITER
-          std::cout << "Testing 2" << std::endl;
-          std::cout << e << std::endl;
-          std::cout << ((e.arg(1) - e.arg(0)).simplify()) << std::endl;
-          std::cout << QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify()) << std::endl;
+          {
+#if 1
+            auto const & temp = QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify());
+            std::cout << temp << std::endl;
+            return temp;
 #endif
-          return QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify());
+
+            //return QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify());
+          }
         case Z3_OP_GT:
-#if _DEBUG_QF_TO_REWRITER
-          std::cout << "Testing 3" << std::endl;
-          std::cout << e << std::endl;
-          std::cout << ((e.arg(0) - e.arg(1) - 1).simplify()) << std::endl;
-          std::cout << QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify()) << std::endl;
+          {
+#if 1
+            auto const & temp = QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify());
+            std::cout << temp << std::endl;
+            return temp;
 #endif
-          return QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify());
+
+            //return QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify());
+          }
         case Z3_OP_LT:
-#if _DEBUG_QF_TO_REWRITER
-          std::cout << "Testing 4" << std::endl;
-          std::cout << e << std::endl;
-          std::cout << ((e.arg(1) - e.arg(0) - 1).simplify()) << std::endl;
-          std::cout << QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify()) << std::endl;
+          {
+#if 1
+            auto const & temp = QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify());
+            std::cout << temp << std::endl;
+            return temp;
 #endif
-          return QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify());
+
+            //return QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify());
+          }
         default: 
           {
             z3::func_decl f_name = e.decl();

@@ -107,9 +107,10 @@ z3::expr AXDInterpolant::liftInterpolant(
 
   // TODO: this might need some optimization
   if(strcmp(theory_name, "QF_TO") == 0)
-    for(auto const & x : interpolant)
+    for(auto const & x : interpolant){
       //_interpolant.push_back(x);
       _interpolant.push_back(QF_TO_Rewriter(x));
+    }
   else
     for(auto const & x : interpolant)
       _interpolant.push_back(x);
