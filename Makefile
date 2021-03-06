@@ -8,9 +8,16 @@ LINUXOLDCOMPVERSION=8.3.0
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
 SRC=$(wildcard $(SDIR)/*.cpp)
-OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.so
 DEPS=$(wildcard $(IDIR)/*.h)
 OS=$(shell uname)
+ifeq ($(OS), Darwin)
+	SO_EXT=dylib
+	DYLD_LIBRARY_PATH=$(LDIR)
+	export DYLD_LIBRARY_PATH
+else
+	SO_EXT=so
+endif
+OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 
 #METHOD=0# Z3
 METHOD=1# MATHSAT
@@ -35,24 +42,24 @@ all: tests/one
 
 # ----------------------------------------------------------
 #  Rules to build the project
-$(LDIR)/libz3.so:
+$(LDIR)/libz3.$(SO_EXT):
 	CURRENT_DIR=$$(pwd); perl -i -pe"s|replace_once|$${CURRENT_DIR}|g" ./include/AXDInterpolant.h
 ifeq ($(OS), Darwin)
-	cp ./lib/for_mac_libz3.so ./lib/libz3.so
+	cp ./lib/for_mac_libz3.dylib ./lib/libz3.$(SO_EXT)
 else
 ifeq ($(OS), Linux)
 	if [ "$(shell printf '%s\n' ${LINUXOLDCOMPVERSION} ${COMPILERVERSION} | sort -V | head -n1)" = "${COMPILERVERSION}" ]; \
-	then cp ./lib/for_linux_libz3_old.so ./lib/libz3.so; \
-	else cp ./lib/for_linux_libz3.so ./lib/libz3.so; \
+	then cp ./lib/for_linux_libz3_old.so ./lib/libz3.$(SO_EXT); \
+	else cp ./lib/for_linux_libz3.so ./lib/libz3.$(SO_EXT); \
 	fi
 endif
 endif
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.so
+$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
-bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.so
+bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./bin
 	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
 # ----------------------------------------------------------
@@ -108,5 +115,5 @@ clean:
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
 	rm -rf ./bin/axd_interpolator
-	rm -rf ./lib/libz3.so
+	rm -rf ./lib/libz3.$(SO_EXT)
 # ------------------------------
