@@ -2,9 +2,8 @@ IDIR=./include
 ODIR=./obj
 SDIR=./src
 LDIR=./lib
+CURRENT_DIR=$(shell pwd)
 CC=g++
-COMPILERVERSION=$(shell g++ -dumpversion)
-LINUXOLDCOMPVERSION=8.3.0
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
 SRC=$(wildcard $(SDIR)/*.cpp)
@@ -36,24 +35,18 @@ FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
-all: tests/one
+#all: tests/one
+all: haha
 #all: tests/all
 #all: tests/print_all
 
 # ----------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
-	CURRENT_DIR=$$(pwd); perl -i -pe"s|replace_once|$${CURRENT_DIR}|g" ./include/AXDInterpolant.h
-ifeq ($(OS), Darwin)
-	cp ./lib/for_mac_libz3.dylib ./lib/libz3.$(SO_EXT)
-else
-ifeq ($(OS), Linux)
-	if [ "$(shell printf '%s\n' ${LINUXOLDCOMPVERSION} ${COMPILERVERSION} | sort -V | head -n1)" = "${COMPILERVERSION}" ]; \
-	then cp ./lib/for_linux_libz3_old.so ./lib/libz3.$(SO_EXT); \
-	else cp ./lib/for_linux_libz3.so ./lib/libz3.$(SO_EXT); \
-	fi
-endif
-endif
+	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
+	cd dependencies/z3-interp-plus;\
+		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
+		cd build; make install -j$(nproc)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./obj
@@ -110,7 +103,7 @@ z3_check:
 # ------------------------------
 .PHONY: clean
 clean:
-	CURRENT_DIR=$$(pwd); perl -i -pe"s|$${CURRENT_DIR}|replace_once|g" ./include/AXDInterpolant.h
+	perl -i -pe"s|$(CURRENT_DIR)|replace_once|g" ./include/AXDInterpolant.h
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
