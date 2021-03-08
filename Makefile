@@ -9,9 +9,12 @@ ifeq ($(OS), Darwin)
 	SO_EXT=dylib
 	DYLD_LIBRARY_PATH=$(LDIR)
 	export DYLD_LIBRARY_PATH
+	NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
 else
 	SO_EXT=so
+	NUM_PROCS=$(shell nproc)
 endif
+NUM_PROCS_H=$$(($(NUM_PROCS)/2))
 
 SRC=$(wildcard $(SDIR)/*.cpp)
 DEPS=$(wildcard $(IDIR)/*.h)
@@ -45,7 +48,7 @@ $(LDIR)/libz3.$(SO_EXT):
 	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
-		cd build; make install -j$$((`nproc`/2))
+		cd build; make install -j$(NUM_PROCS_H)
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./obj
