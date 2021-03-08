@@ -4,10 +4,6 @@ SDIR=./src
 LDIR=./lib
 CURRENT_DIR=$(shell pwd)
 CC=g++
-FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
-
-SRC=$(wildcard $(SDIR)/*.cpp)
-DEPS=$(wildcard $(IDIR)/*.h)
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
 	SO_EXT=dylib
@@ -16,7 +12,11 @@ ifeq ($(OS), Darwin)
 else
 	SO_EXT=so
 endif
+
+SRC=$(wildcard $(SDIR)/*.cpp)
+DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
+FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
 #METHOD=0# Z3
 METHOD=1# MATHSAT
@@ -45,7 +45,7 @@ $(LDIR)/libz3.$(SO_EXT):
 	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
-		cd build; make install
+		cd build; make install -j$$((`nproc`/2))
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./obj
@@ -100,6 +100,7 @@ z3_check:
 # -------------------------------------------
 
 # ------------------------------
+#  Cleaning
 .PHONY: clean
 clean:
 	perl -i -pe"s|$(CURRENT_DIR)|replace_once|g" ./include/AXDInterpolant.h
