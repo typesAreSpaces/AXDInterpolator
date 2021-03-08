@@ -9,6 +9,33 @@ calls an interpolation engine to process the
 reduced formula. Currently, the software supports 
 iZ3 and Mathsat as such engines.
 
+## Building the project
+
+The project requires some z3 dependencies. The
+latter can be achieved using the following command from
+the root of the project:
+
+```
+git submodule update --init --remote dependencies/z3-interp-plus
+```
+
+If the user wants to use the MATHSAT SMT solver, the 
+implementation requires a soft link inside the ``bin``
+directory. For the latter, use the following command:
+
+```
+ln -s <mathsat-path> ./bin/mathsat
+```
+
+In the root directory, execute the command:
+
+```
+make bin/axd_interpolator
+```
+
+If the above is successful, then binary file _axd_interpolator_
+will be located inside the _bin_ directory.
+
 ## Setting up the input formula
 
 Input formulas are encoded as a smt2 file 
@@ -36,25 +63,6 @@ followed by additional function declarations as needed.
 The rest of the smt2 should specify two assertions. 
 The first one encodes the A-part and the second one the B-part. 
 
-## Building the project
-
-If the user wants to use the MATHSAT SMT solver, the 
-implementation requires a soft link inside the ``bin``
-directory. For the latter, use the following command:
-
-```
-ln -s <mathsat-path> ./bin/mathsat
-```
-
-In the root directory, execute the command:
-
-```
-make bin/axd_interpolator
-```
-
-If the above is successful, then binary file _axd_interpolator_
-will be located inside the _bin_ directory.
-
 ## Using the implementation
 
 The _axd_interpolator_ binaries receives 4 arguments:
@@ -67,8 +75,18 @@ The _axd_interpolator_ binaries receives 4 arguments:
 The following is an example of an execution of the _axd_interpolator_ binary:
 
 ```
-./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 10
+./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 100
 ```
+
+### Note:
+
+If Mac Os is used, the command requires the following to be
+appended:
+
+```
+DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 100
+```
+
 
 The binary ``axd_interpolator`` outputs to the standard output any of the following:
 
