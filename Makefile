@@ -45,12 +45,15 @@ all: tests/one
 # ----------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
-	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS_H)
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
+renamed_AXDInterpolant:
+	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
+	touch renamed_AXDInterpolant
+
+$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT) renamed_AXDInterpolant
 	@mkdir -p ./obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
@@ -107,6 +110,7 @@ z3_check:
 .PHONY: clean
 clean:
 	perl -i -pe"s|$(CURRENT_DIR)|replace_once|g" ./include/AXDInterpolant.h
+	rm -rf renamed_AXDInterpolant
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
