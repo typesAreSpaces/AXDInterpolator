@@ -111,7 +111,6 @@ clean:
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
 	rm -rf ./bin/axd_interpolator
-	rm -rf ./lib/libz3.$(SO_EXT)
 
 .PHONY: z3_clean
 z3_clean:

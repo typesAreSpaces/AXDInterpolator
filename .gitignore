@@ -3,3 +3,4 @@
 *bin/mathsat
 *bin/z3
 *include/z3*
+*lib/libz3*
