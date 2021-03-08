@@ -2,26 +2,28 @@ IDIR=./include
 ODIR=./obj
 SDIR=./src
 LDIR=./lib
+CURRENT_DIR=$(shell pwd)
 CC=g++
-COMPILERVERSION=$(shell g++ -dumpversion)
-LINUXOLDCOMPVERSION=8.3.0
-FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
-
-SRC=$(wildcard $(SDIR)/*.cpp)
-DEPS=$(wildcard $(IDIR)/*.h)
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
 	SO_EXT=dylib
 	DYLD_LIBRARY_PATH=$(LDIR)
 	export DYLD_LIBRARY_PATH
+	NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
 else
 	SO_EXT=so
+	NUM_PROCS=$(shell nproc)
 endif
+NUM_PROCS_H=$$(($(NUM_PROCS)/2))
+
+SRC=$(wildcard $(SDIR)/*.cpp)
+DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
+FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
 #METHOD=0# Z3
 METHOD=1# MATHSAT
-#METHOD=2# SMTINTERPOL
+#METHOD=2# DIRECT COMPUTATION
 
 ALLOWED_ATTEMPS=100
 
@@ -30,9 +32,9 @@ THEORY=QF_TO
 #THEORY=QF_UTVPI
 #THEORY=QF_LIA
 
-FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
+#FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
-#FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
+FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
@@ -43,19 +45,15 @@ all: tests/one
 # ----------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
-	CURRENT_DIR=$$(pwd); perl -i -pe"s|replace_once|$${CURRENT_DIR}|g" ./include/AXDInterpolant.h
-ifeq ($(OS), Darwin)
-	cp ./lib/for_mac_libz3.dylib ./lib/libz3.$(SO_EXT)
-else
-ifeq ($(OS), Linux)
-	if [ "$(shell printf '%s\n' ${LINUXOLDCOMPVERSION} ${COMPILERVERSION} | sort -V | head -n1)" = "${COMPILERVERSION}" ]; \
-	then cp ./lib/for_linux_libz3_old.so ./lib/libz3.$(SO_EXT); \
-	else cp ./lib/for_linux_libz3.so ./lib/libz3.$(SO_EXT); \
-	fi
-endif
-endif
+	cd dependencies/z3-interp-plus;\
+		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
+		cd build; make install -j$(NUM_PROCS_H)
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
+renamed_AXDInterpolant:
+	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
+	touch renamed_AXDInterpolant
+
+$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT) renamed_AXDInterpolant
 	@mkdir -p ./obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
@@ -108,12 +106,18 @@ z3_check:
 # -------------------------------------------
 
 # ------------------------------
+#  Cleaning
 .PHONY: clean
 clean:
-	CURRENT_DIR=$$(pwd); perl -i -pe"s|$${CURRENT_DIR}|replace_once|g" ./include/AXDInterpolant.h
+	perl -i -pe"s|$(CURRENT_DIR)|replace_once|g" ./include/AXDInterpolant.h
+	rm -rf renamed_AXDInterpolant
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf ./tests/smt2-files/*.txt
 	cd output && make clean
 	rm -rf ./bin/axd_interpolator
-	rm -rf ./lib/libz3.$(SO_EXT)
+
+.PHONY: z3_clean
+z3_clean:
+	cd dependencies/z3-interp-plus/build;\
+		make uninstall
 # ------------------------------
