@@ -80,7 +80,7 @@ The following is an example of an execution of the _axd_interpolator_ binary:
 
 ### Note:
 
-If the users is using Mac Os, the command requires the following to be
+If Mac Os is used, the command requires the following to be
 appended:
 
 ```
