@@ -45,7 +45,7 @@ $(LDIR)/libz3.$(SO_EXT):
 	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
-		cd build; make install -j4
+		cd build; make install
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./obj
