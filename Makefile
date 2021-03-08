@@ -35,8 +35,7 @@ FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
-#all: tests/one
-all: haha
+all: tests/one
 #all: tests/all
 #all: tests/print_all
 
@@ -46,7 +45,7 @@ $(LDIR)/libz3.$(SO_EXT):
 	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
-		cd build; make install -j$(nproc)
+		cd build; make install -j4
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./obj
@@ -109,4 +108,9 @@ clean:
 	cd output && make clean
 	rm -rf ./bin/axd_interpolator
 	rm -rf ./lib/libz3.$(SO_EXT)
+
+.PHONY: z3_clean
+z3_clean:
+	cd dependencies/z3-interp-plus/build;\
+		make uninstall
 # ------------------------------
