@@ -69,6 +69,9 @@ z3::expr AXDInterpolant::QF_TO_RewriterAux(z3::expr const & normal_rhs){
   if(normal_rhs.decl().decl_kind() != Z3_OP_ADD){
     if(normal_rhs.num_args() == 0)
       return 0 <= normal_rhs;
+    // TODO: investigate why
+    // this assertion fails
+    //assert(normal_rhs.decl().decl_kind() == Z3_OP_UMINUS);
     return normal_rhs.arg(1) <= 0;
   }
   auto const & n_rhs_num_args = normal_rhs.num_args();
