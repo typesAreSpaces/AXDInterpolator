@@ -38,11 +38,12 @@ FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
-all: tests/one
+all: z3-interp-changes-test
+#all: tests/one
 #all: tests/all
 #all: tests/print_all
 
-# ----------------------------------------------------------
+# -------------------------------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
 	cd dependencies/z3-interp-plus;\
@@ -60,9 +61,9 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT) renamed_AXDInterpolan
 bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./bin
 	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
-# ----------------------------------------------------------
+# -------------------------------------------------------------------------------
 
-# -------------------------------------------
+# -------------------------------------------------------
 #  Rules to test a single or many smt2 files
 tests/one: bin/axd_interpolator
 	./bin/axd_interpolator \
@@ -91,9 +92,9 @@ tests/print_all: bin/axd_interpolator
 		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
-# -------------------------------------------
+# -------------------------------------------------------
 
-# -------------------------------------------
+# ----------------------------
 #  Check output
 check: 
 	@make -C ./output
@@ -103,7 +104,16 @@ mathsat_check:
 
 z3_check: 
 	SMT_SOLVER=Z3 make check
-# -------------------------------------------
+# ----------------------------
+
+# ---------------------------------------
+#  Testing z3-interp-plus-changes
+z3-interp-changes-test:
+	$(CC) ./tests/qf_to_simplify_test.cpp \
+		$(LDIR)/libz3.$(SO_EXT) -o $@
+	./$@
+	rm $@
+# ---------------------------------------
 
 # ------------------------------
 #  Cleaning
