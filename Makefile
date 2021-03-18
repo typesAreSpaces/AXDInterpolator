@@ -38,8 +38,7 @@ FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=./tests/smt2-files/length_example.smt2
 
-all: z3-interp-changes-test
-#all: tests/one
+all: tests/one
 #all: tests/all
 #all: tests/print_all
 
