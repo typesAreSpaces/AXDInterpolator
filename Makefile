@@ -109,10 +109,10 @@ z3_check:
 # ---------------------------------------
 #  Testing z3-interp-plus-changes
 z3-interp-changes-test:
-	$(CC) ./tests/qf_to_simplify_test.cpp \
+	@$(CC) ./tests/qf_to_simplify_test.cpp \
 		$(LDIR)/libz3.$(SO_EXT) -o $@
-	./$@
-	rm $@
+	@./$@
+	@rm $@
 # ---------------------------------------
 
 # ------------------------------
