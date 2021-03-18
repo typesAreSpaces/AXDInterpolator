@@ -1,0 +1,225 @@
+let SessionLoad = 1
+let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
+let v:this_session=expand("<sfile>:p")
+silent only
+cd ~/Documents/GithubProjects/AXDInterpolator
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+set shortmess=aoO
+badd +13 src/Preprocessor.cpp
+badd +1 src/StandardInput.cpp
+badd +104 include/StandardInput.h
+badd +112 src/AXDInterpolant.cpp
+badd +5 include/Preprocess.h
+badd +22 include/AXDSignature.h
+badd +76 include/AXDInterpolant.h
+badd +1 src/AXDSignature.cpp
+badd +28 src/main.cpp
+badd +27 src/AXDInterpolantCircularPairIterator.cpp
+badd +2 src/AXDInterpolantDefineDeclarations.cpp
+badd +4 src/AXDInterpolantSetup.cpp
+badd +191 src/AXDInterpolantOutputFile.cpp
+badd +10 src/AXDInterpolantQF_TO_Rewriter.cpp
+argglobal
+%argdel
+edit src/AXDInterpolant.cpp
+set splitbelow splitright
+wincmd _ | wincmd |
+vsplit
+wincmd _ | wincmd |
+vsplit
+2wincmd h
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd _ | wincmd |
+vsplit
+1wincmd h
+wincmd w
+wincmd w
+wincmd w
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd w
+wincmd w
+wincmd _ | wincmd |
+split
+1wincmd k
+wincmd w
+set nosplitbelow
+set nosplitright
+wincmd t
+set winminheight=0
+set winheight=1
+set winminwidth=0
+set winwidth=1
+exe '1resize ' . ((&lines * 32 + 28) / 56)
+exe 'vert 1resize ' . ((&columns * 72 + 144) / 288)
+exe '2resize ' . ((&lines * 32 + 28) / 56)
+exe 'vert 2resize ' . ((&columns * 73 + 144) / 288)
+exe '3resize ' . ((&lines * 21 + 28) / 56)
+exe 'vert 3resize ' . ((&columns * 146 + 144) / 288)
+exe '4resize ' . ((&lines * 27 + 28) / 56)
+exe 'vert 4resize ' . ((&columns * 73 + 144) / 288)
+exe '5resize ' . ((&lines * 26 + 28) / 56)
+exe 'vert 5resize ' . ((&columns * 73 + 144) / 288)
+exe '6resize ' . ((&lines * 27 + 28) / 56)
+exe 'vert 6resize ' . ((&columns * 67 + 144) / 288)
+exe '7resize ' . ((&lines * 26 + 28) / 56)
+exe 'vert 7resize ' . ((&columns * 67 + 144) / 288)
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 113 - ((24 * winheight(0) + 16) / 32)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+113
+normal! 05|
+wincmd w
+argglobal
+if bufexists("src/AXDInterpolantQF_TO_Rewriter.cpp") | buffer src/AXDInterpolantQF_TO_Rewriter.cpp | else | edit src/AXDInterpolantQF_TO_Rewriter.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 72 - ((10 * winheight(0) + 16) / 32)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+72
+normal! 05|
+wincmd w
+argglobal
+if bufexists("include/AXDInterpolant.h") | buffer include/AXDInterpolant.h | else | edit include/AXDInterpolant.h | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 19 - ((9 * winheight(0) + 10) / 21)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+19
+normal! 0
+wincmd w
+argglobal
+if bufexists("src/Preprocessor.cpp") | buffer src/Preprocessor.cpp | else | edit src/Preprocessor.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 54 - ((23 * winheight(0) + 13) / 27)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+54
+normal! 028|
+wincmd w
+argglobal
+if bufexists("include/Preprocess.h") | buffer include/Preprocess.h | else | edit include/Preprocess.h | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 12 - ((0 * winheight(0) + 13) / 26)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+12
+normal! 0
+wincmd w
+argglobal
+if bufexists("src/StandardInput.cpp") | buffer src/StandardInput.cpp | else | edit src/StandardInput.cpp | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 309 - ((0 * winheight(0) + 13) / 27)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+309
+normal! 06|
+wincmd w
+argglobal
+if bufexists("include/StandardInput.h") | buffer include/StandardInput.h | else | edit include/StandardInput.h | endif
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let s:l = 15 - ((0 * winheight(0) + 13) / 26)
+if s:l < 1 | let s:l = 1 | endif
+exe s:l
+normal! zt
+15
+normal! 0
+wincmd w
+2wincmd w
+exe '1resize ' . ((&lines * 32 + 28) / 56)
+exe 'vert 1resize ' . ((&columns * 72 + 144) / 288)
+exe '2resize ' . ((&lines * 32 + 28) / 56)
+exe 'vert 2resize ' . ((&columns * 73 + 144) / 288)
+exe '3resize ' . ((&lines * 21 + 28) / 56)
+exe 'vert 3resize ' . ((&columns * 146 + 144) / 288)
+exe '4resize ' . ((&lines * 27 + 28) / 56)
+exe 'vert 4resize ' . ((&columns * 73 + 144) / 288)
+exe '5resize ' . ((&lines * 26 + 28) / 56)
+exe 'vert 5resize ' . ((&columns * 73 + 144) / 288)
+exe '6resize ' . ((&lines * 27 + 28) / 56)
+exe 'vert 6resize ' . ((&columns * 67 + 144) / 288)
+exe '7resize ' . ((&lines * 26 + 28) / 56)
+exe 'vert 7resize ' . ((&columns * 67 + 144) / 288)
+tabnext 1
+if exists('s:wipebuf') && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=20 winminheight=1 winminwidth=1 shortmess=filnxtToOFIc
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if file_readable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &so = s:so_save | let &siso = s:siso_save
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :
