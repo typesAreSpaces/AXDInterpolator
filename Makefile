@@ -129,4 +129,8 @@ clean:
 z3_clean:
 	cd dependencies/z3-interp-plus/build;\
 		make uninstall
+
+.PHONY: deep_clean
+deep_clean: clean z3_clean
+
 # ------------------------------
