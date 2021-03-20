@@ -6,42 +6,43 @@ z3::expr AXDInterpolant::QF_TO_Rewriter(z3::expr const & e){
       switch(e.decl().decl_kind()){
         case Z3_OP_GE:
           {
-#if 1
+#if 0
             auto const & temp = QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify());
             std::cout << temp << std::endl;
             return temp;
+#else
+            return QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify());
 #endif
-            //return QF_TO_RewriterAux((e.arg(0) - e.arg(1)).simplify());
           }
         case Z3_OP_LE:
           {
-#if 1
+#if 0
             auto const & temp = QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify());
             std::cout << temp << std::endl;
             return temp;
+#else
+            return QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify());
 #endif
-
-            //return QF_TO_RewriterAux((e.arg(1) - e.arg(0)).simplify());
           }
         case Z3_OP_GT:
           {
-#if 1
+#if 0
             auto const & temp = QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify());
             std::cout << temp << std::endl;
             return temp;
+#else
+            return QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify());
 #endif
-
-            //return QF_TO_RewriterAux((e.arg(0) - e.arg(1) - 1).simplify());
           }
         case Z3_OP_LT:
           {
-#if 1
+#if 0
             auto const & temp = QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify());
             std::cout << temp << std::endl;
             return temp;
+#else
+            return QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify());
 #endif
-
-            //return QF_TO_RewriterAux((e.arg(1) - e.arg(0) - 1).simplify());
           }
         default: 
           {
@@ -108,6 +109,7 @@ z3::expr AXDInterpolant::QF_TO_RewriterAux(z3::expr const & normal_rhs){
     }
   }
 
+#if 1
   if(is_def_pos_term){
     if(is_def_neg_term){
       if(is_def_const_term){
@@ -143,7 +145,7 @@ z3::expr AXDInterpolant::QF_TO_RewriterAux(z3::expr const & normal_rhs){
       }
     }
   }
-  else{
+  else {
     if(is_def_neg_term){
       if(is_def_const_term){
         // 011
@@ -177,4 +179,7 @@ z3::expr AXDInterpolant::QF_TO_RewriterAux(z3::expr const & normal_rhs){
       }
     }
   }
+#else
+  // TODO: work here new approach
+#endif
 }
