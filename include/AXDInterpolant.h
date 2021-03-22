@@ -73,9 +73,6 @@ class AXDInterpolant : public Preprocessor {
       z3::expr_vector &, 
       StandardInput const &);
 
-  z3::expr QF_TO_Rewriter(z3::expr const &);
-  z3::expr QF_TO_RewriterAux(z3::expr const &);
-
   z3::expr liftInterpolant(z3::expr_vector const &); 
   void liftInterpolantDiffSubs(
       z3::expr_vector &, 
