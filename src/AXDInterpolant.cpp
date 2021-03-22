@@ -105,12 +105,9 @@ z3::expr AXDInterpolant::liftInterpolant(
 
   z3::expr_vector _interpolant(ctx);
 
-  // TODO: this might need some optimization
   if(strcmp(theory_name, "QF_TO") == 0)
-    for(auto const & x : interpolant){
-      //_interpolant.push_back(x);
-      _interpolant.push_back(QF_TO_Rewriter(x));
-    }
+    for(auto const & x : interpolant)
+      _interpolant.push_back(x.qf_to_simplify());
   else
     for(auto const & x : interpolant)
       _interpolant.push_back(x);
