@@ -21,9 +21,9 @@ DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-METHOD=0# Z3
+#METHOD=0# Z3
 #METHOD=1# MATHSAT
-#METHOD=2# DIRECT COMPUTATION
+METHOD=2# SMTINTERPOL
 
 ALLOWED_ATTEMPS=100
 
@@ -34,9 +34,9 @@ THEORY=QF_TO
 
 #FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
-FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
+#FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
 #FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
-#FILE_TEST=./tests/smt2-files/length_example.smt2
+FILE_TEST=./tests/smt2-files/length_example.smt2
 
 all: tests/one
 #all: tests/all
@@ -124,5 +124,4 @@ z3_clean:
 
 .PHONY: deep_clean
 deep_clean: clean z3_clean
-
 # ------------------------------
