@@ -106,15 +106,6 @@ z3_check:
 	SMT_SOLVER=Z3 make check
 # ----------------------------
 
-# ---------------------------------------
-#  Testing z3-interp-plus-changes
-z3-interp-changes-test:
-	@$(CC) ./tests/qf_to_simplify_test.cpp \
-		$(LDIR)/libz3.$(SO_EXT) -o $@
-	@./$@
-	@rm $@
-# ---------------------------------------
-
 # ------------------------------
 #  Cleaning
 .PHONY: clean
