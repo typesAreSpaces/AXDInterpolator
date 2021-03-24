@@ -23,7 +23,7 @@ FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
 METHOD=0# Z3
 #METHOD=1# MATHSAT
-#METHOD=2# DIRECT COMPUTATION
+#METHOD=2# SMTINTERPOL
 
 ALLOWED_ATTEMPS=100
 
@@ -45,6 +45,7 @@ all: tests/one
 # -------------------------------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
+	@mkdir -p ./lib
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS_H)
@@ -105,15 +106,6 @@ z3_check:
 	SMT_SOLVER=Z3 make check
 # ----------------------------
 
-# ---------------------------------------
-#  Testing z3-interp-plus-changes
-z3-interp-changes-test:
-	@$(CC) ./tests/qf_to_simplify_test.cpp \
-		$(LDIR)/libz3.$(SO_EXT) -o $@
-	@./$@
-	@rm $@
-# ---------------------------------------
-
 # ------------------------------
 #  Cleaning
 .PHONY: clean
@@ -132,5 +124,4 @@ z3_clean:
 
 .PHONY: deep_clean
 deep_clean: clean z3_clean
-
 # ------------------------------
