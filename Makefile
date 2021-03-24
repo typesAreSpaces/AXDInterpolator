@@ -44,10 +44,8 @@ all: tests/one
 
 # -------------------------------------------------------------------------------
 #  Rules to build the project
-lib_dir:
+$(LDIR)/libz3.$(SO_EXT):
 	@mkdir -p ./lib
-
-$(LDIR)/libz3.$(SO_EXT): lib_dir
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS_H)
