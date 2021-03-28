@@ -78,7 +78,7 @@ The _axd_interpolator_ binaries receives 4 arguments:
 The following is an example of an execution of the _axd_interpolator_ binary:
 
 ```
-./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 100
+./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100
 ```
 
 ### Note:
@@ -87,7 +87,7 @@ If Mac Os is used, the command requires the following to be
 appended:
 
 ```
-DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 100
+DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100
 ```
 
 
