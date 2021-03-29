@@ -6,3 +6,4 @@
 *lib/libz3*
 *renamed_AXDInterpolant
 sessions/*
+tests/verification-files/*
