@@ -38,7 +38,7 @@ subtracks=($SUBTRACKS)
 PROPERTY="unreach-call.prp"
 
 for SUBTRACK in $SUBTRACKS; do
-  cp ./experiment-template.sh ./$TRACK-temp-$SUBTRACK.sh
+  cp ./experiment-template-subtrack.sh ./$TRACK-temp-$SUBTRACK.sh
   sed -i "s/_track/$TRACK/g" ./$TRACK-temp-$SUBTRACK.sh
   sed -i "s/_sub/$SUBTRACK/g" ./$TRACK-temp-$SUBTRACK.sh
   sed -i "s/_prop/$PROPERTY/g" ./$TRACK-temp-$SUBTRACK.sh
