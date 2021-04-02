@@ -41,7 +41,7 @@ for SUBTRACK in $SUBTRACKS; do
 done
 
 for i in `seq 0 2`; do
-  echo "./$TRACK-temp-${subtracks[i]}.sh &"
+  ./$TRACK-temp-${subtracks[i]}.sh &
 done
 wait
 
