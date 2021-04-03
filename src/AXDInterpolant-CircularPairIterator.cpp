@@ -22,6 +22,5 @@ StandardInput::DiffMap::z3_expr_pair AXDInterpolant::CircularPairIterator::opera
 }
 
 void AXDInterpolant::CircularPairIterator::avoidLowerDiagonal(){
-  while(!Z3ExprComparator()(*first, *second)) 
-    next();
+  while(!Z3ExprComparator()(*first, *second)) next();
 }
