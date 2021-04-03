@@ -1,15 +1,17 @@
 #!/bin/bash
 
-TRACK="_track"
-SUBTRACK="_sub"
+TRACK="_track_"
+SUBTRACK="_sub_"
 PROPERTY="_prop"
+
 MODE=simple
 SV_COMP_DIR=$HOME/Documents/GithubProjects/AXDInterpolator/tests/sv-benchmarks/c
 LOG_FILE=$PWD/run_experiment-$TRACK-Log-$SUBTRACK.txt
 
-rm -rf $LOG_FILE
-touch $LOG_FILE
-echo "Track $TRACK - Subtrack $SUBTRACK experiments" >> $LOG_FILE
+if [ ! -f $LOG_FILE ]; then 
+  touch $LOG_FILE
+  echo "Track $TRACK - Subtrack $SUBTRACK experiments" >> $LOG_FILE
+fi
 
 for file in $SV_COMP_DIR/$SUBTRACK/*.c; do
   ROOT_DIR=$PWD

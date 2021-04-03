@@ -39,9 +39,9 @@ PROPERTY="unreach-call.prp"
 
 for SUBTRACK in $SUBTRACKS; do
   cp ./experiment-template-subtrack.sh ./$TRACK-temp-$SUBTRACK.sh
-  sed -i "s/_track/$TRACK/g" ./$TRACK-temp-$SUBTRACK.sh
-  sed -i "s/_sub/$SUBTRACK/g" ./$TRACK-temp-$SUBTRACK.sh
-  sed -i "s/_prop/$PROPERTY/g" ./$TRACK-temp-$SUBTRACK.sh
+  sed -i "s/_track_/$TRACK/g" ./$TRACK-temp-$SUBTRACK.sh
+  sed -i "s/_sub_/$SUBTRACK/g" ./$TRACK-temp-$SUBTRACK.sh
+  sed -i "s/_prop_/$PROPERTY/g" ./$TRACK-temp-$SUBTRACK.sh
 done
 
 for i in `seq 0 6`; do

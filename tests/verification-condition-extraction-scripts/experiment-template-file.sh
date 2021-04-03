@@ -1,9 +1,10 @@
 #!/bin/bash
 
-TRACK="_track"
-SUBTRACK="_sub"
-PROPERTY="_prop"
+TRACK="_track_"
+SUBTRACK="_sub_"
+PROPERTY="_prop_"
 FILE="_file_"
+
 MODE=simple
 SV_COMP_DIR=$HOME/Documents/GithubProjects/AXDInterpolator/tests/sv-benchmarks/c
 LOG_FILE=$PWD/run_experiment-$TRACK-Log-$SUBTRACK.txt
