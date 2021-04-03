@@ -3,7 +3,7 @@
 TRACK="_track"
 SUBTRACK="_sub"
 PROPERTY="_prop"
-FILE="_file"
+FILE="_file_"
 MODE=simple
 SV_COMP_DIR=$HOME/Documents/GithubProjects/AXDInterpolator/tests/sv-benchmarks/c
 LOG_FILE=$PWD/run_experiment-$TRACK-Log-$SUBTRACK.txt
@@ -33,11 +33,11 @@ arch=$(yq --raw-output "select(.options != null) | .options.data_model" $yml_fil
 unset ultimate_exit_code
 
 if [ "$arch" = "ILP32" ]; then 
-  timeout 900 $HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux/Ultimate.py --spec ../properties/$PROPERTY --architecture 32bit $MODE --file $FILE
+  timeout 900 $HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux/Ultimate.py --spec ../properties/$PROPERTY --architecture 32bit $MODE --file $file_no_path
   ultimate_exit_code=$?
 fi
 if [ "$arch" = "LP64" ]; then 
-  timeout 900 $HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux/Ultimate.py --spec ../properties/$PROPERTY --architecture 64bit $MODE --file $FILE
+  timeout 900 $HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux/Ultimate.py --spec ../properties/$PROPERTY --architecture 64bit $MODE --file $file_no_path
   ultimate_exit_code=$?
 fi
 

@@ -31,7 +31,6 @@ get_num_procs_by_name(){
 }
 
 TRACK="MemSafety-Arrays"
-# TODO: Fix SUBTRACKS
 SUBTRACKS="array-memsafety\
   array-examples \
   array-memsafety-realloc"
@@ -54,6 +53,7 @@ PROPERTY="valid-memsafety.prp"
   #rm ./$TRACK-temp-$SUBTRACK.sh
 #done
 
+# termination-crafted/Arrays*.yml
 for FILE in ./sv-benchmarks/c/termination-crafted/Arrays*.c; do 
   SUBTRACK=$(basename $(dirname $FILE))
   file_no_path=$(basename $FILE)
@@ -61,12 +61,63 @@ for FILE in ./sv-benchmarks/c/termination-crafted/Arrays*.c; do
   sed -i "s/_track/$TRACK/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
   sed -i "s/_sub/$SUBTRACK/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
   sed -i "s/_prop/$PROPERTY/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
-  sed -i "s/_file/$FILE/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
-
+  sed -i "s/_file_/${FILE//\//\\/}/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
   while [ "$(get_num_procs_by_name temp)" -gt 7 ]; do
     sleep 1
   done
-
   ./$TRACK-temp-$SUBTRACK-$file_no_path.sh &
+done
+
+for FILE in ./sv-benchmarks/c/termination-crafted/Arrays*.c; do 
+  SUBTRACK=$(basename $(dirname $FILE))
+  file_no_path=$(basename $FILE)
+  rm -rf ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+done
+
+# termination-crafted/LexIndexValue*.yml
+for FILE in ./sv-benchmarks/c/termination-crafted/LexIndexValue*.c; do 
+  SUBTRACK=$(basename $(dirname $FILE))
+  file_no_path=$(basename $FILE)
+  cp ./experiment-template-file.sh ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_track/$TRACK/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_sub/$SUBTRACK/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_prop/$PROPERTY/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_file_/${FILE//\//\\/}/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  while [ "$(get_num_procs_by_name temp)" -gt 7 ]; do
+    sleep 1
+  done
+  ./$TRACK-temp-$SUBTRACK-$file_no_path.sh &
+done
+
+for FILE in ./sv-benchmarks/c/termination-crafted/LexIndexValue*.c; do 
+  SUBTRACK=$(basename $(dirname $FILE))
+  file_no_path=$(basename $FILE)
+  rm -rf ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+done
+
+REMAINING_FILES="./termination-crafted/NonTermination3-1.c \
+  ./verifythis/duplets.c \
+  ./verifythis/elimination_max.c \
+  ./verifythis/lcp.c \
+  ./verifythis/prefixsum_iter.c \ 
+  ./verifythis/elimination_max_rec.c \ 
+  ./verifythis/elimination_max_rec_onepoint.c"
+for FILE in $REMAINING_FILES; do 
+  SUBTRACK=$(basename $(dirname $FILE))
+  file_no_path=$(basename $FILE)
+  cp ./experiment-template-file.sh ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_track/$TRACK/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_sub/$SUBTRACK/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_prop/$PROPERTY/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  sed -i "s/_file_/${FILE//\//\\/}/g" ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
+  while [ "$(get_num_procs_by_name temp)" -gt 7 ]; do
+    sleep 1
+  done
+  ./$TRACK-temp-$SUBTRACK-$file_no_path.sh &
+done
+
+for FILE in $REMAINING_FILES; do 
+  SUBTRACK=$(basename $(dirname $FILE))
+  file_no_path=$(basename $FILE)
   rm -rf ./$TRACK-temp-$SUBTRACK-$file_no_path.sh
 done
