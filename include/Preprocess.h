@@ -1,5 +1,4 @@
 #ifndef _PREPROCESS_
-
 #define _PREPROCESS_
 
 #define _DEBUG_PREPROCESS_ 0
@@ -10,9 +9,7 @@
 
 class Preprocessor : public AXDSignature {
 
-  enum SideInterpolant {
-    PART_A, PART_B
-  };
+  enum SideInterpolant { PART_A, PART_B };
 
   unsigned current_conjs_in_input;
 
