@@ -166,7 +166,6 @@ void AXDInterpolant::smtInterpolOutputFile(){
       OUTPUT_DIR + "/" + m_file_name 
       + "_reduced_smtinterpol.smt2");
 
-  // TODO: change the following
   smtinterpol_file 
     << "(set-option :print-success false)\n" 
     << "(set-option :produce-interpolants true)" 
@@ -178,7 +177,6 @@ void AXDInterpolant::smtInterpolOutputFile(){
           strcmp(theory_name, "QF_IDL") == 0) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
 
-  // TODO: change the following
   smtinterpol_file << defineDeclarations(solver.to_smt2_decls_only());
   smtinterpol_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(smtinterpol_file, part_a);
