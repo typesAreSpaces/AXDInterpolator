@@ -1,31 +1,23 @@
 #include "AXDInterpolant.h"
 
-#define TEST_OUTPUT_CODE(SOLVER) \
+#define TEST_OUTPUT_CODE(SOLVER_PARSER) \
   z3::expr_vector _part_a_vector(ctx); \
   z3::expr_vector _part_b_vector(ctx); \
   AB_VectorsSetup(_part_a_vector, part_a); \
   AB_VectorsSetup(_part_b_vector, part_b); \
- \
   z3::expr_vector part_a_vector(ctx); \
   z3::expr_vector part_b_vector(ctx); \
   for(auto const & x : _part_a_vector) \
-    part_a_vector.push_back(defineDeclarations(x)); \
+  part_a_vector.push_back(defineDeclarations(x)); \
   for(auto const & x : _part_b_vector) \
-    part_b_vector.push_back(defineDeclarations(x)); \
- \
-  if(testOutput( \
-        SOLVER_parser.assertions(),  \
-        part_a_vector, part_b_vector) \
-    ) \
-    std::cerr \
-      << "Successful Test: formula is an interpolant"  \
-      << std::endl; \
-  else \
-    std::cerr \
-      << "Unsuccessful Test: formula isn't an interpolant"  \
-      << std::endl; \
+  part_b_vector.push_back(defineDeclarations(x)); \
+  if(testOutput( SOLVER_PARSER.assertions(),  \
+        part_a_vector, part_b_vector)) \
+        state_output = fine; \
+        else \
+        state_output = notfine;
 
-z3::expr const & AXDInterpolant::z3OutputFile(){
+void AXDInterpolant::z3OutputFile(){
   if(!is_unsat)
     throw "Input problem is not unsatisfiable.";
   // Setup smt2 file with reduced formulas
@@ -90,20 +82,14 @@ z3::expr const & AXDInterpolant::z3OutputFile(){
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      z3_parser.assertions())
-#if _SIMPLIFY_OUTPUT
-    .simplify()
-#endif
-    ;
+      z3_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(z3);
+  TEST_OUTPUT_CODE(z3_parser);
 #endif
-
-  return current_interpolant;
 }
 
-z3::expr const & AXDInterpolant::mathsatOutputFile(){
+void AXDInterpolant::mathsatOutputFile(){
   if(!is_unsat)
     throw "Input problem is not unsatisfiable.";
   // Setup smt2 file with reduced formulas
@@ -163,20 +149,14 @@ z3::expr const & AXDInterpolant::mathsatOutputFile(){
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      mathsat_parser.assertions())
-#if _SIMPLIFY_OUTPUT
-    .simplify()
-#endif
-    ;
+      mathsat_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(mathsat);
+  TEST_OUTPUT_CODE(mathsat_parser);
 #endif
-
-  return current_interpolant;
 }
 
-z3::expr const & AXDInterpolant::smtInterpolOutputFile(){
+void AXDInterpolant::smtInterpolOutputFile(){
   if(!is_unsat)
     throw "Input problem is not unsatisfiable.";
   // Setup smt2 file with reduced formulas
@@ -252,15 +232,9 @@ z3::expr const & AXDInterpolant::smtInterpolOutputFile(){
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      smtinterpol_parser.assertions())
-#if _SIMPLIFY_OUTPUT
-    .simplify()
-#endif
-    ;
+      smtinterpol_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(smtinterpol);
+  TEST_OUTPUT_CODE(smtinterpol_parser);
 #endif
-
-  return current_interpolant;
 }

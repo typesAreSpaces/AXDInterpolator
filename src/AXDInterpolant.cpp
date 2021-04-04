@@ -26,7 +26,8 @@ AXDInterpolant::AXDInterpolant(
   num_attempts(allowed_attempts),
   is_interpolant_computed(false), is_unsat(false),
   current_interpolant(ctx.bool_val(true)),
-  theory_name(_theory_name)
+  theory_name(_theory_name),
+  state_output(undefined)
 {
   m_out
     << "Solving file " << m_file_name 
@@ -144,28 +145,43 @@ void AXDInterpolant::liftInterpolantDiffSubs(
 
 std::ostream & operator << (std::ostream & os, 
     AXDInterpolant const & axd){
-  os << "Output:" << std::endl;
 
   if(!axd.num_attempts)
     return os 
       << "Unknown: Input formula might be "
-      "satisfiable or unsatisfiable."
-      << std::endl
-      ;
+      "satisfiable or unsatisfiable.";
   if(!axd.is_unsat)
     return os 
-      << "Satisfiable: No interpolant available."
-      ;
-  if(axd.is_interpolant_computed)
-    return (os 
-        << "Unsatisfiable: " << std::endl
-        << axd.current_interpolant
-        );
+      << "Input formula is satisfiable.";
+  if(axd.is_interpolant_computed){
+    os 
+      << "Input formula is unsatisfiable." 
+      << std::endl;
+    switch(axd.state_output){
+      case AXDInterpolant::undefined:
+        os
+          << "State Output: not tested" 
+          << std::endl;
+        break;
+      case AXDInterpolant::fine:
+        os 
+          << "State Output: valid" 
+          << std::endl;
+        break;
+      case AXDInterpolant::notfine:
+        os 
+          << "State Output: not valid" 
+          << std::endl;
+        break;
+    }
+    return os 
+      << "Interpolant:" << std::endl
+      << axd.current_interpolant;
+  }
   else
-    return (os 
-        << "Interpolant hasn't been computed.\n"
-        "Use .z3OutputFile or .mathsatOutputFile\n"
-        "or .directComputation on a AXDInterpolant\n" 
-        "object to obtain an interpolant."
-        );
+    return os 
+      << "Interpolant hasn't been computed.\n"
+      "Use .z3OutputFile or .mathsatOutputFile\n"
+      "or .directComputation on a AXDInterpolant\n" 
+      "object to obtain an interpolant.";
 }

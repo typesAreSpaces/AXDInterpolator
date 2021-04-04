@@ -12,7 +12,7 @@ bool AXDInterpolant::testOutput(
 
   z3::solver test1(ctx), test2(ctx);
 
-#if _TEST_ORIGINAL_INPUT_
+#if _TEST_OUTPUT_ORIGINAL_THY_
   test1.add(
       not(z3::implies(
           z3::mk_and(input_part_a), 
@@ -27,7 +27,7 @@ bool AXDInterpolant::testOutput(
           z3::mk_and(interpolant))));
 #endif
 
-#if _TEST_ORIGINAL_INPUT_
+#if _TEST_OUTPUT_ORIGINAL_THY_
   test2.add(
       z3::mk_and(input_part_b) 
       && z3::mk_and(interpolant));

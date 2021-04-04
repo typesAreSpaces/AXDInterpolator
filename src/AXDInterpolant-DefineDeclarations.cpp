@@ -25,3 +25,29 @@ std::string AXDInterpolant::defineDeclarations(std::string decls) const {
 
   return result;
 }
+
+z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
+  if(e.is_app()){
+    if(e.num_args() > 0){
+      auto const & func_name = func_name(e);
+      if(func_name == "pred")
+        return (defineDeclarations(e.arg(0)) - 1);
+      if(func_name == "succ")
+        return (defineDeclarations(e.arg(0)) + 1);
+      if(func_name == "neg")
+        return (-defineDeclarations(e.arg(0)));
+      if(func_name == "add")
+        return (defineDeclarations(e.arg(0)) 
+            + defineDeclarations(e.arg(1)));
+      z3::func_decl f_name = e.decl();
+      z3::expr_vector args(ctx);
+      for(unsigned i = 0; i < e.num_args(); ++i)
+        args.push_back(defineDeclarations(e.arg(i)));
+      return f_name(args);
+    }
+    return e;
+  }
+  throw "Problem @ "
+    "AXDInterpolant::defineDeclarations"
+    "Not an application";
+}
