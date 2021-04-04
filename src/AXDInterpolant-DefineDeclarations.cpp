@@ -51,4 +51,3 @@ z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
     "AXDInterpolant::defineDeclarations"
     "Not an application";
 }
-

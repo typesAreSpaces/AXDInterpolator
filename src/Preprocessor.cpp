@@ -2,7 +2,7 @@
 
 Preprocessor::Preprocessor(
     z3::context & ctx, 
-    char const * file):
+    z3::expr const & assertions):
   AXDSignature(ctx),
   current_conjs_in_input(0),
   fresh_index(0), 
@@ -12,17 +12,12 @@ Preprocessor::Preprocessor(
   part_a_array_vars({}), part_b_array_vars({}), 
   common_array_vars({})
 {
-
-  z3::solver really_a_parser(ctx);
-  really_a_parser.from_file(file);
-  z3::expr_vector assertions = really_a_parser.assertions();
-
   // NOTE:
   // For now, it is assumed that
   // assertions is a conjunction of two 
   // conjunctions i.e. Part-A and Part-B
   // are both conjunctions
-  assert(assertions.size() == 2);
+  assert(assertions.num_args() == 2);
 
   // empty_array is a common symbol
   part_a_array_vars.insert(empty_array);
@@ -31,9 +26,8 @@ Preprocessor::Preprocessor(
   // conjunction_a doesn't contain length
   // applications
   z3::expr const & conjunction_a = 
-    removeLengthApplications(assertions[0]);
+    remove_Not_Length_Apps(assertions.arg(0));
   for(unsigned i = 0; i < conjunction_a.num_args(); ++i){
-    //input_part_a.push_back(conjunction_a.arg(i));
     auto const & curr_arg = conjunction_a.arg(i);
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ
         && rhs(curr_arg).num_args() == 0)
@@ -44,9 +38,8 @@ Preprocessor::Preprocessor(
   // conjunction_b doesn't contain length
   // applications
   z3::expr const & conjunction_b = 
-    removeLengthApplications(assertions[1]);
+    remove_Not_Length_Apps(assertions.arg(1));
   for(unsigned i = 0; i < conjunction_b.num_args(); ++i){
-    //input_part_b.push_back(conjunction_b.arg(i));
     auto const & curr_arg = conjunction_b.arg(i);
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ
         && rhs(curr_arg).num_args() == 0)
@@ -85,7 +78,7 @@ Preprocessor::Preprocessor(
   m_out << "Arrays B-local" << std::endl;
   m_out << part_b_array_vars << std::endl;
 #endif
-   
+
   // Compute Common Array Var Ids
   for(auto iterator_a = part_a_array_vars.begin(); 
       iterator_a != part_a_array_vars.end(); ++iterator_a){
@@ -109,17 +102,54 @@ Preprocessor::Preprocessor(
 #endif
 }
 
-z3::expr Preprocessor::removeLengthApplications(z3::expr const & e){
+z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
   if(e.is_app()){
     if(e.num_args() > 0 && func_name(e) == "length")
       return diff(
-          removeLengthApplications(e.arg(0)), 
+          remove_Not_Length_Apps(e.arg(0)), 
           empty_array);
+
+    if(e.num_args() == 1 && e.decl().decl_kind() == Z3_OP_NOT){
+      z3::expr pred = e.arg(0);
+      switch(pred.decl().decl_kind()){
+        case Z3_OP_EQ:       // ==
+          return remove_Not_Length_Apps(pred.arg(0)) 
+            != remove_Not_Length_Apps(pred.arg(1));
+        case Z3_OP_DISTINCT: // !=
+          return remove_Not_Length_Apps(pred.arg(0)) 
+            == remove_Not_Length_Apps(pred.arg(1));
+        case Z3_OP_GE:       // >=
+          return remove_Not_Length_Apps(pred.arg(0)) 
+            < remove_Not_Length_Apps(pred.arg(1));
+        case Z3_OP_LE:       // <=
+          return remove_Not_Length_Apps(pred.arg(0)) 
+            > remove_Not_Length_Apps(pred.arg(1));
+        case Z3_OP_GT:       // >
+          return remove_Not_Length_Apps(pred.arg(0)) 
+            <= remove_Not_Length_Apps(pred.arg(1));
+        case Z3_OP_LT:       // <
+          return remove_Not_Length_Apps(pred.arg(0)) 
+            >= remove_Not_Length_Apps(pred.arg(1));
+        case Z3_OP_UNINTERPRETED:
+          if(pred.get_sort().to_string() 
+              == bool_sort.to_string()){
+            return remove_Not_Length_Apps(pred) 
+              == ctx.bool_val(false);
+          }
+        default:
+          throw "Error @ Preprocessor::remove_Not_Legth_Apps." 
+            "Not is applied to a non predicate.";
+      }
+    }
+
+    if(e.num_args() == 0)
+      return e;
 
     z3::func_decl f_name = e.decl();
     z3::expr_vector args(ctx);
     for(unsigned i = 0; i < e.num_args(); ++i)
-      args.push_back(removeLengthApplications(e.arg(i)));
+      args.push_back(remove_Not_Length_Apps(e.arg(i)));
+
     return f_name(args);
   }
   throw "Problem @ "
@@ -151,9 +181,15 @@ void Preprocessor::flattenPredicate(
     case Z3_OP_LT:       // <
       flattenPredicateAux(formula, side);
       return;
+    case Z3_OP_UNINTERPRETED:
+      if(formula.get_sort().to_string() 
+          == bool_sort.to_string()){
+        flattenTerm(formula, side);
+        return;
+      }
     default:
       throw "Error at "
-        "Preprocessor::flattenPredicate(z3::expr const &)." 
+        "Preprocessor::flattenPredicate(z3::expr const &). " 
         "Formula not in AXD";
   }
 }

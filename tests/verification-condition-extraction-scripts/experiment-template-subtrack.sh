@@ -1,0 +1,67 @@
+#!/bin/bash
+
+TRACK="_track_"
+SUBTRACK="_sub_"
+PROPERTY="_prop"
+
+MODE=simple
+SV_COMP_DIR=$HOME/Documents/GithubProjects/AXDInterpolator/tests/sv-benchmarks/c
+LOG_FILE=$PWD/run_experiment-$TRACK-Log-$SUBTRACK.txt
+
+if [ ! -f $LOG_FILE ]; then 
+  touch $LOG_FILE
+  echo "Track $TRACK - Subtrack $SUBTRACK experiments" >> $LOG_FILE
+fi
+
+for file in $SV_COMP_DIR/$SUBTRACK/*.c; do
+  ROOT_DIR=$PWD
+  if [ ! -d $ROOT_DIR/$TRACK/$SUBTRACK ]; then 
+    mkdir -p $ROOT_DIR/$TRACK/$SUBTRACK
+  fi
+
+  CURR_DIR=$(dirname $file)
+  pushd $CURR_DIR > /dev/null
+  file_no_path=$(basename $file) 
+  yml_file="${file_no_path/.c/.yml}"
+
+  if [ ! -f $yml_file ]; then
+    echo "YML file not found for file $file_no_path ." >> $LOG_FILE
+    continue
+  fi
+
+  arch=$(yq --raw-output "select(.options != null) | .options.data_model" $yml_file)
+
+  unset ultimate_exit_code
+
+  if [ "$arch" = "ILP32" ]; then 
+    timeout 900 $HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux/Ultimate.py --spec ../properties/$PROPERTY --architecture 32bit $MODE --file $file
+    ultimate_exit_code=$?
+  fi
+  if [ "$arch" = "LP64" ]; then 
+    timeout 900 $HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux/Ultimate.py --spec ../properties/$PROPERTY --architecture 64bit $MODE --file $file
+    ultimate_exit_code=$?
+  fi
+
+  if [ -z ${ultimate_exit_code+x} ]; then
+    echo "Architecture not supported for file $file_no_path with property $PROPERTY" >> $LOG_FILE
+    continue
+  else
+    if [ $ultimate_exit_code -eq 0 ]; then
+      echo "UAutomizer finished for file $file_no_path , property $PROPERTY , arch $arch" >> $LOG_FILE
+      rm -rf Ultimate.log UltimateCounterExample.errorpath
+      if [ -f $HOME/$file_no_path.smt2 ]; then
+        mv $HOME/$file_no_path.smt2 $ROOT_DIR/$TRACK/$SUBTRACK/${file_no_path}_${PROPERTY}.smt2
+      fi
+    else
+      if [ $ultimate_exit_code -eq 124 ]; then
+        echo "UAutomizer timed out for file $file_no_path , property $PROPERTY , arch $arch" >> $LOG_FILE
+        rm -rf Ultimate.log UltimateCounterExample.errorpath $HOME/$file_no_path.smt2
+      else
+        echo "Unexpected exit code $ultimate_exit_code for file $file_no_path , property $PROPERTY , arch $arch" >> $LOG_FILE
+      fi
+    fi
+  fi
+
+  popd > /dev/null
+
+done

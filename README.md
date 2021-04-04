@@ -69,13 +69,16 @@ The _axd_interpolator_ binaries receives 4 arguments:
 
 * The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality (UTVPI), and linear arithmetic logic. The user should specify ``QF_TO`` to use the total order logic, ``QF_IDL`` for integer difference logic, ``QF_UTVPI`` for UTVPI, and ``QF_LIA`` for the linear arithmetic logic option.
 * The second argument specifies the path of the smt2 file to work with.
-* The third argument specifies the engine/method to be used. For the latter there are two options: 0, 1. The option 0 generates a smt2 file with the reduced formula in the theory EUF + T_I and calls ``Z3`` as the interpolating engine. The option 1 behaves the same as option 0, but calls ``MATHSAT`` as the interpolating engine instead.
+* The third argument specifies the engine/method to be used. For the latter there are three options: 0, 1, and 2. 
+  - Option 0 uses ``Z3`` 
+  - Option 1 uses ``MATHSAT``
+  - Option 2 uses ``SMTINTERPOL``
 * The fourth argument specifies a number of attempts, i.e. a number that bounds the number of executions of the main loop of the implementation.
 
 The following is an example of an execution of the _axd_interpolator_ binary:
 
 ```
-./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 100
+./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100
 ```
 
 ### Note:
@@ -84,7 +87,7 @@ If Mac Os is used, the command requires the following to be
 appended:
 
 ```
-DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/max_diff_paper_example.smt2 1 100
+DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100
 ```
 
 

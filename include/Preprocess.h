@@ -9,13 +9,11 @@
 
 class Preprocessor : public AXDSignature {
 
-  enum SideInterpolant {
-    PART_A, PART_B
-  };
+  enum SideInterpolant { PART_A, PART_B };
 
   unsigned current_conjs_in_input;
 
-  z3::expr removeLengthApplications(z3::expr const &);
+  z3::expr remove_Not_Length_Apps(z3::expr const &);
 
   void flattenPredicate(z3::expr const &, SideInterpolant);
   void flattenPredicateAux(z3::expr const &, SideInterpolant);
@@ -52,7 +50,7 @@ class Preprocessor : public AXDSignature {
   z3::expr fresh_constant(z3::sort const &);
 
   public:
-  Preprocessor(z3::context &, char const *);
+  Preprocessor(z3::context &, z3::expr const &);
 };
 
 #endif

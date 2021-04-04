@@ -21,9 +21,9 @@ DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-#METHOD=0# Z3
-METHOD=1# MATHSAT
-#METHOD=2# DIRECT COMPUTATION
+METHOD=0# Z3
+#METHOD=1# MATHSAT
+#METHOD=2# SMTINTERPOL
 
 ALLOWED_ATTEMPS=100
 
@@ -42,9 +42,18 @@ all: tests/one
 #all: tests/all
 #all: tests/print_all
 
-# ----------------------------------------------------------
+# -------------------------------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
+	cd dependencies/z3-interp-plus;\
+		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
+		cd build; make install -j$(NUM_PROCS_H)
+
+renamed_AXDInterpolant:
+	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
+	touch renamed_AXDInterpolant
+
+	@mkdir -p ./lib
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS_H)
@@ -60,9 +69,9 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT) renamed_AXDInterpolan
 bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p ./bin
 	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
-# ----------------------------------------------------------
+# -------------------------------------------------------------------------------
 
-# -------------------------------------------
+# -------------------------------------------------------
 #  Rules to test a single or many smt2 files
 tests/one: bin/axd_interpolator
 	./bin/axd_interpolator \
@@ -91,9 +100,9 @@ tests/print_all: bin/axd_interpolator
 		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
-# -------------------------------------------
+# -------------------------------------------------------
 
-# -------------------------------------------
+# ----------------------------
 #  Check output
 check: 
 	@make -C ./output
@@ -103,7 +112,7 @@ mathsat_check:
 
 z3_check: 
 	SMT_SOLVER=Z3 make check
-# -------------------------------------------
+# ----------------------------
 
 # ------------------------------
 #  Cleaning
@@ -120,4 +129,7 @@ clean:
 z3_clean:
 	cd dependencies/z3-interp-plus/build;\
 		make uninstall
+
+.PHONY: deep_clean
+deep_clean: clean z3_clean
 # ------------------------------
