@@ -45,14 +45,6 @@ all: tests/one
 # -------------------------------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
-	cd dependencies/z3-interp-plus;\
-		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
-		cd build; make install -j$(NUM_PROCS_H)
-
-renamed_AXDInterpolant:
-	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
-	touch renamed_AXDInterpolant
-
 	@mkdir -p ./lib
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
