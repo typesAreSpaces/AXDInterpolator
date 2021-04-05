@@ -175,8 +175,11 @@ std::ostream & operator << (std::ostream & os,
         break;
     }
     return os 
+#if _INCLUDE_OUTPUT_
       << "Interpolant:" << std::endl
-      << axd.current_interpolant;
+      << axd.current_interpolant
+#endif
+      ;
   }
   else
     return os 
