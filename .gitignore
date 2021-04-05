@@ -5,6 +5,6 @@ bin/z3
 bin/axd_interpolator
 include/z3*
 lib/libz3*
+output/*.smt2
 renamed_AXDInterpolant
 sessions/*
-tests/verification-files/*
