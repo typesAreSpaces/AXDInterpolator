@@ -16,9 +16,41 @@ class StandardInput : public AXDSignature {
   unsigned s_fresh_index;
 
   friend class AXDInterpolant;
+
+  struct DiffMapEntry : public z3::expr_vector {
+    friend struct DiffMap;
+
+    z3::expr_vector lifted_b;
+    z3::expr_vector lifted_diff_k;
+
+    DiffMapEntry(z3::context & ctx) : 
+      z3::expr_vector(ctx), 
+      lifted_b(ctx), 
+      lifted_diff_k(ctx)
+    {
+    }
+
+    void push(
+        z3::expr const & index, 
+        z3::expr const & a,
+        z3::expr const & b
+        ){
+      push_back(index);
+      if(this->size() == 1)
+      {
+        lifted_b.push_back(b);
+        //lifted_diff_k.push_back(diff(a, b));
+      }
+      else{
+      }
+    }
+  };
+
   // DiffMap : 
   // c_array_var.id() x c_array_var.id() -> sequence of diff_k
   struct DiffMap {
+
+    friend class StandardInput;
 
     typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
     struct Z3ExprExprComparator {
@@ -28,7 +60,7 @@ class StandardInput : public AXDSignature {
     };
 
     std::map<z3_expr_pair, 
-      z3::expr_vector, 
+      DiffMapEntry,
       Z3ExprExprComparator> m_map;
 
     DiffMap(z3::context &, z3_expr_set const &);

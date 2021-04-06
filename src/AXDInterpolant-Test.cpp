@@ -12,6 +12,16 @@ bool AXDInterpolant::testOutput(
 
   z3::solver test1(ctx), test2(ctx);
 
+  // ---------
+  // [DEBUG]
+  std::cout << ">>>>>>>>>Showing input_part_a" << std::endl;
+  std::cout << input_part_a << std::endl << std::endl;;
+  std::cout << ">>>>>>>>>Showing interpolant" << std::endl;
+  std::cout << interpolant << std::endl;
+  std::cout << ">>>>>>>>>Showing input_part_b" << std::endl;
+  std::cout << input_part_b << std::endl;
+  // ---------
+
 #if _TEST_OUTPUT_ORIGINAL_THY_
   test1.add(
       not(z3::implies(
@@ -40,8 +50,12 @@ bool AXDInterpolant::testOutput(
       && z3::mk_and(interpolant));
 #endif
 
-  return (test1.check() == z3::unsat 
-      && test2.check() == z3::unsat);
+  if(test1.check() == z3::unsat){
+    std::cout << "Done with A-part testing - PASSED" << std::endl;
+    return test2.check() == z3::unsat;
+  }
+
+  return false;
 }
 
 void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
@@ -50,6 +64,7 @@ void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
   z3::expr e = ctx.constant("e", this->element_sort);
   z3::expr i = ctx.constant("i", this->int_sort);
   z3::expr j = ctx.constant("j", this->int_sort);
+  z3::expr n = ctx.constant("n", this->int_sort);
   // Adding axiomatization
   s.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
   s.add(forall(y, i , j, e, z3::implies(i != j, rd(wr(y, i, e), j) == rd(y, j))));
@@ -67,7 +82,14 @@ void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const &
     auto const & diff_seq = diff_entry.second;
     unsigned diff_iteration = 1;
     for(auto const & k_ : diff_seq)
-      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0)
+      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
+        // ----------------------
+        // [DEBUG]
+        std::cout << k_ 
+          << " == " 
+          << diff_k(ctx.int_val(diff_iteration), diff_a, diff_b) << std::endl;
+        // ----------------------
         s.add(k_ == diff_k(ctx.int_val(diff_iteration++), diff_a, diff_b));
+      }
   }
 }

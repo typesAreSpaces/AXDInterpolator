@@ -3,21 +3,22 @@
 StandardInput::DiffMap::DiffMap(
     z3::context & ctx,
     z3_expr_set const & array_var_ids) : 
-  m_map(){
+  m_map()
+{
   for(auto const & x : array_var_ids)
     for(auto const & y : array_var_ids){
       if(x.id() > y.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(x, y), 
-              z3::expr_vector(ctx)));
+              DiffMapEntry(ctx)));
       if(y.id() > x.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(y, x), 
-              z3::expr_vector(ctx)));
+              DiffMapEntry(ctx)));
     }
 }
 
-bool StandardInput::DiffMap::Z3ExprExprComparator::operator () (
+bool StandardInput::DiffMap::Z3ExprExprComparator::operator() (
     z3_expr_pair const & a, z3_expr_pair const & b) const {
   return a.first.id() > b.first.id() 
     || (a.first.id() == b.first.id() 
@@ -45,14 +46,16 @@ void StandardInput::DiffMap::add_aux(
     throw "Problem @ StandardInput::DiffMap::add_aux."
       "Query a pair that should'nt be in the map";
   }
-  table_entry->second.push_back(index);
+  table_entry->second.push(index, a, b);
 }
 
-unsigned StandardInput::DiffMap::size_of_entry(z3_expr_pair const & entry){
+unsigned StandardInput::DiffMap::size_of_entry(
+    z3_expr_pair const & entry){
   return m_map.find(entry)->second.size();
 }
 
-std::ostream & operator << (std::ostream & os, StandardInput::DiffMap const & dm){
+std::ostream & operator << (std::ostream & os, 
+    StandardInput::DiffMap const & dm){
 
   for(auto const & x : dm.m_map){
     os 
