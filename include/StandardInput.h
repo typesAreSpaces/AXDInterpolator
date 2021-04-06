@@ -25,32 +25,18 @@ class StandardInput {
     z3::expr_vector lifted_diff_k;
     AXDSignature const & sig;
 
-    DiffMapEntry(z3::context & ctx, 
-        AXDSignature const & sig, 
-        z3::expr const & a, 
-        z3::expr const & b) : 
-      z3::expr_vector(ctx), 
-      lifted_b(ctx), 
-      lifted_diff_k(ctx),
-      sig(sig)
-    {
-      lifted_b.push_back(b);
-      lifted_diff_k.push_back(sig.diff(a, b));
-    }
+    DiffMapEntry(
+        z3::context &, 
+        AXDSignature const &, 
+        z3::expr const &, 
+        z3::expr const &);
 
     void push(
-        z3::expr const & index, 
-        z3::expr const & a,
-        z3::expr const & b
-        ){
-      push_back(index);
-      unsigned last_index = this->size();
-      auto const & last_b = lifted_b[last_index - 1];
-      auto const & last_diff = lifted_diff_k[last_index - 1];
-      auto const & new_b = sig.wr(last_b, last_diff, sig.rd(a, last_diff));
-      lifted_b.push_back(new_b);
-      lifted_diff_k.push_back(sig.diff(a, new_b));
-    }
+        z3::expr const &, 
+        z3::expr const &,
+        z3::expr const &
+        );
+    
   };
 
   // DiffMap : 
