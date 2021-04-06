@@ -1,6 +1,6 @@
 #include "AXDInterpolant.h"
 
-#define TEST_OUTPUT_CODE(SOLVER_PARSER) \
+#define TEST_OUTPUT_CODE(PARSED_FROM_SOLVER_INTERPOLANT) \
   z3::expr_vector _part_a_vector(ctx); \
   z3::expr_vector _part_b_vector(ctx); \
   AB_VectorsSetup(_part_a_vector, part_a); \
@@ -11,7 +11,7 @@
   part_a_vector.push_back(defineDeclarations(x)); \
   for(auto const & x : _part_b_vector) \
   part_b_vector.push_back(defineDeclarations(x)); \
-  if(testOutput( SOLVER_PARSER.assertions(),  \
+  if(testOutput(PARSED_FROM_SOLVER_INTERPOLANT.assertions(), \
         part_a_vector, part_b_vector)) \
         state_output = fine; \
         else \
@@ -77,15 +77,15 @@ void AXDInterpolant::z3OutputFile(){
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver z3_parser(ctx);
-  z3_parser.from_string(interpolant_from_file.c_str());
+  z3::solver z3_interpolant_parser(ctx);
+  z3_interpolant_parser.from_string(interpolant_from_file.c_str());
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      z3_parser.assertions());
+      z3_interpolant_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(z3_parser);
+  TEST_OUTPUT_CODE(z3_interpolant_parser);
 #endif
 }
 
@@ -144,15 +144,15 @@ void AXDInterpolant::mathsatOutputFile(){
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver mathsat_parser(ctx);
-  mathsat_parser.from_string(interpolant_from_file.c_str());
+  z3::solver mathsat_interpolant_parser(ctx);
+  mathsat_interpolant_parser.from_string(interpolant_from_file.c_str());
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      mathsat_parser.assertions());
+      mathsat_interpolant_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(mathsat_parser);
+  TEST_OUTPUT_CODE(mathsat_interpolant_parser);
 #endif
 }
 
@@ -225,14 +225,14 @@ void AXDInterpolant::smtInterpolOutputFile(){
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver smtinterpol_parser(ctx);
-  smtinterpol_parser.from_string(interpolant_from_file.c_str());
+  z3::solver smtinterpol_interpolant_parser(ctx);
+  smtinterpol_interpolant_parser.from_string(interpolant_from_file.c_str());
 
   is_interpolant_computed = true;
   current_interpolant = liftInterpolant(
-      smtinterpol_parser.assertions());
+      smtinterpol_interpolant_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(smtinterpol_parser);
+  TEST_OUTPUT_CODE(smtinterpol_interpolant_parser);
 #endif
 }
