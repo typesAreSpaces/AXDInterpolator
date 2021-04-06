@@ -36,7 +36,6 @@ class StandardInput {
         z3::expr const &,
         z3::expr const &
         );
-    
   };
 
   // DiffMap : 
