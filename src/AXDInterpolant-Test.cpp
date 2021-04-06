@@ -83,13 +83,18 @@ void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const &
     unsigned diff_iteration = 1;
     for(auto const & k_ : diff_seq)
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
+
         // ----------------------
         // [DEBUG]
         std::cout << k_ 
           << " == " 
           << sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b) << std::endl;
-        // ----------------------
-        s.add(k_ == sig.diff_k(sig.ctx.int_val(diff_iteration++), diff_a, diff_b));
+         //----------------------
+         //
+        //s.add(k_ == sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b));
+        // [TODO] keep working here
+        s.add(k_ == input.diff_map.m_map.at);
+        diff_iteration++
       }
   }
 }
