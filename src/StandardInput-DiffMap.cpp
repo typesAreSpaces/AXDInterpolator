@@ -56,6 +56,18 @@ unsigned StandardInput::DiffMap::size_of_entry(
   return m_map.find(entry)->second.size();
 }
 
+z3::expr StandardInput::DiffMap::lift_diff_k(
+    unsigned index,
+    z3::expr const & a,
+    z3::expr const & b){
+  auto table_entry = m_map.find(std::make_pair(a, b));
+  if(table_entry == m_map.end()){
+    throw "Problem @ StandardInput::DiffMap::add_aux."
+      "Query a pair that should'nt be in the map";
+  }
+  return table_entry->second.lifted_diff_k[index];
+}
+
 std::ostream & operator << (std::ostream & os, 
     StandardInput::DiffMap const & dm){
 

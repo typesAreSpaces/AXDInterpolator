@@ -68,7 +68,14 @@ class StandardInput {
         z3::expr const &, 
         z3::expr const &, 
         z3::expr const &);
+
     unsigned size_of_entry(z3_expr_pair const &);
+
+    z3::expr lift_diff_k(
+        unsigned,
+        z3::expr const &,
+        z3::expr const &
+        );
   };
 
   // Container keeping track of a, b, i, e from 
