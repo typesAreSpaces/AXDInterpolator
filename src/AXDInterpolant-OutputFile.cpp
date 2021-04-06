@@ -77,7 +77,7 @@ void AXDInterpolant::z3OutputFile(){
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver z3_interpolant_parser(ctx);
+  z3::solver z3_interpolant_parser(sig.ctx);
   z3_interpolant_parser.from_string(interpolant_from_file.c_str());
 
   is_interpolant_computed = true;
@@ -144,7 +144,7 @@ void AXDInterpolant::mathsatOutputFile(){
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver mathsat_interpolant_parser(ctx);
+  z3::solver mathsat_interpolant_parser(sig.ctx);
   mathsat_interpolant_parser.from_string(interpolant_from_file.c_str());
 
   is_interpolant_computed = true;
@@ -225,7 +225,7 @@ void AXDInterpolant::smtInterpolOutputFile(){
   system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver smtinterpol_interpolant_parser(ctx);
+  z3::solver smtinterpol_interpolant_parser(sig.ctx);
   smtinterpol_interpolant_parser.from_string(interpolant_from_file.c_str());
 
   is_interpolant_computed = true;

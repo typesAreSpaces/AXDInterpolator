@@ -1,6 +1,7 @@
 #include "AXDInterpolant.h"
 
-AXDInterpolant::CircularPairIterator::CircularPairIterator(z3_expr_set const & vars) : 
+AXDInterpolant::CircularPairIterator::CircularPairIterator(
+    AXDSignature::z3_expr_set const & vars) : 
   vars(vars),
   first(vars.begin()), second(vars.begin()) { avoidLowerDiagonal(); }
 
@@ -22,5 +23,5 @@ StandardInput::DiffMap::z3_expr_pair AXDInterpolant::CircularPairIterator::opera
 }
 
 void AXDInterpolant::CircularPairIterator::avoidLowerDiagonal(){
-  while(!Z3ExprComparator()(*first, *second)) next();
+  while(!AXDSignature::Z3ExprComparator()(*first, *second)) next();
 }

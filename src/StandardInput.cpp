@@ -1,49 +1,50 @@
 #include "StandardInput.h"
 
 StandardInput::StandardInput(
+    AXDSignature const & sig,
     z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
-    z3_expr_set const & array_var_ids,
+    AXDSignature::z3_expr_set const & array_var_ids,
     char const * theory, 
     unsigned _fresh_index) :
-  AXDSignature(conjunction.ctx()),
+  sig(sig),
   s_fresh_index(_fresh_index),
-  diff_map(conjunction.ctx(), array_var_ids),
+  diff_map(conjunction.ctx(), array_var_ids, sig),
   write_vector(),
-  local_signature(ctx),
+  local_signature(sig.ctx),
   part_1(conjunction.ctx()),
   part_2(conjunction.ctx()), 
-  index_vars(ctx),
+  index_vars(sig.ctx),
   N_instantiation(0),
-  current_instantiated_index_terms(ctx),
-  index_var(ctx.constant("index_var", index_sort)),
-  axiom_8(ctx), 
-  axiom_9(rd(empty_array, index_var) == undefined)
+  current_instantiated_index_terms(sig.ctx),
+  index_var(sig.ctx.constant("index_var", sig.index_sort)),
+  axiom_8(sig.ctx), 
+  axiom_9(sig.rd(sig.empty_array, index_var) == sig.undefined)
 {
   std::string theory_signature(theory);
   if(theory_signature == "QF_TO"){
   }
   if(theory_signature == "QF_IDL"){
-    local_signature.push_back(pred);
-    local_signature.push_back(succ);
+    local_signature.push_back(sig.pred);
+    local_signature.push_back(sig.succ);
   }
   if(theory_signature == "QF_UTVPI"){
-    local_signature.push_back(pred);
-    local_signature.push_back(succ);
-    local_signature.push_back(neg);
+    local_signature.push_back(sig.pred);
+    local_signature.push_back(sig.succ);
+    local_signature.push_back(sig.neg);
   }
   if(theory_signature == "QF_LIA"){
-    local_signature.push_back(pred);
-    local_signature.push_back(succ);
-    local_signature.push_back(neg);
-    local_signature.push_back(add);
+    local_signature.push_back(sig.pred);
+    local_signature.push_back(sig.succ);
+    local_signature.push_back(sig.neg);
+    local_signature.push_back(sig.add);
   }
 
   // Splitting input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
     if(current_arg.decl().decl_kind() == Z3_OP_UNINTERPRETED
-        && current_arg.get_sort().to_string() == bool_sort.to_string()){
+        && current_arg.get_sort().to_string() == sig.bool_sort.to_string()){
       part_2.push_back(current_arg);
       continue;
     }
@@ -69,10 +70,10 @@ StandardInput::StandardInput(
 
             // [10] predicates are added here
             if(_lhs.num_args() == 0 && _rhs.num_args() == 0){
-              part_1.push_back(0 == diff(_lhs, _rhs));
+              part_1.push_back(0 == sig.diff(_lhs, _rhs));
               part_2.push_back(
                   current_arg
-                  && rd(_lhs, 0) == rd(_rhs, 0));
+                  && sig.rd(_lhs, 0) == sig.rd(_rhs, 0));
             }
             // Equations of the form i = diff(a, b), 
             // a = wr(b, i, e) will be processed 
@@ -101,9 +102,9 @@ StandardInput::StandardInput(
 
           // [10] predicates are added here
           part_1.push_back(f_index 
-              == diff(__lhs, __rhs));
-          part_1.push_back(f_element1 == rd(__lhs, 0));
-          part_1.push_back(f_element2 == rd(__rhs, 0));
+              == sig.diff(__lhs, __rhs));
+          part_1.push_back(f_element1 == sig.rd(__lhs, 0));
+          part_1.push_back(f_element2 == sig.rd(__rhs, 0));
           part_2.push_back(f_index != 0 
               || f_element1 != f_element2);
         }
@@ -168,12 +169,12 @@ StandardInput::StandardInput(
   // Setup axiom 8
   // Instantiate will all the current array elements
   // since this won't change
-  z3::expr_vector instances_axiom_8(ctx);
+  z3::expr_vector instances_axiom_8(sig.ctx);
   for(auto const & array_element : array_var_ids)
     instances_axiom_8.push_back(
         z3::implies(
           index_var < 0, 
-          rd(array_element, index_var) == undefined)
+          sig.rd(array_element, index_var) == sig.undefined)
         );
   axiom_8 = z3::mk_and(instances_axiom_8);
 
@@ -211,7 +212,7 @@ void StandardInput::N_instantiate(){
 }
 
 void StandardInput::unaryInstantiationExtension(z3::func_decl const & f_1){
-  z3::expr_vector temp(ctx);
+  z3::expr_vector temp(sig.ctx);
   for(unsigned i = 0; i < current_instantiated_index_terms.size(); i++)
     temp.push_back(
         f_1(current_instantiated_index_terms[i]));
@@ -221,7 +222,7 @@ void StandardInput::unaryInstantiationExtension(z3::func_decl const & f_1){
 }
 
 void StandardInput::binaryInstantiationExtension(z3::func_decl const & f_2){
-  z3::expr_vector temp(ctx);
+  z3::expr_vector temp(sig.ctx);
   for(unsigned i = 0; i < current_instantiated_index_terms.size(); i++)
     for(unsigned j = 0; j < current_instantiated_index_terms.size(); j++)
       temp.push_back(
@@ -233,13 +234,13 @@ void StandardInput::binaryInstantiationExtension(z3::func_decl const & f_2){
 }
 
 z3::expr StandardInput::fresh_index_constant(){
-  return ctx.constant((FRESH_INDEX_PREFIX 
-        + std::to_string(s_fresh_index++)).c_str(), int_sort);
+  return sig.ctx.constant((FRESH_INDEX_PREFIX 
+        + std::to_string(s_fresh_index++)).c_str(), sig.int_sort);
 }
 
 z3::expr StandardInput::fresh_element_constant(){
-  return ctx.constant((FRESH_ELEMENT_PREFIX 
-        + std::to_string(s_fresh_index++)).c_str(), element_sort);
+  return sig.ctx.constant((FRESH_ELEMENT_PREFIX 
+        + std::to_string(s_fresh_index++)).c_str(), sig.element_sort);
 }
 
 void StandardInput::initSaturation(){
@@ -255,7 +256,7 @@ void StandardInput::initSaturation(){
     part_2.push_back(
         z3::implies(
           i >= 0, 
-          rd(a, i) == e) 
+          sig.rd(a, i) == e) 
         );
 
     // [11] predicates are processed in 
@@ -285,8 +286,8 @@ void StandardInput::initSaturation(){
       // i > 0 \rightarrow rd(a, i) \neq rd(b, i) 
       part_2.push_back(
           z3::implies(
-            i > ctx.int_val(0), 
-            rd(a, i) != rd(b, i))
+            i > sig.ctx.int_val(0), 
+            sig.rd(a, i) != sig.rd(b, i))
           );
     }
   }
@@ -337,25 +338,25 @@ void StandardInput::updateSaturation(
           _previous_index >= _new_index
           );
       part_2.push_back(
-          _new_index >= ctx.int_val(0)
+          _new_index >= sig.ctx.int_val(0)
           );
 
       // The following adds [15] predicates
       part_2.push_back(z3::implies(
             _previous_index > _new_index,
-            rd(a, _previous_index) != rd(b, _previous_index)
+            sig.rd(a, _previous_index) != sig.rd(b, _previous_index)
             ));
 
       // The following adds [16] predicates
       part_2.push_back(z3::implies(
             _previous_index == _new_index,
-            _previous_index == ctx.int_val(0)
+            _previous_index == sig.ctx.int_val(0)
             ));
     }
     // The following adds [17] predicates
     part_2.push_back(z3::implies(
-          rd(a, _new_index) == rd(b, _new_index),
-          _new_index == ctx.int_val(0)
+          sig.rd(a, _new_index) == sig.rd(b, _new_index),
+          _new_index == sig.ctx.int_val(0)
           ));
   }
 

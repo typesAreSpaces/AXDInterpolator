@@ -2,19 +2,21 @@
 
 StandardInput::DiffMap::DiffMap(
     z3::context & ctx,
-    z3_expr_set const & array_var_ids) : 
-  m_map()
+    AXDSignature::z3_expr_set const & array_var_ids, 
+    AXDSignature const & sig) : 
+  m_map(),
+  sig(sig)
 {
   for(auto const & x : array_var_ids)
     for(auto const & y : array_var_ids){
       if(x.id() > y.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(x, y), 
-              DiffMapEntry(ctx)));
+              DiffMapEntry(ctx, sig, x, y)));
       if(y.id() > x.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(y, x), 
-              DiffMapEntry(ctx)));
+              DiffMapEntry(ctx, sig, y, x)));
     }
 }
 

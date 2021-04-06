@@ -10,7 +10,7 @@ bool AXDInterpolant::testOutput(
     z3::expr_vector & part_a_vector, 
     z3::expr_vector & part_b_vector){
 
-  z3::solver test1(ctx), test2(ctx);
+  z3::solver test1(sig.ctx), test2(sig.ctx);
 
   // ---------
   // [DEBUG]
@@ -59,18 +59,18 @@ bool AXDInterpolant::testOutput(
 }
 
 void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
-  z3::expr x = ctx.constant("x", this->array_sort);
-  z3::expr y = ctx.constant("y", this->array_sort);
-  z3::expr e = ctx.constant("e", this->element_sort);
-  z3::expr i = ctx.constant("i", this->int_sort);
-  z3::expr j = ctx.constant("j", this->int_sort);
-  z3::expr n = ctx.constant("n", this->int_sort);
+  z3::expr x = sig.ctx.constant("x", this->sig.array_sort);
+  z3::expr y = sig.ctx.constant("y", this->sig.array_sort);
+  z3::expr e = sig.ctx.constant("e", this->sig.element_sort);
+  z3::expr i = sig.ctx.constant("i", this->sig.int_sort);
+  z3::expr j = sig.ctx.constant("j", this->sig.int_sort);
+  z3::expr n = sig.ctx.constant("n", this->sig.int_sort);
   // Adding axiomatization
-  s.add(forall(y, i, e, rd(wr(y, i, e), i) == e));
-  s.add(forall(y, i , j, e, z3::implies(i != j, rd(wr(y, i, e), j) == rd(y, j))));
-  s.add(forall(x, y, z3::implies(x != y, rd(x, diff(x, y)) != rd(y, diff(x, y)))));
-  s.add(forall(x, y, i, z3::implies(i > diff(x, y), rd(x, i) == rd(y, i))));
-  s.add(forall(x, diff(x, x) == 0));
+  s.add(forall(y, i, e, sig.rd(sig.wr(y, i, e), i) == e));
+  s.add(forall(y, i , j, e, z3::implies(i != j, sig.rd(sig.wr(y, i, e), j) == sig.rd(y, j))));
+  s.add(forall(x, y, z3::implies(x != y, sig.rd(x, sig.diff(x, y)) != sig.rd(y, sig.diff(x, y)))));
+  s.add(forall(x, y, i, z3::implies(i > sig.diff(x, y), sig.rd(x, i) == sig.rd(y, i))));
+  s.add(forall(x, sig.diff(x, x) == 0));
   return ;
 }
 
@@ -87,9 +87,9 @@ void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const &
         // [DEBUG]
         std::cout << k_ 
           << " == " 
-          << diff_k(ctx.int_val(diff_iteration), diff_a, diff_b) << std::endl;
+          << sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b) << std::endl;
         // ----------------------
-        s.add(k_ == diff_k(ctx.int_val(diff_iteration++), diff_a, diff_b));
+        s.add(k_ == sig.diff_k(sig.ctx.int_val(diff_iteration++), diff_a, diff_b));
       }
   }
 }

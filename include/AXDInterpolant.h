@@ -15,7 +15,7 @@
 #define _TEST_OUTPUT_ORIGINAL_THY_ 0
 #define _INCLUDE_OUTPUT_           1
 
-#define CURRENT_DIR std::string("/home/jose/Documents/GithubProjects/AXDInterpolator")
+#define CURRENT_DIR std::string("replace_once")
 #define OUTPUT_DIR  CURRENT_DIR + std::string("/output")
 
 // Notes:
@@ -29,28 +29,29 @@ class AXDInterpolant : public Preprocessor {
   class CircularPairIterator {
     friend class AXDInterpolant;
 
-    z3_expr_set const & vars;
-    z3_expr_set::iterator first, second;
+    AXDSignature::z3_expr_set const & vars;
+    AXDSignature::z3_expr_set::iterator first, second;
 
     void avoidLowerDiagonal();
 
     public:
-    CircularPairIterator(z3_expr_set const &);
+    CircularPairIterator(AXDSignature::z3_expr_set const &);
     void next();
     StandardInput::DiffMap::z3_expr_pair operator *() const;
   };
 
   enum StateOutput { undefined, fine, notfine };
 
-  z3::solver    solver;
-  StandardInput part_a, part_b;
-  std::string   m_file_name;
-  unsigned      num_attempts;
-  bool          is_interpolant_computed,
-                is_unsat;
-  z3::expr      current_interpolant;
-  char const *  theory_name;
-  StateOutput   state_output;
+  AXDSignature const & sig;
+  z3::solver           solver;
+  StandardInput        part_a, part_b;
+  std::string          m_file_name;
+  unsigned             num_attempts;
+  bool                 is_interpolant_computed,
+                       is_unsat;
+  z3::expr             current_interpolant;
+  char const *         theory_name;
+  StateOutput          state_output;
 
   void loop();
 
@@ -85,6 +86,7 @@ class AXDInterpolant : public Preprocessor {
   public: 
   AXDInterpolant(
       z3::context &, 
+      AXDSignature const &,
       z3::expr const &,
       char const *, 
       char const *, 

@@ -40,7 +40,7 @@ z3::expr AXDInterpolant::defineDeclarations(z3::expr const & e) const {
         return (defineDeclarations(e.arg(0)) 
             + defineDeclarations(e.arg(1)));
       z3::func_decl f_name = e.decl();
-      z3::expr_vector args(ctx);
+      z3::expr_vector args(sig.ctx);
       for(unsigned i = 0; i < e.num_args(); ++i)
         args.push_back(defineDeclarations(e.arg(i)));
       return f_name(args);

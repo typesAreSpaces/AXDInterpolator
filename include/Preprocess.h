@@ -7,7 +7,9 @@
 #include <string>
 #include "AXDSignature.h"
 
-class Preprocessor : public AXDSignature {
+class Preprocessor {
+
+  AXDSignature const & sig;
 
   enum SideInterpolant { PART_A, PART_B };
 
@@ -38,7 +40,7 @@ class Preprocessor : public AXDSignature {
     part_a_index_vars,
     part_b_index_vars;
 
-  z3_expr_set
+  AXDSignature::z3_expr_set
     part_a_array_vars, 
     part_b_array_vars,
     common_array_vars;
@@ -50,7 +52,7 @@ class Preprocessor : public AXDSignature {
   z3::expr fresh_constant(z3::sort const &);
 
   public:
-  Preprocessor(z3::context &, z3::expr const &);
+  Preprocessor(AXDSignature const &, z3::expr const &);
 };
 
 #endif

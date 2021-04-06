@@ -11,23 +11,31 @@
 #include <tuple>
 #include "AXDSignature.h"
 
-class StandardInput : public AXDSignature {
+class StandardInput {
+
+  AXDSignature const & sig;
 
   unsigned s_fresh_index;
 
   friend class AXDInterpolant;
 
   struct DiffMapEntry : public z3::expr_vector {
-    friend struct DiffMap;
 
     z3::expr_vector lifted_b;
     z3::expr_vector lifted_diff_k;
+    AXDSignature const & sig;
 
-    DiffMapEntry(z3::context & ctx) : 
+    DiffMapEntry(z3::context & ctx, 
+        AXDSignature const & sig, 
+        z3::expr const & a, 
+        z3::expr const & b) : 
       z3::expr_vector(ctx), 
       lifted_b(ctx), 
-      lifted_diff_k(ctx)
+      lifted_diff_k(ctx),
+      sig(sig)
     {
+      lifted_b.push_back(b);
+      lifted_diff_k.push_back(sig.diff(a, b));
     }
 
     void push(
@@ -36,13 +44,12 @@ class StandardInput : public AXDSignature {
         z3::expr const & b
         ){
       push_back(index);
-      if(this->size() == 1)
-      {
-        lifted_b.push_back(b);
-        //lifted_diff_k.push_back(diff(a, b));
-      }
-      else{
-      }
+      unsigned last_index = this->size();
+      auto const & last_b = lifted_b[last_index - 1];
+      auto const & last_diff = lifted_diff_k[last_index - 1];
+      auto const & new_b = sig.wr(last_b, last_diff, sig.rd(a, last_diff));
+      lifted_b.push_back(new_b);
+      lifted_diff_k.push_back(sig.diff(a, new_b));
     }
   };
 
@@ -62,8 +69,11 @@ class StandardInput : public AXDSignature {
     std::map<z3_expr_pair, 
       DiffMapEntry,
       Z3ExprExprComparator> m_map;
+    AXDSignature const & sig;
 
-    DiffMap(z3::context &, z3_expr_set const &);
+    DiffMap(z3::context &, 
+        AXDSignature::z3_expr_set const &,
+        AXDSignature const &);
 
     void add(
         z3::expr const &, 
@@ -117,9 +127,10 @@ class StandardInput : public AXDSignature {
 
   public:
   StandardInput(
+      AXDSignature const &,
       z3::expr_vector const &, 
       z3::expr_vector &,
-      z3_expr_set const &,
+      AXDSignature::z3_expr_set const &,
       char const *, unsigned);
 
   void initSaturation(); 

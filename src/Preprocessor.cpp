@@ -1,14 +1,14 @@
 #include "Preprocess.h"
 
 Preprocessor::Preprocessor(
-    z3::context & ctx, 
+    AXDSignature const & sig, 
     z3::expr const & assertions):
-  AXDSignature(ctx),
+  sig(sig),
   current_conjs_in_input(0),
   fresh_index(0), 
-  input_part_a(ctx), 
-  input_part_b(ctx),
-  part_a_index_vars(ctx), part_b_index_vars(ctx),
+  input_part_a(sig.ctx), 
+  input_part_b(sig.ctx),
+  part_a_index_vars(sig.ctx), part_b_index_vars(sig.ctx),
   part_a_array_vars({}), part_b_array_vars({}), 
   common_array_vars({})
 {
@@ -20,8 +20,8 @@ Preprocessor::Preprocessor(
   assert(assertions.num_args() == 2);
 
   // empty_array is a common symbol
-  part_a_array_vars.insert(empty_array);
-  part_b_array_vars.insert(empty_array);
+  part_a_array_vars.insert(sig.empty_array);
+  part_b_array_vars.insert(sig.empty_array);
 
   // conjunction_a doesn't contain length
   // applications
@@ -105,9 +105,9 @@ Preprocessor::Preprocessor(
 z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
   if(e.is_app()){
     if(e.num_args() > 0 && func_name(e) == "length")
-      return diff(
+      return sig.diff(
           remove_Not_Length_Apps(e.arg(0)), 
-          empty_array);
+          sig.empty_array);
 
     if(e.num_args() == 1 && e.decl().decl_kind() == Z3_OP_NOT){
       z3::expr pred = e.arg(0);
@@ -132,9 +132,9 @@ z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
             >= remove_Not_Length_Apps(pred.arg(1));
         case Z3_OP_UNINTERPRETED:
           if(pred.get_sort().to_string() 
-              == bool_sort.to_string()){
+              == sig.bool_sort.to_string()){
             return remove_Not_Length_Apps(pred) 
-              == ctx.bool_val(false);
+              == sig.ctx.bool_val(false);
           }
         default:
           throw "Error @ Preprocessor::remove_Not_Legth_Apps." 
@@ -146,7 +146,7 @@ z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
       return e;
 
     z3::func_decl f_name = e.decl();
-    z3::expr_vector args(ctx);
+    z3::expr_vector args(sig.ctx);
     for(unsigned i = 0; i < e.num_args(); ++i)
       args.push_back(remove_Not_Length_Apps(e.arg(i)));
 
@@ -183,7 +183,7 @@ void Preprocessor::flattenPredicate(
       return;
     case Z3_OP_UNINTERPRETED:
       if(formula.get_sort().to_string() 
-          == bool_sort.to_string()){
+          == sig.bool_sort.to_string()){
         flattenTerm(formula, side);
         return;
       }
@@ -202,9 +202,9 @@ void Preprocessor::flattenPredicate(
 void Preprocessor::flattenPredicateAux(
     z3::expr const & atomic_predicate, SideInterpolant side){
 
-  z3::expr_vector old_terms(ctx); 
-  z3::expr_vector fresh_consts(ctx);
-  z3::expr_vector temp_predicates(ctx);
+  z3::expr_vector old_terms(sig.ctx); 
+  z3::expr_vector fresh_consts(sig.ctx);
+  z3::expr_vector temp_predicates(sig.ctx);
 
   auto const & lhs_atom = lhs(atomic_predicate);
   if(lhs_atom.num_args() > 0){
@@ -290,11 +290,11 @@ void Preprocessor::cojoin_aux(
     z3::expr const & old_term, 
     z3::expr const & new_const){
 
-  z3::expr_vector from(ctx), to(ctx);
+  z3::expr_vector from(sig.ctx), to(sig.ctx);
   from.push_back(old_term);
   to.push_back(new_const);
 
-  z3::expr_vector temp_predicates(ctx);
+  z3::expr_vector temp_predicates(sig.ctx);
   for(unsigned i = 0; i < predicates.size(); i++)
     temp_predicates.push_back(
         predicates[i].substitute(from, to));
@@ -331,19 +331,19 @@ void Preprocessor::updateIndexVars(z3::expr const & e,
 void Preprocessor::updateVarsDB(z3::expr const & e, 
     z3::sort const & s, SideInterpolant side){
   auto const & s_name = s.name().str();
-  if(s_name == array_sort.name().str()){
+  if(s_name == sig.array_sort.name().str()){
     updateArrayVars(e, side);
     return;
   }
-  if(s_name == index_sort.name().str()){
+  if(s_name == sig.index_sort.name().str()){
     updateIndexVars(e, side);
     return;
   }
 }
 
 void Preprocessor::removeDuplicates(z3::expr_vector & terms){
-  z3::expr_vector aux(ctx);
-  z3_expr_set ids({});
+  z3::expr_vector aux(sig.ctx);
+  AXDSignature::z3_expr_set ids({});
   for(auto const & term : terms)
     if(!inSet(term, ids)){
       ids.insert(term);
@@ -353,35 +353,35 @@ void Preprocessor::removeDuplicates(z3::expr_vector & terms){
 }
 
 z3::expr Preprocessor::fresh_bool_constant(){
-  return ctx.constant((FRESH_INDEX_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), bool_sort);
+  return sig.ctx.constant((FRESH_INDEX_PREFIX 
+        + std::to_string(fresh_index++)).c_str(), sig.bool_sort);
 }
 
 z3::expr Preprocessor::fresh_index_constant(){
-  return ctx.constant((FRESH_INDEX_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), int_sort);
+  return sig.ctx.constant((FRESH_INDEX_PREFIX 
+        + std::to_string(fresh_index++)).c_str(), sig.int_sort);
 }
 
 z3::expr Preprocessor::fresh_element_constant(){
-  return ctx.constant((FRESH_ELEMENT_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), element_sort);
+  return sig.ctx.constant((FRESH_ELEMENT_PREFIX 
+        + std::to_string(fresh_index++)).c_str(), sig.element_sort);
 }
 
 z3::expr Preprocessor::fresh_array_constant(){
-  return ctx.constant((FRESH_ARRAY_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), array_sort);
+  return sig.ctx.constant((FRESH_ARRAY_PREFIX 
+        + std::to_string(fresh_index++)).c_str(), sig.array_sort);
 }
 
 z3::expr Preprocessor::fresh_constant(z3::sort const & s){
   auto const & s_name = s.to_string();
 
-  if(s_name == bool_sort.to_string())
+  if(s_name == sig.bool_sort.to_string())
     return fresh_bool_constant();
-  if(s_name == array_sort.to_string())
+  if(s_name == sig.array_sort.to_string())
     return fresh_array_constant();
-  if(s_name == element_sort.to_string())
+  if(s_name == sig.element_sort.to_string())
     return fresh_element_constant();
-  if(s_name == index_sort.to_string())
+  if(s_name == sig.index_sort.to_string())
     return fresh_index_constant();
 
   throw "Problem @ Preprocessor::fresh_constant."

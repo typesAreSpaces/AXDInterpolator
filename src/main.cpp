@@ -16,6 +16,7 @@ int main(int argc, char * argv[]){
   z3::set_param("proof", true);
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
+  AXDSignature sig(ctx);
   
   switch(argc){
     case 5:
@@ -51,7 +52,7 @@ int main(int argc, char * argv[]){
         try {
           for(unsigned i = 0; i < part_a.size(); i++){
             for(unsigned j = 0; j < part_b.size(); j++){
-              AXDInterpolant axd(ctx, 
+              AXDInterpolant axd(ctx, sig,
                   // Input formula
                   part_a[i].as_expr() 
                   && part_b[j].as_expr(),

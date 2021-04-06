@@ -3,13 +3,16 @@
 
 AXDInterpolant::AXDInterpolant(
     z3::context & ctx, 
+    AXDSignature const & sig,
     z3::expr const & assertions,
     char const * file_name,
     char const * _theory_name,
     unsigned allowed_attempts) : 
   Preprocessor(ctx, assertions),
+  sig(sig),
   solver(ctx), 
   part_a(
+      sig,
       input_part_a,
       part_a_index_vars, 
       part_a_array_vars, 
@@ -17,6 +20,7 @@ AXDInterpolant::AXDInterpolant(
       fresh_index
       ),
   part_b(
+      sig,
       input_part_b,
       part_b_index_vars, 
       part_b_array_vars,
@@ -104,7 +108,7 @@ void AXDInterpolant::loop(){
 z3::expr AXDInterpolant::liftInterpolant(
     z3::expr_vector const & interpolant){
 
-  z3::expr_vector _interpolant(ctx);
+  z3::expr_vector _interpolant(sig.ctx);
 
   if(strcmp(theory_name, "QF_TO") == 0)
     for(auto const & x : interpolant)
@@ -113,8 +117,8 @@ z3::expr AXDInterpolant::liftInterpolant(
     for(auto const & x : interpolant)
       _interpolant.push_back(x);
 
-  z3::expr_vector from(ctx);
-  z3::expr_vector to(ctx);
+  z3::expr_vector from(sig.ctx);
+  z3::expr_vector to(sig.ctx);
 
   liftInterpolantDiffSubs(from, to, part_a);
   liftInterpolantDiffSubs(from, to, part_b);
@@ -135,8 +139,8 @@ void AXDInterpolant::liftInterpolantDiffSubs(
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
         from.push_back(k_);
-        to.push_back(diff_k(
-              ctx.int_val(diff_iteration++), 
+        to.push_back(sig.diff_k(
+              sig.ctx.int_val(diff_iteration++), 
               diff_a, diff_b));
       }
     }

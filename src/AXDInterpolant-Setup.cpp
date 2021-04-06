@@ -20,7 +20,7 @@
     z3::expr axiom_11_2 =  \
     z3::implies( \
         side_part.index_var != i, \
-        rd(a, side_part.index_var) == rd(b, side_part.index_var) \
+        sig.rd(a, side_part.index_var) == sig.rd(b, side_part.index_var) \
         ); \
     side_part.instantiate(VAR, axiom_11_2); \
   } \
@@ -36,10 +36,10 @@
     continue; \
     \
     unsigned last_one = diff_seq.size() - 1; \
-    z3::expr_vector disj_equalities(ctx); \
+    z3::expr_vector disj_equalities(sig.ctx); \
     disj_equalities.push_back( \
-        rd(a, side_part.index_var)  \
-        == rd(b, side_part.index_var)); \
+        sig.rd(a, side_part.index_var)  \
+        == sig.rd(b, side_part.index_var)); \
     for(unsigned i = 0; i < last_one; i++) \
     disj_equalities.push_back( \
         side_part.index_var == diff_seq[i]); \
