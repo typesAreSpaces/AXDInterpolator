@@ -12,16 +12,6 @@ bool AXDInterpolant::testOutput(
 
   z3::solver test1(sig.ctx), test2(sig.ctx);
 
-  // ---------
-  // [DEBUG]
-  std::cout << ">>>>>>>>>Showing input_part_a" << std::endl;
-  std::cout << input_part_a << std::endl << std::endl;;
-  std::cout << ">>>>>>>>>Showing interpolant" << std::endl;
-  std::cout << interpolant << std::endl;
-  std::cout << ">>>>>>>>>Showing input_part_b" << std::endl;
-  std::cout << input_part_b << std::endl;
-  // ---------
-
 #if _TEST_OUTPUT_ORIGINAL_THY_
   test1.add(
       not(z3::implies(
@@ -49,9 +39,9 @@ bool AXDInterpolant::testOutput(
       mk_and(part_b_vector) 
       && z3::mk_and(interpolant));
 #endif
-
+  
   if(test1.check() == z3::unsat){
-    std::cout << "Done with A-part testing - PASSED" << std::endl;
+    //std::cout << "Done with A-part testing - PASSED" << std::endl;
     return test2.check() == z3::unsat;
   }
 
@@ -66,12 +56,14 @@ void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
   z3::expr j = sig.ctx.constant("j", this->sig.int_sort);
   z3::expr n = sig.ctx.constant("n", this->sig.int_sort);
   // Adding axiomatization
-  s.add(forall(y, i, e, sig.rd(sig.wr(y, i, e), i) == e));
+  s.add(forall(y, i, e, z3::implies( i >= 0, sig.rd(sig.wr(y, i, e), i) == e)));
   s.add(forall(y, i , j, e, z3::implies(i != j, sig.rd(sig.wr(y, i, e), j) == sig.rd(y, j))));
   s.add(forall(x, y, z3::implies(x != y, sig.rd(x, sig.diff(x, y)) != sig.rd(y, sig.diff(x, y)))));
   s.add(forall(x, y, i, z3::implies(i > sig.diff(x, y), sig.rd(x, i) == sig.rd(y, i))));
   s.add(forall(x, sig.diff(x, x) == 0));
-  return ;
+  s.add(forall(i, x, z3::implies(i < 0, sig.rd(x, i) == sig.undefined)));
+  s.add(forall(i, sig.rd(sig.empty_array, i) == sig.undefined));
+  return;
 }
 
 void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const & input){
@@ -83,18 +75,9 @@ void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const &
     unsigned diff_iteration = 1;
     for(auto const & k_ : diff_seq)
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
-
-        // ----------------------
-        // [DEBUG]
-        std::cout << k_ 
-          << " == " 
-          << sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b) << std::endl;
-         //----------------------
-         //
         //s.add(k_ == sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b));
-        // [TODO] keep working here
-        s.add(k_ == input.diff_map.m_map.at);
-        diff_iteration++
+        s.add(k_ == input.diff_map.lift_diff_k(diff_iteration, diff_a, diff_b));
+        diff_iteration++;
       }
   }
 }

@@ -59,7 +59,7 @@ unsigned StandardInput::DiffMap::size_of_entry(
 z3::expr StandardInput::DiffMap::lift_diff_k(
     unsigned index,
     z3::expr const & a,
-    z3::expr const & b){
+    z3::expr const & b) const {
   auto table_entry = m_map.find(std::make_pair(a, b));
   if(table_entry == m_map.end()){
     throw "Problem @ StandardInput::DiffMap::add_aux."

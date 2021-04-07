@@ -1,12 +1,12 @@
 #include "AXDInterpolant.h"
 
 #define TEST_OUTPUT_CODE(PARSED_FROM_SOLVER_INTERPOLANT) \
-  z3::expr_vector _part_a_vector(ctx); \
-  z3::expr_vector _part_b_vector(ctx); \
+  z3::expr_vector _part_a_vector(sig.ctx); \
+  z3::expr_vector _part_b_vector(sig.ctx); \
   AB_VectorsSetup(_part_a_vector, part_a); \
   AB_VectorsSetup(_part_b_vector, part_b); \
-  z3::expr_vector part_a_vector(ctx); \
-  z3::expr_vector part_b_vector(ctx); \
+  z3::expr_vector part_a_vector(sig.ctx); \
+  z3::expr_vector part_b_vector(sig.ctx); \
   for(auto const & x : _part_a_vector) \
   part_a_vector.push_back(defineDeclarations(x)); \
   for(auto const & x : _part_b_vector) \

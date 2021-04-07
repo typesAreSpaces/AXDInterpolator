@@ -75,7 +75,7 @@ class StandardInput {
         unsigned,
         z3::expr const &,
         z3::expr const &
-        );
+        ) const;
   };
 
   // Container keeping track of a, b, i, e from 
