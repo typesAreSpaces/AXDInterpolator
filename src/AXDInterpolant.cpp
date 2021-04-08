@@ -3,12 +3,12 @@
 
 AXDInterpolant::AXDInterpolant(
     AXDSignature & sig, 
-    z3::expr const & _part_a,
-    z3::expr const & _part_b,
+    z3::expr const & _input_part_a,
+    z3::expr const & _input_part_b,
     char const * file_name,
     char const * _theory_name,
     unsigned allowed_attempts) : 
-  Preprocessor(sig, _part_a, _part_b),
+  Preprocessor(sig, _input_part_a, _input_part_b),
   solver(sig.ctx), 
   part_a(
       sig,

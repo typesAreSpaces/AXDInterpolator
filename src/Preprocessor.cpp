@@ -3,8 +3,8 @@
 
 Preprocessor::Preprocessor(
     AXDSignature & sig, 
-    z3::expr const & _part_a, 
-    z3::expr const & _part_b):
+    z3::expr const & _input_part_a, 
+    z3::expr const & _input_part_b):
   sig(sig),
   current_conjs_in_input(0),
   fresh_index(0), 
@@ -21,7 +21,7 @@ Preprocessor::Preprocessor(
   // conjunction_a doesn't contain length
   // applications
   z3::expr const & conjunction_a = 
-    remove_Not_Length_Apps(_part_a);
+    remove_Not_Length_Apps(_input_part_a);
   for(unsigned i = 0; i < conjunction_a.num_args(); ++i){
     auto const & curr_arg = conjunction_a.arg(i);
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ
@@ -33,7 +33,7 @@ Preprocessor::Preprocessor(
   // conjunction_b doesn't contain length
   // applications
   z3::expr const & conjunction_b = 
-    remove_Not_Length_Apps(_part_b);
+    remove_Not_Length_Apps(_input_part_b);
   for(unsigned i = 0; i < conjunction_b.num_args(); ++i){
     auto const & curr_arg = conjunction_b.arg(i);
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ
