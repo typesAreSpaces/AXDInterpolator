@@ -54,8 +54,8 @@ int main(int argc, char * argv[]){
             for(unsigned j = 0; j < part_b.size(); j++){
               AXDInterpolant axd(sig,
                   // Input formula
-                  part_a[i].as_expr() 
-                  && part_b[j].as_expr(),
+                  part_a[i].as_expr(),
+                  part_b[j].as_expr(),
                   // Smt2 file name
                   argv[2], 
                   // Theory

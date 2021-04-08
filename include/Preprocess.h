@@ -54,7 +54,9 @@ class Preprocessor {
   z3::expr fresh_constant(z3::sort const &);
 
   public:
-  Preprocessor(AXDSignature &, z3::expr const &);
+  Preprocessor(AXDSignature &, 
+      z3::expr const &,
+      z3::expr const &);
 };
 
 #endif

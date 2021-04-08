@@ -1,8 +1,10 @@
 #include "Preprocess.h"
+#include "z3++.h"
 
 Preprocessor::Preprocessor(
     AXDSignature & sig, 
-    z3::expr const & assertions):
+    z3::expr const & _part_a, 
+    z3::expr const & _part_b):
   sig(sig),
   current_conjs_in_input(0),
   fresh_index(0), 
@@ -12,13 +14,6 @@ Preprocessor::Preprocessor(
   part_a_array_vars({}), part_b_array_vars({}), 
   common_array_vars({})
 {
-  // NOTE:
-  // For now, it is assumed that
-  // assertions is a conjunction of two 
-  // conjunctions i.e. Part-A and Part-B
-  // are both conjunctions
-  assert(assertions.num_args() == 2);
-
   // empty_array is a common symbol
   part_a_array_vars.insert(sig.empty_array);
   part_b_array_vars.insert(sig.empty_array);
@@ -26,7 +21,7 @@ Preprocessor::Preprocessor(
   // conjunction_a doesn't contain length
   // applications
   z3::expr const & conjunction_a = 
-    remove_Not_Length_Apps(assertions.arg(0));
+    remove_Not_Length_Apps(_part_a);
   for(unsigned i = 0; i < conjunction_a.num_args(); ++i){
     auto const & curr_arg = conjunction_a.arg(i);
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ
@@ -38,7 +33,7 @@ Preprocessor::Preprocessor(
   // conjunction_b doesn't contain length
   // applications
   z3::expr const & conjunction_b = 
-    remove_Not_Length_Apps(assertions.arg(1));
+    remove_Not_Length_Apps(_part_b);
   for(unsigned i = 0; i < conjunction_b.num_args(); ++i){
     auto const & curr_arg = conjunction_b.arg(i);
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ
