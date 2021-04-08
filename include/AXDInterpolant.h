@@ -13,7 +13,7 @@
 #define _DEBUG_AXD_LOOP_           0
 #define _TEST_OUTPUT_              0
 #define _TEST_OUTPUT_ORIGINAL_THY_ 0
-#define _INCLUDE_OUTPUT_           0
+#define _INCLUDE_OUTPUT_           1
 
 #define CURRENT_DIR std::string("replace_once")
 #define OUTPUT_DIR  CURRENT_DIR + std::string("/output")
@@ -42,7 +42,6 @@ class AXDInterpolant : public Preprocessor {
 
   enum StateOutput { undefined, fine, notfine };
 
-  AXDSignature const & sig;
   z3::solver           solver;
   StandardInput        part_a, part_b;
   std::string          m_file_name;
@@ -85,8 +84,7 @@ class AXDInterpolant : public Preprocessor {
 
   public: 
   AXDInterpolant(
-      z3::context &, 
-      AXDSignature const &,
+      AXDSignature &, 
       z3::expr const &,
       char const *, 
       char const *, 

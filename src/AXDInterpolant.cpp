@@ -2,15 +2,13 @@
 #include "z3++.h"
 
 AXDInterpolant::AXDInterpolant(
-    z3::context & ctx, 
-    AXDSignature const & sig,
+    AXDSignature & sig, 
     z3::expr const & assertions,
     char const * file_name,
     char const * _theory_name,
     unsigned allowed_attempts) : 
-  Preprocessor(ctx, assertions),
-  sig(sig),
-  solver(ctx), 
+  Preprocessor(sig, assertions),
+  solver(sig.ctx), 
   part_a(
       sig,
       input_part_a,
@@ -29,7 +27,7 @@ AXDInterpolant::AXDInterpolant(
   m_file_name(std::string(file_name)),
   num_attempts(allowed_attempts),
   is_interpolant_computed(false), is_unsat(false),
-  current_interpolant(ctx.bool_val(true)),
+  current_interpolant(sig.ctx.bool_val(true)),
   theory_name(_theory_name),
   state_output(undefined)
 {

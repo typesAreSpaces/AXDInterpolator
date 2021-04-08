@@ -1,7 +1,6 @@
 #include "StandardInput.h"
 
 StandardInput::DiffMap::DiffMap(
-    z3::context & ctx,
     AXDSignature::z3_expr_set const & array_var_ids, 
     AXDSignature const & sig) : 
   m_map(),
@@ -12,11 +11,11 @@ StandardInput::DiffMap::DiffMap(
       if(x.id() > y.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(x, y), 
-              DiffMapEntry(ctx, sig, x, y)));
+              DiffMapEntry(sig, x, y)));
       if(y.id() > x.id())
         m_map.insert(std::make_pair(
               z3_expr_pair(y, x), 
-              DiffMapEntry(ctx, sig, y, x)));
+              DiffMapEntry(sig, y, x)));
     }
 }
 

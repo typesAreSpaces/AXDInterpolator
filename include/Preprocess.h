@@ -9,7 +9,9 @@
 
 class Preprocessor {
 
-  AXDSignature const & sig;
+  friend class AXDInterpolant;
+
+  AXDSignature & sig;
 
   enum SideInterpolant { PART_A, PART_B };
 
@@ -52,7 +54,7 @@ class Preprocessor {
   z3::expr fresh_constant(z3::sort const &);
 
   public:
-  Preprocessor(AXDSignature const &, z3::expr const &);
+  Preprocessor(AXDSignature &, z3::expr const &);
 };
 
 #endif

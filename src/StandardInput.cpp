@@ -9,7 +9,7 @@ StandardInput::StandardInput(
     unsigned _fresh_index) :
   sig(sig),
   s_fresh_index(_fresh_index),
-  diff_map(conjunction.ctx(), array_var_ids, sig),
+  diff_map(array_var_ids, sig),
   write_vector(),
   local_signature(sig.ctx),
   part_1(conjunction.ctx()),

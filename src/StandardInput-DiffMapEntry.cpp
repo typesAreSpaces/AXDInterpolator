@@ -1,13 +1,12 @@
 #include "StandardInput.h"
 
 StandardInput::DiffMapEntry::DiffMapEntry(
-    z3::context & ctx, 
     AXDSignature const & sig, 
     z3::expr const & a, 
     z3::expr const & b) : 
-  z3::expr_vector(ctx), 
-  lifted_b(ctx), 
-  lifted_diff_k(ctx),
+  z3::expr_vector(sig.ctx), 
+  lifted_b(sig.ctx), 
+  lifted_diff_k(sig.ctx),
   sig(sig)
 {
   lifted_b.push_back(b);

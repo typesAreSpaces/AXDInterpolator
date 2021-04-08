@@ -1,7 +1,7 @@
 #include "Preprocess.h"
 
 Preprocessor::Preprocessor(
-    AXDSignature const & sig, 
+    AXDSignature & sig, 
     z3::expr const & assertions):
   sig(sig),
   current_conjs_in_input(0),

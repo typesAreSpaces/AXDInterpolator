@@ -26,7 +26,6 @@ class StandardInput {
     AXDSignature const & sig;
 
     DiffMapEntry(
-        z3::context &, 
         AXDSignature const &, 
         z3::expr const &, 
         z3::expr const &);
@@ -56,7 +55,7 @@ class StandardInput {
       Z3ExprExprComparator> m_map;
     AXDSignature const & sig;
 
-    DiffMap(z3::context &, 
+    DiffMap(
         AXDSignature::z3_expr_set const &,
         AXDSignature const &);
 
