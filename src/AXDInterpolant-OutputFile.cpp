@@ -7,12 +7,8 @@
   AB_VectorsSetup(_part_b_vector, part_b); \
   z3::expr_vector part_a_vector(sig.ctx); \
   z3::expr_vector part_b_vector(sig.ctx); \
-  for(auto const & x : _part_a_vector) \
-  part_a_vector.push_back(defineDeclarations(x)); \
-  for(auto const & x : _part_b_vector) \
-  part_b_vector.push_back(defineDeclarations(x)); \
   if(testOutput(PARSED_FROM_SOLVER_INTERPOLANT.assertions(), \
-        part_a_vector, part_b_vector)) \
+        _part_a_vector, _part_b_vector)) \
         state_output = fine; \
         else \
         state_output = notfine;
@@ -37,7 +33,7 @@ void AXDInterpolant::z3OutputFile(){
           sig.is_QF_IDL()) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
 
-  z3_file << defineDeclarations(solver.to_smt2_decls_only());
+  z3_file << solver.to_smt2_decls_only();
   z3_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(z3_file, part_a);
   z3_file << ") :named part_a))" << std::endl;
@@ -109,7 +105,7 @@ void AXDInterpolant::mathsatOutputFile(){
           sig.is_QF_IDL()) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
 
-  mathsat_file << defineDeclarations(solver.to_smt2_decls_only());
+  mathsat_file << solver.to_smt2_decls_only();
   mathsat_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(mathsat_file, part_a);
   mathsat_file << ") :interpolation-group part_a))" << std::endl;
@@ -177,7 +173,7 @@ void AXDInterpolant::smtInterpolOutputFile(){
           sig.is_QF_IDL()) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
 
-  smtinterpol_file << defineDeclarations(solver.to_smt2_decls_only());
+  smtinterpol_file << solver.to_smt2_decls_only();
   smtinterpol_file << "(assert (! (and" << std::endl;
   SmtSolverOutStreamSetup(smtinterpol_file, part_a);
   smtinterpol_file << ") :named part_a))" << std::endl;

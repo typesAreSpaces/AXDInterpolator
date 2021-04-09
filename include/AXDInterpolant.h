@@ -78,9 +78,6 @@ class AXDInterpolant : public Preprocessor {
       z3::expr_vector &, 
       StandardInput const &); 
 
-  std::string defineDeclarations(std::string) const;
-  z3::expr    defineDeclarations(z3::expr const &) const;
-
   public: 
   AXDInterpolant(
       AXDSignature &, 
