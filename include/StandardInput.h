@@ -95,23 +95,37 @@ class StandardInput {
         z3::expr const &);
   };
 
-  DiffMap     diff_map;
-  WriteVector write_vector;
+  class InstantiatedTerms {
+    AXDSignature const & sig;
+    AXDSignature::z3_expr_set terms;
+    unsigned num_of_instantiations;
+    unsigned num_of_new_index;
 
-  z3::func_decl_vector local_signature;
+    void instantiate_QF_IDL();
+    void instantiate_QF_UTVPI();
+    void instantiate_QF_LIA();
+
+    public:
+
+    InstantiatedTerms(
+        AXDSignature const &,
+        z3::expr_vector const &);
+
+    AXDSignature::z3_expr_set const & getInstantiatedTerms() const;
+    void operator++();
+    void add_var(z3::expr const &);
+  };
+
+  DiffMap           diff_map;
+  WriteVector       write_vector;
+  InstantiatedTerms instantiated_terms;
 
   // -) part_1 contains wr-equations and diff(k)-equations
   // of the original input
   // -) part_2 contains the rest
   z3::expr_vector part_1, part_2;
-  z3::expr_vector index_vars;
-  unsigned N_instantiation;
-  z3::expr_vector current_instantiated_index_terms;
-  z3::expr index_var, axiom_8, axiom_9;
 
-  void     N_instantiate();
-  void     unaryInstantiationExtension(z3::func_decl const &);
-  void     binaryInstantiationExtension(z3::func_decl const &);
+  z3::expr index_var, axiom_8, axiom_9;
 
   z3::expr fresh_index_constant();
   z3::expr fresh_element_constant();
@@ -122,13 +136,14 @@ class StandardInput {
       z3::expr_vector const &, 
       z3::expr_vector &,
       AXDSignature::z3_expr_set const &,
-      char const *, unsigned);
+      unsigned);
 
   void initSaturation(); 
   void updateSaturation(
       DiffMap::z3_expr_pair const &, 
       z3::expr const &, 
       unsigned min_dim); 
+
   void instantiate(z3::solver &, z3::expr &) const;
   void instantiate(std::ostream &, z3::expr &) const;
   void instantiate(z3::expr_vector &, z3::expr &) const;

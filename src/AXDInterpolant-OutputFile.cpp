@@ -33,8 +33,8 @@ void AXDInterpolant::z3OutputFile(){
   // Setup logic engine
   z3_file 
     << "(set-logic " 
-    << ((strcmp(theory_name, "QF_TO") == 0 || 
-          strcmp(theory_name, "QF_IDL") == 0) ? 
+    << ( (sig.is_QF_TO() ||
+          sig.is_QF_IDL()) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
 
   z3_file << defineDeclarations(solver.to_smt2_decls_only());
@@ -105,8 +105,8 @@ void AXDInterpolant::mathsatOutputFile(){
   // Setup logic engine
   mathsat_file 
     << "(set-logic " 
-    << ((strcmp(theory_name, "QF_TO") == 0 || 
-          strcmp(theory_name, "QF_IDL") == 0) ? 
+    << ((sig.is_QF_TO() ||
+          sig.is_QF_IDL()) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
 
   mathsat_file << defineDeclarations(solver.to_smt2_decls_only());
@@ -173,8 +173,8 @@ void AXDInterpolant::smtInterpolOutputFile(){
   // Setup logic engine
   smtinterpol_file 
     << "(set-logic " 
-    << ((strcmp(theory_name, "QF_TO") == 0 || 
-          strcmp(theory_name, "QF_IDL") == 0) ? 
+    << ((sig.is_QF_TO() ||
+          sig.is_QF_IDL()) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
 
   smtinterpol_file << defineDeclarations(solver.to_smt2_decls_only());

@@ -330,7 +330,7 @@ void Preprocessor::updateVarsDB(z3::expr const & e,
     updateArrayVars(e, side);
     return;
   }
-  if(s_name == sig.index_sort.name().str()){
+  if(s_name == sig.int_sort.name().str()){
     updateIndexVars(e, side);
     return;
   }
@@ -376,7 +376,7 @@ z3::expr Preprocessor::fresh_constant(z3::sort const & s){
     return fresh_array_constant();
   if(s_name == sig.element_sort.to_string())
     return fresh_element_constant();
-  if(s_name == sig.index_sort.to_string())
+  if(s_name == sig.int_sort.to_string())
     return fresh_index_constant();
 
   throw "Problem @ Preprocessor::fresh_constant."

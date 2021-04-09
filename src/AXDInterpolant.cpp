@@ -6,7 +6,6 @@ AXDInterpolant::AXDInterpolant(
     z3::expr const & _input_part_a,
     z3::expr const & _input_part_b,
     char const * file_name,
-    char const * _theory_name,
     unsigned allowed_attempts) : 
   Preprocessor(sig, _input_part_a, _input_part_b),
   solver(sig.ctx), 
@@ -15,7 +14,6 @@ AXDInterpolant::AXDInterpolant(
       input_part_a,
       part_a_index_vars, 
       part_a_array_vars, 
-      _theory_name,
       fresh_index
       ),
   part_b(
@@ -23,13 +21,11 @@ AXDInterpolant::AXDInterpolant(
       input_part_b,
       part_b_index_vars, 
       part_b_array_vars,
-      _theory_name,
       part_a.get_fresh_index()),
   m_file_name(std::string(file_name)),
   num_attempts(allowed_attempts),
   is_interpolant_computed(false), is_unsat(false),
   current_interpolant(sig.ctx.bool_val(true)),
-  theory_name(_theory_name),
   state_output(undefined)
 {
   m_out
@@ -109,7 +105,7 @@ z3::expr AXDInterpolant::liftInterpolant(
 
   z3::expr_vector _interpolant(sig.ctx);
 
-  if(strcmp(theory_name, "QF_TO") == 0)
+  if(sig.is_QF_TO())
     for(auto const & x : interpolant)
       _interpolant.push_back(x.qf_to_simplify());
   else

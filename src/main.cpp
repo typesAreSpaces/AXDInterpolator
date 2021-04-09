@@ -16,7 +16,7 @@ int main(int argc, char * argv[]){
   z3::set_param("proof", true);
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
-  AXDSignature sig(ctx);
+  AXDSignature sig(ctx, argv[1]);
   
   switch(argc){
     case 5:
@@ -58,8 +58,6 @@ int main(int argc, char * argv[]){
                   part_b[j].as_expr(),
                   // Smt2 file name
                   argv[2], 
-                  // Theory
-                  argv[1], 
                   // Number of allowed attemps
                   strtoul(argv[4], NULL, 0));
               switch(*argv[3]){

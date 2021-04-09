@@ -49,7 +49,6 @@ class AXDInterpolant : public Preprocessor {
   bool                 is_interpolant_computed,
                        is_unsat;
   z3::expr             current_interpolant;
-  char const *         theory_name;
   StateOutput          state_output;
 
   void loop();
@@ -87,7 +86,6 @@ class AXDInterpolant : public Preprocessor {
       AXDSignature &, 
       z3::expr const &,
       z3::expr const &,
-      char const *, 
       char const *, 
       unsigned);
 

@@ -5,41 +5,18 @@ StandardInput::StandardInput(
     z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
     AXDSignature::z3_expr_set const & array_var_ids,
-    char const * theory, 
     unsigned _fresh_index) :
   sig(sig),
   s_fresh_index(_fresh_index),
   diff_map(array_var_ids, sig),
   write_vector(),
-  local_signature(sig.ctx),
+  instantiated_terms(sig, initial_index_vars),
   part_1(conjunction.ctx()),
   part_2(conjunction.ctx()), 
-  index_vars(sig.ctx),
-  N_instantiation(0),
-  current_instantiated_index_terms(sig.ctx),
-  index_var(sig.ctx.constant("index_var", sig.index_sort)),
+  index_var(sig.ctx.constant("index_var", sig.int_sort)),
   axiom_8(sig.ctx), 
   axiom_9(sig.rd(sig.empty_array, index_var) == sig.undefined)
 {
-  std::string theory_signature(theory);
-  if(theory_signature == "QF_TO"){
-  }
-  if(theory_signature == "QF_IDL"){
-    local_signature.push_back(sig.pred);
-    local_signature.push_back(sig.succ);
-  }
-  if(theory_signature == "QF_UTVPI"){
-    local_signature.push_back(sig.pred);
-    local_signature.push_back(sig.succ);
-    local_signature.push_back(sig.neg);
-  }
-  if(theory_signature == "QF_LIA"){
-    local_signature.push_back(sig.pred);
-    local_signature.push_back(sig.succ);
-    local_signature.push_back(sig.neg);
-    local_signature.push_back(sig.add);
-  }
-
   // Splitting input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
@@ -162,12 +139,8 @@ StandardInput::StandardInput(
   m_out << std::endl;
 #endif
 
-  for(auto const & x : initial_index_vars)
-    index_vars.push_back(x);
-  N_instantiate();
-
   // Setup axiom 8
-  // Instantiate will all the current array elements
+  // Instantiate with all the current array elements
   // since this won't change
   z3::expr_vector instances_axiom_8(sig.ctx);
   for(auto const & array_element : array_var_ids)
@@ -179,58 +152,6 @@ StandardInput::StandardInput(
   axiom_8 = z3::mk_and(instances_axiom_8);
 
   initSaturation();
-}
-
-void StandardInput::N_instantiate(){
-  // Reset current_instantiated_index_terms
-  current_instantiated_index_terms.resize(0);
-
-  // Add current set of index vars to 
-  // current_instantiated_index_terms
-  for(unsigned i = 0; i < index_vars.size(); i++)
-    current_instantiated_index_terms.push_back(index_vars[i]);
-
-  // Perform instantiations "N_instiation" times
-  for(unsigned i = 0; i < N_instantiation; i++){
-    for(unsigned j = 0; j < local_signature.size(); j++){
-      auto const & current_signature = local_signature[j];
-      switch(current_signature.arity()){
-        case 1:
-          unaryInstantiationExtension(current_signature);
-          break;
-        case 2:
-          binaryInstantiationExtension(current_signature);
-          break;
-        default:
-          throw "Error @ N_instantiate. Function arity cannot"
-            "be different to 1 or 2.";
-      }
-    }
-  }
-
-  return;
-}
-
-void StandardInput::unaryInstantiationExtension(z3::func_decl const & f_1){
-  z3::expr_vector temp(sig.ctx);
-  for(unsigned i = 0; i < current_instantiated_index_terms.size(); i++)
-    temp.push_back(
-        f_1(current_instantiated_index_terms[i]));
-
-  for(unsigned i = 0; i < temp.size(); i++)
-    current_instantiated_index_terms.push_back(temp[i]);
-}
-
-void StandardInput::binaryInstantiationExtension(z3::func_decl const & f_2){
-  z3::expr_vector temp(sig.ctx);
-  for(unsigned i = 0; i < current_instantiated_index_terms.size(); i++)
-    for(unsigned j = 0; j < current_instantiated_index_terms.size(); j++)
-      temp.push_back(
-          f_2(current_instantiated_index_terms[i], 
-            current_instantiated_index_terms[j]));
-
-  for(unsigned i = 0; i < temp.size(); i++)
-    current_instantiated_index_terms.push_back(temp[i]);
 }
 
 z3::expr StandardInput::fresh_index_constant(){
@@ -305,16 +226,8 @@ void StandardInput::updateSaturation(
   auto const & current_indices = map_element->second;
   unsigned old_dim = current_indices.size();
 
-  index_vars.push_back(_new_index);
-
-  // TODO: implement/compare more heuristics
-  // to increase N_instantiation
-
-  // Heuristic # 1
-  if(index_vars.size() % 5 == 0){
-    N_instantiation++;
-    N_instantiate();
-  }
+  instantiated_terms.add_var(_new_index);
+  ++instantiated_terms;
 
   // [11] predicates are processed in 
   // AXDInterpolant::SmtSolverSetup(z3::solver &);
@@ -326,8 +239,6 @@ void StandardInput::updateSaturation(
         _new_index == map_element->second[min_dim]
         );
   else{
-    current_instantiated_index_terms.push_back(_new_index);
-
     diff_map.add(entry.first, entry.second, _new_index);
     // old_dim > 0 guarantees having a previous index
     if(old_dim > 0){

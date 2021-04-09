@@ -17,6 +17,7 @@
 
 #include <z3++.h>
 #include <set>
+#include <cstring>
 #include <utility>
 
 // Notes:
@@ -26,6 +27,8 @@
 
 struct AXDSignature {
 
+  enum TheoryName { QF_TO, QF_IDL, QF_UTVPI, QF_LIA };
+
   struct Z3ExprComparator {
     bool operator() (z3::expr const & a, z3::expr const & b) const;
   };
@@ -33,12 +36,12 @@ struct AXDSignature {
   typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
 
   z3::context & ctx;
+  TheoryName    theory_name;
 
   z3::sort const
     bool_sort, 
     int_sort, 
-    index_sort, 
-    element_sort, 
+    element_sort,
     array_sort;
 
   z3::expr const 
@@ -48,11 +51,13 @@ struct AXDSignature {
   z3::func_decl const
     diff, diff_k,
     wr, rd,
-    pred, succ, 
-    neg, add, 
     length;
 
-  AXDSignature(z3::context &);
+  AXDSignature(z3::context &, char const *);
+
+  bool is_QF_TO() const;
+  bool is_QF_IDL() const;
+  TheoryName getTheoryName() const;
   friend std::ostream & operator << (std::ostream &, z3_expr_set const &);
 };
 
