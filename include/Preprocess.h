@@ -11,11 +11,7 @@ class Preprocessor {
 
   friend class AXDInterpolant;
 
-  AXDSignature & sig;
-
   enum SideInterpolant { PART_A, PART_B };
-
-  unsigned current_conjs_in_input;
 
   z3::expr remove_Not_Length_Apps(z3::expr const &);
 
@@ -34,8 +30,15 @@ class Preprocessor {
 
   void removeDuplicates(z3::expr_vector &);
 
-  protected:
-  unsigned fresh_index;
+  z3::expr fresh_bool_constant();
+  z3::expr fresh_index_constant();
+  z3::expr fresh_element_constant();
+  z3::expr fresh_array_constant();
+  z3::expr fresh_constant(z3::sort const &);
+
+  AXDSignature &  sig;
+  unsigned        current_conjs_in_input;
+  unsigned        fresh_index;
   z3::expr_vector input_part_a, input_part_b;
 
   z3::expr_vector 
@@ -46,12 +49,6 @@ class Preprocessor {
     part_a_array_vars, 
     part_b_array_vars,
     common_array_vars;
-
-  z3::expr fresh_bool_constant();
-  z3::expr fresh_index_constant();
-  z3::expr fresh_element_constant();
-  z3::expr fresh_array_constant();
-  z3::expr fresh_constant(z3::sort const &);
 
   public:
   Preprocessor(AXDSignature &, 

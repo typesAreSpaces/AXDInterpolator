@@ -13,16 +13,12 @@
 
 class StandardInput {
 
-  AXDSignature const & sig;
-
-  unsigned s_fresh_index;
-
   friend class AXDInterpolant;
 
   struct DiffMapEntry : public z3::expr_vector {
 
-    z3::expr_vector lifted_b;
-    z3::expr_vector lifted_diff_k;
+    z3::expr_vector      lifted_b;
+    z3::expr_vector      lifted_diff_k;
     AXDSignature const & sig;
 
     DiffMapEntry(
@@ -53,7 +49,7 @@ class StandardInput {
     std::map<z3_expr_pair, 
       DiffMapEntry,
       Z3ExprExprComparator> m_map;
-    AXDSignature const & sig;
+    AXDSignature const &    sig;
 
     DiffMap(
         AXDSignature::z3_expr_set const &,
@@ -96,10 +92,10 @@ class StandardInput {
   };
 
   class InstantiatedTerms {
-    AXDSignature const & sig;
+    AXDSignature const &      sig;
     AXDSignature::z3_expr_set terms;
-    unsigned num_of_instantiations;
-    unsigned num_of_new_index;
+    unsigned                  num_of_instantiations;
+    unsigned                  num_of_new_index;
 
     void instantiate_QF_IDL();
     void instantiate_QF_UTVPI();
@@ -116,9 +112,11 @@ class StandardInput {
     void add_var(z3::expr const &);
   };
 
-  DiffMap           diff_map;
-  WriteVector       write_vector;
-  InstantiatedTerms instantiated_terms;
+  AXDSignature const & sig;
+  unsigned             s_fresh_index;
+  DiffMap              diff_map;
+  WriteVector          write_vector;
+  InstantiatedTerms    instantiated_terms;
 
   // -) part_1 contains wr-equations and diff(k)-equations
   // of the original input

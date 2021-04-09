@@ -35,6 +35,12 @@ struct AXDSignature {
 
   typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
 
+  bool is_QF_TO() const;
+  bool is_QF_IDL() const;
+  TheoryName getTheoryName() const;
+  friend std::ostream & operator << (std::ostream &, z3_expr_set const &);
+
+
   z3::context & ctx;
   TheoryName    theory_name;
 
@@ -61,10 +67,6 @@ struct AXDSignature {
 
   AXDSignature(z3::context &, char const *);
 
-  bool is_QF_TO() const;
-  bool is_QF_IDL() const;
-  TheoryName getTheoryName() const;
-  friend std::ostream & operator << (std::ostream &, z3_expr_set const &);
 };
 
 #endif

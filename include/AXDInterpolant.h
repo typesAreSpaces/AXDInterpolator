@@ -73,7 +73,7 @@ class AXDInterpolant : public Preprocessor {
       StandardInput const &);
 
   z3::expr liftInterpolant(z3::expr_vector const &); 
-  void liftInterpolantDiffSubs(
+  void     liftInterpolantDiffSubs(
       z3::expr_vector &, 
       z3::expr_vector &, 
       StandardInput const &); 
