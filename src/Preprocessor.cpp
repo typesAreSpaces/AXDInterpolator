@@ -1,6 +1,18 @@
 #include "Preprocess.h"
 #include "z3++.h"
 
+#define NORMALIZE_INPUT(OLD, NEW, TEMP_VAR)\
+  z3::expr const & TEMP_VAR =\
+  remove_Not_Length_Apps(OLD);\
+  for(unsigned i = 0; i < TEMP_VAR.num_args(); ++i){\
+    auto const & curr_arg = TEMP_VAR.arg(i);\
+    if(curr_arg.decl().decl_kind() == Z3_OP_EQ\
+        && rhs(curr_arg).num_args() == 0)\
+    NEW.push_back(rhs(curr_arg) == lhs(curr_arg));\
+    else\
+    NEW.push_back(curr_arg);\
+  }
+
 Preprocessor::Preprocessor(
     AXDSignature & sig, 
     z3::expr const & _input_part_a, 
@@ -18,30 +30,8 @@ Preprocessor::Preprocessor(
   part_a_array_vars.insert(sig.empty_array);
   part_b_array_vars.insert(sig.empty_array);
 
-  // conjunction_a doesn't contain length
-  // applications
-  z3::expr const & conjunction_a = 
-    remove_Not_Length_Apps(_input_part_a);
-  for(unsigned i = 0; i < conjunction_a.num_args(); ++i){
-    auto const & curr_arg = conjunction_a.arg(i);
-    if(curr_arg.decl().decl_kind() == Z3_OP_EQ
-        && rhs(curr_arg).num_args() == 0)
-      input_part_a.push_back(rhs(curr_arg) == lhs(curr_arg));
-    else
-      input_part_a.push_back(curr_arg);
-  }
-  // conjunction_b doesn't contain length
-  // applications
-  z3::expr const & conjunction_b = 
-    remove_Not_Length_Apps(_input_part_b);
-  for(unsigned i = 0; i < conjunction_b.num_args(); ++i){
-    auto const & curr_arg = conjunction_b.arg(i);
-    if(curr_arg.decl().decl_kind() == Z3_OP_EQ
-        && rhs(curr_arg).num_args() == 0)
-      input_part_b.push_back(rhs(curr_arg) == lhs(curr_arg));
-    else
-      input_part_b.push_back(curr_arg);
-  }
+  NORMALIZE_INPUT(_input_part_a, input_part_a, conjunction_a);
+  NORMALIZE_INPUT(_input_part_b, input_part_b, conjunction_b);
 
 #if _DEBUG_PREPROCESS_
   m_out << "Conjunction a" << std::endl;
