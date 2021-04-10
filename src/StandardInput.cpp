@@ -102,7 +102,6 @@ StandardInput::StandardInput(
   m_out << "Part 2: " << part_2 << std::endl;
 #endif
 
-  // (*)
   // Setting up internal data structures
   // WriteVector and DiffMap
   for(auto const & equation : part_1){

@@ -13,6 +13,11 @@
     NEW.push_back(curr_arg);\
   }
 
+#define FLATTEN_PREDICATE(NUM_CONJS_INPUT, INPUT_PART, SIDE)\
+  NUM_CONJS_INPUT = INPUT_PART.size();\
+  for(unsigned i = 0; i < NUM_CONJS_INPUT; i++)\
+  flattenPredicate(INPUT_PART[i], SIDE);
+
 Preprocessor::Preprocessor(
     AXDSignature & sig, 
     z3::expr const & _input_part_a, 
@@ -40,16 +45,9 @@ Preprocessor::Preprocessor(
   m_out << conjunction_b << std::endl;
 #endif
 
-  // Processing Part-A
-  current_conjs_in_input = input_part_a.size();
-  for(unsigned i = 0; i < current_conjs_in_input; i++)
-    flattenPredicate(input_part_a[i], PART_A);
-
-  // Processing Part-B
-  current_conjs_in_input = input_part_b.size();
-  for(unsigned i = 0; i < current_conjs_in_input; i++)
-    flattenPredicate(input_part_b[i], PART_B);
-
+  FLATTEN_PREDICATE(current_conjs_in_input, input_part_a, PART_A);
+  FLATTEN_PREDICATE(current_conjs_in_input, input_part_b, PART_B);
+  
   // Set current_conjs_in_input to zero
   // because the variable is no longer needed
   current_conjs_in_input = 0;
@@ -334,6 +332,7 @@ void Preprocessor::removeDuplicates(z3::expr_vector & terms){
       ids.insert(term);
       aux.push_back(term);
     }
+
   terms = aux;
 }
 
