@@ -4,24 +4,31 @@ StandardInput::StandardInput(
     AXDSignature const & sig,
     z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
+    // [TODO]: lift this structure to map 
+    // index by ElementSorts and extend 
+    // similarly the production of axioms
     AXDSignature::z3_expr_set const & array_var_ids,
     unsigned _fresh_index) :
   sig(sig),
   s_fresh_index(_fresh_index),
+
   diff_map(array_var_ids, sig),
   write_vector(),
   instantiated_terms(sig, initial_index_vars),
+
   part_1(conjunction.ctx()),
   part_2(conjunction.ctx()), 
+
   index_var(sig.ctx.constant("index_var", sig.int_sort)),
+
   axiom_8(sig.ctx), 
   axiom_9(sig.rd(sig.empty_array, index_var) == sig.undefined)
 {
   // Splitting input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
-    if(current_arg.decl().decl_kind() == Z3_OP_UNINTERPRETED
-        && current_arg.get_sort().to_string() == sig.bool_sort.to_string()){
+    if(func_kind(current_arg) == Z3_OP_UNINTERPRETED
+        && current_arg.get_sort().is_bool()){
       part_2.push_back(current_arg);
       continue;
     }

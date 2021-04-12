@@ -1,11 +1,10 @@
 ; Sorts
-(declare-sort ElementSort 0)
 (declare-sort ArraySort 0)
 
 ; Function declarartions
 (declare-fun diff (ArraySort ArraySort) Int)
-(declare-fun wr (ArraySort Int ElementSort) ArraySort)
-(declare-fun rd (ArraySort Int) ElementSort)
+(declare-fun wr (ArraySort Int Int) ArraySort)
+(declare-fun rd (ArraySort Int) Int)
 
 ; Paper example
 (declare-fun a () ArraySort)
@@ -18,11 +17,11 @@
 (declare-fun i4 () Int)
 (declare-fun i5 () Int)
 (declare-fun a1 () ArraySort)
-(declare-fun e1 () ElementSort)
-(declare-fun e2 () ElementSort)
-(declare-fun e3 () ElementSort)
-(declare-fun e4 () ElementSort)
-(declare-fun e5 () ElementSort)
+(declare-fun e1 () Int)
+(declare-fun e2 () Int)
+(declare-fun e3 () Int)
+(declare-fun e4 () Int)
+(declare-fun e5 () Int)
 
 ; Part A
 (assert 

@@ -14,11 +14,13 @@
 #define rhs(x)              x.arg(1)
 #define func_name(x)        x.decl().name().str()
 #define sort_name(x)        x.decl().range().name().str()
+#define func_kind(x)        x.decl().decl_kind()
 
 #include <z3++.h>
 #include <set>
 #include <cstring>
 #include <utility>
+#include <algorithm>
 
 // Notes:
 // The implementation considers
@@ -30,16 +32,19 @@ struct AXDSignature {
   enum TheoryName { QF_TO, QF_IDL, QF_UTVPI, QF_LIA };
 
   struct Z3ExprComparator {
-    bool operator() (z3::expr const & a, z3::expr const & b) const;
+    bool operator() (
+        z3::expr const & a, 
+        z3::expr const & b) const;
   };
 
   typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
 
+  static bool isSpaceOrParen(char);
+  void extractNameFromSort(std::string &) const;
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
   TheoryName getTheoryName() const;
   friend std::ostream & operator << (std::ostream &, z3_expr_set const &);
-
 
   z3::context & ctx;
   TheoryName    theory_name;
@@ -54,7 +59,22 @@ struct AXDSignature {
     // every type A from (Array Int A)
     element_sort,
     array_sort;
+  // -------------------------------
 
+  // es stands for elements sorts
+  z3::sort_vector element_sorts;
+  z3::expr_vector undefined_es;
+  z3::expr_vector empty_array_es;
+  z3::func_decl_vector 
+    diff_es,
+    diff_k_es,
+    wr_es, rd_es,
+    length_es;
+
+  // -------------------------------
+  // [TODO] remove the following
+  // Parametrize them instead with
+  // every type A from (Array Int A)
   z3::expr const 
     undefined, 
     empty_array;

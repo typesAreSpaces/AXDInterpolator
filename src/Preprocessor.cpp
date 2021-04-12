@@ -114,8 +114,7 @@ z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
           return remove_Not_Length_Apps(pred.arg(0)) 
             >= remove_Not_Length_Apps(pred.arg(1));
         case Z3_OP_UNINTERPRETED:
-          if(pred.get_sort().to_string() 
-              == sig.bool_sort.to_string()){
+          if(pred.get_sort().is_bool()){
             return remove_Not_Length_Apps(pred) 
               == sig.ctx.bool_val(false);
           }
@@ -165,8 +164,7 @@ void Preprocessor::flattenPredicate(
       flattenPredicateAux(formula, side);
       return;
     case Z3_OP_UNINTERPRETED:
-      if(formula.get_sort().to_string() 
-          == sig.bool_sort.to_string()){
+      if(formula.get_sort().is_bool()){
         flattenTerm(formula, side);
         return;
       }
@@ -336,19 +334,9 @@ void Preprocessor::removeDuplicates(z3::expr_vector & terms){
   terms = aux;
 }
 
-z3::expr Preprocessor::fresh_bool_constant(){
-  return sig.ctx.constant((FRESH_INDEX_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), sig.bool_sort);
-}
-
 z3::expr Preprocessor::fresh_index_constant(){
   return sig.ctx.constant((FRESH_INDEX_PREFIX 
         + std::to_string(fresh_index++)).c_str(), sig.int_sort);
-}
-
-z3::expr Preprocessor::fresh_element_constant(){
-  return sig.ctx.constant((FRESH_ELEMENT_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), sig.element_sort);
 }
 
 z3::expr Preprocessor::fresh_array_constant(){
@@ -359,13 +347,10 @@ z3::expr Preprocessor::fresh_array_constant(){
 z3::expr Preprocessor::fresh_constant(z3::sort const & s){
   auto const & s_name = s.to_string();
 
-  if(s_name == sig.bool_sort.to_string())
-    return fresh_bool_constant();
+  // TODO: remove this one and use is_array()
   if(s_name == sig.array_sort.to_string())
     return fresh_array_constant();
-  if(s_name == sig.element_sort.to_string())
-    return fresh_element_constant();
-  if(s_name == sig.int_sort.to_string())
+  if(s.is_int())
     return fresh_index_constant();
 
   throw "Problem @ Preprocessor::fresh_constant."
