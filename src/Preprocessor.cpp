@@ -3,7 +3,7 @@
 
 #define NORMALIZE_INPUT(OLD, NEW, TEMP_VAR)\
   z3::expr const & TEMP_VAR =\
-  remove_Not_Length_Apps(OLD);\
+  initialTraverse(OLD);\
   for(unsigned i = 0; i < TEMP_VAR.num_args(); ++i){\
     auto const & curr_arg = TEMP_VAR.arg(i);\
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ\
@@ -26,8 +26,10 @@ Preprocessor::Preprocessor(
   fresh_index(0), 
   input_part_a(sig.ctx), 
   input_part_b(sig.ctx),
-  part_a_index_vars(sig.ctx), part_b_index_vars(sig.ctx),
-  part_a_array_vars({}), part_b_array_vars({}), 
+  part_a_index_vars(sig.ctx), 
+  part_b_index_vars(sig.ctx),
+  part_a_array_vars({}), 
+  part_b_array_vars({}), 
   common_array_vars({})
 {
   NORMALIZE_INPUT(_input_part_a, input_part_a, conjunction_a);
@@ -40,6 +42,8 @@ Preprocessor::Preprocessor(
   m_out << conjunction_b << std::endl;
 #endif
 
+  // [TODO]: parametrize empty_array elements
+  //
   // empty_array is a common symbol
   part_a_array_vars.insert(sig.empty_array);
   part_b_array_vars.insert(sig.empty_array);
@@ -65,53 +69,41 @@ Preprocessor::Preprocessor(
       common_array_vars.insert(*iterator_a);
   }
 
-#if _DEBUG_PREPROCESS_
-  m_out << "Before" << std::endl;
-  m_out << part_a_index_vars << std::endl;
-  m_out << part_b_index_vars << std::endl;
-#endif
-
   removeDuplicates(part_a_index_vars);
   removeDuplicates(part_b_index_vars);
-
-#if _DEBUG_PREPROCESS_
-  m_out << "After" << std::endl;
-  m_out << part_a_index_vars << std::endl;
-  m_out << part_b_index_vars << std::endl;
-#endif
 }
 
-z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
+z3::expr Preprocessor::initialTraverse(z3::expr const & e){
   if(e.is_app()){
-    if(e.num_args() > 0 && func_name(e) == "length")
+    if(e.num_args() == 1 && func_name(e) == "length")
       return sig.diff(
-          remove_Not_Length_Apps(e.arg(0)), 
+          initialTraverse(e.arg(0)), 
           sig.empty_array);
 
     if(e.num_args() == 1 && e.decl().decl_kind() == Z3_OP_NOT){
       z3::expr pred = e.arg(0);
       switch(pred.decl().decl_kind()){
         case Z3_OP_EQ:       // ==
-          return remove_Not_Length_Apps(pred.arg(0)) 
-            != remove_Not_Length_Apps(pred.arg(1));
+          return initialTraverse(pred.arg(0)) 
+            != initialTraverse(pred.arg(1));
         case Z3_OP_DISTINCT: // !=
-          return remove_Not_Length_Apps(pred.arg(0)) 
-            == remove_Not_Length_Apps(pred.arg(1));
+          return initialTraverse(pred.arg(0)) 
+            == initialTraverse(pred.arg(1));
         case Z3_OP_GE:       // >=
-          return remove_Not_Length_Apps(pred.arg(0)) 
-            < remove_Not_Length_Apps(pred.arg(1));
+          return initialTraverse(pred.arg(0)) 
+            < initialTraverse(pred.arg(1));
         case Z3_OP_LE:       // <=
-          return remove_Not_Length_Apps(pred.arg(0)) 
-            > remove_Not_Length_Apps(pred.arg(1));
+          return initialTraverse(pred.arg(0)) 
+            > initialTraverse(pred.arg(1));
         case Z3_OP_GT:       // >
-          return remove_Not_Length_Apps(pred.arg(0)) 
-            <= remove_Not_Length_Apps(pred.arg(1));
+          return initialTraverse(pred.arg(0)) 
+            <= initialTraverse(pred.arg(1));
         case Z3_OP_LT:       // <
-          return remove_Not_Length_Apps(pred.arg(0)) 
-            >= remove_Not_Length_Apps(pred.arg(1));
+          return initialTraverse(pred.arg(0)) 
+            >= initialTraverse(pred.arg(1));
         case Z3_OP_UNINTERPRETED:
           if(pred.get_sort().is_bool()){
-            return remove_Not_Length_Apps(pred) 
+            return initialTraverse(pred) 
               == sig.ctx.bool_val(false);
           }
         default:
@@ -126,7 +118,7 @@ z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
     z3::func_decl f_name = e.decl();
     z3::expr_vector args(sig.ctx);
     for(unsigned i = 0; i < e.num_args(); ++i)
-      args.push_back(remove_Not_Length_Apps(e.arg(i)));
+      args.push_back(initialTraverse(e.arg(i)));
 
     return f_name(args);
   }
@@ -331,15 +323,15 @@ void Preprocessor::updateVarsDB(z3::expr const & e,
 }
 
 void Preprocessor::removeDuplicates(z3::expr_vector & terms){
-  z3::expr_vector aux(sig.ctx);
+  z3::expr_vector new_terms(sig.ctx);
   AXDSignature::z3_expr_set ids({});
   for(auto const & term : terms)
     if(!inSet(term, ids)){
       ids.insert(term);
-      aux.push_back(term);
+      new_terms.push_back(term);
     }
 
-  terms = aux;
+  terms = new_terms;
 }
 
 z3::expr Preprocessor::fresh_index_constant(){

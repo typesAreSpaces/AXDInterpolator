@@ -29,7 +29,11 @@ int main(int argc, char * argv[]){
           return 1;
         }
         input_parser.from_file(argv[2]);
+        std::cout 
+          << input_parser.to_smt2_decls_only()
+          << std::endl;
 
+#if 1
         auto const & to_cnf_tactic = 
           z3::tactic(ctx, "tseitin-cnf");
         auto const & to_dnf_tactic = 
@@ -86,6 +90,9 @@ int main(int argc, char * argv[]){
           std::cerr << e << std::endl;
           return 1;
         }
+#else
+        return 0;
+#endif
       }
 
     default:

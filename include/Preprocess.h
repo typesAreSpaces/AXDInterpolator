@@ -13,7 +13,12 @@ class Preprocessor {
 
   enum SideInterpolant { PART_A, PART_B };
 
-  z3::expr remove_Not_Length_Apps(z3::expr const &);
+  // initialTraverse accomplishes the following:
+  // 1. Removes applications of length(x)
+  // replacing them with diff(x, empty_array)
+  // of the right type
+  // 2. Remove
+  z3::expr initialTraverse(z3::expr const &);
 
   void flattenPredicate(
       z3::expr const &, SideInterpolant,
@@ -42,6 +47,7 @@ class Preprocessor {
   void removeDuplicates(z3::expr_vector &);
 
   z3::expr fresh_index_constant();
+  // [TODO] parametrize the following
   z3::expr fresh_array_constant();
   z3::expr fresh_constant(z3::sort const &);
 
