@@ -14,13 +14,18 @@
 (declare-fun e3 () Int)
 
 ; Part A
-(assert 
-(and (= (diffInt a c1) i1) (= (diffInt b c2) i1) (= a (store a1 i3 e3)) (= a1 (store b i1 e1)))
-)
+(assert (and 
+(= (diffInt a c1) i1) 
+(= (diffInt b c2) i1) 
+(= a (store a1 i3 e3)) 
+(= a1 (store b i1 e1))
+))
 
 ; Part B
-(assert 
-(and (< i1 i2) (< i2 i3) (distinct (select c1 i2) (select c2 i2)))
-)
+(assert (and 
+(< i1 i2) 
+(< i2 i3) 
+(distinct (select c1 i2) (select c2 i2))
+))
 
 (check-sat)
