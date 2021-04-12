@@ -29,6 +29,8 @@ int main(int argc, char * argv[]){
           return 1;
         }
         input_parser.from_file(argv[2]);
+        // [TODO] extract types A from 
+        // constants of type (Array Int A)
         std::cout 
           << input_parser.to_smt2_decls_only()
           << std::endl;
