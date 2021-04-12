@@ -13,17 +13,16 @@
     NEW.push_back(curr_arg);\
   }
 
-#define FLATTEN_PREDICATE(NUM_CONJS_INPUT, INPUT_PART, SIDE)\
-  NUM_CONJS_INPUT = INPUT_PART.size();\
+#define FLATTEN_PREDICATE(NUM_CONJS_INPUT, CONJUNCTION, SIDE)\
+  NUM_CONJS_INPUT = CONJUNCTION.size();\
   for(unsigned i = 0; i < NUM_CONJS_INPUT; i++)\
-  flattenPredicate(INPUT_PART[i], SIDE);
+  flattenPredicate(CONJUNCTION[i], SIDE, NUM_CONJS_INPUT);
 
 Preprocessor::Preprocessor(
     AXDSignature & sig, 
     z3::expr const & _input_part_a, 
     z3::expr const & _input_part_b):
   sig(sig),
-  current_conjs_in_input(0),
   fresh_index(0), 
   input_part_a(sig.ctx), 
   input_part_b(sig.ctx),
@@ -31,10 +30,6 @@ Preprocessor::Preprocessor(
   part_a_array_vars({}), part_b_array_vars({}), 
   common_array_vars({})
 {
-  // empty_array is a common symbol
-  part_a_array_vars.insert(sig.empty_array);
-  part_b_array_vars.insert(sig.empty_array);
-
   NORMALIZE_INPUT(_input_part_a, input_part_a, conjunction_a);
   NORMALIZE_INPUT(_input_part_b, input_part_b, conjunction_b);
 
@@ -45,12 +40,13 @@ Preprocessor::Preprocessor(
   m_out << conjunction_b << std::endl;
 #endif
 
+  // empty_array is a common symbol
+  part_a_array_vars.insert(sig.empty_array);
+  part_b_array_vars.insert(sig.empty_array);
+
+  unsigned current_conjs_in_input(0);
   FLATTEN_PREDICATE(current_conjs_in_input, input_part_a, PART_A);
   FLATTEN_PREDICATE(current_conjs_in_input, input_part_b, PART_B);
-  
-  // Set current_conjs_in_input to zero
-  // because the variable is no longer needed
-  current_conjs_in_input = 0;
 
 #if _DEBUG_PREPROCESS_
   m_out << "Assertions " << assertions << std::endl;
@@ -141,7 +137,8 @@ z3::expr Preprocessor::remove_Not_Length_Apps(z3::expr const & e){
 
 void Preprocessor::flattenPredicate(
     z3::expr const & formula, 
-    SideInterpolant side){
+    SideInterpolant side,
+    unsigned & current_conjs_in_input){
   switch(formula.decl().decl_kind()){
     case Z3_OP_EQ:       // ==
       {
@@ -150,10 +147,12 @@ void Preprocessor::flattenPredicate(
           updateVarsDB(lhs_form, 
               lhs_form.decl().range(), 
               side);
-          flattenTerm(rhs(formula), side);
+          flattenTerm(rhs(formula), side, 
+              current_conjs_in_input);
         }
         else
-          flattenPredicateAux(formula, side);
+          flattenPredicateAux(formula, side,
+              current_conjs_in_input);
       }
       return;
     case Z3_OP_DISTINCT: // !=
@@ -161,11 +160,13 @@ void Preprocessor::flattenPredicate(
     case Z3_OP_LE:       // <=
     case Z3_OP_GT:       // >
     case Z3_OP_LT:       // <
-      flattenPredicateAux(formula, side);
+      flattenPredicateAux(formula, side,
+          current_conjs_in_input);
       return;
     case Z3_OP_UNINTERPRETED:
       if(formula.get_sort().is_bool()){
-        flattenTerm(formula, side);
+        flattenTerm(formula, side,
+            current_conjs_in_input);
         return;
       }
     default:
@@ -181,7 +182,8 @@ void Preprocessor::flattenPredicate(
 // and b arent constants (respectively) obtaining
 // input[side](x/a)(y/t) \land x = a \land y = b
 void Preprocessor::flattenPredicateAux(
-    z3::expr const & atomic_predicate, SideInterpolant side){
+    z3::expr const & atomic_predicate, SideInterpolant side,
+    unsigned & current_conjs_in_input){
 
   z3::expr_vector old_terms(sig.ctx); 
   z3::expr_vector fresh_consts(sig.ctx);
@@ -236,14 +238,16 @@ void Preprocessor::flattenPredicateAux(
 }
 
 void Preprocessor::flattenTerm(z3::expr const & term, 
-    SideInterpolant side){
+    SideInterpolant side,
+    unsigned & current_conjs_in_input){
   if(term.num_args() > 0){
     auto f_name = func_name(term);
     for(unsigned i = 0; i < term.num_args(); i++){
       auto const & curr_arg = term.arg(i);
       auto const & type_arg = curr_arg.decl().range();
       if(curr_arg.num_args() > 0)
-        cojoin(curr_arg, fresh_constant(type_arg), side);
+        cojoin(curr_arg, fresh_constant(type_arg), side,
+            current_conjs_in_input);
       else
         updateVarsDB(curr_arg, type_arg, side); 
     }
@@ -255,13 +259,16 @@ void Preprocessor::flattenTerm(z3::expr const & term,
 void Preprocessor::cojoin(
     z3::expr const & old_term, 
     z3::expr const & new_const, 
-    SideInterpolant side){
+    SideInterpolant side,
+    unsigned & current_conjs_in_input){
   switch(side){
     case PART_A:
-      cojoin_aux(input_part_a, old_term, new_const);
+      cojoin_aux(input_part_a, old_term, new_const,
+          current_conjs_in_input);
       return;
     case PART_B:
-      cojoin_aux(input_part_b, old_term, new_const);
+      cojoin_aux(input_part_b, old_term, new_const,
+          current_conjs_in_input);
       return;
   }
 }
@@ -269,7 +276,8 @@ void Preprocessor::cojoin(
 void Preprocessor::cojoin_aux(
     z3::expr_vector & predicates,
     z3::expr const & old_term, 
-    z3::expr const & new_const){
+    z3::expr const & new_const,
+    unsigned & current_conjs_in_input){
 
   z3::expr_vector from(sig.ctx), to(sig.ctx);
   from.push_back(old_term);

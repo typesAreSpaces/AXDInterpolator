@@ -41,10 +41,12 @@ struct AXDSignature {
 
   static bool isSpaceOrParen(char);
   void extractNameFromSort(std::string &) const;
+
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
   TheoryName getTheoryName() const;
-  friend std::ostream & operator << (std::ostream &, z3_expr_set const &);
+  friend std::ostream & operator << (
+      std::ostream &, z3_expr_set const &);
 
   z3::context & ctx;
   TheoryName    theory_name;
