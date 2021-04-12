@@ -19,9 +19,9 @@ class Preprocessor {
   // of the appropriate type
   // 2. Remove applications of not
   // 3. Replace Select by rd of the appropriate
-  // typ
+  // type
   // 4. Replace Store by wr of the appropriate
-  // typ
+  // type
   z3::expr initialTraverse(z3::expr const &);
 
   void flattenPredicate(

@@ -1,7 +1,5 @@
 ; Function declarartions
 (declare-fun diffInt ((Array Int Int) (Array Int Int)) Int)
-(declare-fun wrInt ((Array Int Int) Int Int) (Array Int Int))
-(declare-fun rdInt ((Array Int Int) Int) Int)
 
 ; Paper example
 (declare-fun a () (Array Int Int))
@@ -17,12 +15,12 @@
 
 ; Part A
 (assert 
-(and (= (diffInt a c1) i1) (= (diffInt b c2) i1) (= a (wrInt a1 i3 e3)) (= a1 (wrInt b i1 e1)))
+(and (= (diffInt a c1) i1) (= (diffInt b c2) i1) (= a (store a1 i3 e3)) (= a1 (store b i1 e1)))
 )
 
 ; Part B
 (assert 
-(and (< i1 i2) (< i2 i3) (distinct (rdInt c1 i2) (rdInt c2 i2)))
+(and (< i1 i2) (< i2 i3) (distinct (select c1 i2) (select c2 i2)))
 )
 
 (check-sat)
