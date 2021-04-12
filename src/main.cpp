@@ -33,7 +33,7 @@ int main(int argc, char * argv[]){
           << input_parser.to_smt2_decls_only()
           << std::endl;
 
-#if 1
+#if 0
         auto const & to_cnf_tactic = 
           z3::tactic(ctx, "tseitin-cnf");
         auto const & to_dnf_tactic = 

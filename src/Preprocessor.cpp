@@ -75,35 +75,39 @@ Preprocessor::Preprocessor(
 
 z3::expr Preprocessor::initialTraverse(z3::expr const & e){
   if(e.is_app()){
-    if(e.num_args() == 1 && func_name(e) == "length")
+    // [TODO] parametrize the
+    // detection of length applications
+    if(e.num_args() == 1 
+        && func_name(e) == "length")
       return sig.diff(
           initialTraverse(e.arg(0)), 
           sig.empty_array);
 
-    if(e.num_args() == 1 && e.decl().decl_kind() == Z3_OP_NOT){
-      z3::expr pred = e.arg(0);
-      switch(pred.decl().decl_kind()){
+    if(e.num_args() == 1 
+        && e.decl().decl_kind() == Z3_OP_NOT){
+      z3::expr predicate = e.arg(0);
+      switch(predicate.decl().decl_kind()){
         case Z3_OP_EQ:       // ==
-          return initialTraverse(pred.arg(0)) 
-            != initialTraverse(pred.arg(1));
+          return initialTraverse(predicate.arg(0)) 
+            != initialTraverse(predicate.arg(1));
         case Z3_OP_DISTINCT: // !=
-          return initialTraverse(pred.arg(0)) 
-            == initialTraverse(pred.arg(1));
+          return initialTraverse(predicate.arg(0)) 
+            == initialTraverse(predicate.arg(1));
         case Z3_OP_GE:       // >=
-          return initialTraverse(pred.arg(0)) 
-            < initialTraverse(pred.arg(1));
+          return initialTraverse(predicate.arg(0)) 
+            < initialTraverse(predicate.arg(1));
         case Z3_OP_LE:       // <=
-          return initialTraverse(pred.arg(0)) 
-            > initialTraverse(pred.arg(1));
+          return initialTraverse(predicate.arg(0)) 
+            > initialTraverse(predicate.arg(1));
         case Z3_OP_GT:       // >
-          return initialTraverse(pred.arg(0)) 
-            <= initialTraverse(pred.arg(1));
+          return initialTraverse(predicate.arg(0)) 
+            <= initialTraverse(predicate.arg(1));
         case Z3_OP_LT:       // <
-          return initialTraverse(pred.arg(0)) 
-            >= initialTraverse(pred.arg(1));
+          return initialTraverse(predicate.arg(0)) 
+            >= initialTraverse(predicate.arg(1));
         case Z3_OP_UNINTERPRETED:
-          if(pred.get_sort().is_bool()){
-            return initialTraverse(pred) 
+          if(predicate.get_sort().is_bool()){
+            return initialTraverse(predicate) 
               == sig.ctx.bool_val(false);
           }
         default:
@@ -123,7 +127,7 @@ z3::expr Preprocessor::initialTraverse(z3::expr const & e){
     return f_name(args);
   }
   throw "Problem @ "
-    "Preprocessor::removeLengthApplications" 
+    "Preprocessor::initialTraverse" 
     "Not an application";
 }
 

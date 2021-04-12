@@ -16,8 +16,12 @@ class Preprocessor {
   // initialTraverse accomplishes the following:
   // 1. Removes applications of length(x)
   // replacing them with diff(x, empty_array)
-  // of the right type
-  // 2. Remove
+  // of the appropriate type
+  // 2. Remove applications of not
+  // 3. Replace Select by rd of the appropriate
+  // typ
+  // 4. Replace Store by wr of the appropriate
+  // typ
   z3::expr initialTraverse(z3::expr const &);
 
   void flattenPredicate(

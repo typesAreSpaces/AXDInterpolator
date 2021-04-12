@@ -63,7 +63,7 @@ struct AXDSignature {
     array_sort;
   // -------------------------------
 
-  // es stands for elements sorts
+  // "es" stands for elements sorts
   z3::sort_vector element_sorts;
   z3::expr_vector undefined_es;
   z3::expr_vector empty_array_es;
