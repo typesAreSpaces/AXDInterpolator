@@ -1,31 +1,28 @@
-; Sorts
-(declare-sort ArraySort 0)
-
 ; Function declarartions
-(declare-fun diff (ArraySort ArraySort) Int)
-(declare-fun wr (ArraySort Int Int) ArraySort)
-(declare-fun rd (ArraySort Int) Int)
+(declare-fun diffInt ((Array Int Int) (Array Int Int)) Int)
+(declare-fun wrInt ((Array Int Int) Int Int) (Array Int Int))
+(declare-fun rdInt ((Array Int Int) Int) Int)
 
 ; Paper example
-(declare-fun a () ArraySort)
-(declare-fun b () ArraySort)
-(declare-fun c1 () ArraySort)
-(declare-fun c2 () ArraySort)
+(declare-fun a () (Array Int Int))
+(declare-fun b () (Array Int Int))
+(declare-fun c1 () (Array Int Int))
+(declare-fun c2 () (Array Int Int))
 (declare-fun i1 () Int)
 (declare-fun i2 () Int)
 (declare-fun i3 () Int)
-(declare-fun a1 () ArraySort)
+(declare-fun a1 () (Array Int Int))
 (declare-fun e1 () Int)
 (declare-fun e3 () Int)
 
 ; Part A
 (assert 
-(and (= (diff a c1) i1) (= (diff b c2) i1) (= a (wr a1 i3 e3)) (= a1 (wr b i1 e1)))
+(and (= (diffInt a c1) i1) (= (diffInt b c2) i1) (= a (wrInt a1 i3 e3)) (= a1 (wrInt b i1 e1)))
 )
 
 ; Part B
 (assert 
-(and (< i1 i2) (< i2 i3) (distinct (rd c1 i2) (rd c2 i2)))
+(and (< i1 i2) (< i2 i3) (distinct (rdInt c1 i2) (rdInt c2 i2)))
 )
 
 (check-sat)
