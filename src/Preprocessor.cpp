@@ -3,7 +3,7 @@
 
 #define NORMALIZE_INPUT(OLD, NEW, TEMP_VAR)\
   z3::expr const & TEMP_VAR =\
-  initialTraverse(OLD);\
+  normalizeInput(OLD);\
   for(unsigned i = 0; i < TEMP_VAR.num_args(); ++i){\
     auto const & curr_arg = TEMP_VAR.arg(i);\
     if(curr_arg.decl().decl_kind() == Z3_OP_EQ\
@@ -32,8 +32,15 @@ Preprocessor::Preprocessor(
   part_b_array_vars({}), 
   common_array_vars({})
 {
+  std::cout << "Now you will stop. Input a number to continue..." << std::endl;
+  unsigned stop;
+  std::cin >> stop;
+
   NORMALIZE_INPUT(_input_part_a, input_part_a, conjunction_a);
   NORMALIZE_INPUT(_input_part_b, input_part_b, conjunction_b);
+
+  std::cout << "Now you will stop. Input a number to continue..." << std::endl;
+  std::cin >> stop;
 
 #if _DEBUG_PREPROCESS_
   m_out << "Conjunction a" << std::endl;
@@ -43,7 +50,6 @@ Preprocessor::Preprocessor(
 #endif
 
   // [TODO]: parametrize empty_array elements
-  //
   // empty_array is a common symbol
   part_a_array_vars.insert(sig.empty_array);
   part_b_array_vars.insert(sig.empty_array);
@@ -70,64 +76,125 @@ Preprocessor::Preprocessor(
   }
 }
 
-// [TODO] implement initialTraverse 
-// properly according to specification
-// in Preprocess.h
-z3::expr Preprocessor::initialTraverse(z3::expr const & e){
-  if(e.is_app()){
-    // [TODO] parametrize the
-    // detection of length applications
-    if(e.num_args() == 1 
-        && func_name(e) == "length")
-      return sig.diff(
-          initialTraverse(e.arg(0)), 
-          sig.empty_array);
+z3::expr Preprocessor::normalizeInput(z3::expr const & e){
+  std::cout << e << std::endl;
+  if(e.is_app())
+    switch(e.num_args()){
+      case 0:
+        std::cout << "Case 0" << std::endl;
+        if(e.is_array()){
+          std::cout << "haha" << std::endl;
+          std::cout << sig.getArraySortBySort(e.get_sort().array_range()) << std::endl;
+          std::cout << "hehe" << std::endl;
+          z3::expr wot = sig.ctx.constant(func_name(e).c_str(), 
+              sig.getArraySortBySort(e.get_sort().array_range()));
+          std::cout << "Hwmm" << std::endl;
+          std::cout << wot << std::endl;
+          return wot;
+        }
+        return e;
+      case 1:
+        std::cout << "Case 1" << std::endl;
+        // [TODO] This needs testing
+        if(func_name(e).find("length") != std::string::npos){
+          auto const & arg = e.arg(0);
+          z3::func_decl const & curr_diff = sig.getDiffBySort(arg.get_sort().array_range());
+          z3::expr const & curr_empty_array = sig.getEmptyArrayBySort(arg.get_sort().array_range());
+          return curr_diff(normalizeInput(arg), curr_empty_array);
+        }
 
-    if(e.num_args() == 1 
-        && e.decl().decl_kind() == Z3_OP_NOT){
-      z3::expr predicate = e.arg(0);
-      switch(predicate.decl().decl_kind()){
-        case Z3_OP_EQ:       // ==
-          return initialTraverse(predicate.arg(0)) 
-            != initialTraverse(predicate.arg(1));
-        case Z3_OP_DISTINCT: // !=
-          return initialTraverse(predicate.arg(0)) 
-            == initialTraverse(predicate.arg(1));
-        case Z3_OP_GE:       // >=
-          return initialTraverse(predicate.arg(0)) 
-            < initialTraverse(predicate.arg(1));
-        case Z3_OP_LE:       // <=
-          return initialTraverse(predicate.arg(0)) 
-            > initialTraverse(predicate.arg(1));
-        case Z3_OP_GT:       // >
-          return initialTraverse(predicate.arg(0)) 
-            <= initialTraverse(predicate.arg(1));
-        case Z3_OP_LT:       // <
-          return initialTraverse(predicate.arg(0)) 
-            >= initialTraverse(predicate.arg(1));
-        case Z3_OP_UNINTERPRETED:
-          if(predicate.get_sort().is_bool()){
-            return initialTraverse(predicate) 
-              == sig.ctx.bool_val(false);
+        if(e.decl().decl_kind() == Z3_OP_NOT){
+          z3::expr predicate = e.arg(0);
+          switch(predicate.decl().decl_kind()){
+            case Z3_OP_EQ:       // ==
+              return normalizeInput(predicate.arg(0)) 
+                != normalizeInput(predicate.arg(1));
+            case Z3_OP_DISTINCT: // !=
+              return normalizeInput(predicate.arg(0)) 
+                == normalizeInput(predicate.arg(1));
+            case Z3_OP_GE:       // >=
+              return normalizeInput(predicate.arg(0)) 
+                < normalizeInput(predicate.arg(1));
+            case Z3_OP_LE:       // <=
+              return normalizeInput(predicate.arg(0)) 
+                > normalizeInput(predicate.arg(1));
+            case Z3_OP_GT:       // >
+              return normalizeInput(predicate.arg(0)) 
+                <= normalizeInput(predicate.arg(1));
+            case Z3_OP_LT:       // <
+              return normalizeInput(predicate.arg(0)) 
+                >= normalizeInput(predicate.arg(1));
+            case Z3_OP_UNINTERPRETED:
+              if(predicate.get_sort().is_bool()){
+                return normalizeInput(predicate) 
+                  == sig.ctx.bool_val(false);
+              }
+            default:
+              throw "Error @ Preprocessor::remove_Not_Legth_Apps." 
+                "Not is applied to a non predicate.";
           }
-        default:
-          throw "Error @ Preprocessor::remove_Not_Legth_Apps." 
-            "Not is applied to a non predicate.";
-      }
+        }
+        goto actual_default;
+      case 2:
+        std::cout << "Case 2" << std::endl;
+        // [TODO] This needs testing
+        if(func_name(e).find("select") != std::string::npos){
+          auto const & array_arg = e.arg(0);
+          auto const & index_arg = e.arg(1);
+          auto const & curr_rd = sig.getRdBySort(array_arg.get_sort().array_range());
+          return curr_rd(normalizeInput(array_arg), index_arg);
+        }
+        if(func_name(e).find("diff") != std::string::npos){
+          auto const & array_arg1 = e.arg(0);
+          auto const & array_arg2 = e.arg(1);
+          auto const & curr_diff = sig.getDiffBySort(array_arg1.get_sort().array_range());
+          return curr_diff(normalizeInput(array_arg1), normalizeInput(array_arg2));
+        }
+
+        goto actual_default;
+      case 3:
+        std::cout << "Case 3" << std::endl;
+        // [TODO] This needs testing
+        if(func_name(e).find("store") != std::string::npos){
+          auto const & array_arg = e.arg(0);
+          auto const & index_arg = e.arg(1);
+          auto const & element_arg = e.arg(2);
+          auto const & curr_wr = sig.getWrBySort(array_arg.get_sort().array_range());
+          return curr_wr(normalizeInput(array_arg), index_arg, normalizeInput(element_arg));
+        }
+        goto actual_default;
+actual_default:
+      default:
+        {
+          std::cout << "wot" << std::endl;
+          // [TODO]: Fix Issue with f_name
+          // The type might not align
+          // with the new normalized args
+          z3::func_decl f_name = e.decl();
+          z3::expr_vector args(sig.ctx);
+          for(unsigned i = 0; i < e.num_args(); ++i)
+            args.push_back(normalizeInput(e.arg(i)));
+
+          for(auto const & x : args){
+            std::cout << ">>>> Hmmm " << x << std::endl;
+            std::cout << ">>>> Hmmm1 " << x.get_sort() << std::endl;
+          }
+
+          if(e.num_args() == 2){
+            auto const & result = args[0] == args[1];
+            std::cout << "Printing the result " << result << std::endl;
+            return result;
+          }
+
+          auto const & result = f_name(args);
+          std::cout << "Printing the result " << result << std::endl;
+          return result;
+        }
+        break;
     }
 
-    if(e.num_args() == 0)
-      return e;
-
-    z3::func_decl f_name = e.decl();
-    z3::expr_vector args(sig.ctx);
-    for(unsigned i = 0; i < e.num_args(); ++i)
-      args.push_back(initialTraverse(e.arg(i)));
-
-    return f_name(args);
-  }
   throw "Problem @ "
-    "Preprocessor::initialTraverse" 
+    "Preprocessor::normalizeInput" 
     "Not an application";
 }
 
@@ -140,14 +207,17 @@ void Preprocessor::flattenPredicate(
       {
         auto const & lhs_form = lhs(formula);
         if(lhs_form.num_args() == 0){
-          updateVarsDB(lhs_form, 
+          updateVarsDB(
+              lhs_form, 
               lhs_form.decl().range(), 
               side);
-          flattenTerm(rhs(formula), side, 
+          flattenTerm(
+              rhs(formula), side, 
               current_conjs_in_input);
         }
         else
-          flattenPredicateAux(formula, side,
+          flattenPredicateAux(
+              formula, side,
               current_conjs_in_input);
       }
       return;
@@ -156,15 +226,16 @@ void Preprocessor::flattenPredicate(
     case Z3_OP_LE:       // <=
     case Z3_OP_GT:       // >
     case Z3_OP_LT:       // <
-      flattenPredicateAux(formula, side,
+      flattenPredicateAux(
+          formula, side,
           current_conjs_in_input);
       return;
     case Z3_OP_UNINTERPRETED:
-      if(formula.get_sort().is_bool()){
-        flattenTerm(formula, side,
-            current_conjs_in_input);
-        return;
-      }
+      assert(formula.get_sort().is_bool());
+      flattenTerm(
+          formula, side,
+          current_conjs_in_input);
+      return;
     default:
       throw "Error at "
         "Preprocessor::flattenPredicate(z3::expr const &). " 

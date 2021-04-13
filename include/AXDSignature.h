@@ -21,6 +21,7 @@
 #include <cstring>
 #include <utility>
 #include <regex>
+#include <map>
 #include <algorithm>
 
 // Notes:
@@ -63,7 +64,16 @@ struct AXDSignature {
 
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
+
   TheoryName const & getTheoryName() const;
+  z3::sort           getArraySortBySort(z3::sort const &) const;
+  z3::expr           getUndefinedBySort(z3::sort const &) const;
+  z3::expr           getEmptyArrayBySort(z3::sort const &) const;
+  z3::func_decl      getDiffBySort(z3::sort const &) const;
+  z3::func_decl      getDiff_BySort(z3::sort const &) const;
+  z3::func_decl      getWrBySort(z3::sort const &) const;
+  z3::func_decl      getRdBySort(z3::sort const &) const;
+
   friend std::ostream & operator << (
       std::ostream &, z3_expr_set const &);
 
@@ -81,6 +91,15 @@ struct AXDSignature {
   z3::sort const
     element_sort,
     array_sort;
+
+  z3::expr const 
+    undefined, 
+    empty_array;
+
+  z3::func_decl const
+    diff, diff_k,
+    wr, rd,
+    length;
   // -------------------------------
 
   // "es" stands for elements sorts
@@ -94,22 +113,11 @@ struct AXDSignature {
     wr_es, rd_es,
     length_es;
 
-  // -------------------------------
-  // [TODO] remove the following
-  // Parametrize them instead with
-  // every type A from (Array Int A)
-  z3::expr const 
-    undefined, 
-    empty_array;
-
-  z3::func_decl const
-    diff, diff_k,
-    wr, rd,
-    length;
-  // -------------------------------
+  // Given the id() of a type A
+  // returns the abstract type ArraySortA
+  std::map<unsigned, unsigned> arraySortMap;
 
   AXDSignature(z3::context &, char const *, std::string &);
-
 };
 
 #endif

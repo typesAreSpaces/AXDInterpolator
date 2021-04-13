@@ -13,16 +13,16 @@ class Preprocessor {
 
   enum SideInterpolant { PART_A, PART_B };
 
-  // initialTraverse accomplishes the following:
+  // normalizeInput accomplishes the following:
   // 1. Removes applications of length(x)
   // replacing them with diff(x, empty_array)
   // of the appropriate type
   // 2. Remove applications of not
-  // 3. Replace Select by rd of the appropriate
+  // 3. Replace select by rd of the appropriate
   // type
-  // 4. Replace Store by wr of the appropriate
+  // 4. Replace store by wr of the appropriate
   // type
-  z3::expr initialTraverse(z3::expr const &);
+  z3::expr normalizeInput(z3::expr const &);
 
   void flattenPredicate(
       z3::expr const &, SideInterpolant,

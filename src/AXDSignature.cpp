@@ -1,4 +1,5 @@
 #include "AXDSignature.h"
+#include "z3++.h"
 #include <sstream>
 
 AXDSignature::AXDSignature(
@@ -10,14 +11,23 @@ AXDSignature::AXDSignature(
   bool_sort(ctx.bool_sort()), 
   int_sort(ctx.int_sort()), 
 
-  // -------------------------------
+  // ------------------------------------------------------
   // [TODO] remove the following
   // Parametrize them instead with
   // every type A from (Array Int A)
   //element_sort(ctx.uninterpreted_sort("ElementSort")), 
   element_sort(ctx.int_sort()), 
   array_sort(ctx.uninterpreted_sort("ArraySort")),
-  // -------------------------------
+
+  undefined(ctx.constant("undefined", element_sort)),
+  empty_array(ctx.constant("empty_array", array_sort)),
+
+  diff(ctx.function("diff", array_sort, array_sort, int_sort)),
+  diff_k(ctx.function("diff_", int_sort, array_sort, array_sort, int_sort)),
+  wr(ctx.function("wr", array_sort, int_sort, element_sort, array_sort)),
+  rd(ctx.function("rd", array_sort, int_sort, element_sort)),
+  length(ctx.function("length", array_sort, int_sort)),
+  // ------------------------------------------------------
 
   element_sorts(ctx),
   array_sorts(ctx),
@@ -28,23 +38,7 @@ AXDSignature::AXDSignature(
   wr_es(ctx),
   rd_es(ctx),
   length_es(ctx),
-
-  // -------------------------------
-  // [TODO] remove the following
-  // Parametrize them instead with
-  // every type A from (Array Int A)
-  //element_sort(ctx.uninterpreted_sort("ElementSort")), 
-  undefined(ctx.constant("undefined", element_sort)),
-  empty_array(ctx.constant("empty_array", array_sort)),
-
-  diff(ctx.function("diff", array_sort, array_sort, int_sort)),
-  diff_k(ctx.function("diff_", int_sort, array_sort, array_sort, int_sort)),
-  wr(ctx.function("wr", array_sort, int_sort, element_sort, array_sort)),
-  rd(ctx.function("rd", array_sort, int_sort, element_sort)),
-  // length is a conservative extension of any Th(T_I)
-  // because \forall x . length(x) = diff(x, empty_array)
-  length(ctx.function("length", array_sort, int_sort))
-  // -------------------------------
+  arraySortMap({})
 {
   if(!strcmp(theory_string, "QF_TO"))
     theory_name = QF_TO;
@@ -89,28 +83,50 @@ void AXDSignature::processArrayDecls(std::string & decls){
 }
 
 void AXDSignature::indexElementSorts(){
+  // [NOTICE]: curr_element_sort can be an Array type
   for(auto const & curr_element_sort : element_sorts){
     std::string temp_name_sort = curr_element_sort.to_string();
     extractNameFromSort(temp_name_sort);
 
     auto const & curr_array_sort = 
       ctx.uninterpreted_sort(("ArraySort" +  temp_name_sort).c_str());
+    arraySortMap.insert(std::pair<unsigned, unsigned>(curr_element_sort.id(), array_sorts.size()));
     array_sorts.push_back(curr_array_sort);
 
-    undefined_es.push_back(ctx.constant(("undefined" + temp_name_sort).c_str(), 
-          curr_element_sort));
     empty_array_es.push_back(ctx.constant(("empty_array" + temp_name_sort).c_str(), 
           curr_array_sort));
     diff_es.push_back(ctx.function(("diff" + temp_name_sort).c_str(), 
           curr_array_sort, curr_array_sort, int_sort));
     diff_k_es.push_back(ctx.function(("diff_" + temp_name_sort).c_str(), 
           int_sort, curr_array_sort, curr_array_sort, int_sort));
-    wr_es.push_back(ctx.function(("wr" + temp_name_sort).c_str(), 
-          curr_array_sort, int_sort, curr_element_sort, curr_array_sort));
-    rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(), 
-          curr_array_sort, int_sort, curr_element_sort));
     length_es.push_back(ctx.function(("length" + temp_name_sort).c_str(), 
           curr_array_sort, int_sort));
+  }
+
+  // [TODO] This needs testing
+  for(auto const & curr_element_sort : element_sorts){
+    std::string temp_name_sort = curr_element_sort.to_string();
+    extractNameFromSort(temp_name_sort);
+
+    auto const & curr_array_sort = 
+      ctx.uninterpreted_sort(("ArraySort" +  temp_name_sort).c_str());
+
+    if(curr_element_sort.is_array()){
+      auto const & abstract_element_sort = getArraySortBySort(curr_element_sort.array_range());
+      undefined_es.push_back(ctx.constant(("undefined" + temp_name_sort).c_str(), abstract_element_sort));
+      wr_es.push_back(ctx.function(("wr" + temp_name_sort).c_str(), 
+            curr_array_sort, int_sort, abstract_element_sort, curr_array_sort));
+      rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(), 
+            curr_array_sort, int_sort, abstract_element_sort));
+    }
+    else{
+      undefined_es.push_back(ctx.constant(("undefined" + temp_name_sort).c_str(), 
+            curr_element_sort));
+      wr_es.push_back(ctx.function(("wr" + temp_name_sort).c_str(), 
+            curr_array_sort, int_sort, curr_element_sort, curr_array_sort));
+      rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(), 
+            curr_array_sort, int_sort, curr_element_sort));
+    }
   }
 }
 
@@ -124,6 +140,34 @@ bool AXDSignature::is_QF_IDL() const {
 
 AXDSignature::TheoryName const & AXDSignature::getTheoryName() const {
   return theory_name;
+}
+
+z3::sort AXDSignature::getArraySortBySort(z3::sort const & sort) const {
+  return array_sorts[arraySortMap.at(sort.id())];
+}
+
+z3::expr AXDSignature::getUndefinedBySort(z3::sort const & sort) const {
+  return undefined_es[arraySortMap.at(sort.id())];
+}
+
+z3::expr AXDSignature::getEmptyArrayBySort(z3::sort const & sort) const {
+  return empty_array_es[arraySortMap.at(sort.id())];
+}
+
+z3::func_decl AXDSignature::getDiffBySort(z3::sort const & sort) const {
+  return diff_es[arraySortMap.at(sort.id())];
+}
+
+z3::func_decl AXDSignature::getDiff_BySort(z3::sort const & sort) const {
+  return diff_k_es[arraySortMap.at(sort.id())];
+}
+
+z3::func_decl AXDSignature::getWrBySort(z3::sort const & sort) const {
+  return wr_es[arraySortMap.at(sort.id())];
+}
+
+z3::func_decl AXDSignature::getRdBySort(z3::sort const & sort) const {
+  return rd_es[arraySortMap.at(sort.id())];
 }
 
 std::ostream & operator << (
