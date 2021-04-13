@@ -1,5 +1,15 @@
 #include "StandardInput.h"
 
+#define UNARY_INSTANTIATION(TERM, TERMS, ARRAY, OP)\
+  for(auto const & TERM : TERMS){\
+  z3::expr new_term = (OP).simplify();\
+  if(!inSet(new_term, TERMS))\
+  ARRAY.push_back(new_term);\
+  }\
+  for(auto const & TERM : ARRAY)\
+  TERMS.insert(TERM);\
+  ARRAY.resize(0);
+
 StandardInput::InstantiatedTerms::InstantiatedTerms(
     AXDSignature const & sig,
     z3::expr_vector const & vars):
@@ -45,21 +55,8 @@ void StandardInput::InstantiatedTerms::operator++(){
 void StandardInput::InstantiatedTerms::instantiate_QF_IDL(){
   z3::expr_vector temp(sig.ctx);
 
-  for(auto const & term : terms){
-    z3::expr new_term = (term - 1).simplify();
-    if(!inSet(new_term, terms))
-      temp.push_back(new_term);
-  }
-  for(auto const & term : temp)
-    terms.insert(term);
-
-  for(auto const & term : terms){
-    z3::expr new_term = (term + 1).simplify();
-    if(!inSet(new_term, terms))
-      temp.push_back(new_term);
-  }
-  for(auto const & term : temp)
-    terms.insert(term);
+  UNARY_INSTANTIATION(term, terms, temp, term - 1);
+  UNARY_INSTANTIATION(term, terms, temp, term + 1);
 }
 
 void StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
@@ -67,13 +64,7 @@ void StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
 
   z3::expr_vector temp(sig.ctx);
 
-  for(auto const & term : terms){
-    z3::expr new_term = (-term).simplify();
-    if(!inSet(new_term, terms))
-      temp.push_back(new_term);
-  }
-  for(auto const & term : temp)
-    terms.insert(term);
+  UNARY_INSTANTIATION(term, terms, temp, -term);
 }
 
 void StandardInput::InstantiatedTerms::instantiate_QF_LIA(){
@@ -90,6 +81,7 @@ void StandardInput::InstantiatedTerms::instantiate_QF_LIA(){
   }
   for(auto const & term : temp)
     terms.insert(term);
+  temp.resize(0);
 }
 
 void StandardInput::InstantiatedTerms::add_var(z3::expr const & var){

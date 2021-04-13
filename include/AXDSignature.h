@@ -20,6 +20,7 @@
 #include <set>
 #include <cstring>
 #include <utility>
+#include <regex>
 #include <algorithm>
 
 // Notes:
@@ -39,8 +40,26 @@ struct AXDSignature {
 
   typedef std::set<z3::expr, Z3ExprComparator> z3_expr_set;
 
+  class z3_expr_vector_unique : public z3::expr_vector {
+    std::set<unsigned> expr_ids;
+
+    public:
+    z3_expr_vector_unique(z3::context &);
+    void push(z3::expr const &);
+  };
+
+  class z3_sort_vector_unique : public z3::sort_vector {
+    std::set<unsigned> sort_ids;
+
+    public:
+    z3_sort_vector_unique(z3::context &);
+    void push(z3::sort const &);
+  };
+
   static bool isSpaceOrParen(char);
-  void extractNameFromSort(std::string &) const;
+  void        extractNameFromSort(std::string &) const;
+  void        processArrayDecls(std::string &);
+  void        indexElementSorts();
 
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
@@ -64,7 +83,7 @@ struct AXDSignature {
   // -------------------------------
 
   // "es" stands for elements sorts
-  z3::sort_vector element_sorts;
+  z3_sort_vector_unique element_sorts;
   z3::expr_vector undefined_es;
   z3::expr_vector empty_array_es;
   z3::func_decl_vector 
@@ -87,7 +106,7 @@ struct AXDSignature {
     length;
   // -------------------------------
 
-  AXDSignature(z3::context &, char const *);
+  AXDSignature(z3::context &, char const *, std::string &);
 
 };
 

@@ -48,8 +48,6 @@ class Preprocessor {
       z3::expr const &, z3::sort const &, 
       SideInterpolant);
 
-  void removeDuplicates(z3::expr_vector &);
-
   z3::expr fresh_index_constant();
   // [TODO] parametrize the following
   z3::expr fresh_array_constant();
@@ -59,7 +57,7 @@ class Preprocessor {
   unsigned        fresh_index;
   z3::expr_vector input_part_a, input_part_b;
 
-  z3::expr_vector 
+  AXDSignature::z3_expr_vector_unique
     part_a_index_vars,
     part_b_index_vars;
 

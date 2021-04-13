@@ -68,9 +68,6 @@ Preprocessor::Preprocessor(
     if(inSet(*iterator_a, part_b_array_vars))
       common_array_vars.insert(*iterator_a);
   }
-
-  removeDuplicates(part_a_index_vars);
-  removeDuplicates(part_b_index_vars);
 }
 
 z3::expr Preprocessor::initialTraverse(z3::expr const & e){
@@ -305,10 +302,10 @@ void Preprocessor::updateIndexVars(z3::expr const & e,
     SideInterpolant side){
   switch(side){
     case PART_A:
-      part_a_index_vars.push_back(e);
+      part_a_index_vars.push(e);
       return;
     case PART_B:
-      part_b_index_vars.push_back(e);
+      part_b_index_vars.push(e);
       return;
   }
 }
@@ -324,18 +321,6 @@ void Preprocessor::updateVarsDB(z3::expr const & e,
     updateIndexVars(e, side);
     return;
   }
-}
-
-void Preprocessor::removeDuplicates(z3::expr_vector & terms){
-  z3::expr_vector new_terms(sig.ctx);
-  AXDSignature::z3_expr_set ids({});
-  for(auto const & term : terms)
-    if(!inSet(term, ids)){
-      ids.insert(term);
-      new_terms.push_back(term);
-    }
-
-  terms = new_terms;
 }
 
 z3::expr Preprocessor::fresh_index_constant(){

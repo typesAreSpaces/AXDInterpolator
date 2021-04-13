@@ -1,8 +1,10 @@
 #include "AXDSignature.h"
+#include <sstream>
 
 AXDSignature::AXDSignature(
     z3::context & ctx, 
-    char const * theory_string) :
+    char const * theory_string,
+    std::string & decls) :
   ctx(ctx),
 
   bool_sort(ctx.bool_sort()), 
@@ -53,6 +55,9 @@ AXDSignature::AXDSignature(
     theory_name = QF_LIA;
   else
     throw "Error: theory not supported";
+
+  processArrayDecls(decls);
+  indexElementSorts();
 }
 
 bool AXDSignature::isSpaceOrParen(char T){
@@ -63,6 +68,40 @@ void AXDSignature::extractNameFromSort(std::string & s) const {
   s.erase(
       std::remove_if(s.begin(), s.end(), isSpaceOrParen), 
       s.end());
+}
+
+void AXDSignature::processArrayDecls(std::string & decls){
+  std::smatch match;
+  std::regex array_decl_regex(
+      "\\(declare-fun .* \\(\\) \\(Array.*\\)\\)");
+  while(regex_search(decls, match, array_decl_regex)){
+    auto const & curr_decl = match.str(0);
+    std::istringstream iss(curr_decl);
+    std::string curr_name;
+    iss >> curr_name >> curr_name;
+    z3::expr temp_expr = ctx.parse_string(
+        (curr_decl + "(assert ( = " + curr_name + " " + curr_name + "))").c_str());
+
+    z3::sort const & curr_sort = temp_expr.arg(0).get_sort();
+    element_sorts.push(curr_sort);
+    
+    decls = match.suffix().str();
+  }
+}
+
+void AXDSignature::indexElementSorts(){
+  // [TODO:] index 
+  // 1. undefined_es
+  // 2. empty_array_es
+  // 3. diff_es
+  // 4. diff_k_es
+  // 5. wr_es
+  // 6. rd_es
+  // 7. length_es
+  for(auto const & sort : element_sorts){
+    // [TODO] keep working here
+    std::cout << sort << std::endl;
+  }
 }
 
 bool AXDSignature::is_QF_TO() const {

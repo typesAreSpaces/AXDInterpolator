@@ -16,7 +16,6 @@ int main(int argc, char * argv[]){
   z3::set_param("proof", true);
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
-  AXDSignature sig(ctx, argv[1]);
   
   switch(argc){
     case 5:
@@ -31,11 +30,9 @@ int main(int argc, char * argv[]){
         input_parser.from_file(argv[2]);
         // [TODO] extract types A from 
         // constants of type (Array Int A)
-        std::cout 
-          << input_parser.to_smt2_decls_only()
-          << std::endl;
-
-#if 0
+        std::string decls = input_parser.to_smt2_decls_only();
+        AXDSignature sig(ctx, argv[1], decls);
+#if 1
         auto const & to_cnf_tactic = 
           z3::tactic(ctx, "tseitin-cnf");
         auto const & to_dnf_tactic = 
