@@ -32,11 +32,14 @@ THEORY=QF_TO
 #THEORY=QF_UTVPI
 #THEORY=QF_LIA
 
-#FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_4.smt2
-#FILE_TEST=./tests/smt2-files/ijcar_2018_paper_example4_n_8.smt2
-FILE_TEST=./tests/smt2-files/maxdiff_paper_example.smt2
-#FILE_TEST=./tests/smt2-files/maxdiff_paper_example_another_another.smt2
-#FILE_TEST=./tests/smt2-files/length_example.smt2
+TEST_DIR=./tests/smt2-files
+#TEST_DIR=./tests/smt2-files-old
+
+#FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
+#FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_8.smt2
+FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
+#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
+#FILE_TEST=$(TEST_DIR)/length_example.smt2
 
 all: tests/one
 #all: tests/all
