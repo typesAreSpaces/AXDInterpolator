@@ -112,7 +112,7 @@ bool AXDSignature::is_QF_IDL() const {
   return theory_name == QF_IDL;
 }
 
-AXDSignature::TheoryName AXDSignature::getTheoryName() const {
+AXDSignature::TheoryName const & AXDSignature::getTheoryName() const {
   return theory_name;
 }
 

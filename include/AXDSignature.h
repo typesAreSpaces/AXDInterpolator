@@ -63,7 +63,7 @@ struct AXDSignature {
 
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
-  TheoryName getTheoryName() const;
+  TheoryName const & getTheoryName() const;
   friend std::ostream & operator << (
       std::ostream &, z3_expr_set const &);
 
