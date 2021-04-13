@@ -70,6 +70,9 @@ Preprocessor::Preprocessor(
   }
 }
 
+// [TODO] implement initialTraverse 
+// properly according to specification
+// in Preprocess.h
 z3::expr Preprocessor::initialTraverse(z3::expr const & e){
   if(e.is_app()){
     // [TODO] parametrize the

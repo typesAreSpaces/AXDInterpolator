@@ -72,12 +72,13 @@ struct AXDSignature {
 
   z3::sort const
     bool_sort, 
-    int_sort, 
+    int_sort;
 
-    // -------------------------------
-    // [TODO] remove the following
-    // Parametrize them instead with
-    // every type A from (Array Int A)
+  // -------------------------------
+  // [TODO] remove the following
+  // Parametrize them instead with
+  // every type A from (Array Int A)
+  z3::sort const
     element_sort,
     array_sort;
   // -------------------------------
