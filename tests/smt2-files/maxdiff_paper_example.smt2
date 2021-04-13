@@ -16,10 +16,10 @@
 
 ; Part A
 (assert (and 
-;(= (diffInt a c1) i1) 
-;(= (diffInt b c2) i1) 
+(= (diffInt a c1) i1) 
+(= (diffInt b c2) i1) 
 (= a (store a1 i3 e3)) 
-;(= a1 (store b i1 e1))
+(= a1 (store b i1 e1))
 ))
 
 ; Part B

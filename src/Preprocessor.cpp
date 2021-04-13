@@ -77,24 +77,15 @@ Preprocessor::Preprocessor(
 }
 
 z3::expr Preprocessor::normalizeInput(z3::expr const & e){
-  std::cout << e << std::endl;
   if(e.is_app())
     switch(e.num_args()){
       case 0:
-        std::cout << "Case 0" << std::endl;
         if(e.is_array()){
-          std::cout << "haha" << std::endl;
-          std::cout << sig.getArraySortBySort(e.get_sort().array_range()) << std::endl;
-          std::cout << "hehe" << std::endl;
-          z3::expr wot = sig.ctx.constant(func_name(e).c_str(), 
+          return sig.ctx.constant(func_name(e).c_str(), 
               sig.getArraySortBySort(e.get_sort().array_range()));
-          std::cout << "Hwmm" << std::endl;
-          std::cout << wot << std::endl;
-          return wot;
         }
         return e;
       case 1:
-        std::cout << "Case 1" << std::endl;
         // [TODO] This needs testing
         if(func_name(e).find("length") != std::string::npos){
           auto const & arg = e.arg(0);
@@ -136,7 +127,6 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
         }
         goto actual_default;
       case 2:
-        std::cout << "Case 2" << std::endl;
         // [TODO] This needs testing
         if(func_name(e).find("select") != std::string::npos){
           auto const & array_arg = e.arg(0);
@@ -153,7 +143,6 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
 
         goto actual_default;
       case 3:
-        std::cout << "Case 3" << std::endl;
         // [TODO] This needs testing
         if(func_name(e).find("store") != std::string::npos){
           auto const & array_arg = e.arg(0);
@@ -166,28 +155,26 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
 actual_default:
       default:
         {
-          std::cout << "wot" << std::endl;
-          // [TODO]: Fix Issue with f_name
+          // [TODO]: 
+          // Keep working here
+          // Fix Issue with f_name
           // The type might not align
           // with the new normalized args
           z3::func_decl f_name = e.decl();
-          z3::expr_vector args(sig.ctx);
-          for(unsigned i = 0; i < e.num_args(); ++i)
-            args.push_back(normalizeInput(e.arg(i)));
-
-          for(auto const & x : args){
-            std::cout << ">>>> Hmmm " << x << std::endl;
-            std::cout << ">>>> Hmmm1 " << x.get_sort() << std::endl;
+          std::cout << ">>>>>Hmmm " << f_name << std::endl;
+          z3::expr_vector expr_args(sig.ctx);
+          z3::sort_vector sort_args(sig.ctx);
+          for(unsigned i = 0; i < e.num_args(); ++i){
+            expr_args.push_back(normalizeInput(e.arg(i)));
+            sort_args.push_back(expr_args[i].get_sort());
           }
-
+          
           if(e.num_args() == 2){
-            auto const & result = args[0] == args[1];
-            std::cout << "Printing the result " << result << std::endl;
+            auto const & result = expr_args[0] == expr_args[1];
             return result;
           }
 
-          auto const & result = f_name(args);
-          std::cout << "Printing the result " << result << std::endl;
+          auto const & result = f_name(expr_args);
           return result;
         }
         break;
