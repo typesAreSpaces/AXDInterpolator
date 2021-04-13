@@ -32,7 +32,7 @@ int main(int argc, char * argv[]){
         // constants of type (Array Int A)
         std::string decls = input_parser.to_smt2_decls_only();
         AXDSignature sig(ctx, argv[1], decls);
-#if 1
+#if 0
         auto const & to_cnf_tactic = 
           z3::tactic(ctx, "tseitin-cnf");
         auto const & to_dnf_tactic = 

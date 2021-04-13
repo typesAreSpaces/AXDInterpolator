@@ -20,6 +20,7 @@ AXDSignature::AXDSignature(
   // -------------------------------
 
   element_sorts(ctx),
+  array_sorts(ctx),
   undefined_es(ctx),
   empty_array_es(ctx),
   diff_es(ctx),
@@ -80,27 +81,36 @@ void AXDSignature::processArrayDecls(std::string & decls){
     std::string curr_name;
     iss >> curr_name >> curr_name;
     z3::expr temp_expr = ctx.parse_string(
-        (curr_decl + "(assert ( = " + curr_name + " " + curr_name + "))").c_str());
+        (curr_decl + " (assert (= " + curr_name + " " + curr_name + "))").c_str());
 
-    z3::sort const & curr_sort = temp_expr.arg(0).get_sort();
-    element_sorts.push(curr_sort);
-    
+    element_sorts.push(temp_expr.arg(0).get_sort().array_range());
     decls = match.suffix().str();
   }
 }
 
 void AXDSignature::indexElementSorts(){
-  // [TODO:] index 
-  // 1. undefined_es
-  // 2. empty_array_es
-  // 3. diff_es
-  // 4. diff_k_es
-  // 5. wr_es
-  // 6. rd_es
-  // 7. length_es
-  for(auto const & sort : element_sorts){
-    // [TODO] keep working here
-    std::cout << sort << std::endl;
+  for(auto const & curr_element_sort : element_sorts){
+    std::string temp_name_sort = curr_element_sort.to_string();
+    extractNameFromSort(temp_name_sort);
+
+    auto const & curr_array_sort = 
+      ctx.uninterpreted_sort(("ArraySort" +  temp_name_sort).c_str());
+    array_sorts.push_back(curr_array_sort);
+
+    undefined_es.push_back(ctx.constant(("undefined" + temp_name_sort).c_str(), 
+          curr_element_sort));
+    empty_array_es.push_back(ctx.constant(("empty_array" + temp_name_sort).c_str(), 
+          curr_array_sort));
+    diff_es.push_back(ctx.function(("diff" + temp_name_sort).c_str(), 
+          curr_array_sort, curr_array_sort, int_sort));
+    diff_k_es.push_back(ctx.function(("diff_" + temp_name_sort).c_str(), 
+          int_sort, curr_array_sort, curr_array_sort, int_sort));
+    wr_es.push_back(ctx.function(("wr" + temp_name_sort).c_str(), 
+          curr_array_sort, int_sort, curr_element_sort, curr_array_sort));
+    rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(), 
+          curr_array_sort, int_sort, curr_element_sort));
+    length_es.push_back(ctx.function(("length" + temp_name_sort).c_str(), 
+          curr_array_sort, int_sort));
   }
 }
 
