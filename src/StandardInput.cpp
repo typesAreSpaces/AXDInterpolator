@@ -100,7 +100,9 @@ StandardInput::StandardInput(
         part_2.push_back(current_arg);
         break;
       default:
-        throw "Problem @ StandardInput::StandardInput"
+        throw 
+          "Problem @ "
+          "StandardInput::StandardInput "
           "Invalid formula.";
     }
   }

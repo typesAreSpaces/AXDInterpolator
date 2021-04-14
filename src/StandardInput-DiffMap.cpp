@@ -44,7 +44,8 @@ void StandardInput::DiffMap::add_aux(
     z3::expr const & index){
   auto table_entry = m_map.find(std::make_pair(a, b));
   if(table_entry == m_map.end()){
-    throw "Problem @ StandardInput::DiffMap::add_aux."
+    throw 
+      "Problem @ StandardInput::DiffMap::add_aux. "
       "Query a pair that should'nt be in the map";
   }
   table_entry->second.push(index, a, b);
@@ -61,7 +62,8 @@ z3::expr StandardInput::DiffMap::lift_diff_k(
     z3::expr const & b) const {
   auto table_entry = m_map.find(std::make_pair(a, b));
   if(table_entry == m_map.end()){
-    throw "Problem @ StandardInput::DiffMap::add_aux."
+    throw 
+      "Problem @ StandardInput::DiffMap::add_aux. "
       "Query a pair that should'nt be in the map";
   }
   return table_entry->second.lifted_diff_k[index];

@@ -28,8 +28,6 @@ int main(int argc, char * argv[]){
           return 1;
         }
         input_parser.from_file(argv[2]);
-        // [TODO] extract types A from 
-        // constants of type (Array Int A)
         std::string decls = input_parser.to_smt2_decls_only();
         AXDSignature sig(ctx, argv[1], decls);
 #if 1

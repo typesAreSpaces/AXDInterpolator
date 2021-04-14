@@ -49,7 +49,10 @@ AXDSignature::AXDSignature(
   else if(!strcmp(theory_string, "QF_LIA"))
     theory_name = QF_LIA;
   else
-    throw "Error: theory not supported";
+    throw 
+      "Error @ "
+      "AXDSignature constructor. "
+      "theory not supported";
 
   processArrayDecls(decls);
   indexElementSorts();

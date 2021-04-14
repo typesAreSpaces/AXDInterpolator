@@ -32,15 +32,8 @@ Preprocessor::Preprocessor(
   part_b_array_vars({}), 
   common_array_vars({})
 {
-  std::cout << "Now you will stop. Input a number to continue..." << std::endl;
-  unsigned stop;
-  std::cin >> stop;
-
   NORMALIZE_INPUT(_input_part_a, input_part_a, conjunction_a);
   NORMALIZE_INPUT(_input_part_b, input_part_b, conjunction_b);
-
-  std::cout << "Now you will stop. Input a number to continue..." << std::endl;
-  std::cin >> stop;
 
 #if _DEBUG_PREPROCESS_
   m_out << "Conjunction a" << std::endl;
@@ -48,6 +41,10 @@ Preprocessor::Preprocessor(
   m_out << "Conjunction b" << std::endl;
   m_out << conjunction_b << std::endl;
 #endif
+
+  unsigned stop;
+  std::cout << "Now you will stop. Input a number to continue..." << std::endl;
+  std::cin >> stop;
 
   // [TODO]: parametrize empty_array elements
   // empty_array is a common symbol
@@ -59,7 +56,6 @@ Preprocessor::Preprocessor(
   FLATTEN_PREDICATE(current_conjs_in_input, input_part_b, PART_B);
 
 #if _DEBUG_PREPROCESS_
-  m_out << "Assertions " << assertions << std::endl;
   m_out << "Part a " << input_part_a << std::endl;
   m_out << "Part b " << input_part_b << std::endl;
   m_out << "Arrays A-local" << std::endl;
@@ -76,14 +72,56 @@ Preprocessor::Preprocessor(
   }
 }
 
+z3::expr Preprocessor::normalizeInputDefault(z3::expr const & e){
+  assert(e.num_args() > 0);
+
+  z3::func_decl f_name = e.decl();
+
+  z3::expr_vector expr_args(sig.ctx);
+  for(unsigned i = 0; i < e.num_args(); ++i)
+    expr_args.push_back(normalizeInput(e.arg(i)));
+
+  switch(f_name.decl_kind()){
+    case Z3_OP_EQ:
+      return expr_args[0] == expr_args[1];
+    case Z3_OP_DISTINCT:
+      return expr_args[0] != expr_args[1];
+    case Z3_OP_UNINTERPRETED:
+      {
+        z3::sort_vector sort_args(sig.ctx);
+        for(unsigned i = 0; i < e.num_args(); ++i)
+          sort_args.push_back(expr_args[i].get_sort());
+
+        if(f_name.range().is_array()){
+          z3::func_decl lifted_f_name = sig.ctx.function(
+              f_name.to_string().c_str(), 
+              sort_args, 
+              sig.getArraySortBySort(f_name.range().array_range()));
+
+          return lifted_f_name(expr_args);
+        }
+        else {
+          z3::func_decl lifted_f_name = sig.ctx.function(
+              f_name.to_string().c_str(), 
+              sort_args, 
+              f_name.range());
+
+          return lifted_f_name(expr_args);
+        }
+
+      }
+    default:
+      return f_name(expr_args);
+  }
+}
+
 z3::expr Preprocessor::normalizeInput(z3::expr const & e){
   if(e.is_app())
     switch(e.num_args()){
       case 0:
-        if(e.is_array()){
+        if(e.is_array())
           return sig.ctx.constant(func_name(e).c_str(), 
               sig.getArraySortBySort(e.get_sort().array_range()));
-        }
         return e;
       case 1:
         // [TODO] This needs testing
@@ -121,11 +159,13 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
                   == sig.ctx.bool_val(false);
               }
             default:
-              throw "Error @ Preprocessor::remove_Not_Legth_Apps." 
+              throw 
+                "Error @ Preprocessor::normalizeInput. " 
                 "Not is applied to a non predicate.";
           }
         }
-        goto actual_default;
+        return normalizeInputDefault(e);
+
       case 2:
         // [TODO] This needs testing
         if(func_name(e).find("select") != std::string::npos){
@@ -140,8 +180,8 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
           auto const & curr_diff = sig.getDiffBySort(array_arg1.get_sort().array_range());
           return curr_diff(normalizeInput(array_arg1), normalizeInput(array_arg2));
         }
+        return normalizeInputDefault(e);
 
-        goto actual_default;
       case 3:
         // [TODO] This needs testing
         if(func_name(e).find("store") != std::string::npos){
@@ -151,37 +191,15 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
           auto const & curr_wr = sig.getWrBySort(array_arg.get_sort().array_range());
           return curr_wr(normalizeInput(array_arg), index_arg, normalizeInput(element_arg));
         }
-        goto actual_default;
-actual_default:
-      default:
-        {
-          // [TODO]: 
-          // Keep working here
-          // Fix Issue with f_name
-          // The type might not align
-          // with the new normalized args
-          z3::func_decl f_name = e.decl();
-          std::cout << ">>>>>Hmmm " << f_name << std::endl;
-          z3::expr_vector expr_args(sig.ctx);
-          z3::sort_vector sort_args(sig.ctx);
-          for(unsigned i = 0; i < e.num_args(); ++i){
-            expr_args.push_back(normalizeInput(e.arg(i)));
-            sort_args.push_back(expr_args[i].get_sort());
-          }
-          
-          if(e.num_args() == 2){
-            auto const & result = expr_args[0] == expr_args[1];
-            return result;
-          }
+        return normalizeInputDefault(e);
 
-          auto const & result = f_name(expr_args);
-          return result;
-        }
-        break;
+      default:
+        return normalizeInputDefault(e);
     }
 
-  throw "Problem @ "
-    "Preprocessor::normalizeInput" 
+  throw 
+    "Problem @ "
+    "Preprocessor::normalizeInput "
     "Not an application";
 }
 
@@ -224,8 +242,9 @@ void Preprocessor::flattenPredicate(
           current_conjs_in_input);
       return;
     default:
-      throw "Error at "
-        "Preprocessor::flattenPredicate(z3::expr const &). " 
+      throw 
+        "Error at "
+        "Preprocessor::flattenPredicate(z3::expr const &). "
         "Formula not in AXD";
   }
 }
@@ -403,6 +422,7 @@ z3::expr Preprocessor::fresh_constant(z3::sort const & s){
   if(s.is_int())
     return fresh_index_constant();
 
-  throw "Problem @ Preprocessor::fresh_constant."
+  throw 
+    "Problem @ Preprocessor::fresh_constant. "
     "Given sort is not in the language";
 }

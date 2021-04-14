@@ -1,7 +1,7 @@
 #ifndef _PREPROCESS_
 #define _PREPROCESS_
 
-#define _DEBUG_PREPROCESS_ 0
+#define _DEBUG_PREPROCESS_ 1
 
 #include <iostream>
 #include <string>
@@ -22,6 +22,7 @@ class Preprocessor {
   // type
   // 4. Replace store by wr of the appropriate
   // type
+  z3::expr normalizeInputDefault(z3::expr const &);
   z3::expr normalizeInput(z3::expr const &);
 
   void flattenPredicate(
