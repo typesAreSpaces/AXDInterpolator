@@ -15,7 +15,7 @@
 #define _TEST_OUTPUT_ORIGINAL_THY_ 0
 #define _INCLUDE_OUTPUT_           1
 
-#define CURRENT_DIR std::string("replace_once")
+#define CURRENT_DIR std::string("/home/jose/Documents/GithubProjects/AXDInterpolator")
 #define OUTPUT_DIR  CURRENT_DIR + std::string("/output")
 
 // Notes:
@@ -29,13 +29,19 @@ class AXDInterpolant : public Preprocessor {
   class CircularPairIterator {
     friend class AXDInterpolant;
 
-    AXDSignature::z3_expr_set const & vars;
-    AXDSignature::z3_expr_set::iterator first, second;
+    typedef Preprocessor::ArrayVars PArrayVars;
+
+    PArrayVars const & vars;
+    PArrayVars::Container::const_iterator 
+      p_array_vars_it;
+    AXDSignature::z3_expr_set::iterator
+      z3_expr_set_first, 
+      z3_expr_set_second;
 
     void avoidLowerDiagonal();
 
     public:
-    CircularPairIterator(AXDSignature::z3_expr_set const &);
+    CircularPairIterator(Preprocessor::ArrayVars const &);
     void next();
     StandardInput::DiffMap::z3_expr_pair operator *() const;
   };

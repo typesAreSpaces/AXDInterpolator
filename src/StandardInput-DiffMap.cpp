@@ -1,21 +1,27 @@
 #include "StandardInput.h"
 
 StandardInput::DiffMap::DiffMap(
-    AXDSignature::z3_expr_set const & array_var_ids, 
+    Preprocessor::ArrayVars const & array_var_ids, 
     AXDSignature const & sig) : 
   m_map(),
   sig(sig)
 {
   for(auto const & x : array_var_ids)
     for(auto const & y : array_var_ids){
-      if(x.id() > y.id())
-        m_map.insert(std::make_pair(
-              z3_expr_pair(x, y), 
-              DiffMapEntry(sig, x, y)));
-      if(y.id() > x.id())
-        m_map.insert(std::make_pair(
-              z3_expr_pair(y, x), 
-              DiffMapEntry(sig, y, x)));
+      if(x.first == y.first){
+        for(auto const & _x : x.second){
+          for(auto const & _y : y.second){
+            if(_x.id() > _y.id())
+              m_map.insert(std::make_pair(
+                    z3_expr_pair(_x, _y), 
+                    DiffMapEntry(sig, _x, _y, x.first)));
+            if(_y.id() > _x.id())
+              m_map.insert(std::make_pair(
+                    z3_expr_pair(_y, _x), 
+                    DiffMapEntry(sig, _y, _x, x.first)));
+          }
+        }
+      }
     }
 }
 

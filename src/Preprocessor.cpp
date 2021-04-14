@@ -42,10 +42,10 @@ Preprocessor::Preprocessor(
   m_out << conjunction_b << std::endl;
 #endif
 
-  // [TODO]: parametrize empty_array elements
-  // empty_array is a common symbol
-  part_a_array_vars.insert(sig.empty_array);
-  part_b_array_vars.insert(sig.empty_array);
+  for(auto const & _empty_array : sig.empty_array_es){
+    part_a_array_vars.insert(_empty_array);
+    part_b_array_vars.insert(_empty_array);
+  }
 
   unsigned current_conjs_in_input(0);
   FLATTEN_PREDICATE(current_conjs_in_input, input_part_a, PART_A);
@@ -61,9 +61,24 @@ Preprocessor::Preprocessor(
 #endif
 
   // Compute Common Array Var Ids
-  for(auto iterator_a = part_a_array_vars.begin(); 
-      iterator_a != part_a_array_vars.end(); ++iterator_a){
-    if(inSet(*iterator_a, part_b_array_vars))
-      common_array_vars.insert(*iterator_a);
-  }
+  //for(auto iterator_a = part_a_array_vars.begin(); 
+  //iterator_a != part_a_array_vars.end(); ++iterator_a){
+  //if(inSet(*iterator_a, part_b_array_vars))
+  //common_array_vars.insert(*iterator_a);
+  //}
+
+  for(auto const & a_array_var_entry : part_a_array_vars)
+    for(auto const & b_array_var_entry  : part_b_array_vars)
+      if(a_array_var_entry.first == b_array_var_entry.first){
+        for(auto iterator_a = a_array_var_entry.second.begin();
+            iterator_a != a_array_var_entry.second.end(); ++iterator_a){
+          if(inSet(*iterator_a, b_array_var_entry.second))
+            common_array_vars.insert(*iterator_a);
+        }
+      }
+}
+
+std::ostream & operator << (std::ostream & os, 
+    std::map<unsigned, AXDSignature::z3_expr_set> const & m){
+  return os;
 }

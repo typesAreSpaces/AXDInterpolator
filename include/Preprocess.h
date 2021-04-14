@@ -1,7 +1,7 @@
 #ifndef _PREPROCESS_
 #define _PREPROCESS_
 
-#define _DEBUG_PREPROCESS_ 1
+#define _DEBUG_PREPROCESS_ 0
 
 #include <iostream>
 #include <string>
@@ -12,6 +12,25 @@ class Preprocessor {
   friend class AXDInterpolant;
 
   enum SideInterpolant { PART_A, PART_B };
+
+  public:
+  struct ArrayVars { 
+
+    typedef std::map<
+      unsigned, 
+      AXDSignature::z3_expr_set> Container;
+
+    Container vars; 
+
+    Container::const_iterator begin() const;
+    Container::const_iterator end() const;
+
+    public:
+    ArrayVars();
+    void insert(z3::expr const &);
+  };
+
+  private:
 
   // normalizeInput accomplishes the following:
   // 1. Removes applications of length(x)
@@ -61,20 +80,22 @@ class Preprocessor {
     part_a_index_vars,
     part_b_index_vars;
 
-  //std::map<unsigned, AXDSignature::z3_expr_set> 
-    //part_a_array_vars,
-    //part_b_array_vars,
-    //common_array_vars;
+  ArrayVars part_a_array_vars,
+            part_b_array_vars,
+            common_array_vars;
 
-  AXDSignature::z3_expr_set
-    part_a_array_vars, 
-    part_b_array_vars,
-    common_array_vars;
+  //AXDSignature::z3_expr_set
+  //part_a_array_vars, 
+  //part_b_array_vars,
+  //common_array_vars;
 
   public:
   Preprocessor(AXDSignature &, 
       z3::expr const &,
       z3::expr const &);
+
+  friend std::ostream & operator << (
+      std::ostream &, Preprocessor::ArrayVars const &);
 };
 
 #endif

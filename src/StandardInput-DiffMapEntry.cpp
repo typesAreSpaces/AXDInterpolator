@@ -3,15 +3,31 @@
 StandardInput::DiffMapEntry::DiffMapEntry(
     AXDSignature const & sig, 
     z3::expr const & a, 
-    z3::expr const & b) : 
+    z3::expr const & b,
+    unsigned sort_index
+    ) : 
   z3::expr_vector(sig.ctx), 
+  sort_index(sort_index),
   lifted_b(sig.ctx), 
   lifted_diff_k(sig.ctx),
   sig(sig)
 {
   lifted_b.push_back(b);
+
   // [TODO] use appropriate sig.diff
-  lifted_diff_k.push_back(sig.diff(a, b));
+  // [TODO] keep working here
+  std::cout << "ok 1" << std::endl;
+
+  std::cout << sig.diff_k_es << std::endl;
+
+  lifted_diff_k.push_back(
+      //sig.diff(a, b)
+      sig.getDiffBySort(sort_index)(a, b)
+      );
+
+  std::cout << "ok 2" << std::endl;
+  int stopp;
+  std::cin >> stopp;
 }
 
 void StandardInput::DiffMapEntry::push(

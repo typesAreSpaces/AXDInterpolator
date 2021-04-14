@@ -7,7 +7,7 @@ StandardInput::StandardInput(
     // [TODO]: lift this structure to map 
     // index by ElementSorts and extend 
     // similarly the production of axioms
-    AXDSignature::z3_expr_set const & array_var_ids,
+    Preprocessor::ArrayVars const & array_var_ids,
     unsigned _fresh_index) :
   sig(sig),
   s_fresh_index(_fresh_index),
@@ -153,14 +153,15 @@ StandardInput::StandardInput(
   // since this won't change
   // [TODO] lift this indexing by 
   // ElementSorts
-  z3::expr_vector instances_axiom_8(sig.ctx);
-  for(auto const & array_element : array_var_ids)
-    instances_axiom_8.push_back(
-        z3::implies(
-          index_var < 0, 
-          sig.rd(array_element, index_var) == sig.undefined)
-        );
-  axiom_8 = z3::mk_and(instances_axiom_8);
+  // [TODO] remove comment and implement properly
+  //z3::expr_vector instances_axiom_8(sig.ctx);
+  //for(auto const & array_element : array_var_ids)
+    //instances_axiom_8.push_back(
+        //z3::implies(
+          //index_var < 0, 
+          //sig.rd(array_element, index_var) == sig.undefined)
+        //);
+  //axiom_8 = z3::mk_and(instances_axiom_8);
 
   initSaturation();
 }

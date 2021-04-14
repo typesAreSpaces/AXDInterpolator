@@ -9,7 +9,7 @@
 #include <map>
 #include <vector>
 #include <tuple>
-#include "AXDSignature.h"
+#include "Preprocess.h"
 
 class StandardInput {
 
@@ -17,6 +17,7 @@ class StandardInput {
 
   struct DiffMapEntry : public z3::expr_vector {
 
+    unsigned             sort_index;
     z3::expr_vector      lifted_b;
     z3::expr_vector      lifted_diff_k;
     AXDSignature const & sig;
@@ -24,7 +25,8 @@ class StandardInput {
     DiffMapEntry(
         AXDSignature const &, 
         z3::expr const &, 
-        z3::expr const &);
+        z3::expr const &, 
+        unsigned);
 
     void push(
         z3::expr const &, 
@@ -40,6 +42,7 @@ class StandardInput {
     friend class StandardInput;
 
     typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
+
     struct Z3ExprExprComparator {
       bool operator() (
           z3_expr_pair const & a, 
@@ -52,7 +55,7 @@ class StandardInput {
     AXDSignature const &    sig;
 
     DiffMap(
-        AXDSignature::z3_expr_set const &,
+        Preprocessor::ArrayVars const &,
         AXDSignature const &);
 
     void add(
@@ -133,7 +136,7 @@ class StandardInput {
       AXDSignature const &,
       z3::expr_vector const &, 
       z3::expr_vector &,
-      AXDSignature::z3_expr_set const &,
+      Preprocessor::ArrayVars const &,
       unsigned);
 
   void initSaturation(); 
