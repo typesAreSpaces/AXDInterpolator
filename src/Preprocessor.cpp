@@ -60,13 +60,6 @@ Preprocessor::Preprocessor(
   m_out << part_b_array_vars << std::endl;
 #endif
 
-  // Compute Common Array Var Ids
-  //for(auto iterator_a = part_a_array_vars.begin(); 
-  //iterator_a != part_a_array_vars.end(); ++iterator_a){
-  //if(inSet(*iterator_a, part_b_array_vars))
-  //common_array_vars.insert(*iterator_a);
-  //}
-
   for(auto const & a_array_var_entry : part_a_array_vars)
     for(auto const & b_array_var_entry  : part_b_array_vars)
       if(a_array_var_entry.first == b_array_var_entry.first){

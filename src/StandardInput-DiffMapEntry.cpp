@@ -13,21 +13,8 @@ StandardInput::DiffMapEntry::DiffMapEntry(
   sig(sig)
 {
   lifted_b.push_back(b);
-
-  // [TODO] use appropriate sig.diff
-  // [TODO] keep working here
-  std::cout << "ok 1" << std::endl;
-
-  std::cout << sig.diff_k_es << std::endl;
-
   lifted_diff_k.push_back(
-      //sig.diff(a, b)
-      sig.getDiffBySort(sort_index)(a, b)
-      );
-
-  std::cout << "ok 2" << std::endl;
-  int stopp;
-  std::cin >> stopp;
+      sig.getDiffBySort(sort_index)(a, b));
 }
 
 void StandardInput::DiffMapEntry::push(

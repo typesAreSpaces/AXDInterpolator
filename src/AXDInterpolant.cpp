@@ -34,7 +34,7 @@ AXDInterpolant::AXDInterpolant(
   unsigned stop;
   std::cin >> stop;
   // ---------------------------------------------------------------------------
-  
+
   m_out
     << "Solving file " << m_file_name 
     << std::endl;

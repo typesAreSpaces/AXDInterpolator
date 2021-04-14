@@ -122,9 +122,11 @@ struct AXDSignature {
     wr_es, rd_es,
     length_es;
 
-  // Given the id() of a type A
-  // returns the abstract type ArraySortA
-  std::map<unsigned, unsigned> arraySortMap;
+  // 1. Given the id() of a type A
+  // returns the indexing-position of the abstract type ArraySortA
+  // 2. Given the id() of an abstract type ArraySortA
+  // returns the indexing-position of the abstract type ArraySortA
+  std::map<unsigned, unsigned> array_sort_map;
 
   AXDSignature(z3::context &, char const *, std::string &);
 };

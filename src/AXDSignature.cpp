@@ -2,6 +2,14 @@
 #include "z3++.h"
 #include <sstream>
 
+#define INDEX_UNDEFINED_WR_RD(ELEMENT_SORT)\
+  undefined_es.push_back(ctx.constant(("undefined" + temp_name_sort).c_str(), \
+        ELEMENT_SORT));\
+        wr_es.push_back(ctx.function(("wr" + temp_name_sort).c_str(),\
+              curr_array_sort, int_sort, ELEMENT_SORT, curr_array_sort));\
+              rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(),\
+                    curr_array_sort, int_sort, ELEMENT_SORT));
+
 AXDSignature::AXDSignature(
     z3::context & ctx, 
     char const * theory_string,
@@ -38,7 +46,7 @@ AXDSignature::AXDSignature(
   wr_es(ctx),
   rd_es(ctx),
   length_es(ctx),
-  arraySortMap({})
+  array_sort_map({})
 {
   if(!strcmp(theory_string, "QF_TO"))
     theory_name = QF_TO;
@@ -88,12 +96,20 @@ void AXDSignature::processArrayDecls(std::string & decls){
 void AXDSignature::indexElementSorts(){
   // [NOTICE]: curr_element_sort can be an Array type
   for(auto const & curr_element_sort : element_sorts){
+
     std::string temp_name_sort = curr_element_sort.to_string();
     extractNameFromSort(temp_name_sort);
 
     auto const & curr_array_sort = 
       ctx.uninterpreted_sort(("ArraySort" +  temp_name_sort).c_str());
-    arraySortMap.insert(std::pair<unsigned, unsigned>(curr_element_sort.id(), array_sorts.size()));
+
+    array_sort_map.insert(
+        std::pair<unsigned, unsigned>(
+          curr_element_sort.id(), array_sorts.size()));
+    array_sort_map.insert(
+        std::pair<unsigned, unsigned>(
+          curr_array_sort.id(), array_sorts.size()));
+
     array_sorts.push_back(curr_array_sort);
 
     empty_array_es.push_back(ctx.constant(("empty_array" + temp_name_sort).c_str(), 
@@ -114,20 +130,12 @@ void AXDSignature::indexElementSorts(){
       ctx.uninterpreted_sort(("ArraySort" +  temp_name_sort).c_str());
 
     if(curr_element_sort.is_array()){
-      auto const & abstract_element_sort = getArraySortBySort(curr_element_sort.array_range());
-      undefined_es.push_back(ctx.constant(("undefined" + temp_name_sort).c_str(), abstract_element_sort));
-      wr_es.push_back(ctx.function(("wr" + temp_name_sort).c_str(), 
-            curr_array_sort, int_sort, abstract_element_sort, curr_array_sort));
-      rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(), 
-            curr_array_sort, int_sort, abstract_element_sort));
+      auto const & abstract_element_sort = 
+        getArraySortBySort(curr_element_sort.array_range());
+      INDEX_UNDEFINED_WR_RD(abstract_element_sort);
     }
     else{
-      undefined_es.push_back(ctx.constant(("undefined" + temp_name_sort).c_str(), 
-            curr_element_sort));
-      wr_es.push_back(ctx.function(("wr" + temp_name_sort).c_str(), 
-            curr_array_sort, int_sort, curr_element_sort, curr_array_sort));
-      rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(), 
-            curr_array_sort, int_sort, curr_element_sort));
+      INDEX_UNDEFINED_WR_RD(curr_element_sort);
     }
   }
 }
