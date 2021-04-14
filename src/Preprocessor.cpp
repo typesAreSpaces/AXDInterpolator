@@ -42,10 +42,6 @@ Preprocessor::Preprocessor(
   m_out << conjunction_b << std::endl;
 #endif
 
-  unsigned stop;
-  std::cout << "Now you will stop. Input a number to continue..." << std::endl;
-  std::cin >> stop;
-
   // [TODO]: parametrize empty_array elements
   // empty_array is a common symbol
   part_a_array_vars.insert(sig.empty_array);
@@ -214,7 +210,6 @@ void Preprocessor::flattenPredicate(
         if(lhs_form.num_args() == 0){
           updateVarsDB(
               lhs_form, 
-              lhs_form.decl().range(), 
               side);
           flattenTerm(
               rhs(formula), side, 
@@ -266,13 +261,13 @@ void Preprocessor::flattenPredicateAux(
   if(lhs_atom.num_args() > 0){
     old_terms.push_back(lhs_atom);
     fresh_consts.push_back(
-        fresh_constant(lhs_atom.decl().range()));
+        fresh_constant(_get_sort(lhs_atom)));
   }
   auto const & rhs_atom = rhs(atomic_predicate);
   if(rhs_atom.num_args() > 0){
     old_terms.push_back(rhs_atom);
     fresh_consts.push_back(
-        fresh_constant(rhs_atom.decl().range()));
+        fresh_constant(_get_sort(rhs_atom)));
   }
 
   switch(side){
@@ -317,16 +312,16 @@ void Preprocessor::flattenTerm(z3::expr const & term,
     auto f_name = func_name(term);
     for(unsigned i = 0; i < term.num_args(); i++){
       auto const & curr_arg = term.arg(i);
-      auto const & type_arg = curr_arg.decl().range();
+      auto const & type_arg = _get_sort(curr_arg);
       if(curr_arg.num_args() > 0)
         cojoin(curr_arg, fresh_constant(type_arg), side,
             current_conjs_in_input);
       else
-        updateVarsDB(curr_arg, type_arg, side); 
+        updateVarsDB(curr_arg, side); 
     }
   }
   else
-    updateVarsDB(term, term.decl().range(), side);
+    updateVarsDB(term, side);
 }
 
 void Preprocessor::cojoin(
@@ -390,9 +385,10 @@ void Preprocessor::updateIndexVars(z3::expr const & e,
   }
 }
 
-void Preprocessor::updateVarsDB(z3::expr const & e, 
-    z3::sort const & s, SideInterpolant side){
-  auto const & s_name = s.name().str();
+void Preprocessor::updateVarsDB(
+    z3::expr const & e, 
+    SideInterpolant side){
+  auto const & s_name = sort_name(e);
   if(s_name == sig.array_sort.name().str()){
     updateArrayVars(e, side);
     return;

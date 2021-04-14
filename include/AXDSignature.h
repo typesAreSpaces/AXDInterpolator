@@ -13,6 +13,7 @@
 #define lhs(x)              x.arg(0)
 #define rhs(x)              x.arg(1)
 #define func_name(x)        x.decl().name().str()
+#define _get_sort(x)        x.decl().range()
 #define sort_name(x)        x.decl().range().name().str()
 #define func_kind(x)        x.decl().decl_kind()
 

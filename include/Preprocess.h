@@ -46,8 +46,7 @@ class Preprocessor {
   void updateIndexVars(
       z3::expr const &, SideInterpolant);
   void updateVarsDB(
-      z3::expr const &, z3::sort const &, 
-      SideInterpolant);
+      z3::expr const &, SideInterpolant);
 
   z3::expr fresh_index_constant();
   // [TODO] parametrize the following
