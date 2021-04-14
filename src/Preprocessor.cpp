@@ -23,7 +23,7 @@ Preprocessor::Preprocessor(
     z3::expr const & _input_part_a, 
     z3::expr const & _input_part_b):
   sig(sig),
-  fresh_index(0), 
+  fresh_num(0), 
   input_part_a(sig.ctx), 
   input_part_b(sig.ctx),
   part_a_index_vars(sig.ctx), 
@@ -361,7 +361,8 @@ void Preprocessor::cojoin_aux(
   return;
 }
 
-void Preprocessor::updateArrayVars(z3::expr const & e, 
+void Preprocessor::updateArrayVars(
+    z3::expr const & e, 
     SideInterpolant side){
   switch(side){
     case PART_A:
@@ -373,7 +374,8 @@ void Preprocessor::updateArrayVars(z3::expr const & e,
   }
 }
 
-void Preprocessor::updateIndexVars(z3::expr const & e, 
+void Preprocessor::updateIndexVars(
+    z3::expr const & e, 
     SideInterpolant side){
   switch(side){
     case PART_A:
@@ -393,7 +395,7 @@ void Preprocessor::updateVarsDB(
     updateArrayVars(e, side);
     return;
   }
-  if(s_name == sig.int_sort.name().str()){
+  if(e.is_int()){
     updateIndexVars(e, side);
     return;
   }
@@ -401,12 +403,12 @@ void Preprocessor::updateVarsDB(
 
 z3::expr Preprocessor::fresh_index_constant(){
   return sig.ctx.constant((FRESH_INDEX_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), sig.int_sort);
+        + std::to_string(fresh_num++)).c_str(), sig.int_sort);
 }
 
 z3::expr Preprocessor::fresh_array_constant(){
   return sig.ctx.constant((FRESH_ARRAY_PREFIX 
-        + std::to_string(fresh_index++)).c_str(), sig.array_sort);
+        + std::to_string(fresh_num++)).c_str(), sig.array_sort);
 }
 
 z3::expr Preprocessor::fresh_constant(z3::sort const & s){

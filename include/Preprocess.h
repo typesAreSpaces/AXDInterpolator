@@ -54,7 +54,7 @@ class Preprocessor {
   z3::expr fresh_constant(z3::sort const &);
 
   AXDSignature &  sig;
-  unsigned        fresh_index;
+  unsigned        fresh_num;
   z3::expr_vector input_part_a, input_part_b;
 
   AXDSignature::z3_expr_vector_unique

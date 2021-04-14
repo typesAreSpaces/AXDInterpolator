@@ -14,7 +14,7 @@ AXDInterpolant::AXDInterpolant(
       input_part_a,
       part_a_index_vars, 
       part_a_array_vars, 
-      fresh_index
+      fresh_num
       ),
   part_b(
       sig,
