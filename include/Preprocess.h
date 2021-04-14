@@ -61,9 +61,11 @@ class Preprocessor {
     part_a_index_vars,
     part_b_index_vars;
 
-  // [TODO]: lift the following
-  // structures to map i.e.
-  // map<ElementSorts, AXDSignature::z3_expr_set>
+  //std::map<unsigned, AXDSignature::z3_expr_set> 
+    //part_a_array_vars,
+    //part_b_array_vars,
+    //common_array_vars;
+
   AXDSignature::z3_expr_set
     part_a_array_vars, 
     part_b_array_vars,

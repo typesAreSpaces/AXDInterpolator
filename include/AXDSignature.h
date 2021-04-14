@@ -65,15 +65,23 @@ struct AXDSignature {
 
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
+  bool isArraySort(z3::sort const &) const;
 
   TheoryName const & getTheoryName() const;
   z3::sort           getArraySortBySort(z3::sort const &) const;
+  z3::sort           getArraySortBySort(unsigned) const;
   z3::expr           getUndefinedBySort(z3::sort const &) const;
+  z3::expr           getUndefinedBySort(unsigned) const;
   z3::expr           getEmptyArrayBySort(z3::sort const &) const;
+  z3::expr           getEmptyArrayBySort(unsigned) const;
   z3::func_decl      getDiffBySort(z3::sort const &) const;
+  z3::func_decl      getDiffBySort(unsigned) const;
   z3::func_decl      getDiff_BySort(z3::sort const &) const;
+  z3::func_decl      getDiff_BySort(unsigned) const;
   z3::func_decl      getWrBySort(z3::sort const &) const;
+  z3::func_decl      getWrBySort(unsigned) const;
   z3::func_decl      getRdBySort(z3::sort const &) const;
+  z3::func_decl      getRdBySort(unsigned) const;
 
   friend std::ostream & operator << (
       std::ostream &, z3_expr_set const &);
@@ -86,7 +94,7 @@ struct AXDSignature {
     int_sort;
 
   // -------------------------------
-  // [TODO] remove the following
+  // [TODO] Remove the following
   // Parametrize them instead with
   // every type A from (Array Int A)
   z3::sort const

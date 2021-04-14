@@ -151,6 +151,8 @@ StandardInput::StandardInput(
   // Setup axiom 8
   // Instantiate with all the current array elements
   // since this won't change
+  // [TODO] lift this indexing by 
+  // ElementSorts
   z3::expr_vector instances_axiom_8(sig.ctx);
   for(auto const & array_element : array_var_ids)
     instances_axiom_8.push_back(
@@ -168,6 +170,7 @@ z3::expr StandardInput::fresh_index_constant(){
         + std::to_string(s_fresh_index++)).c_str(), sig.int_sort);
 }
 
+// [TODO] parametrize this function
 z3::expr StandardInput::fresh_element_constant(){
   return sig.ctx.constant((FRESH_ELEMENT_PREFIX 
         + std::to_string(s_fresh_index++)).c_str(), sig.element_sort);

@@ -10,6 +10,7 @@ StandardInput::DiffMapEntry::DiffMapEntry(
   sig(sig)
 {
   lifted_b.push_back(b);
+  // [TODO] use appropriate sig.diff
   lifted_diff_k.push_back(sig.diff(a, b));
 }
 
@@ -22,7 +23,11 @@ void StandardInput::DiffMapEntry::push(
   unsigned last_index = this->size();
   auto const & last_b = lifted_b[last_index - 1];
   auto const & last_diff = lifted_diff_k[last_index - 1];
+  // [TODO] use appropriate 
+  // sig.wr and sig.rd
   auto const & new_b = sig.wr(last_b, last_diff, sig.rd(a, last_diff));
   lifted_b.push_back(new_b);
+  // [TODO] use appropriate 
+  // sig.diff
   lifted_diff_k.push_back(sig.diff(a, new_b));
 }

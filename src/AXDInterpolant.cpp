@@ -28,6 +28,13 @@ AXDInterpolant::AXDInterpolant(
   current_interpolant(sig.ctx.bool_val(true)),
   state_output(undefined)
 {
+  // ---------------------------------------------------------------------------
+  // [DEBUGGING]
+  std::cout << "Now you will stop. Insert a number to continue..." << std::endl;
+  unsigned stop;
+  std::cin >> stop;
+  // ---------------------------------------------------------------------------
+  
   m_out
     << "Solving file " << m_file_name 
     << std::endl;
