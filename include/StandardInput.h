@@ -4,6 +4,19 @@
 #include "z3++.h"
 #define _DEBUG_STDINPUT_ 0
 
+#ifndef NDEBUG
+#   define ASSERT(condition, message) \
+  do { \
+    if (! (condition)) { \
+      std::cerr << "Assertion `" #condition "` failed in " << __FILE__ \
+      << " line " << __LINE__ << ": " << message << std::endl; \
+      std::terminate(); \
+    } \
+  } while (false)
+#else
+#   define ASSERT(condition, message) do { } while (false)
+#endif
+
 #include <set>
 #include <utility>
 #include <map>

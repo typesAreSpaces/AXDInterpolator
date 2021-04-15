@@ -106,17 +106,47 @@ void Preprocessor::flattenTerm(
     SideInterpolant side,
     unsigned & current_conjs_in_input){
   if(term.num_args() > 0){
-    for(unsigned i = 0; i < term.num_args(); i++){
-      auto const & curr_arg = term.arg(i);
-      auto const & type_arg = _get_sort(curr_arg);
-      if(curr_arg.num_args() > 0)
-        cojoin(
-            curr_arg, 
-            fresh_constant(type_arg), 
-            side,
-            current_conjs_in_input);
-      else
-        updateVarsDB(curr_arg, side); 
+    switch(func_kind(term)){
+      case Z3_OP_ADD:
+      case Z3_OP_SUB:
+      case Z3_OP_UMINUS:
+      case Z3_OP_MUL:
+        {
+          z3::expr_vector queue_args(sig.ctx);
+          for(unsigned i = 0; i < term.num_args(); i++)
+            queue_args.push_back(term.arg(i));
+
+          while(queue_args.size() != 0){
+            z3::expr const & curr = queue_args.back();
+            queue_args.pop_back();
+            if(curr.num_args() == 0)
+              updateIndexVars(curr, side);
+            else{
+              for(unsigned i = 0; i < curr.num_args(); i++)
+                queue_args.push_back(curr.arg(i));
+            }
+          }
+        }
+        return;
+      case Z3_OP_UNINTERPRETED:
+        for(unsigned i = 0; i < term.num_args(); i++){
+          auto const & curr_arg = term.arg(i);
+          auto const & type_arg = _get_sort(curr_arg);
+          if(curr_arg.num_args() > 0)
+            cojoin(
+                curr_arg, 
+                fresh_constant(type_arg), 
+                side,
+                current_conjs_in_input);
+          else
+            updateVarsDB(curr_arg, side); 
+        }
+        return;
+      default:
+        throw 
+          "Problem @ "
+          "Preprocessor::flattenTerm "
+          "Invalid function aplication";
     }
   }
   else
@@ -165,7 +195,8 @@ void Preprocessor::updateIndexVars(
       part_a_index_vars.push(e);
       return;
     case PART_B:
-      part_b_index_vars.push(e);
+      if(!e.is_numeral())
+        part_b_index_vars.push(e);
       return;
   }
 }
@@ -173,12 +204,12 @@ void Preprocessor::updateIndexVars(
 void Preprocessor::updateVarsDB(
     z3::expr const & e, 
     SideInterpolant side){
-  if(sig.isArraySort(e.get_sort())){
-    updateArrayVars(e, side);
-    return;
-  }
   if(e.is_int()){
     updateIndexVars(e, side);
+    return;
+  }
+  if(sig.isArraySort(e.get_sort())){
+    updateArrayVars(e, side);
     return;
   }
 }

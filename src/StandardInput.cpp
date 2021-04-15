@@ -64,28 +64,9 @@ StandardInput::StandardInput(
           break;
         }
       case Z3_OP_DISTINCT: // !=
-        {
-          auto const & _lhs = lhs(current_arg);
-          auto const & _rhs = rhs(current_arg);
-          if(sig.isArraySort(_lhs.get_sort())
-              && _lhs.num_args() == 0 
-              && _rhs.num_args() == 0){
-
-            auto const & new_index    = fresh_index_constant();
-            // [TODO] use fresh element constants properly
-            auto const & new_element1 = fresh_element_constant(_lhs.get_sort());
-            auto const & new_element2 = fresh_element_constant(_rhs.get_sort());
-
-            auto const & curr_diff = sig.getDiffBySort(_lhs.get_sort());
-            auto const & curr_rd = sig.getRdBySort(_lhs.get_sort());
-
-            // [10] predicates are added here
-            part_1.push_back(new_index    == curr_diff(_lhs, _rhs));
-            part_1.push_back(new_element1 == curr_rd(_lhs, 0));
-            part_1.push_back(new_element2 == curr_rd(_rhs, 0));
-            part_2.push_back(new_index != 0 || new_element1 != new_element2);
-          }
-        }
+        ASSERT(lhs(current_arg).num_args() == 0 
+            && rhs(current_arg).num_args() == 0, 
+            "Invariant of constant_1 != constant_2 is violated");
       case Z3_OP_GE:       // >=
       case Z3_OP_LE:       // <=
       case Z3_OP_GT:       // >
