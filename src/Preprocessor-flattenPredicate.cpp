@@ -1,10 +1,30 @@
 #include "Preprocess.h"
 
+#define SUBSTITUTE_AND_ADJOINT(INPUT_PART)\
+  for(unsigned i = 0; i < INPUT_PART.size(); i++)\
+  temp_predicates.push_back(\
+      INPUT_PART[i].substitute(old_terms, fresh_consts)\
+      );\
+      \
+      for(unsigned i = 0; i < old_terms.size(); i++)\
+      temp_predicates.push_back(fresh_consts[i] == old_terms[i]);\
+      \
+      input_part_b = temp_predicates;\
+      current_conjs_in_input += old_terms.size();
+
+#define SUBSTITUTE_AND_ADJOINT_ONE(INPUT_PART)\
+  for(unsigned i = 0; i < INPUT_PART.size(); i++)\
+  temp_predicates.push_back(\
+      INPUT_PART[i].substitute(from, to));\
+      temp_predicates.push_back(new_const == old_term);\
+      INPUT_PART = temp_predicates;\
+      current_conjs_in_input++;
+
 void Preprocessor::flattenPredicate(
     z3::expr const & formula, 
     SideInterpolant side,
     unsigned & current_conjs_in_input){
-  switch(formula.decl().decl_kind()){
+  switch(func_kind(formula)){
     case Z3_OP_EQ:       // ==
       {
         auto const & lhs_form = lhs(formula);
@@ -44,13 +64,14 @@ void Preprocessor::flattenPredicate(
   }
 }
 
-// Takes an atomic predicate, except equality, 
-// i.e. B(a, b) and updates the correspondant
-// input side with fresh constants x, y if a 
-// and b arent constants (respectively) obtaining
-// input[side](x/a)(y/t) \land x = a \land y = b
+// Takes a binary atomic predicate,
+// i.e. B(x, y) and updates the correspondant
+// input side with fresh constants a, b if x
+// and y arent constants (respectively) obtaining
+// B(x, y)[x->a, y->b] \land x = a \land y = b
 void Preprocessor::flattenPredicateAux(
-    z3::expr const & atomic_predicate, SideInterpolant side,
+    z3::expr const & atomic_predicate, 
+    SideInterpolant side,
     unsigned & current_conjs_in_input){
 
   z3::expr_vector old_terms(sig.ctx); 
@@ -72,49 +93,27 @@ void Preprocessor::flattenPredicateAux(
 
   switch(side){
     case PART_A:
-      {
-        for(unsigned i = 0; i < input_part_a.size(); i++)
-          temp_predicates.push_back(
-              input_part_a[i].substitute(old_terms, fresh_consts)
-              );
-
-        unsigned j = old_terms.size();
-        while(j--)
-          temp_predicates.push_back(fresh_consts[j] == old_terms[j]);
-
-        input_part_a = temp_predicates;
-        current_conjs_in_input += old_terms.size();
-        return;
-      }
+      SUBSTITUTE_AND_ADJOINT(input_part_a);
+      return;
     case PART_B:
-      {
-        for(unsigned i = 0; i < input_part_b.size(); i++){
-          temp_predicates.push_back(
-              input_part_b[i].substitute(old_terms, fresh_consts)
-              );
-        }
-
-        unsigned j = old_terms.size();
-        while(j--)
-          temp_predicates.push_back(fresh_consts[j] == old_terms[j]);
-
-        input_part_b = temp_predicates;
-        current_conjs_in_input += old_terms.size();
-      }
+      SUBSTITUTE_AND_ADJOINT(input_part_b);
       return;
   }
 }
 
-void Preprocessor::flattenTerm(z3::expr const & term, 
+void Preprocessor::flattenTerm(
+    z3::expr const & term, 
     SideInterpolant side,
     unsigned & current_conjs_in_input){
   if(term.num_args() > 0){
-    auto f_name = func_name(term);
     for(unsigned i = 0; i < term.num_args(); i++){
       auto const & curr_arg = term.arg(i);
       auto const & type_arg = _get_sort(curr_arg);
       if(curr_arg.num_args() > 0)
-        cojoin(curr_arg, fresh_constant(type_arg), side,
+        cojoin(
+            curr_arg, 
+            fresh_constant(type_arg), 
+            side,
             current_conjs_in_input);
       else
         updateVarsDB(curr_arg, side); 
@@ -129,36 +128,20 @@ void Preprocessor::cojoin(
     z3::expr const & new_const, 
     SideInterpolant side,
     unsigned & current_conjs_in_input){
-  switch(side){
-    case PART_A:
-      cojoin_aux(input_part_a, old_term, new_const,
-          current_conjs_in_input);
-      return;
-    case PART_B:
-      cojoin_aux(input_part_b, old_term, new_const,
-          current_conjs_in_input);
-      return;
-  }
-}
 
-void Preprocessor::cojoin_aux(
-    z3::expr_vector & predicates,
-    z3::expr const & old_term, 
-    z3::expr const & new_const,
-    unsigned & current_conjs_in_input){
-
+  z3::expr_vector temp_predicates(sig.ctx);
   z3::expr_vector from(sig.ctx), to(sig.ctx);
   from.push_back(old_term);
   to.push_back(new_const);
 
-  z3::expr_vector temp_predicates(sig.ctx);
-  for(unsigned i = 0; i < predicates.size(); i++)
-    temp_predicates.push_back(
-        predicates[i].substitute(from, to));
-  temp_predicates.push_back(new_const == old_term);
-  predicates = temp_predicates;
-  current_conjs_in_input++;
-  return;
+  switch(side){
+    case PART_A:
+      SUBSTITUTE_AND_ADJOINT_ONE(input_part_a);
+      return;
+    case PART_B:
+      SUBSTITUTE_AND_ADJOINT_ONE(input_part_b);
+      return;
+  }
 }
 
 void Preprocessor::updateArrayVars(

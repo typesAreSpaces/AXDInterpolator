@@ -59,9 +59,6 @@ class Preprocessor {
   void cojoin(z3::expr const &, 
       z3::expr const &, SideInterpolant,
       unsigned &);
-  void cojoin_aux(z3::expr_vector &, 
-      z3::expr const &, z3::expr const &,
-      unsigned &);
 
   void updateArrayVars(
       z3::expr const &, SideInterpolant);

@@ -24,17 +24,20 @@ StandardInput::StandardInput(
   // Split input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
-    if(func_kind(current_arg) == Z3_OP_UNINTERPRETED
-        && current_arg.get_sort().is_bool()){
-      part_2.push_back(current_arg);
-      continue;
-    }
 
-    // Invariant from Preprocess.cpp
-    assert(
-        lhs(current_arg).num_args() <= 
-        rhs(current_arg).num_args());
-    switch(current_arg.decl().decl_kind()){
+    //if(func_kind(current_arg) == Z3_OP_UNINTERPRETED
+        //&& current_arg.get_sort().is_bool()){
+      //part_2.push_back(current_arg);
+      //continue;
+    //}
+
+    switch(func_kind(current_arg)){
+      case Z3_OP_UNINTERPRETED:
+        if(current_arg.get_sort().is_bool()){
+          part_2.push_back(current_arg);
+          continue;
+        }
+        break;
       case Z3_OP_EQ:       // ==
         {     
           auto const & _lhs = lhs(current_arg);
@@ -45,7 +48,7 @@ StandardInput::StandardInput(
           if( // Covers equations of the form 
               // a = wr(b, i, e) or a = b 
               // when a is an array var
-              lhs_sort == "ArraySort"  
+              lhs_sort == "ArraySort"
               // Covers equations of the
               // form i = diff(a, b)
               || func_name(_lhs) == "diff" 
@@ -70,9 +73,6 @@ StandardInput::StandardInput(
           break;
         }
       case Z3_OP_DISTINCT: // !=
-        // Invariant from Preprocess.cpp
-        assert(lhs(current_arg).num_args() == 0
-            && rhs(current_arg).num_args() == 0);
         //auto const & _lhs = lhs(current_arg);
         //auto const & _rhs = rhs(current_arg);
         //auto const & lhs_sort = sort_name(_lhs);
@@ -145,7 +145,7 @@ StandardInput::StandardInput(
   m_out << "End WriteVector" << std::endl;
   m_out << std::endl;
 #endif
-  
+
   initSaturation();
 }
 

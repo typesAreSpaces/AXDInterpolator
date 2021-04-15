@@ -6,7 +6,7 @@
   normalizeInput(OLD);\
   for(unsigned i = 0; i < TEMP_VAR.num_args(); ++i){\
     auto const & curr_arg = TEMP_VAR.arg(i);\
-    if(curr_arg.decl().decl_kind() == Z3_OP_EQ\
+    if(func_kind(curr_arg) == Z3_OP_EQ\
         && rhs(curr_arg).num_args() == 0)\
     NEW.push_back(rhs(curr_arg) == lhs(curr_arg));\
     else\

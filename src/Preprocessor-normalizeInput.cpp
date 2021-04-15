@@ -59,9 +59,9 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
           return curr_diff(normalizeInput(arg), curr_empty_array);
         }
 
-        if(e.decl().decl_kind() == Z3_OP_NOT){
+        if(func_kind(e) == Z3_OP_NOT){
           z3::expr predicate = e.arg(0);
-          switch(predicate.decl().decl_kind()){
+          switch(func_kind(predicate)){
             case Z3_OP_EQ:       // ==
               return normalizeInput(predicate.arg(0)) 
                 != normalizeInput(predicate.arg(1));
