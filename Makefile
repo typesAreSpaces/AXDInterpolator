@@ -42,8 +42,8 @@ FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=$(TEST_DIR)/length_example.smt2
 
-all: tests/one
-#all: tests/all
+#all: tests/one
+all: tests/all
 #all: tests/print_all
 
 # -------------------------------------------------------------------------------
@@ -75,14 +75,14 @@ tests/one: bin/axd_interpolator
 	rm -rf tests/*.o $@
 
 tests/all: bin/axd_interpolator
-	for smt_file in ./tests/smt2-files/*.smt2; do \
+	for smt_file in $(TEST_DIR)/*.smt2; do \
 		./bin/axd_interpolator \
 		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) ; \
 		done
 	rm -rf tests/*.o $@
 
 tests/print_all: bin/axd_interpolator
-	for smt_file in ./tests/smt2-files/*.smt2; do \
+	for smt_file in $(TEST_DIR)/*.smt2; do \
 		if [ "${METHOD}" = "0" ]; \
 		then METHOD_NAME="Z3"; \
 		else \
@@ -117,7 +117,7 @@ clean:
 	perl -i -pe"s|$(CURRENT_DIR)|replace_once|g" ./include/AXDInterpolant.h
 	rm -rf renamed_AXDInterpolant
 	rm -rf $(ODIR)/* output/*.smt2
-	rm -rf ./tests/smt2-files/*.txt
+	rm -rf $(TEST_DIR)/*.txt
 	cd output && make clean
 	rm -rf ./bin/axd_interpolator
 
