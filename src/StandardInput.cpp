@@ -41,6 +41,7 @@ StandardInput::StandardInput(
           auto const & _rhs = rhs(current_arg);
           auto const & lhs_sort = sort_name(_lhs);
           // [TODO]: rework the following conditional block
+          // KEEP working here
           if( // Covers equations of the form 
               // a = wr(b, i, e) or a = b 
               // when a is an array var
