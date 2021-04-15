@@ -205,7 +205,6 @@ z3::expr Preprocessor::fresh_index_constant(){
         + std::to_string(fresh_num++)).c_str(), sig.int_sort);
 }
 
-// [TODO] parametrize this function
 z3::expr Preprocessor::fresh_array_constant(z3::sort const & s){
   return sig.ctx.constant((FRESH_ARRAY_PREFIX 
         + std::to_string(fresh_num++)).c_str(), sig.getArraySortBySort(s));
