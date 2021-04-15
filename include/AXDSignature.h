@@ -92,25 +92,7 @@ struct AXDSignature {
   z3::sort const
     bool_sort, 
     int_sort;
-
-  // -------------------------------
-  // [TODO] Remove the following
-  // Parametrize them instead with
-  // every type A from (Array Int A)
-  z3::sort const
-    element_sort,
-    array_sort;
-
-  z3::expr const 
-    undefined, 
-    empty_array;
-
-  z3::func_decl const
-    diff, diff_k,
-    wr, rd,
-    length;
-  // -------------------------------
-
+  
   // "es" stands for elements sorts
   z3_sort_vector_unique element_sorts;
   z3::sort_vector array_sorts;

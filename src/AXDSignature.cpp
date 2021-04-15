@@ -19,24 +19,6 @@ AXDSignature::AXDSignature(
   bool_sort(ctx.bool_sort()), 
   int_sort(ctx.int_sort()), 
 
-  // ------------------------------------------------------
-  // [TODO] remove the following
-  // Parametrize them instead with
-  // every type A from (Array Int A)
-  //element_sort(ctx.uninterpreted_sort("ElementSort")), 
-  element_sort(ctx.int_sort()), 
-  array_sort(ctx.uninterpreted_sort("ArraySort")),
-
-  undefined(ctx.constant("undefined", element_sort)),
-  empty_array(ctx.constant("empty_array", array_sort)),
-
-  diff(ctx.function("diff", array_sort, array_sort, int_sort)),
-  diff_k(ctx.function("diff_", int_sort, array_sort, array_sort, int_sort)),
-  wr(ctx.function("wr", array_sort, int_sort, element_sort, array_sort)),
-  rd(ctx.function("rd", array_sort, int_sort, element_sort)),
-  length(ctx.function("length", array_sort, int_sort)),
-  // ------------------------------------------------------
-
   element_sorts(ctx),
   array_sorts(ctx),
   undefined_es(ctx),

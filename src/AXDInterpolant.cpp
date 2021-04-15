@@ -137,11 +137,12 @@ void AXDInterpolant::liftInterpolantDiffSubs(
     auto const & diff_a   = diff_entry.first.first;
     auto const & diff_b   = diff_entry.first.second;
     auto const & diff_seq = diff_entry.second;
+    auto const & curr_diff_k = sig.getDiff_BySort(diff_a.get_sort());
     unsigned diff_iteration = 1;
     for(auto const & k_ : diff_seq){
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
         from.push_back(k_);
-        to.push_back(sig.diff_k(
+        to.push_back(curr_diff_k(
               sig.ctx.int_val(diff_iteration++), 
               diff_a, diff_b));
       }

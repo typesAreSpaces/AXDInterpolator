@@ -15,11 +15,12 @@
     auto const & a = std::get<0>(_4tuple);\
     auto const & b = std::get<1>(_4tuple);\
     auto const & i = std::get<2>(_4tuple);\
+    auto const & curr_rd = sig.getRdBySort(a.get_sort());\
     \
     z3::expr axiom_11_2 =\
     z3::implies(\
         side_part.index_var != i,\
-        sig.rd(a, side_part.index_var) == sig.rd(b, side_part.index_var)\
+        curr_rd(a, side_part.index_var) == curr_rd(b, side_part.index_var)\
         );\
     side_part.instantiate(VAR, axiom_11_2);\
   }\
@@ -30,6 +31,7 @@
     auto const & a = diff_entry.first.first;\
     auto const & b = diff_entry.first.second;\
     auto const & diff_seq = diff_entry.second;\
+    auto const & curr_rd = sig.getRdBySort(a.get_sort());\
     \
     if(diff_seq.size() == 0)\
     continue;\
@@ -37,8 +39,8 @@
     unsigned last_one = diff_seq.size() - 1;\
     z3::expr_vector disj_equalities(sig.ctx);\
     disj_equalities.push_back(\
-        sig.rd(a, side_part.index_var)\
-        == sig.rd(b, side_part.index_var));\
+        curr_rd(a, side_part.index_var)\
+        == curr_rd(b, side_part.index_var));\
     for(unsigned i = 0; i < last_one; i++)\
     disj_equalities.push_back(\
         side_part.index_var == diff_seq[i]);\
