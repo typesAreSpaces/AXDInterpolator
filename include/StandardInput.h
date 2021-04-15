@@ -126,10 +126,14 @@ class StandardInput {
   // -) part_2 contains the rest
   z3::expr_vector part_1, part_2;
 
-  z3::expr index_var, axiom_8, axiom_9;
+  z3::expr const index_var;
+  z3::expr axiom_8, axiom_9;
 
   z3::expr fresh_index_constant();
   z3::expr fresh_element_constant();
+
+  z3::expr generateAxiom8(Preprocessor::ArrayVars const &) const;
+  z3::expr generateAxiom9() const;
 
   public:
   StandardInput(

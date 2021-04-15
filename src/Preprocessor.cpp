@@ -64,7 +64,8 @@ Preprocessor::Preprocessor(
     for(auto const & b_array_var_entry  : part_b_array_vars)
       if(a_array_var_entry.first == b_array_var_entry.first){
         for(auto iterator_a = a_array_var_entry.second.begin();
-            iterator_a != a_array_var_entry.second.end(); ++iterator_a){
+            iterator_a != a_array_var_entry.second.end(); 
+            ++iterator_a){
           if(inSet(*iterator_a, b_array_var_entry.second))
             common_array_vars.insert(*iterator_a);
         }

@@ -4,9 +4,6 @@ StandardInput::StandardInput(
     AXDSignature const & sig,
     z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
-    // [TODO]: lift this structure to map 
-    // index by ElementSorts and extend 
-    // similarly the production of axioms
     Preprocessor::ArrayVars const & array_var_ids,
     unsigned _fresh_index) :
   sig(sig),
@@ -16,15 +13,15 @@ StandardInput::StandardInput(
   write_vector(),
   instantiated_terms(sig, initial_index_vars),
 
-  part_1(conjunction.ctx()),
-  part_2(conjunction.ctx()), 
+  part_1(sig.ctx),
+  part_2(sig.ctx), 
 
   index_var(sig.ctx.constant("index_var", sig.int_sort)),
 
-  axiom_8(sig.ctx), 
-  axiom_9(sig.rd(sig.empty_array, index_var) == sig.undefined)
+  axiom_8(generateAxiom8(array_var_ids)), 
+  axiom_9(generateAxiom9())
 {
-  // Splitting input into part_1 and part_2
+  // Split input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
     if(func_kind(current_arg) == Z3_OP_UNINTERPRETED
@@ -147,22 +144,7 @@ StandardInput::StandardInput(
   m_out << "End WriteVector" << std::endl;
   m_out << std::endl;
 #endif
-
-  // Setup axiom 8
-  // Instantiate with all the current array elements
-  // since this won't change
-  // [TODO] lift this indexing by 
-  // ElementSorts
-  // [TODO] remove comment and implement properly
-  //z3::expr_vector instances_axiom_8(sig.ctx);
-  //for(auto const & array_element : array_var_ids)
-    //instances_axiom_8.push_back(
-        //z3::implies(
-          //index_var < 0, 
-          //sig.rd(array_element, index_var) == sig.undefined)
-        //);
-  //axiom_8 = z3::mk_and(instances_axiom_8);
-
+  
   initSaturation();
 }
 

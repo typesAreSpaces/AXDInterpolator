@@ -1,7 +1,10 @@
 #include "StandardInput.h"
 
-void StandardInput::instantiate(z3::solver & s, z3::expr & e) const {
-  for(auto const & index_term : instantiated_terms.getInstantiatedTerms()){
+void StandardInput::instantiate(
+    z3::solver & s, 
+    z3::expr & e) const {
+  for(auto const & index_term 
+      : instantiated_terms.getInstantiatedTerms()){
     z3::expr_vector from(sig.ctx), to(sig.ctx);
     from.push_back(index_var);
     to.push_back(index_term);
@@ -9,8 +12,11 @@ void StandardInput::instantiate(z3::solver & s, z3::expr & e) const {
   }
 }
 
-void StandardInput::instantiate(std::ostream & os, z3::expr & e) const {
-  for(auto const & index_term : instantiated_terms.getInstantiatedTerms()){
+void StandardInput::instantiate(
+    std::ostream & os, 
+    z3::expr & e) const {
+  for(auto const & index_term 
+      : instantiated_terms.getInstantiatedTerms()){
     z3::expr_vector from(sig.ctx), to(sig.ctx);
     from.push_back(index_var);
     to.push_back(index_term);
@@ -18,8 +24,11 @@ void StandardInput::instantiate(std::ostream & os, z3::expr & e) const {
   }
 }
 
-void StandardInput::instantiate(z3::expr_vector & v, z3::expr & e) const {
-  for(auto const & index_term : instantiated_terms.getInstantiatedTerms()){
+void StandardInput::instantiate(
+    z3::expr_vector & v, 
+    z3::expr & e) const {
+  for(auto const & index_term 
+      : instantiated_terms.getInstantiatedTerms()){
     z3::expr_vector from(sig.ctx), to(sig.ctx);
     from.push_back(index_var);
     to.push_back(index_term);

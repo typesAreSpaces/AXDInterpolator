@@ -48,7 +48,6 @@ void StandardInput::InstantiatedTerms::operator++(){
         instantiate_QF_LIA();
         return;
     }
-
   }
 }
 
