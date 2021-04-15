@@ -48,30 +48,42 @@ bool AXDInterpolant::testOutput(
   return false;
 }
 
-// [TODO]: parametrize array_sort and element_sort axioms
 void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
-  //z3::expr x = sig.ctx.constant("x", this->sig.array_sort);
-  //z3::expr y = sig.ctx.constant("y", this->sig.array_sort);
-  //z3::expr e = sig.ctx.constant("e", this->sig.element_sort);
-  //z3::expr i = sig.ctx.constant("i", this->sig.int_sort);
-  //z3::expr j = sig.ctx.constant("j", this->sig.int_sort);
-  //z3::expr n = sig.ctx.constant("n", this->sig.int_sort);
-  //// Adding axiomatization
-  //s.add(forall(y, i, e, 
-        //z3::implies( i >= 0, sig.rd(sig.wr(y, i, e), i) == e)));
-  //s.add(forall(y, i , j, e, 
-        //z3::implies(i != j, sig.rd(sig.wr(y, i, e), j) == sig.rd(y, j))));
-  //s.add(forall(x, y, 
-        //z3::implies(x != y, sig.rd(x, sig.diff(x, y)) != sig.rd(y, sig.diff(x, y)))));
-  //s.add(forall(x, y, i, 
-        //z3::implies(i > sig.diff(x, y), sig.rd(x, i) == sig.rd(y, i))));
-  //s.add(forall(x, 
-        //sig.diff(x, x) == 0));
-  //s.add(forall(i, x, 
-        //z3::implies(i < 0, sig.rd(x, i) == sig.undefined)));
-  //s.add(forall(i, 
-        //sig.rd(sig.empty_array, i) == sig.undefined));
-  //return;
+
+  z3::expr i = sig.ctx.constant("i", sig.int_sort);
+  z3::expr j = sig.ctx.constant("j", sig.int_sort);
+  z3::expr n = sig.ctx.constant("n", sig.int_sort);
+
+  for(unsigned m = 0; m < sig.element_sorts.size(); m++){
+
+    auto const & curr_element_sort = sig.element_sorts[m];
+    auto const & curr_array_sort = sig.array_sorts[m];
+    auto const & curr_rd = sig.rd_es[m];
+    auto const & curr_wr = sig.wr_es[m];
+    auto const & curr_diff = sig.diff_es[m];
+    auto const & curr_undefined = sig.undefined_es[m];
+    auto const & curr_empty_array = sig.empty_array_es[m];
+
+    z3::expr x = sig.ctx.constant("x", curr_array_sort);
+    z3::expr y = sig.ctx.constant("y", curr_array_sort);
+    z3::expr e = sig.ctx.constant("e", curr_element_sort);
+
+    s.add(forall(y, i, e, 
+          z3::implies( i >= 0, curr_rd(curr_wr(y, i, e), i) == e)));
+    s.add(forall(y, i , j, e, 
+          z3::implies(i != j, curr_rd(curr_wr(y, i, e), j) == curr_rd(y, j))));
+    s.add(forall(x, y, 
+          z3::implies(x != y, curr_rd(x, curr_diff(x, y)) != curr_rd(y, curr_diff(x, y)))));
+    s.add(forall(x, y, i, 
+          z3::implies(i > curr_diff(x, y), curr_rd(x, i) == curr_rd(y, i))));
+    s.add(forall(x, 
+          curr_diff(x, x) == 0));
+    s.add(forall(i, x, 
+          z3::implies(i < 0, curr_rd(x, i) == curr_undefined)));
+    s.add(forall(i, 
+          curr_rd(curr_empty_array, i) == curr_undefined));
+  }
+  return;
 }
 
 void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const & input){
