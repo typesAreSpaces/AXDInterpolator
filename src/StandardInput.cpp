@@ -125,16 +125,6 @@ StandardInput::StandardInput(
   initSaturation();
 }
 
-z3::expr StandardInput::fresh_index_constant(){
-  return sig.ctx.constant((FRESH_INDEX_PREFIX 
-        + std::to_string(s_fresh_index++)).c_str(), sig.int_sort);
-}
-
-z3::expr StandardInput::fresh_element_constant(z3::sort const & s){
-  return sig.ctx.constant((FRESH_ELEMENT_PREFIX 
-        + std::to_string(s_fresh_index++)).c_str(), s);
-}
-
 void StandardInput::initSaturation(){
   // ------------------------------------------------
   // Processing equations of the form a = wr(b, i, e)
