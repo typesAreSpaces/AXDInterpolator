@@ -38,29 +38,24 @@ will be located inside the _bin_ directory.
 
 ## Setting up the input formula
 
-Input formulas are encoded as a smt2 file 
-in the ./tests/smt2-files directory. Such smt2 
-file should include the next sort and function 
-declarations:
+Input formulas are encoded as a SMTLIB2 file 
+in the ./tests/smt2-files directory. If the input
+includes function applications of our extended
+language, i.e. diff, length, empty_array, undefined,
+then the latter elements should be appended a string
+denoting the type of the range of the associated
+array element. The latter ensures compatibility with
+the internal language used in the implementation.
+The following are examples of declarations following
+the above convention:
 
 ```
-; Sorts
-(declare-sort ElementSort 0)
-(declare-sort ArraySort 0)
-
-; Function declarartions
-(declare-fun diff (ArraySort ArraySort) Int)
-(declare-fun wr (ArraySort Int ElementSort) ArraySort)
-(declare-fun rd (ArraySort Int) ElementSort)
-(declare-fun pred (Int) Int)
-(declare-fun succ (Int) Int)
-(declare-fun neg (Int) Int)
-(declare-fun add (Int Int) Int)
-(declare-fun length (ArraySort) Int)
+(declare-fun diffInt ((Array Int Int) (Array Int Int)) Int)
+(declare-fun lengthArrayIntInt ((Array Int (Array Int Int))) Int)
+(declare-fun empty_arrayArrayIntInt () (Array Int (Array Int Int))
 ```
 
-followed by additional function declarations as needed. 
-The rest of the smt2 should specify two assertions. 
+The rest of the SMTLIB2 file should specify two assertions. 
 The first one encodes the A-part and the second one the B-part. 
 
 ## Using the implementation
