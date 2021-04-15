@@ -32,6 +32,13 @@ Preprocessor::Preprocessor(
   part_b_array_vars({}), 
   common_array_vars({})
 {
+#if _DEBUG_PREPROCESS_
+  m_out << "From Preprocessor: Input a" << std::endl;
+  m_out << _input_part_a << std::endl;
+  m_out << "From Preprocessor: Input b" << std::endl;
+  m_out << _input_part_b << std::endl;
+#endif
+
   NORMALIZE_INPUT(_input_part_a, input_part_a, conjunction_a);
   NORMALIZE_INPUT(_input_part_b, input_part_b, conjunction_b);
 
@@ -40,6 +47,8 @@ Preprocessor::Preprocessor(
   m_out << conjunction_a << std::endl;
   m_out << "Conjunction b" << std::endl;
   m_out << conjunction_b << std::endl;
+  m_out << "Before Flattening Part a " << input_part_a << std::endl;
+  m_out << "Before Flattening Part b " << input_part_b << std::endl;
 #endif
 
   for(auto const & _empty_array : sig.empty_array_es){
@@ -52,8 +61,8 @@ Preprocessor::Preprocessor(
   FLATTEN_PREDICATE(current_conjs_in_input, input_part_b, PART_B);
 
 #if _DEBUG_PREPROCESS_
-  m_out << "Part a " << input_part_a << std::endl;
-  m_out << "Part b " << input_part_b << std::endl;
+  m_out << "After Flattening Part a " << input_part_a << std::endl;
+  m_out << "After Flattening Part b " << input_part_b << std::endl;
   m_out << "Arrays A-local" << std::endl;
   m_out << part_a_array_vars << std::endl;
   m_out << "Arrays B-local" << std::endl;

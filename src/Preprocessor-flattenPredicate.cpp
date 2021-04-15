@@ -9,7 +9,7 @@
       for(unsigned i = 0; i < old_terms.size(); i++)\
       temp_predicates.push_back(fresh_consts[i] == old_terms[i]);\
       \
-      input_part_b = temp_predicates;\
+      INPUT_PART = temp_predicates;\
       current_conjs_in_input += old_terms.size();
 
 #define SUBSTITUTE_AND_ADJOINT_ONE(INPUT_PART)\

@@ -29,13 +29,13 @@ AXDInterpolant::AXDInterpolant(
   state_output(undefined)
 {
 #if _DEBUG_AXD_CONSTRUCTOR_
-  std::cout << "Before Processing" << std::endl;
+  std::cout << "After Processing" << std::endl;
   std::cout << "Input Part A" << std::endl;
   std::cout << input_part_a << std::endl;
   std::cout << "Input Part B" << std::endl;
   std::cout << input_part_b << std::endl;
 
-  std::cout << "After Processing" << std::endl;
+  std::cout << "Before StandardInput" << std::endl;
   std::cout << "Input Part A" << std::endl;
   std::cout << part_a << std::endl;
   std::cout << "Input Part B" << std::endl;
