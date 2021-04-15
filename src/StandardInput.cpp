@@ -43,7 +43,7 @@ StandardInput::StandardInput(
               sig.isArraySort(_lhs.get_sort())
               // Covers equations of the
               // form i = diff(a, b)
-              || func_name(_rhs) == "diff"){
+              || func_name(_rhs).find("diff") != std::string::npos){
 
             // [10] predicates are added here
             if(_lhs.num_args() == 0 && _rhs.num_args() == 0){

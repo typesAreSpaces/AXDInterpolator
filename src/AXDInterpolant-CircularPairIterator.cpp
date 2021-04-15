@@ -7,7 +7,7 @@ AXDInterpolant::CircularPairIterator::CircularPairIterator(
   z3_expr_set_first((p_array_vars_it->second).begin()),
   z3_expr_set_second((p_array_vars_it->second).begin())
 { 
-  avoidLowerDiagonal(); 
+  avoidLowerDiagonalAndDifferentTypes(); 
 }
 
 void AXDInterpolant::CircularPairIterator::next(){
@@ -20,18 +20,26 @@ void AXDInterpolant::CircularPairIterator::next(){
   if(z3_expr_set_first == p_array_vars_it->second.end()){
     p_array_vars_it++;
     z3_expr_set_first = p_array_vars_it->second.begin();
+    z3_expr_set_second = p_array_vars_it->second.begin();
   }
-  if(p_array_vars_it == vars.end())
+  if(p_array_vars_it == vars.end()){
     p_array_vars_it = vars.begin();
+    z3_expr_set_first = p_array_vars_it->second.begin();
+    z3_expr_set_second = p_array_vars_it->second.begin();
+  }
 
-  avoidLowerDiagonal();
+  avoidLowerDiagonalAndDifferentTypes();
 }
 
 StandardInput::DiffMap::z3_expr_pair AXDInterpolant::CircularPairIterator::operator *() const {
   return StandardInput::DiffMap::z3_expr_pair(*z3_expr_set_first, *z3_expr_set_second);
 }
 
-void AXDInterpolant::CircularPairIterator::avoidLowerDiagonal(){
+void AXDInterpolant::CircularPairIterator::avoidLowerDiagonalAndDifferentTypes(){
   while(!AXDSignature::Z3ExprComparator()(
-        *z3_expr_set_first, *z3_expr_set_second)) next();
+        *z3_expr_set_first, *z3_expr_set_second) 
+      || (*z3_expr_set_first).get_sort().id() != (*z3_expr_set_second).get_sort().id()
+      ){
+    next();
+  }
 }

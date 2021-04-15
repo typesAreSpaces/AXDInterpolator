@@ -20,7 +20,6 @@ StandardInput::DiffMap::DiffMap(
                 DiffMapEntry(sig, _y, _x)));
       }
     }
-
   }
 }
 

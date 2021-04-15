@@ -11,11 +11,12 @@
 #include "StandardInput.h"
 
 #define _DEBUG_AXD_LOOP_           0
+#define _DEBUG_AXD_CONSTRUCTOR_    0
 #define _TEST_OUTPUT_              0
 #define _TEST_OUTPUT_ORIGINAL_THY_ 0
 #define _INCLUDE_OUTPUT_           1
 
-#define CURRENT_DIR std::string("replace_once")
+#define CURRENT_DIR std::string("/home/jose/Documents/GithubProjects/AXDInterpolator")
 #define OUTPUT_DIR  CURRENT_DIR + std::string("/output")
 
 // Notes:
@@ -32,13 +33,13 @@ class AXDInterpolant : public Preprocessor {
     typedef Preprocessor::ArrayVars PArrayVars;
 
     PArrayVars const & vars;
-    PArrayVars::Container::const_iterator 
+    PArrayVars::Container::const_iterator
       p_array_vars_it;
-    AXDSignature::z3_expr_set::iterator
+    AXDSignature::z3_expr_set::const_iterator
       z3_expr_set_first, 
       z3_expr_set_second;
 
-    void avoidLowerDiagonal();
+    void avoidLowerDiagonalAndDifferentTypes();
 
     public:
     CircularPairIterator(Preprocessor::ArrayVars const &);
