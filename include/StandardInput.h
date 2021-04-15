@@ -127,7 +127,7 @@ class StandardInput {
   z3::expr axiom_8, axiom_9;
 
   z3::expr fresh_index_constant();
-  z3::expr fresh_element_constant();
+  z3::expr fresh_element_constant(z3::sort const &);
 
   z3::expr generateAxiom8(Preprocessor::ArrayVars const &) 
     const;

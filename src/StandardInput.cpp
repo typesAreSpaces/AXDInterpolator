@@ -21,16 +21,11 @@ StandardInput::StandardInput(
   axiom_8(generateAxiom8(array_var_ids)), 
   axiom_9(generateAxiom9())
 {
+
   // Split input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
-
-    //if(func_kind(current_arg) == Z3_OP_UNINTERPRETED
-        //&& current_arg.get_sort().is_bool()){
-      //part_2.push_back(current_arg);
-      //continue;
-    //}
-
+        
     switch(func_kind(current_arg)){
       case Z3_OP_UNINTERPRETED:
         if(current_arg.get_sort().is_bool()){
@@ -42,24 +37,21 @@ StandardInput::StandardInput(
         {     
           auto const & _lhs = lhs(current_arg);
           auto const & _rhs = rhs(current_arg);
-          auto const & lhs_sort = sort_name(_lhs);
-          // [TODO]: rework the following conditional block
-          // KEEP working here
           if( // Covers equations of the form 
               // a = wr(b, i, e) or a = b 
               // when a is an array var
-              lhs_sort == "ArraySort"
+              sig.isArraySort(_lhs.get_sort())
               // Covers equations of the
               // form i = diff(a, b)
-              || func_name(_lhs) == "diff" 
               || func_name(_rhs) == "diff"){
 
             // [10] predicates are added here
             if(_lhs.num_args() == 0 && _rhs.num_args() == 0){
-              part_1.push_back(0 == sig.diff(_lhs, _rhs));
-              part_2.push_back(
-                  current_arg
-                  && sig.rd(_lhs, 0) == sig.rd(_rhs, 0));
+              auto const & curr_diff = sig.getDiffBySort(_lhs.get_sort());
+              auto const & curr_rd = sig.getRdBySort(_lhs.get_sort());
+              part_1.push_back(0 == curr_diff(_lhs, _rhs));
+              part_2.push_back(curr_rd(_lhs, 0) == curr_diff(_rhs, 0));
+              part_2.push_back(current_arg);
             }
             // Equations of the form i = diff(a, b), 
             // a = wr(b, i, e) will be processed 
@@ -69,27 +61,30 @@ StandardInput::StandardInput(
           }
           else
             part_2.push_back(current_arg);
-
           break;
         }
       case Z3_OP_DISTINCT: // !=
-        //auto const & _lhs = lhs(current_arg);
-        //auto const & _rhs = rhs(current_arg);
-        //auto const & lhs_sort = sort_name(_lhs);
-        if(sort_name(lhs(current_arg)) == "ArraySort"){
-          auto const & f_index = fresh_index_constant();
-          auto const & f_element1 = fresh_element_constant();
-          auto const & f_element2 = fresh_element_constant();
-          auto const & __lhs = lhs(current_arg);
-          auto const & __rhs = rhs(current_arg);
+        {
+          auto const & _lhs = lhs(current_arg);
+          auto const & _rhs = rhs(current_arg);
+          if(sig.isArraySort(_lhs.get_sort())
+              && _lhs.num_args() == 0 
+              && _rhs.num_args() == 0){
 
-          // [10] predicates are added here
-          part_1.push_back(f_index 
-              == sig.diff(__lhs, __rhs));
-          part_1.push_back(f_element1 == sig.rd(__lhs, 0));
-          part_1.push_back(f_element2 == sig.rd(__rhs, 0));
-          part_2.push_back(f_index != 0 
-              || f_element1 != f_element2);
+            auto const & new_index    = fresh_index_constant();
+            // [TODO] use fresh element constants properly
+            auto const & new_element1 = fresh_element_constant(_lhs.get_sort());
+            auto const & new_element2 = fresh_element_constant(_rhs.get_sort());
+
+            auto const & curr_diff = sig.getDiffBySort(_lhs.get_sort());
+            auto const & curr_rd = sig.getRdBySort(_lhs.get_sort());
+
+            // [10] predicates are added here
+            part_1.push_back(new_index    == curr_diff(_lhs, _rhs));
+            part_1.push_back(new_element1 == curr_rd(_lhs, 0));
+            part_1.push_back(new_element2 == curr_rd(_rhs, 0));
+            part_2.push_back(new_index != 0 || new_element1 != new_element2);
+          }
         }
       case Z3_OP_GE:       // >=
       case Z3_OP_LE:       // <=
@@ -120,7 +115,7 @@ StandardInput::StandardInput(
       << std::endl;
 #endif
     auto f_name = func_name(rhs(equation));
-    if(f_name == "wr"){
+    if(f_name.find("wr") != std::string::npos){
       write_vector.add(
           lhs(equation), 
           lhs(rhs(equation)), 
@@ -128,7 +123,7 @@ StandardInput::StandardInput(
           rhs(equation).arg(2)
           );
     }
-    if(f_name == "diff"){
+    if(f_name.find("diff") != std::string::npos){
       diff_map.add(
           lhs(rhs(equation)), 
           rhs(rhs(equation)),
@@ -154,10 +149,9 @@ z3::expr StandardInput::fresh_index_constant(){
         + std::to_string(s_fresh_index++)).c_str(), sig.int_sort);
 }
 
-// [TODO] parametrize this function
-z3::expr StandardInput::fresh_element_constant(){
+z3::expr StandardInput::fresh_element_constant(z3::sort const & s){
   return sig.ctx.constant((FRESH_ELEMENT_PREFIX 
-        + std::to_string(s_fresh_index++)).c_str(), sig.element_sort);
+        + std::to_string(s_fresh_index++)).c_str(), s);
 }
 
 void StandardInput::initSaturation(){
@@ -169,11 +163,13 @@ void StandardInput::initSaturation(){
     auto const & i = std::get<2>(_4tuple);
     auto const & e = std::get<3>(_4tuple);
 
+    auto const & curr_rd = sig.getRdBySort(a.get_sort());
+
     // The following adds i >=0 \rightarrow rd(a, i) = e
     part_2.push_back(
         z3::implies(
           i >= 0, 
-          sig.rd(a, i) == e) 
+          curr_rd(a, i) == e) 
         );
 
     // [11] predicates are processed in 
@@ -188,6 +184,8 @@ void StandardInput::initSaturation(){
     auto const & a   = entry.first.first;
     auto const & b   = entry.first.second;
     auto const & seq = entry.second;
+
+    auto const & curr_rd = sig.getRdBySort(a.get_sort());
 
     if(seq.size() > 0){
       auto const & i = seq[0];
@@ -204,7 +202,7 @@ void StandardInput::initSaturation(){
       part_2.push_back(
           z3::implies(
             i > sig.ctx.int_val(0), 
-            sig.rd(a, i) != sig.rd(b, i))
+            curr_rd(a, i) != curr_rd(b, i))
           );
     }
   }
@@ -235,6 +233,7 @@ void StandardInput::updateSaturation(
         _new_index == map_element->second[min_dim]
         );
   else{
+    auto const & curr_rd = sig.getRdBySort(a.get_sort());
     diff_map.add(entry.first, entry.second, _new_index);
     // old_dim > 0 guarantees having a previous index
     if(old_dim > 0){
@@ -251,7 +250,7 @@ void StandardInput::updateSaturation(
       // The following adds [15] predicates
       part_2.push_back(z3::implies(
             _previous_index > _new_index,
-            sig.rd(a, _previous_index) != sig.rd(b, _previous_index)
+            curr_rd(a, _previous_index) != curr_rd(b, _previous_index)
             ));
 
       // The following adds [16] predicates
@@ -262,7 +261,7 @@ void StandardInput::updateSaturation(
     }
     // The following adds [17] predicates
     part_2.push_back(z3::implies(
-          sig.rd(a, _new_index) == sig.rd(b, _new_index),
+          curr_rd(a, _new_index) == curr_rd(b, _new_index),
           _new_index == sig.ctx.int_val(0)
           ));
   }
