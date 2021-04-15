@@ -13,6 +13,9 @@ class Preprocessor {
 
   enum SideInterpolant { PART_A, PART_B };
 
+  // [NOTICE] This structure only contains
+  // array vars of different 
+  // parametrized types
   public:
   struct ArrayVars { 
 

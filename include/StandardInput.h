@@ -17,7 +17,6 @@ class StandardInput {
 
   struct DiffMapEntry : public z3::expr_vector {
 
-    unsigned             sort_index;
     z3::expr_vector      lifted_b;
     z3::expr_vector      lifted_diff_k;
     AXDSignature const & sig;
@@ -25,14 +24,12 @@ class StandardInput {
     DiffMapEntry(
         AXDSignature const &, 
         z3::expr const &, 
-        z3::expr const &, 
-        unsigned);
+        z3::expr const &);
 
     void push(
         z3::expr const &, 
         z3::expr const &,
-        z3::expr const &
-        );
+        z3::expr const &);
   };
 
   // DiffMap : 
@@ -132,7 +129,8 @@ class StandardInput {
   z3::expr fresh_index_constant();
   z3::expr fresh_element_constant();
 
-  z3::expr generateAxiom8(Preprocessor::ArrayVars const &) const;
+  z3::expr generateAxiom8(Preprocessor::ArrayVars const &) 
+    const;
   z3::expr generateAxiom9() const;
 
   public:
