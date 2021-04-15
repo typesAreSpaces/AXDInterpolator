@@ -206,14 +206,14 @@ z3::expr Preprocessor::fresh_index_constant(){
 }
 
 // [TODO] parametrize this function
-z3::expr Preprocessor::fresh_array_constant(){
+z3::expr Preprocessor::fresh_array_constant(z3::sort const & s){
   return sig.ctx.constant((FRESH_ARRAY_PREFIX 
-        + std::to_string(fresh_num++)).c_str(), sig.array_sort);
+        + std::to_string(fresh_num++)).c_str(), sig.getArraySortBySort(s));
 }
 
 z3::expr Preprocessor::fresh_constant(z3::sort const & s){
   if(sig.isArraySort(s))
-    return fresh_array_constant();
+    return fresh_array_constant(s);
   if(s.is_int())
     return fresh_index_constant();
 

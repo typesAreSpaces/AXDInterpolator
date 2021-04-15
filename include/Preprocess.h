@@ -69,7 +69,7 @@ class Preprocessor {
 
   z3::expr fresh_index_constant();
   // [TODO] parametrize the following
-  z3::expr fresh_array_constant();
+  z3::expr fresh_array_constant(z3::sort const &);
   z3::expr fresh_constant(z3::sort const &);
 
   AXDSignature &  sig;
