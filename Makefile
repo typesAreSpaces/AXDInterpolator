@@ -86,7 +86,7 @@ tests/print_all: bin/axd_interpolator
 		else \
 		if [ "${METHOD}" = "1" ]; \
 		then METHOD_NAME="MATHSAT"; \
-		else METHOD_NAME="DIRECT"; \
+		else METHOD_NAME="SMTINTERPOL"; \
 		fi \
 		fi; \
 		./bin/axd_interpolator \
