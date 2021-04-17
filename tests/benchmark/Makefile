@@ -37,8 +37,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 # ------------------------------------------
 #  Rules to test a single or many smt2 files
 main: ./bin/benchmark
-	echo "haha"
-	#./bin/benchmark
+	./bin/benchmark /home/jose/relax-1.c_valid-memsafety.prp.smt2
 # ------------------------------------------
 
 # ----------------------
