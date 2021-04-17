@@ -38,8 +38,11 @@ void UAutomizerFileReader::action(){
 
   switch(input_parser.check()){
     case z3::unsat:
-      std::cout << "Unsat" << std::endl;
-      std::cout << input_parser.assertions() << std::endl;
+      // TODO: extract the assertion and make just two
+      system((
+            "pushd ./../../ && ./bin/axd_interpolator QF_TO ./tests/benchmark/" 
+            + file_name + " 1 1000 && popd"
+            ).c_str());
       break;
     default:
       break;
