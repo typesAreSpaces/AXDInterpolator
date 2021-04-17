@@ -1,4 +1,5 @@
 #include "UAutomizerFileReader.h"
+#include <z3++.h>
 
 UAutomizerFileReader::UAutomizerFileReader() : 
   line(""),
@@ -23,8 +24,10 @@ bool UAutomizerFileReader::isEchoCmd(){
 }
 
 void UAutomizerFileReader::action(){
-  std::string file_name = "temp_" + current_file + ".smt2";
+  std::string file_name = "temp_smt2_" + current_file;
+  std::string file_for_implementation = "axdinterpolator_" + current_file;
   std::ofstream smt_file(file_name.c_str());
+  std::ofstream axdinterpolator_file(file_for_implementation.c_str());
 
   for(auto const & x : stack)
     smt_file  << x << std::endl;
@@ -38,11 +41,33 @@ void UAutomizerFileReader::action(){
 
   switch(input_parser.check()){
     case z3::unsat:
-      // TODO: extract the assertion and make just two
+
+      //TODO: 
+      // extract the assertions 
+      // and make two
+      
+      std::cout << input_parser.assertions() << std::endl;
+
+      axdinterpolator_file << input_parser.to_smt2_decls_only();
+      axdinterpolator_file 
+        << "(assert "
+        << z3::mk_and(input_parser.assertions())
+        << ")\n";
+      axdinterpolator_file 
+        << "(assert false)\n";
+      axdinterpolator_file 
+        << "(check-sat)\n";
+      axdinterpolator_file.close();
+
+      {
+        int stop;
+        std::cin >> stop;
+      }
+
       system((
             "pushd ./../../ "
             "&& ./bin/axd_interpolator QF_TO ./tests/benchmark/" 
-            + file_name + " 1 1000 && popd"
+            + file_for_implementation + " 1 1000 && popd"
             ).c_str());
       break;
     default:
