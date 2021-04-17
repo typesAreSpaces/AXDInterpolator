@@ -17,20 +17,25 @@ class Preprocessor {
   // array vars of different 
   // parametrized types
   public:
-  struct ArrayVars { 
+  class ArrayVars { 
+
+    friend class AXDInterpolant;
 
     typedef std::map<
       unsigned, 
       AXDSignature::z3_expr_set> Container;
 
     Container vars; 
-
-    Container::const_iterator begin() const;
-    Container::const_iterator end() const;
+    unsigned  size;
 
     public:
     ArrayVars();
     void insert(z3::expr const &);
+    bool isEmpty() const;
+    unsigned getSize() const;
+
+    Container::const_iterator begin() const;
+    Container::const_iterator end() const;
   };
 
   private:
