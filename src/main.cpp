@@ -13,10 +13,10 @@ inline bool exists_file (const std::string& name) {
 int main(int argc, char * argv[]){
 
   z3::context ctx;
-  z3::set_param("proof", true);
+  //z3::set_param("proof", true);
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
-  
+
   switch(argc){
     case 5:
       {
@@ -27,10 +27,11 @@ int main(int argc, char * argv[]){
             << std::endl;
           return 0;
         }
+
         input_parser.from_file(argv[2]);
         std::string decls = input_parser.to_smt2_decls_only();
         AXDSignature sig(ctx, argv[1], decls);
-#if 1
+
         auto const & to_cnf_tactic = 
           z3::tactic(ctx, "tseitin-cnf");
         auto const & to_dnf_tactic = 
@@ -87,14 +88,11 @@ int main(int argc, char * argv[]){
           std::cerr << e << std::endl;
           return 0;
         }
-#else
-        return 0;
-#endif
       }
 
     default:
       std::cerr 
-        << "Not allowed option." 
+        << "Invalid number of arguments." 
         << std::endl;
       return 0;
   }
