@@ -40,7 +40,8 @@ void UAutomizerFileReader::action(){
     case z3::unsat:
       // TODO: extract the assertion and make just two
       system((
-            "pushd ./../../ && ./bin/axd_interpolator QF_TO ./tests/benchmark/" 
+            "pushd ./../../ "
+            "&& ./bin/axd_interpolator QF_TO ./tests/benchmark/" 
             + file_name + " 1 1000 && popd"
             ).c_str());
       break;

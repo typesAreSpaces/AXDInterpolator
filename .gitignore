@@ -8,3 +8,4 @@ lib/libz3*
 output/*.smt2
 renamed_AXDInterpolant
 sessions/*
+tests/benchmark/bin/benchmark
