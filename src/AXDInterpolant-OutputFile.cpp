@@ -16,7 +16,8 @@
 void AXDInterpolant::z3OutputFile(){
   if(!is_unsat)
     throw 
-      "Input problem is not unsatisfiable.";
+      "Input problem "
+      "is not unsatisfiable.";
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());

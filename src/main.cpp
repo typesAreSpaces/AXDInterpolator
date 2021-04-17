@@ -25,7 +25,7 @@ int main(int argc, char * argv[]){
           std::cerr 
             << "File not found." 
             << std::endl;
-          return 1;
+          return 0;
         }
         input_parser.from_file(argv[2]);
         std::string decls = input_parser.to_smt2_decls_only();
@@ -76,7 +76,7 @@ int main(int argc, char * argv[]){
                   std::cerr 
                     << "Not valid SMT solver option."
                     << std::endl;
-                  return 1;
+                  return 0;
               }
               std::cout << axd << std::endl;
             }
@@ -85,7 +85,7 @@ int main(int argc, char * argv[]){
         }
         catch(char const * e){
           std::cerr << e << std::endl;
-          return 1;
+          return 0;
         }
 #else
         return 0;
@@ -96,6 +96,6 @@ int main(int argc, char * argv[]){
       std::cerr 
         << "Not allowed option." 
         << std::endl;
-      return 1;
+      return 0;
   }
 }
