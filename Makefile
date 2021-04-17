@@ -117,7 +117,6 @@ clean:
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
 	cd output && make clean
-	rm -rf ./bin/axd_interpolator
 
 .PHONY: z3_clean
 z3_clean:
