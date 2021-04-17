@@ -22,7 +22,7 @@ int main(int argc, char * argv[]){
       {
         z3::solver input_parser(ctx);
         if(!exists_file(argv[2])){
-          std::cerr 
+          std::cout
             << "File not found." 
             << std::endl;
           return 0;
@@ -74,7 +74,7 @@ int main(int argc, char * argv[]){
                   axd.smtInterpolOutputFile();
                   break;
                 default:
-                  std::cerr 
+                  std::cout
                     << "Not valid SMT solver option."
                     << std::endl;
                   return 0;
@@ -85,13 +85,13 @@ int main(int argc, char * argv[]){
           return 0;
         }
         catch(char const * e){
-          std::cerr << e << std::endl;
+          std::cout << e << std::endl;
           return 0;
         }
       }
 
     default:
-      std::cerr 
+      std::cout
         << "Invalid number of arguments." 
         << std::endl;
       return 0;
