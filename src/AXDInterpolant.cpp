@@ -59,6 +59,9 @@ void AXDInterpolant::loop(){
 #if _DEBUG_AXD_LOOP_
   unsigned const constant_allowed_attempts = num_attempts;
 #endif
+  // TODO: Fix this
+  // If there are no common_array_vars just
+  // execute SmtSolverSetup properly just once
   CircularPairIterator search_common_pair(common_array_vars);
 
   while(--num_attempts){
