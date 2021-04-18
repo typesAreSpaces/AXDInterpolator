@@ -63,6 +63,10 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
         if(func_kind(e) == Z3_OP_NOT){
           z3::expr predicate = e.arg(0);
           switch(func_kind(predicate)){
+            case Z3_OP_TRUE:
+              return sig.ctx.bool_val(false);
+            case Z3_OP_FALSE:
+              return sig.ctx.bool_val(true);
             case Z3_OP_EQ:       // ==
               return normalizeInput(predicate.arg(0)) 
                 != normalizeInput(predicate.arg(1));
