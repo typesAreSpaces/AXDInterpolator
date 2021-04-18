@@ -58,10 +58,9 @@ AXDInterpolant::AXDInterpolant(
 void AXDInterpolant::loop(){
 
   if(common_array_vars.getSize() < 2){
-
     SmtSolverSetup(solver, part_a);
     SmtSolverSetup(solver, part_b);
-    
+
     if(solver.check() == z3::unsat){
 #if _DEBUG_AXD_LOOP_ 
       m_out << "Iteration #0" << std::endl;
@@ -75,7 +74,6 @@ void AXDInterpolant::loop(){
       m_out << "Unsat after 0 iterations" << std::endl;
 #endif
     }
-
     return;
   }
 

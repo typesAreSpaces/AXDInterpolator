@@ -28,7 +28,6 @@ StandardInput::StandardInput(
         
     switch(func_kind(current_arg)){
       case Z3_OP_TRUE:
-        continue;
       case Z3_OP_FALSE:
         part_2.push_back(current_arg);
       case Z3_OP_UNINTERPRETED:
