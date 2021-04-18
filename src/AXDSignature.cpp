@@ -15,6 +15,7 @@ AXDSignature::AXDSignature(
     char const * theory_string,
     std::string & decls) :
   ctx(ctx),
+  theory_name(QF_TO),
 
   bool_sort(ctx.bool_sort()), 
   int_sort(ctx.int_sort()), 
@@ -134,10 +135,30 @@ bool AXDSignature::isArraySort(z3::sort const & s) const {
   return s.to_string().find("ArraySort") != std::string::npos;
 }
 
+void AXDSignature::setTheory(TheoryName new_theory_name){
+  theory_name = new_theory_name;
+}
+
 std::ostream & operator << (
     std::ostream & out, 
     AXDSignature::z3_expr_set const & collection){
   for(auto const & x : collection)
     out << x << std::endl;
   return out;
+}
+
+std::ostream & operator << (
+    std::ostream & os,
+    AXDSignature::TheoryName const & theory_name){
+  switch(theory_name){
+    case AXDSignature::QF_TO:
+      return os << "QF_TO";
+    case AXDSignature::QF_IDL:
+      return os << "QF_IDL";
+    case AXDSignature::QF_UTVPI:
+      return os << "QF_UTVPI";
+    case AXDSignature::QF_LIA:
+      return os << "QF_LIA";
+  }
+  return os;
 }

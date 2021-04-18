@@ -1,10 +1,12 @@
 #ifndef _AXD_SIG_
 #define _AXD_SIG_
 
+#include <ios>
 #define FRESH_ARRAY_PREFIX   "fresh_array_"
 #define FRESH_ELEMENT_PREFIX "fresh_element_"
 #define FRESH_INDEX_PREFIX   "fresh_index_"
 #define FRESH_COMMON_PREFIX  "fresh_"
+#define DETECT_THEORY        1
 
 //#define m_out std::cerr
 #define m_out std::cout
@@ -67,6 +69,8 @@ struct AXDSignature {
   bool is_QF_IDL() const;
   bool isArraySort(z3::sort const &) const;
 
+  void setTheory(TheoryName);
+
   TheoryName const & getTheoryName() const;
   z3::sort           getArraySortBySort(z3::sort const &) const;
   z3::sort           getArraySortBySort(unsigned) const;
@@ -85,6 +89,8 @@ struct AXDSignature {
 
   friend std::ostream & operator << (
       std::ostream &, z3_expr_set const &);
+  friend std::ostream & operator << (
+      std::ostream &, TheoryName const &);
 
   z3::context & ctx;
   TheoryName    theory_name;

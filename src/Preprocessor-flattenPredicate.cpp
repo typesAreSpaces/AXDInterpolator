@@ -113,7 +113,15 @@ void Preprocessor::flattenTerm(
       case Z3_OP_ADD:
       case Z3_OP_SUB:
       case Z3_OP_UMINUS:
+#if DETECT_THEORY
+        if(sig.getTheoryName() < AXDSignature::QF_IDL)
+          sig.setTheory(AXDSignature::QF_IDL);
+#endif
       case Z3_OP_MUL:
+#if DETECT_THEORY
+        if(sig.getTheoryName() < AXDSignature::QF_LIA)
+          sig.setTheory(AXDSignature::QF_LIA);
+#endif
         {
           z3::expr_vector queue_args(sig.ctx);
           for(unsigned i = 0; i < term.num_args(); i++)
