@@ -27,6 +27,10 @@ StandardInput::StandardInput(
   for(auto const & current_arg : conjunction){
         
     switch(func_kind(current_arg)){
+      case Z3_OP_TRUE:
+        continue;
+      case Z3_OP_FALSE:
+        part_2.push_back(current_arg);
       case Z3_OP_UNINTERPRETED:
         if(current_arg.get_sort().is_bool()){
           part_2.push_back(current_arg);
@@ -74,6 +78,7 @@ StandardInput::StandardInput(
         part_2.push_back(current_arg);
         break;
       default:
+        std::cout << current_arg << std::endl;
         throw 
           "Problem @ "
           "StandardInput::StandardInput "

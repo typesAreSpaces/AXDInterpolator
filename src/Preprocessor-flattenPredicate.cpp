@@ -25,6 +25,9 @@ void Preprocessor::flattenPredicate(
     SideInterpolant side,
     unsigned & current_conjs_in_input){
   switch(func_kind(formula)){
+    case Z3_OP_TRUE:
+    case Z3_OP_FALSE:
+      return;
     case Z3_OP_EQ:       // ==
       {
         auto const & lhs_form = lhs(formula);
@@ -195,8 +198,7 @@ void Preprocessor::updateIndexVars(
       part_a_index_vars.push(e);
       return;
     case PART_B:
-      if(!e.is_numeral())
-        part_b_index_vars.push(e);
+      part_b_index_vars.push(e);
       return;
   }
 }
@@ -204,7 +206,7 @@ void Preprocessor::updateIndexVars(
 void Preprocessor::updateVarsDB(
     z3::expr const & e, 
     SideInterpolant side){
-  if(e.is_int()){
+  if(e.is_int() && !e.is_numeral()){
     updateIndexVars(e, side);
     return;
   }

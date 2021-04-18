@@ -33,7 +33,10 @@ THEORY=QF_TO
 #THEORY=QF_UTVPI
 #THEORY=QF_LIA
 
-FILE_TEST=$(TEST_DIR)/simple.smt2
+#FILE_TEST=$(TEST_DIR)/simple.smt2
+#FILE_TEST=$(TEST_DIR)/simple2.smt2
+#FILE_TEST=$(TEST_DIR)/simple3.smt2
+FILE_TEST=$(TEST_DIR)/simple4.smt2
 #FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_8.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2

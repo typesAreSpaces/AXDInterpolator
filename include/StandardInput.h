@@ -2,7 +2,7 @@
 #define _STANDARD_INPUT_
 
 #include "z3++.h"
-#define _DEBUG_STDINPUT_ 0
+#define _DEBUG_STDINPUT_ 1
 
 #ifndef NDEBUG
 #   define ASSERT(condition, message) \

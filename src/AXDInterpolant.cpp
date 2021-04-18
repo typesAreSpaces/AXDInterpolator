@@ -58,7 +58,31 @@ AXDInterpolant::AXDInterpolant(
 void AXDInterpolant::loop(){
 
   if(common_array_vars.getSize() < 2){
-    // TODO: implement quick exit
+
+    std::cout << "Work here!" << std::endl;
+
+    SmtSolverSetup(solver, part_a);
+    SmtSolverSetup(solver, part_b);
+
+    std::cout << "Part a" << std::endl;
+    std::cout << part_a << std::endl;
+    std::cout << "Part b" << std::endl;
+    std::cout << part_b << std::endl;
+
+    if(solver.check() == z3::unsat){
+#if _DEBUG_AXD_LOOP_ 
+      m_out << "Iteration #0" << std::endl;
+      m_out << "Current A-part part 2: " << std::endl;
+      SmtSolverOutStreamSetup(m_out, part_a);
+      m_out << "Current B-part part 2: " << std::endl;
+      SmtSolverOutStreamSetup(m_out, part_b);
+#endif
+      is_unsat = true;
+#if _DEBUG_AXD_LOOP_
+      m_out << "Unsat after 0 iterations" << std::endl;
+#endif
+    }
+
     return;
   }
 

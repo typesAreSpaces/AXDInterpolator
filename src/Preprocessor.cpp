@@ -4,13 +4,23 @@
 #define NORMALIZE_INPUT(OLD, NEW, TEMP_VAR)\
   z3::expr const & TEMP_VAR =\
   normalizeInput(OLD);\
-  for(unsigned i = 0; i < TEMP_VAR.num_args(); ++i){\
-    auto const & curr_arg = TEMP_VAR.arg(i);\
-    if(func_kind(curr_arg) == Z3_OP_EQ\
-        && rhs(curr_arg).num_args() == 0)\
-    NEW.push_back(rhs(curr_arg) == lhs(curr_arg));\
+  if(func_kind(TEMP_VAR) == Z3_OP_AND){\
+    for(unsigned i = 0; i < TEMP_VAR.num_args(); ++i){\
+      auto const & curr_arg = TEMP_VAR.arg(i);\
+      if(func_kind(curr_arg) == Z3_OP_EQ\
+          && rhs(curr_arg).num_args() == 0)\
+      NEW.push_back(rhs(curr_arg) == lhs(curr_arg));\
+      else\
+      NEW.push_back(curr_arg);\
+    }\
+  }\
+  else { \
+    assert(TEMP_VAR.is_bool());\
+    if(func_kind(TEMP_VAR) == Z3_OP_EQ\
+        && rhs(TEMP_VAR).num_args() == 0)\
+    NEW.push_back(rhs(TEMP_VAR) == lhs(TEMP_VAR));\
     else\
-    NEW.push_back(curr_arg);\
+    NEW.push_back(TEMP_VAR);\
   }
 
 #define FLATTEN_PREDICATE(NUM_CONJS_INPUT, CONJUNCTION, SIDE)\

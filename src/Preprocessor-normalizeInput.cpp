@@ -49,7 +49,8 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
       case 0:
         if(e.is_array())
           return sig.ctx.constant(func_name(e).c_str(), 
-              sig.getArraySortBySort(e.get_sort().array_range()));
+              sig.getArraySortBySort(
+                e.get_sort().array_range()));
         return e;
       case 1:
         if(func_name(e).find("length") != std::string::npos){

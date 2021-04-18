@@ -2,13 +2,13 @@
 (declare-fun b () Int)
 
 ; Part A
-(assert (and 
-(distinct a b) 
-))
+(assert 
+(distinct a b)
+)
 
 ; Part B
-(assert (and 
+(assert 
 (= a b)
-))
+)
 
 (check-sat)
