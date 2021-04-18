@@ -9,3 +9,4 @@ output/*.smt2
 renamed_AXDInterpolant
 sessions/*
 tests/benchmark/bin/benchmark
+tests/benchmark/.clangd/*
