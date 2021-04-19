@@ -127,6 +127,7 @@ void AXDInterpolant::loop(){
     unsigned part_a_dim = part_a.diff_map.size_of_entry(common_pair),
              part_b_dim = part_b.diff_map.size_of_entry(common_pair),
              min_dim = std::min(part_a_dim, part_b_dim);
+
     auto const & _new_index = fresh_index_constant();
     part_a.updateSaturation(common_pair, _new_index, min_dim);
     part_b.updateSaturation(common_pair, _new_index, min_dim);

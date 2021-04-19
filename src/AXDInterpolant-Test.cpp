@@ -40,19 +40,8 @@ bool AXDInterpolant::testOutput(
       && z3::mk_and(interpolant));
 #endif
 
-  std::cout << ">>>>>Showing input_part_a \n"
-    << input_part_a << std::endl;
-  std::cout << ">>>>>Showing input_part_b \n"
-    << input_part_b << std::endl;
-  std::cout << ">>>>>Showing interpolant \n"
-    << interpolant << std::endl;
-  std::cout << ">>>>>Showing assertions in test1 \n" 
-    << test1.assertions() << std::endl;
-  std::cout << ">>>>>Showing assertions in test2 \n" 
-    << test2.assertions() << std::endl;
-  
   if(test1.check() == z3::unsat){
-    std::cout << "Done with A-part testing - PASSED" << std::endl;
+    //std::cout << "Done with A-part testing - PASSED" << std::endl;
     return test2.check() == z3::unsat;
   }
 
@@ -104,13 +93,14 @@ void AXDInterpolant::testOutputDiffLifting(
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
     auto const & diff_seq = diff_entry.second;
-    unsigned diff_iteration = 1;
+    unsigned diff_iteration = 0;
     for(auto const & k_ : diff_seq){
-      std::cout << ">>>>Hmm1 " << k_ << std::endl;
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
-        std::cout << ">>>Hmm2 " << (k_ == input.diff_map.lift_diff_k(diff_iteration, diff_a, diff_b)) << std::endl;
-        //s.add(k_ == sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b));
-        s.add(k_ == input.diff_map.lift_diff_k(diff_iteration, diff_a, diff_b));
+        //s.add(
+        //k_ == sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b));
+        s.add(
+            k_ 
+            == input.diff_map.lift_diff_k(diff_iteration, diff_a, diff_b));
         diff_iteration++;
       }
     }
