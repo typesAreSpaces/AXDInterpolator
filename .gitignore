@@ -1,3 +1,5 @@
+.DS_Store
+dependencies/.DS_Store
 .clangd/*
 *.o
 bin/mathsat
