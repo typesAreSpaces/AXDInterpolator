@@ -5,8 +5,6 @@
   z3::expr_vector _part_b_vector(sig.ctx); \
   AB_VectorsSetup(_part_a_vector, part_a); \
   AB_VectorsSetup(_part_b_vector, part_b); \
-  z3::expr_vector part_a_vector(sig.ctx); \
-  z3::expr_vector part_b_vector(sig.ctx); \
   if(testOutput(PARSED_FROM_SOLVER_INTERPOLANT.assertions(), \
         _part_a_vector, _part_b_vector)) \
         state_output = fine; \
