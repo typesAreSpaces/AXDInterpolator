@@ -37,9 +37,6 @@ AXDInterpolant::AXDInterpolant(
   std::cout << part_a << std::endl;
   std::cout << "Input Part B" << std::endl;
   std::cout << part_b << std::endl;
-
-  int stop;
-  std::cin >> stop;
 #endif
 
   m_out
