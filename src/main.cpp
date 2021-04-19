@@ -5,8 +5,6 @@
 #include <string>
 #include <fstream>
 
-#define EXTERNAL_SUCCESS_FILE 0
-
 inline bool exists_file (const std::string& name) {
   struct stat buffer;   
   return (stat (name.c_str(), &buffer) == 0); 

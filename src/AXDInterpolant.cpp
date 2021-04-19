@@ -198,7 +198,11 @@ std::ostream & operator << (std::ostream & os,
         break;
       case AXDInterpolant::fine:
         os 
-          << "State Output: valid" 
+#if _TEST_OUTPUT_ORIGINAL_THY_
+          << "State Output: valid in the original theory" 
+#else
+          << "State Output: valid in the reduced theory" 
+#endif
           << std::endl;
         break;
       case AXDInterpolant::notfine:
