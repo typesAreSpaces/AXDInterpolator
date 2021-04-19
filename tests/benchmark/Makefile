@@ -21,6 +21,8 @@ DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
+FILE_TEST=/home/jose/relax-1.c_valid-memsafety.prp.smt2
+
 all: main
 
 # --------------------------------------------------------
@@ -37,7 +39,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 # ------------------------------------------
 #  Rules to test a single or many smt2 files
 main: ./bin/benchmark
-	./bin/benchmark /home/jose/relax-1.c_valid-memsafety.prp.smt2
+	./bin/benchmark $(FILE_TEST)
 # ------------------------------------------
 
 # ----------------------

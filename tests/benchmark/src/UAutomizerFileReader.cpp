@@ -30,9 +30,8 @@ void UAutomizerFileReader::action(){
   std::ofstream axdinterpolator_file(file_for_implementation.c_str());
 
   for(auto const & x : stack)
-    smt_file  << x << std::endl;
+    smt_file << x << std::endl;
   smt_file << current_frame << std::endl;
-
   smt_file.close();
 
   z3::context ctx;
@@ -41,37 +40,35 @@ void UAutomizerFileReader::action(){
 
   switch(input_parser.check()){
     case z3::unsat:
-
       //TODO: 
-      // extract the assertions 
-      // and make two
-      
-      std::cout << ">>>>>Current assertions" << std::endl;
-      std::cout << input_parser.assertions() << std::endl;
-      
-      axdinterpolator_file << input_parser.to_smt2_decls_only();
-      axdinterpolator_file 
-        << "(assert "
-        << z3::mk_and(input_parser.assertions())
-        << ")\n";
-      axdinterpolator_file 
-        << "(assert false)\n";
-      axdinterpolator_file 
-        << "(check-sat)\n";
-      axdinterpolator_file.close();
+      // Extract the assertions and make a non-trivial
+      // splitting, i.e. there show be at least a common
+      // symbol between the two formulas in the splitting
+      {
+        z3::expr_vector curr_assertions = input_parser.assertions();
 
-      system((
-            "pushd ./../../;"
-            "./bin/axd_interpolator QF_TO ./tests/benchmark/" + file_for_implementation + " 1 1000;" 
-            "popd"
-            ).c_str());
-      break;
+        axdinterpolator_file << input_parser.to_smt2_decls_only();
+        axdinterpolator_file 
+          << "(assert "
+          << z3::mk_and(input_parser.assertions())
+          << ")\n";
+        axdinterpolator_file 
+          << "(assert false)\n";
+        axdinterpolator_file 
+          << "(check-sat)\n";
+        axdinterpolator_file.close();
+
+        system((
+              "pushd ./../../ > /dev/null;"
+              "./bin/axd_interpolator QF_TO ./tests/benchmark/" 
+              + file_for_implementation + " 1 1000;" 
+              "popd > /dev/null;"
+              ).c_str());
+        break;
+      }
     default:
       break;
   }
-
-  //int stop;
-  //std::cin >> stop;
 
   system(("rm -rf " + temp_file).c_str());
   system(("rm -rf " + file_for_implementation).c_str());
