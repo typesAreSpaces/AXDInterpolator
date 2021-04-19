@@ -126,7 +126,6 @@ class StandardInput {
   };
 
   AXDSignature const & sig;
-  unsigned             s_fresh_index;
   DiffMap              diff_map;
   WriteVector          write_vector;
   InstantiatedTerms    instantiated_terms;
@@ -148,8 +147,7 @@ class StandardInput {
       AXDSignature const &,
       z3::expr_vector const &, 
       z3::expr_vector &,
-      Preprocessor::ArrayVars const &,
-      unsigned);
+      Preprocessor::ArrayVars const &);
 
   void initSaturation(); 
   void updateSaturation(
@@ -160,8 +158,6 @@ class StandardInput {
   void instantiate(z3::solver &, z3::expr &) const;
   void instantiate(std::ostream &, z3::expr &) const;
   void instantiate(z3::expr_vector &, z3::expr &) const;
-
-  unsigned get_fresh_index() const;
 
   friend std::ostream & operator << (std::ostream &, 
       StandardInput const &);
