@@ -39,9 +39,20 @@ bool AXDInterpolant::testOutput(
       mk_and(part_b_vector) 
       && z3::mk_and(interpolant));
 #endif
+
+  std::cout << ">>>>>Showing input_part_a \n"
+    << input_part_a << std::endl;
+  std::cout << ">>>>>Showing input_part_b \n"
+    << input_part_b << std::endl;
+  std::cout << ">>>>>Showing interpolant \n"
+    << interpolant << std::endl;
+  std::cout << ">>>>>Showing assertions in test1 \n" 
+    << test1.assertions() << std::endl;
+  std::cout << ">>>>>Showing assertions in test2 \n" 
+    << test2.assertions() << std::endl;
   
   if(test1.check() == z3::unsat){
-    //std::cout << "Done with A-part testing - PASSED" << std::endl;
+    std::cout << "Done with A-part testing - PASSED" << std::endl;
     return test2.check() == z3::unsat;
   }
 

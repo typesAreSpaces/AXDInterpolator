@@ -24,9 +24,9 @@ bool UAutomizerFileReader::isEchoCmd(){
 }
 
 void UAutomizerFileReader::action(){
-  std::string file_name = "temp_smt2_" + current_file;
+  std::string temp_file = "temp_" + current_file;
   std::string file_for_implementation = "axdinterpolator_" + current_file;
-  std::ofstream smt_file(file_name.c_str());
+  std::ofstream smt_file(temp_file.c_str());
   std::ofstream axdinterpolator_file(file_for_implementation.c_str());
 
   for(auto const & x : stack)
@@ -37,7 +37,7 @@ void UAutomizerFileReader::action(){
 
   z3::context ctx;
   z3::solver input_parser(ctx);
-  input_parser.from_file(file_name.c_str());
+  input_parser.from_file(temp_file.c_str());
 
   switch(input_parser.check()){
     case z3::unsat:
@@ -46,8 +46,9 @@ void UAutomizerFileReader::action(){
       // extract the assertions 
       // and make two
       
+      std::cout << ">>>>>Current assertions" << std::endl;
       std::cout << input_parser.assertions() << std::endl;
-
+      
       axdinterpolator_file << input_parser.to_smt2_decls_only();
       axdinterpolator_file 
         << "(assert "
@@ -59,22 +60,21 @@ void UAutomizerFileReader::action(){
         << "(check-sat)\n";
       axdinterpolator_file.close();
 
-      {
-        int stop;
-        std::cin >> stop;
-      }
-
       system((
-            "pushd ./../../ "
-            "&& ./bin/axd_interpolator QF_TO ./tests/benchmark/" 
-            + file_for_implementation + " 1 1000 && popd"
+            "pushd ./../../;"
+            "./bin/axd_interpolator QF_TO ./tests/benchmark/" + file_for_implementation + " 1 1000;" 
+            "popd"
             ).c_str());
       break;
     default:
       break;
   }
 
-  system(("rm -rf " + file_name).c_str());
+  //int stop;
+  //std::cin >> stop;
+
+  system(("rm -rf " + temp_file).c_str());
+  system(("rm -rf " + file_for_implementation).c_str());
 }
 
 void UAutomizerFileReader::reset(){

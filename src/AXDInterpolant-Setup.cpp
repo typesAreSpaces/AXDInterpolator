@@ -20,7 +20,8 @@
     z3::expr axiom_11_2 =\
     z3::implies(\
         side_part.index_var != i,\
-        curr_rd(a, side_part.index_var) == curr_rd(b, side_part.index_var)\
+        curr_rd(a, side_part.index_var) \
+        == curr_rd(b, side_part.index_var)\
         );\
     side_part.instantiate(VAR, axiom_11_2);\
   }\

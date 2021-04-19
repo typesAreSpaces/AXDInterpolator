@@ -45,16 +45,16 @@ void AXDInterpolant::z3OutputFile(){
   z3_file << "(check-sat)" << std::endl;
   z3_file << "(get-interpolant part_a part_b)" << std::endl;
 
-  // Obtain reduced interpolant in temp.smt2
+  // Obtain reduced interpolant in <m_file_name>temp.smt2
   system((CURRENT_DIR 
         + "/bin/z3 " 
         + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_z3.smt2 > "
-        + OUTPUT_DIR + "/temp.smt2").c_str());
+        + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
   // Setup *_reduced_interpolant_z3.smt2 file
   // to parse reduced interpolant
-  std::ifstream result(OUTPUT_DIR + "/temp.smt2");
+  std::ifstream result(OUTPUT_DIR + "/" + m_file_name + "temp.smt2");
   std::string line(""), interpolant_from_file("");
   // We consume two lines because
   // z3 outputs "check-sat" followed
@@ -72,7 +72,8 @@ void AXDInterpolant::z3OutputFile(){
   // includes an additional parenthesis
   interpolant_from_file += ")\n";
   interpolant_from_file += "(check-sat)\n";
-  system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
+  system(("rm -rf " 
+        + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
   z3::solver z3_interpolant_parser(sig.ctx);
@@ -119,16 +120,16 @@ void AXDInterpolant::mathsatOutputFile(){
   mathsat_file << "(get-interpolant (part_a))" << std::endl;
   mathsat_file << "(exit)" << std::endl;
 
-  // Obtain reduced interpolant in temp.smt2
+  // Obtain reduced interpolant in <m_file_name>temp.smt2
   system((CURRENT_DIR 
         + "/bin/mathsat " 
         + OUTPUT_DIR  + "/" + m_file_name 
         + "_reduced_mathsat.smt2 > " 
-        + OUTPUT_DIR + "/temp.smt2").c_str());
+        + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
   // Setup *_reduced_interpolant_mathsat.smt2 file
   // to parse reduced interpolant
-  std::ifstream result(OUTPUT_DIR + "/temp.smt2");
+  std::ifstream result(OUTPUT_DIR + "/" + m_file_name + "temp.smt2");
   std::string line(""), interpolant_from_file("");
   // We consume one line because
   // mathsat outputs "check-sat" followed
@@ -140,7 +141,8 @@ void AXDInterpolant::mathsatOutputFile(){
     interpolant_from_file += line + "\n";
   interpolant_from_file += ")\n";
   interpolant_from_file += "(check-sat)\n";
-  system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
+  system(("rm -rf " 
+        + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
   z3::solver mathsat_interpolant_parser(sig.ctx);
@@ -187,16 +189,16 @@ void AXDInterpolant::smtInterpolOutputFile(){
   smtinterpol_file << "(check-sat)" << std::endl;
   smtinterpol_file << "(get-interpolants part_a part_b)" << std::endl;
 
-  // Obtain reduced interpolant in temp.smt2
+  // Obtain reduced interpolant in <m_file_name>temp.smt2
   system(("java -jar " + CURRENT_DIR 
         + "/bin/smtinterpol-2.5-663-gf15aa217.jar -w " 
         + OUTPUT_DIR + "/" + m_file_name 
         + "_reduced_smtinterpol.smt2 > "
-        + OUTPUT_DIR + "/temp.smt2").c_str());
+        + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
   // Setup *_reduced_interpolant_smtinterpol.smt2 file
   // to parse reduced interpolant
-  std::ifstream result(OUTPUT_DIR + "/temp.smt2");
+  std::ifstream result(OUTPUT_DIR + "/" + m_file_name + "temp.smt2");
   std::string line(""), interpolant_from_file("");
   // We consume one line because
   // mathsat outputs "check-sat" followed
@@ -222,7 +224,8 @@ void AXDInterpolant::smtInterpolOutputFile(){
   // includes an additional parenthesis
   interpolant_from_file += ")\n";
   interpolant_from_file += "(check-sat)\n";
-  system(("rm -rf " + OUTPUT_DIR + "/temp.smt2").c_str());
+  system(("rm -rf " 
+        + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
   // Lift interpolant to MaxDiff(Index Theory)
   z3::solver smtinterpol_interpolant_parser(sig.ctx);
