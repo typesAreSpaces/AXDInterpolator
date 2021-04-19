@@ -39,10 +39,10 @@ THEORY=QF_TO
 #FILE_TEST=$(TEST_DIR)/simple4.smt2
 #FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
 #FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_8.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
+FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
-FILE_TEST=$(TEST_DIR)/length_example.smt2
+#FILE_TEST=$(TEST_DIR)/length_example.smt2
 
 all: tests/one
 #all: tests/all
