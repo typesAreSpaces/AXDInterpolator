@@ -44,6 +44,12 @@ int main(int argc, char * argv[]){
 
         auto const & input_formula
           = input_parser.assertions();
+        if(input_formula.size() == 0){
+          std::cout 
+            << "No assertions in input file" 
+            << std::endl;
+          return 0;
+        }
         assert(input_formula.size() == 2);
         z3::goal goal_a(ctx);
         z3::goal goal_b(ctx);
