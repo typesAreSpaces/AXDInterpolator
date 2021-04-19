@@ -16,6 +16,7 @@ int main(int argc, char * argv[]){
   //z3::set_param("proof", true);
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
+  system("rm -rf ok.txt");
 
   switch(argc){
     case 5:
@@ -82,6 +83,7 @@ int main(int argc, char * argv[]){
               std::cout << axd << std::endl;
             }
           }
+          system("touch ok.txt");
           return 0;
         }
         catch(char const * e){
