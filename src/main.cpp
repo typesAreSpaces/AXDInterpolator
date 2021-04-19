@@ -5,6 +5,8 @@
 #include <string>
 #include <fstream>
 
+#define EXTERNAL_SUCCESS_FILE 0
+
 inline bool exists_file (const std::string& name) {
   struct stat buffer;   
   return (stat (name.c_str(), &buffer) == 0); 
@@ -16,7 +18,9 @@ int main(int argc, char * argv[]){
   //z3::set_param("proof", true);
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
+#if EXTERNAL_SUCCESS_FILE
   system("rm -rf ok.txt");
+#endif
 
   switch(argc){
     case 5:
@@ -89,7 +93,9 @@ int main(int argc, char * argv[]){
               std::cout << axd << std::endl;
             }
           }
+#if EXTERNAL_SUCCESS_FILE
           system("touch ok.txt");
+#endif
           return 0;
         }
         catch(char const * e){
