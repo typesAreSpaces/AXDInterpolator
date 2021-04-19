@@ -38,37 +38,40 @@ void UAutomizerFileReader::action(){
   z3::solver input_parser(ctx);
   input_parser.from_file(temp_file.c_str());
 
-  switch(input_parser.check()){
-    case z3::unsat:
-      //TODO: 
-      // Extract the assertions and make a non-trivial
-      // splitting, i.e. there show be at least a common
-      // symbol between the two formulas in the splitting
-      {
-        z3::expr_vector curr_assertions = input_parser.assertions();
+  if(input_parser.check() == z3::unsat){
+    //TODO: 
+    // Extract the assertions and make a non-trivial
+    // splitting, i.e. there show be at least a common
+    // symbol between the two formulas in the splitting
 
-        axdinterpolator_file << input_parser.to_smt2_decls_only();
-        axdinterpolator_file 
-          << "(assert "
-          << z3::mk_and(input_parser.assertions())
-          << ")\n";
-        axdinterpolator_file 
-          << "(assert false)\n";
-        axdinterpolator_file 
-          << "(check-sat)\n";
-        axdinterpolator_file.close();
+    z3::expr_vector curr_assertions = input_parser.assertions();
+    std::cout << curr_assertions << std::endl;
 
-        system((
-              "pushd ./../../ > /dev/null;"
-              "./bin/axd_interpolator QF_TO ./tests/benchmark/" 
-              + file_for_implementation + " 1 1000;" 
-              "popd > /dev/null;"
-              ).c_str());
-        break;
-      }
-    default:
-      break;
+    axdinterpolator_file 
+      << input_parser.to_smt2_decls_only();
+    axdinterpolator_file 
+      << "(assert "
+      << z3::mk_and(input_parser.assertions())
+      << ")\n";
+    axdinterpolator_file 
+      << "(assert false)\n";
+    axdinterpolator_file 
+      << "(check-sat)\n";
+    axdinterpolator_file.close();
+
+    system((
+          "pushd ./../../ > /dev/null;"
+          "./bin/axd_interpolator QF_TO ./tests/benchmark/" 
+          + file_for_implementation + " 1 1000;" 
+          "popd > /dev/null;"
+          ).c_str());
   }
+
+  //int ret = system("[ -f /home/jose/Documents/GithubProjects/AXDInterpolator/ok.txt ]");
+  //if(WEXITSTATUS(ret) != 0){
+    //system(("mv temp_" + current_file + " ouch1.smt2").c_str());
+    //system(("mv axdinterpolator_" + current_file + " ouch2.smt2").c_str());
+  //}
 
   system(("rm -rf " + temp_file).c_str());
   system(("rm -rf " + file_for_implementation).c_str());
