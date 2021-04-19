@@ -22,7 +22,7 @@ z3::expr Preprocessor::normalizeInputDefault(z3::expr const & e){
 
         if(f_name.range().is_array()){
           z3::func_decl lifted_f_name = sig.ctx.function(
-              f_name.to_string().c_str(), 
+              func_name(e).c_str(),
               sort_args, 
               sig.getArraySortBySort(f_name.range().array_range()));
 
@@ -30,7 +30,7 @@ z3::expr Preprocessor::normalizeInputDefault(z3::expr const & e){
         }
         else {
           z3::func_decl lifted_f_name = sig.ctx.function(
-              f_name.to_string().c_str(), 
+              func_name(e).c_str(),
               sort_args, 
               f_name.range());
 
