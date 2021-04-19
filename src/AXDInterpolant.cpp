@@ -13,15 +13,12 @@ AXDInterpolant::AXDInterpolant(
       sig,
       input_part_a,
       part_a_index_vars, 
-      part_a_array_vars, 
-      fresh_num
-      ),
+      part_a_array_vars),
   part_b(
       sig,
       input_part_b,
       part_b_index_vars, 
-      part_b_array_vars,
-      part_a.get_fresh_index()),
+      part_b_array_vars),
   m_file_name(std::string(file_name)),
   num_attempts(allowed_attempts),
   is_interpolant_computed(false), is_unsat(false),

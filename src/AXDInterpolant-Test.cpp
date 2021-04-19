@@ -97,18 +97,22 @@ void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
   return;
 }
 
-void AXDInterpolant::testOutputDiffLifting(z3::solver & s, StandardInput const & input){
+void AXDInterpolant::testOutputDiffLifting(
+    z3::solver & s, StandardInput const & input){
   // Adding equations of new symbols
   for(auto const & diff_entry : input.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;
     auto const & diff_b = diff_entry.first.second;
     auto const & diff_seq = diff_entry.second;
     unsigned diff_iteration = 1;
-    for(auto const & k_ : diff_seq)
+    for(auto const & k_ : diff_seq){
+      std::cout << ">>>>Hmm1 " << k_ << std::endl;
       if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
+        std::cout << ">>>Hmm2 " << (k_ == input.diff_map.lift_diff_k(diff_iteration, diff_a, diff_b)) << std::endl;
         //s.add(k_ == sig.diff_k(sig.ctx.int_val(diff_iteration), diff_a, diff_b));
         s.add(k_ == input.diff_map.lift_diff_k(diff_iteration, diff_a, diff_b));
         diff_iteration++;
       }
+    }
   }
 }

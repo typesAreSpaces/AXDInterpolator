@@ -4,10 +4,8 @@ StandardInput::StandardInput(
     AXDSignature const & sig,
     z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
-    Preprocessor::ArrayVars const & array_var_ids,
-    unsigned _fresh_index) :
+    Preprocessor::ArrayVars const & array_var_ids) :
   sig(sig),
-  s_fresh_index(_fresh_index),
 
   diff_map(array_var_ids, sig),
   write_vector(),
@@ -243,10 +241,6 @@ void StandardInput::updateSaturation(
 
   // [18] predicates are processed in 
   // AXDInterpolant::SmtSolverSetup(z3::solver &);
-}
-
-unsigned StandardInput::get_fresh_index() const {
-  return s_fresh_index;
 }
 
 std::ostream & operator << (std::ostream & os, StandardInput const & si){
