@@ -8,7 +8,6 @@ AXDInterpolant::AXDInterpolant(
     char const * file_name,
     unsigned allowed_attempts) : 
   Preprocessor(sig, _input_part_a, _input_part_b),
-  solver(sig.ctx), 
   part_a(
       sig,
       input_part_a,
@@ -22,8 +21,11 @@ AXDInterpolant::AXDInterpolant(
   m_file_name(std::string(file_name)),
   num_attempts(allowed_attempts),
   is_interpolant_computed(false), is_unsat(false),
+  state_output(undefined),
   current_interpolant(sig.ctx.bool_val(true)),
-  state_output(undefined)
+  solver(sig.ctx, 
+      sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_LIA"
+      )
 {
 #if _DEBUG_AXD_CONSTRUCTOR_
   std::cout << "After Processing" << std::endl;
