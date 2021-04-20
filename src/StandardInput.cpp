@@ -1,4 +1,5 @@
 #include "StandardInput.h"
+#include "z3++.h"
 
 StandardInput::StandardInput(
     AXDSignature const & sig,
@@ -19,11 +20,9 @@ StandardInput::StandardInput(
   axiom_8(generateAxiom8(array_var_ids)), 
   axiom_9(generateAxiom9())
 {
-
   // Split input into part_1 and part_2
   // following the rules for "separated pairs".
   for(auto const & current_arg : conjunction){
-        
     switch(func_kind(current_arg)){
       case Z3_OP_TRUE:
       case Z3_OP_FALSE:
@@ -51,7 +50,7 @@ StandardInput::StandardInput(
               auto const & curr_diff = sig.getDiffBySort(_lhs.get_sort());
               auto const & curr_rd = sig.getRdBySort(_lhs.get_sort());
               part_1.push_back(0 == curr_diff(_lhs, _rhs));
-              part_2.push_back(curr_rd(_lhs, 0) == curr_diff(_rhs, 0));
+              part_2.push_back(curr_rd(_lhs, 0) == curr_rd(_rhs, 0));
               part_2.push_back(current_arg);
             }
             // Equations of the form i = diff(a, b), 
