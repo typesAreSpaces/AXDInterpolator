@@ -2,12 +2,12 @@
 #define _AXD_SIG_
 
 #include <ios>
-#define FRESH_ARRAY_PREFIX   "fresh_array_"
-#define FRESH_ELEMENT_PREFIX "fresh_element_"
-#define FRESH_INDEX_PREFIX   "fresh_index_"
-#define FRESH_COMMON_PREFIX  "fresh_"
-#define DETECT_THEORY        1
-#define EXTERNAL_SUCCESS_FILE 0
+#define FRESH_ARRAY_PREFIX    "fresh_array_"
+#define FRESH_ELEMENT_PREFIX  "fresh_element_"
+#define FRESH_INDEX_PREFIX    "fresh_index_"
+#define FRESH_COMMON_PREFIX   "fresh_"
+#define DETECT_THEORY         1
+#define EXTERNAL_SUCCESS_FILE 1
 
 //#define m_out std::cerr
 #define m_out std::cout

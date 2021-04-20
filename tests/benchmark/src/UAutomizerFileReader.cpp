@@ -26,7 +26,12 @@ bool UAutomizerFileReader::isEchoCmd(){
 void UAutomizerFileReader::action(){
   std::string temp_file = "temp_" + current_file;
   std::string file_for_implementation = "axdinterpolator_" + current_file;
-  std::ofstream smt_file(temp_file.c_str());
+  // This std::ostream writes the top frame of formulas
+  // in the stack in order to check for satisfiability
+  std::ofstream smt_file            (temp_file.c_str());
+  // If formulas in the above frame are unsatisfiable, then
+  // we generate a smtlib2 file for axd_interpolator
+  // to consume
   std::ofstream axdinterpolator_file(file_for_implementation.c_str());
 
   for(auto const & x : stack)
@@ -69,8 +74,11 @@ void UAutomizerFileReader::action(){
 
   //int ret = system("[ -f /home/jose/Documents/GithubProjects/AXDInterpolator/ok.txt ]");
   //if(WEXITSTATUS(ret) != 0){
-    //system(("mv temp_" + current_file + " ouch1.smt2").c_str());
-    //system(("mv axdinterpolator_" + current_file + " ouch2.smt2").c_str());
+  //std::cout << "You will stop. Please input an integer to continue..." << std::endl;
+  //int stop;
+  //std::cin >> stop;
+  //system(("mv temp_" + current_file + " ouch1.smt2").c_str());
+  //system(("mv axdinterpolator_" + current_file + " ouch2.smt2").c_str());
   //}
 
   system(("rm -rf " + temp_file).c_str());
