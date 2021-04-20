@@ -20,7 +20,9 @@ AXDInterpolant::AXDInterpolant(
       part_b_array_vars),
   m_file_name(std::string(file_name)),
   num_attempts(allowed_attempts),
-  is_interpolant_computed(false), is_unsat(false),
+  is_interpolant_computed(false), 
+  is_unsat(false), 
+  is_valid_result(false),
   state_output(undefined),
   current_interpolant(sig.ctx.bool_val(true)),
   solver(sig.ctx, 
@@ -188,6 +190,11 @@ std::ostream & operator << (std::ostream & os,
   if(!axd.is_unsat)
     return os 
       << "Input formula is satisfiable.";
+  if(!axd.is_valid_result)
+    return os 
+      << "Input formula is unsatisfiable.\n"
+      "Solver used wasn't able to compute "
+      "an interpolant in the specified theory";
   if(axd.is_interpolant_computed){
     os 
       << "Input formula is unsatisfiable." 

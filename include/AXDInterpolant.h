@@ -53,7 +53,8 @@ class AXDInterpolant : public Preprocessor {
   std::string          m_file_name;
   unsigned             num_attempts;
   bool                 is_interpolant_computed,
-                       is_unsat;
+                       is_unsat,
+                       is_valid_result;
   StateOutput          state_output;
   z3::expr             current_interpolant;
   z3::solver           solver;

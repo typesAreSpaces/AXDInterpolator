@@ -32,12 +32,19 @@ void AXDInterpolant::z3OutputFile(){
     << ( (sig.is_QF_TO() ||
           sig.is_QF_IDL()) ? 
         "QF_UFIDL" : "QF_UFLIA") << ")" << std::endl;
+        //"QF_UFLIA" : "QF_UFLIA") << ")" << std::endl;
 
   z3_file << solver.to_smt2_decls_only();
   z3_file << "(assert (! (and" << std::endl;
+  // This true assertion prevents 
+  // an unary application of and
+  z3_file << "true" << std::endl;
   SmtSolverOutStreamSetup(z3_file, part_a);
   z3_file << ") :named part_a))" << std::endl;
   z3_file << "(assert (! (and" << std::endl;
+  // This true assertion prevents 
+  // an unary application of and
+  z3_file << "true" << std::endl;
   SmtSolverOutStreamSetup(z3_file, part_b);
   z3_file << ") :named part_b))" << std::endl;
   z3_file << "(check-sat)" << std::endl;
@@ -63,8 +70,10 @@ void AXDInterpolant::z3OutputFile(){
 
   interpolant_from_file += solver.to_smt2_decls_only();
   interpolant_from_file += "(assert (and\n";
-  while(std::getline(result, line))
+  while(std::getline(result, line)){
+    is_valid_result = true;
     interpolant_from_file += line + "\n";
+  }
   // Only one parenthesis is needed to close
   // the above since the content of (interpolant *)
   // includes an additional parenthesis
@@ -73,17 +82,19 @@ void AXDInterpolant::z3OutputFile(){
   system(("rm -rf " 
         + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
-  // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver z3_interpolant_parser(sig.ctx);
-  z3_interpolant_parser.from_string(interpolant_from_file.c_str());
+  if(is_valid_result){
+    // Lift interpolant to MaxDiff(Index Theory)
+    z3::solver z3_interpolant_parser(sig.ctx);
+    z3_interpolant_parser.from_string(interpolant_from_file.c_str());
 
-  is_interpolant_computed = true;
-  current_interpolant = liftInterpolant(
-      z3_interpolant_parser.assertions());
+    is_interpolant_computed = true;
+    current_interpolant = liftInterpolant(
+        z3_interpolant_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(z3_interpolant_parser);
+    TEST_OUTPUT_CODE(z3_interpolant_parser);
 #endif
+  }
 }
 
 void AXDInterpolant::mathsatOutputFile(){
@@ -109,9 +120,15 @@ void AXDInterpolant::mathsatOutputFile(){
 
   mathsat_file << solver.to_smt2_decls_only();
   mathsat_file << "(assert (! (and" << std::endl;
+  // This true assertion prevents 
+  // an unary application of and
+  mathsat_file << "true" << std::endl;
   SmtSolverOutStreamSetup(mathsat_file, part_a);
   mathsat_file << ") :interpolation-group part_a))" << std::endl;
   mathsat_file << "(assert (! (and " << std::endl;
+  // This true assertion prevents 
+  // an unary application of and
+  mathsat_file << "true" << std::endl;
   SmtSolverOutStreamSetup(mathsat_file, part_b);
   mathsat_file << ") :interpolation-group part_b))" << std::endl;
   mathsat_file << "(check-sat)" << std::endl;
@@ -135,24 +152,28 @@ void AXDInterpolant::mathsatOutputFile(){
   std::getline(result, line);
   interpolant_from_file += solver.to_smt2_decls_only();
   interpolant_from_file += "(assert \n";
-  while(std::getline(result, line))
+  while(std::getline(result, line)){
+    is_valid_result = true;
     interpolant_from_file += line + "\n";
+  }
   interpolant_from_file += ")\n";
   interpolant_from_file += "(check-sat)\n";
   system(("rm -rf " 
         + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
-  // Lift interpolant to MaxDiff(Index Theory)
-  z3::solver mathsat_interpolant_parser(sig.ctx);
-  mathsat_interpolant_parser.from_string(interpolant_from_file.c_str());
+  if(is_valid_result){
+    // Lift interpolant to MaxDiff(Index Theory)
+    z3::solver mathsat_interpolant_parser(sig.ctx);
+    mathsat_interpolant_parser.from_string(interpolant_from_file.c_str());
 
-  is_interpolant_computed = true;
-  current_interpolant = liftInterpolant(
-      mathsat_interpolant_parser.assertions());
+    is_interpolant_computed = true;
+    current_interpolant = liftInterpolant(
+        mathsat_interpolant_parser.assertions());
 
 #if _TEST_OUTPUT_
-  TEST_OUTPUT_CODE(mathsat_interpolant_parser);
+    TEST_OUTPUT_CODE(mathsat_interpolant_parser);
 #endif
+  }
 }
 
 void AXDInterpolant::smtInterpolOutputFile(){
@@ -179,9 +200,15 @@ void AXDInterpolant::smtInterpolOutputFile(){
 
   smtinterpol_file << solver.to_smt2_decls_only();
   smtinterpol_file << "(assert (! (and" << std::endl;
+  // This true assertion prevents 
+  // an unary application of and
+  smtinterpol_file << "true" << std::endl;
   SmtSolverOutStreamSetup(smtinterpol_file, part_a);
   smtinterpol_file << ") :named part_a))" << std::endl;
   smtinterpol_file << "(assert (! (and" << std::endl;
+  // This true assertion prevents 
+  // an unary application of and
+  smtinterpol_file << "true" << std::endl;
   SmtSolverOutStreamSetup(smtinterpol_file, part_b);
   smtinterpol_file << ") :named part_b))" << std::endl;
   smtinterpol_file << "(check-sat)" << std::endl;
@@ -212,19 +239,19 @@ void AXDInterpolant::smtInterpolOutputFile(){
   // respectively
   std::getline(result, line);
   interpolant_from_file += line.erase(0, 1) + "\n";
-  while(std::getline(result, line))
-    interpolant_from_file += line + "\n";
   // The following removes the last parenthesis 
   // and the extra '\n'
   interpolant_from_file.erase(interpolant_from_file.size() - 2, 2);
+  is_valid_result = interpolant_from_file.size() > 0;
   // Only one parenthesis is needed to close
   // the above since the content of (interpolant *)
   // includes an additional parenthesis
   interpolant_from_file += ")\n";
   interpolant_from_file += "(check-sat)\n";
-  system(("rm -rf " 
-        + OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
+  //system(("rm -rf " 
+  //+ OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 
+  if(is_valid_result){
   // Lift interpolant to MaxDiff(Index Theory)
   z3::solver smtinterpol_interpolant_parser(sig.ctx);
   smtinterpol_interpolant_parser.from_string(interpolant_from_file.c_str());
@@ -236,4 +263,5 @@ void AXDInterpolant::smtInterpolOutputFile(){
 #if _TEST_OUTPUT_
   TEST_OUTPUT_CODE(smtinterpol_interpolant_parser);
 #endif
+  }
 }
