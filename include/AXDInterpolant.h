@@ -49,14 +49,14 @@ class AXDInterpolant : public Preprocessor {
 
   enum StateOutput { undefined, fine, notfine };
 
-  z3::solver           solver;
   StandardInput        part_a, part_b;
   std::string          m_file_name;
   unsigned             num_attempts;
   bool                 is_interpolant_computed,
                        is_unsat;
-  z3::expr             current_interpolant;
   StateOutput          state_output;
+  z3::expr             current_interpolant;
+  z3::solver           solver;
 
   void loop();
 
