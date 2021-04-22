@@ -12,13 +12,13 @@ class UAutomizerFileReader {
 
   std::string line, current_frame, current_file;
   int nesting_level, max_nesting_level;
-  std::vector<std::string> stack;
+  std::vector<std::string> stack_of_frames;
 
-  bool isPushCmd();
-  bool isPopCmd();
-  bool isEchoCmd(); 
+  bool isPushCmd() const;
+  bool isPopCmd() const;
+  bool isEchoCmd() const; 
 
-  void action(); 
+  void action() const; 
   void reset(); 
 
   public:

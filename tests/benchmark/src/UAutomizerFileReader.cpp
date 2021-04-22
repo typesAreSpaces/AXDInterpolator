@@ -11,19 +11,19 @@ UAutomizerFileReader::UAutomizerFileReader() :
 {
 }
 
-bool UAutomizerFileReader::isPushCmd(){
+bool UAutomizerFileReader::isPushCmd() const {
   return line.find("push") != std::string::npos;
 }
 
-bool UAutomizerFileReader::isPopCmd(){
+bool UAutomizerFileReader::isPopCmd() const {
   return line.find("pop") != std::string::npos;
 }
 
-bool UAutomizerFileReader::isEchoCmd(){
+bool UAutomizerFileReader::isEchoCmd() const {
   return line.find("echo") != std::string::npos;
 }
 
-void UAutomizerFileReader::action(){
+void UAutomizerFileReader::action() const {
   std::string temp_file = "temp_" + current_file;
   std::string file_for_implementation = "axdinterpolator_" + current_file;
   // This std::ostream writes the top frame of formulas
