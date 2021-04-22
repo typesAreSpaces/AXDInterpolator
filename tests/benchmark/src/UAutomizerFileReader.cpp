@@ -44,21 +44,29 @@ void UAutomizerFileReader::action(){
   input_parser.from_file(temp_file.c_str());
 
   if(input_parser.check() == z3::unsat){
-    //TODO: 
-    // Extract the assertions and make a non-trivial
-    // splitting, i.e. there show be at least a common
-    // symbol between the two formulas in the splitting
-
     z3::expr_vector curr_assertions = input_parser.assertions();
+    z3::expr_vector part_a(ctx), part_b(ctx);
 
     // ---------------------------------------------------------------------
-    // TODO: this approach should be finer
-    // since UAtomizer sometimes produces a single
-    // assertion with many formulas inside
-    if(curr_assertions.size() < 2)
+    auto const & to_cnf_tactic = 
+      z3::tactic(ctx, "tseitin-cnf");
+
+    z3::goal goal_assertions(ctx);
+    goal_assertions.add(z3::mk_and(curr_assertions));
+    auto const & cnf_assertions = to_cnf_tactic(goal_assertions);
+
+    assert(cnf_assertions.size() == 1);
+    z3::expr const & curr_conjunction = cnf_assertions[0].as_expr();
+
+    unsigned half_cnf = curr_conjunction.num_args()/2;
+    for(unsigned i = 0; i < half_cnf; i++)
+      part_a.push_back(curr_conjunction.arg(i));
+    for(unsigned i = half_cnf; i < curr_conjunction.num_args(); i++)
+      part_b.push_back(curr_conjunction.arg(i));
+
+    if(part_a.size() == 0 || part_b.size() == 0)
       return;
-    
-    z3::expr_vector part_a(ctx), part_b(ctx);
+
     part_a.push_back(ctx.bool_val(true));
     part_b.push_back(ctx.bool_val(true));
     unsigned half_size = curr_assertions.size()/2;
