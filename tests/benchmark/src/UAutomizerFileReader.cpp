@@ -7,7 +7,7 @@ UAutomizerFileReader::UAutomizerFileReader() :
   current_file(""),
   nesting_level(0),
   max_nesting_level(0),
-  stack({}) 
+  stack_of_frames({}) 
 {
 }
 
@@ -27,14 +27,14 @@ void UAutomizerFileReader::action() const {
   std::string temp_file = "temp_" + current_file;
   std::string file_for_implementation = "axdinterpolator_" + current_file;
   // This std::ostream writes the top frame of formulas
-  // in the stack in order to check for satisfiability
+  // in the stack_of_frames in order to check for satisfiability
   std::ofstream smt_file            (temp_file.c_str());
   // If formulas in the above frame are unsatisfiable, then
   // we generate a smtlib2 file for axd_interpolator
   // to consume
   std::ofstream axdinterpolator_file(file_for_implementation.c_str());
 
-  for(auto const & x : stack)
+  for(auto const & x : stack_of_frames)
     smt_file << x << std::endl;
   smt_file << current_frame << std::endl;
   smt_file.close();
@@ -116,7 +116,7 @@ void UAutomizerFileReader::reset(){
   current_frame = "";
   nesting_level = 0;
   max_nesting_level = 0;
-  stack.clear();
+  stack_of_frames.clear();
 }
 
 void UAutomizerFileReader::process(char const * file_path){
@@ -130,14 +130,14 @@ void UAutomizerFileReader::process(char const * file_path){
 
     if(isPushCmd()){
       nesting_level++;
-      stack.push_back(current_frame);
+      stack_of_frames.push_back(current_frame);
       current_frame = "";
     }
     else if(isPopCmd()){
       nesting_level--;
       action();
-      current_frame = stack.back();
-      stack.pop_back();
+      current_frame = stack_of_frames.back();
+      stack_of_frames.pop_back();
     }
     else if(isEchoCmd())
       continue;
