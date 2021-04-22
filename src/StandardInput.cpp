@@ -193,7 +193,13 @@ void StandardInput::updateSaturation(
   unsigned old_dim = current_indices.size();
 
   instantiated_terms.add_var(_new_index);
-  ++instantiated_terms;
+
+  // TODO: implement/compare more heuristics
+  // to increase N_instantiation
+  //
+  // Heuristic for triggering N-instantiation
+  if(instantiated_terms.getNumOfNewIndex() % 1000 == 0)
+    ++instantiated_terms;
 
   // [11] predicates are processed in 
   // AXDInterpolant::SmtSolverSetup(z3::solver &);

@@ -127,6 +127,7 @@ class StandardInput {
         z3::expr_vector const &);
 
     AXDSignature::z3_expr_set const & getInstantiatedTerms() const;
+    unsigned                          getNumOfNewIndex() const;
     void operator++();
     void add_var(z3::expr const &);
   };

@@ -47,26 +47,24 @@ AXDSignature::z3_expr_set const & StandardInput::InstantiatedTerms::getInstantia
   return terms;
 }
 
+unsigned StandardInput::InstantiatedTerms::getNumOfNewIndex() const {
+  return num_of_new_index;
+}
+
 void StandardInput::InstantiatedTerms::operator++(){
-  // TODO: implement/compare more heuristics
-  // to increase N_instantiation
-  
-  // Heuristic for triggering N-instantiation
-  if(num_of_new_index % 1000 == 0){
-    num_of_instantiations++;
-    switch(sig.getTheoryName()){
-      case AXDSignature::QF_TO:
-        return;
-      case AXDSignature::QF_IDL:
-        instantiate_QF_IDL();
-        return;
-      case AXDSignature::QF_UTVPI:
-        instantiate_QF_UTVPI();
-        return;
-      case AXDSignature::QF_LIA:
-        instantiate_QF_LIA();
-        return;
-    }
+  num_of_instantiations++;
+  switch(sig.getTheoryName()){
+    case AXDSignature::QF_TO:
+      return;
+    case AXDSignature::QF_IDL:
+      instantiate_QF_IDL();
+      return;
+    case AXDSignature::QF_UTVPI:
+      instantiate_QF_UTVPI();
+      return;
+    case AXDSignature::QF_LIA:
+      instantiate_QF_LIA();
+      return;
   }
 }
 
@@ -81,7 +79,7 @@ void StandardInput::InstantiatedTerms::instantiate_QF_IDL(){
 }
 
 void StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
-   std::vector<z3::expr_vector*> 
+  std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds, &new_minus});
 
   UNARY_INSTANTIATION(term, new_succs, term + 1);
