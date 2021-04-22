@@ -110,14 +110,18 @@ void Preprocessor::flattenTerm(
     unsigned & current_conjs_in_input){
   if(term.num_args() > 0){
     switch(func_kind(term)){
-      case Z3_OP_ADD:
-      case Z3_OP_SUB:
       case Z3_OP_UMINUS:
 #if DETECT_THEORY
         if(sig.getTheoryName() < AXDSignature::QF_IDL)
           sig.setTheory(AXDSignature::QF_IDL);
 #endif
+      case Z3_OP_ADD:
+      case Z3_OP_SUB:
       case Z3_OP_MUL:
+      case Z3_OP_DIV:
+      case Z3_OP_IDIV:
+      case Z3_OP_REM:
+      case Z3_OP_MOD:
 #if DETECT_THEORY
         if(sig.getTheoryName() < AXDSignature::QF_LIA)
           sig.setTheory(AXDSignature::QF_LIA);
