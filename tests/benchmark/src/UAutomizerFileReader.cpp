@@ -50,16 +50,34 @@ void UAutomizerFileReader::action(){
     // symbol between the two formulas in the splitting
 
     z3::expr_vector curr_assertions = input_parser.assertions();
-    std::cout << curr_assertions << std::endl;
+
+    // ---------------------------------------------------------------------
+    // TODO: this approach should be finer
+    // since UAtomizer sometimes produces a single
+    // assertion with many formulas inside
+    if(curr_assertions.size() < 2)
+      return;
+    
+    z3::expr_vector part_a(ctx), part_b(ctx);
+    part_a.push_back(ctx.bool_val(true));
+    part_b.push_back(ctx.bool_val(true));
+    unsigned half_size = curr_assertions.size()/2;
+    for(unsigned i = 0; i < half_size; i++)
+      part_a.push_back(curr_assertions[i]);
+    for(unsigned i = half_size; i < curr_assertions.size(); i++)
+      part_b.push_back(curr_assertions[i]);
+    // ---------------------------------------------------------------------
 
     axdinterpolator_file 
       << input_parser.to_smt2_decls_only();
     axdinterpolator_file 
       << "(assert "
-      << z3::mk_and(input_parser.assertions())
+      << z3::mk_and(part_a)
       << ")\n";
     axdinterpolator_file 
-      << "(assert false)\n";
+      << "(assert "
+      << z3::mk_and(part_b)
+      << ")\n";
     axdinterpolator_file 
       << "(check-sat)\n";
     axdinterpolator_file.close();
