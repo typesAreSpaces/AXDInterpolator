@@ -50,8 +50,7 @@ AXDSignature::z3_expr_set const & StandardInput::InstantiatedTerms::getInstantia
 void StandardInput::InstantiatedTerms::operator++(){
   // TODO: implement/compare more heuristics
   // to increase N_instantiation
-  // TODO: more testing is needed
-  //
+  
   // Heuristic for triggering N-instantiation
   if(num_of_new_index % 1000 == 0){
     num_of_instantiations++;

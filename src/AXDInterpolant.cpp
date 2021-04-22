@@ -19,7 +19,7 @@ AXDInterpolant::AXDInterpolant(
       part_b_index_vars, 
       part_b_array_vars),
   m_file_name(std::string(file_name)),
-  num_attempts(allowed_attempts),
+  num_attempts(0), remaining_fuel(allowed_attempts),
   is_interpolant_computed(false), 
   is_unsat(false), 
   is_valid_result(false),
@@ -43,9 +43,7 @@ AXDInterpolant::AXDInterpolant(
   std::cout << part_b << std::endl;
 #endif
 
-  m_out
-    << "Solving file " << m_file_name 
-    << std::endl;
+  m_out << "Solving file " << m_file_name << std::endl;
   m_file_name = m_file_name
     .substr(0, m_file_name.find_last_of("."))
     .substr(m_file_name.find_last_of("\\/") + 1);
@@ -75,12 +73,9 @@ void AXDInterpolant::loop(){
     return;
   }
 
-#if _DEBUG_AXD_LOOP_
-  unsigned const constant_allowed_attempts = num_attempts;
-#endif
   CircularPairIterator search_common_pair(common_array_vars);
 
-  while(--num_attempts){
+  while(num_attempts++ < remaining_fuel){
     solver.push();
     // The following uses a z3::solver 
     // to check if part_a \land part_b
@@ -92,7 +87,7 @@ void AXDInterpolant::loop(){
 #if _DEBUG_AXD_LOOP_ 
       m_out 
         << "Iteration #" 
-        << (constant_allowed_attempts - num_attempts) << std::endl;
+        << num_attempts << std::endl;
       m_out 
         << "Current A-part part 2: " << std::endl;
       SmtSolverOutStreamSetup(m_out, part_a);
@@ -103,9 +98,11 @@ void AXDInterpolant::loop(){
 
       is_unsat = true;
 #if _DEBUG_AXD_LOOP_
-      m_out << "Unsat after " 
-        << constant_allowed_attempts - num_attempts 
-        << " iterations" << std::endl;
+      m_out 
+        << "Unsat after " 
+        << num_attempts 
+        << " iterations" 
+        << std::endl;
 #endif
       return;
     }
@@ -114,7 +111,7 @@ void AXDInterpolant::loop(){
 #if _DEBUG_AXD_LOOP_ 
     m_out 
       << "Iteration #" 
-      << (constant_allowed_attempts - num_attempts) << std::endl;
+      << num_attempts  << std::endl;
     m_out 
       << "Current A-part part 2: " << std::endl;
     SmtSolverOutStreamSetup(m_out, part_a);
@@ -183,7 +180,7 @@ void AXDInterpolant::liftInterpolantDiffSubs(
 std::ostream & operator << (std::ostream & os, 
     AXDInterpolant const & axd){
 
-  if(!axd.num_attempts)
+  if(!axd.remaining_fuel)
     return os 
       << "Unknown: Input formula might be "
       "satisfiable or unsatisfiable.";

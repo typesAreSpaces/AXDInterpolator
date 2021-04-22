@@ -51,7 +51,7 @@ class AXDInterpolant : public Preprocessor {
 
   StandardInput        part_a, part_b;
   std::string          m_file_name;
-  unsigned             num_attempts;
+  unsigned             num_attempts, remaining_fuel;
   bool                 is_interpolant_computed,
                        is_unsat,
                        is_valid_result;
