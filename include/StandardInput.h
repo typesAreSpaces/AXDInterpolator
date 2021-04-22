@@ -110,6 +110,12 @@ class StandardInput {
     unsigned                  num_of_instantiations;
     unsigned                  num_of_new_index;
 
+    z3::expr_vector 
+      new_succs, new_preds, new_minus, 
+      new_adds, new_subtracts,
+      new_mults, new_divs, 
+      new_mods, new_rems;
+
     void instantiate_QF_IDL();
     void instantiate_QF_UTVPI();
     void instantiate_QF_LIA();

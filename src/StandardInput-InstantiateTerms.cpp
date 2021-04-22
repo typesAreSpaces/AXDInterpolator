@@ -1,28 +1,31 @@
 #include "StandardInput.h"
 #include "z3++.h"
 
-#define PUSH_INSTANTIATIONS(TERM, TERMS, ARRAY)\
-  for(auto const & TERM : ARRAY)\
-  TERMS.insert(TERM);\
-  ARRAY.resize(0);
-
-#define UNARY_INSTANTIATION(TERM, TERMS, ARRAY, OP)\
-  for(auto const & TERM : TERMS){\
-    z3::expr new_term = (OP).simplify();\
-    if(!inSet(new_term, TERMS))\
-    ARRAY.push_back(new_term);\
-  }\
-  PUSH_INSTANTIATIONS(TERM, TERMS, ARRAY);
-
-#define BINARY_INSTANTIATIONS(TERM1, TERM2, TERMS, ARRAY, OP)\
-  for(auto const & TERM1 : TERMS){\
-    for(auto const & TERM2 : TERMS){\
-      z3::expr new_term = (OP).simplify();\
-      if(!inSet(new_term, TERMS))\
-      ARRAY.push_back(new_term);\
+#define PUSH_INSTANTIATIONS(ARRAY_OF_ARRAYS)\
+  for(auto const & vec_pointer : ARRAY_OF_ARRAYS){\
+    for(auto const & elem : *vec_pointer){\
+      std::cout << ">>> ahhh " << elem << std::endl;\
+      terms.insert(elem);\
     }\
+    vec_pointer->resize(0);\
   }\
-  PUSH_INSTANTIATIONS(TERM1, TERMS, ARRAY);
+  std::cout << "Done PUSH_INSTANTIATIONS" << std::endl;
+
+
+#define UNARY_INSTANTIATION(TERM, ARRAY, OP)\
+  for(auto const & TERM : terms){\
+    z3::expr new_term = (OP).simplify();\
+    if(!inSet(new_term, terms))\
+    ARRAY.push_back(new_term);\
+  }
+
+#define BINARY_INSTANTIATIONS(TERM1, TERM2, ARRAY, OP)\
+  for(auto const & TERM1 : terms)\
+    for(auto const & TERM2 : terms){\
+      z3::expr new_term = (OP).simplify();\
+      if(!inSet(new_term, terms))\
+      ARRAY.push_back(new_term);\
+    }
 
 StandardInput::InstantiatedTerms::InstantiatedTerms(
     AXDSignature const & sig,
@@ -30,7 +33,11 @@ StandardInput::InstantiatedTerms::InstantiatedTerms(
   sig(sig),
   terms({}),
   num_of_instantiations(0),
-  num_of_new_index(0)
+  num_of_new_index(0),
+  new_succs(sig.ctx), new_preds(sig.ctx), new_minus(sig.ctx),
+  new_adds(sig.ctx), new_subtracts(sig.ctx),
+  new_mults(sig.ctx), new_divs(sig.ctx), 
+  new_mods(sig.ctx), new_rems(sig.ctx)
 {
   for(auto var : vars)
     terms.insert(var);
@@ -46,7 +53,7 @@ void StandardInput::InstantiatedTerms::operator++(){
   // TODO: more testing is needed
   //
   // Heuristic for triggering N-instantiation
-  if(num_of_new_index % 5 == 0){
+  if(num_of_new_index % 1000 == 0){
     num_of_instantiations++;
     switch(sig.getTheoryName()){
       case AXDSignature::QF_TO:
@@ -65,33 +72,46 @@ void StandardInput::InstantiatedTerms::operator++(){
 }
 
 void StandardInput::InstantiatedTerms::instantiate_QF_IDL(){
-  z3::expr_vector temp(sig.ctx);
+  std::vector<z3::expr_vector*> 
+    collection({&new_succs, &new_preds});
 
-  // Successor
-  UNARY_INSTANTIATION(term, terms, temp, term + 1);
-  // Predecessor
-  UNARY_INSTANTIATION(term, terms, temp, term - 1);
+  UNARY_INSTANTIATION(term, new_succs, term + 1);
+  UNARY_INSTANTIATION(term, new_preds, term - 1);
+
+  PUSH_INSTANTIATIONS(collection);
 }
 
 void StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
-  instantiate_QF_IDL();
+   std::vector<z3::expr_vector*> 
+    collection({&new_succs, &new_preds, &new_minus});
 
-  z3::expr_vector temp(sig.ctx);
+  UNARY_INSTANTIATION(term, new_succs, term + 1);
+  UNARY_INSTANTIATION(term, new_preds, term - 1);
+  UNARY_INSTANTIATION(term, new_minus, -term);
 
-  UNARY_INSTANTIATION(term, terms, temp, -term);
+  PUSH_INSTANTIATIONS(collection);
 }
 
 void StandardInput::InstantiatedTerms::instantiate_QF_LIA(){
-  instantiate_QF_UTVPI();
+  std::vector<z3::expr_vector*> 
+    collection({&new_succs, &new_preds, &new_minus
+        , &new_adds, &new_subtracts
+        , &new_mults, &new_divs
+        //, &new_mods, &new_rems
+        });
 
-  z3::expr_vector temp(sig.ctx);
+  UNARY_INSTANTIATION(term, new_succs, term + 1);
+  UNARY_INSTANTIATION(term, new_preds, term - 1);
+  UNARY_INSTANTIATION(term, new_minus, -term);
+  BINARY_INSTANTIATIONS(term1, term2, new_adds, term1 + term2);
+  BINARY_INSTANTIATIONS(term1, term2, new_subtracts, term1 - term2);
+  BINARY_INSTANTIATIONS(term1, term2, new_mults, term1 * term2);
+  BINARY_INSTANTIATIONS(term1, term2, new_divs, term1 / term2);
+  // TODO: decide if the following should be added
+  //BINARY_INSTANTIATIONS(term1, term2, new_mods, z3::mod(term1,term2));
+  //BINARY_INSTANTIATIONS(term1, term2, new_rems, z3::rem(term1,term2));
 
-  BINARY_INSTANTIATIONS(term1, term2, terms, temp, term1 + term2);
-  BINARY_INSTANTIATIONS(term1, term2, terms, temp, term1 - term2);
-  BINARY_INSTANTIATIONS(term1, term2, terms, temp, term1 * term2);
-  BINARY_INSTANTIATIONS(term1, term2, terms, temp, term1 / term2);
-  BINARY_INSTANTIATIONS(term1, term2, terms, temp, z3::mod(term1,term2));
-  BINARY_INSTANTIATIONS(term1, term2, terms, temp, z3::rem(term1,term2));
+  PUSH_INSTANTIATIONS(collection);
 }
 
 void StandardInput::InstantiatedTerms::add_var(z3::expr const & var){
