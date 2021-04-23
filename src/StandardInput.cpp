@@ -198,7 +198,8 @@ void StandardInput::updateSaturation(
   // to increase N_instantiation
   //
   // Heuristic for triggering N-instantiation
-  if(instantiated_terms.getNumOfNewIndex() % 1000 == 0)
+  //if(instantiated_terms.getNumOfNewIndex() % 1000 == 0)
+  if(false)
     ++instantiated_terms;
 
   // [11] predicates are processed in 

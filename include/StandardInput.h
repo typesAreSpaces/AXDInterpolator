@@ -112,9 +112,7 @@ class StandardInput {
 
     z3::expr_vector 
       new_succs, new_preds, new_minus, 
-      new_adds, new_subtracts,
-      new_mults, new_divs, 
-      new_mods, new_rems;
+      new_adds, new_subtracts;
 
     void instantiate_QF_IDL();
     void instantiate_QF_UTVPI();

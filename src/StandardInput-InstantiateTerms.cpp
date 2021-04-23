@@ -35,9 +35,7 @@ StandardInput::InstantiatedTerms::InstantiatedTerms(
   num_of_instantiations(0),
   num_of_new_index(0),
   new_succs(sig.ctx), new_preds(sig.ctx), new_minus(sig.ctx),
-  new_adds(sig.ctx), new_subtracts(sig.ctx),
-  new_mults(sig.ctx), new_divs(sig.ctx), 
-  new_mods(sig.ctx), new_rems(sig.ctx)
+  new_adds(sig.ctx), new_subtracts(sig.ctx)
 {
   for(auto var : vars)
     terms.insert(var);
@@ -92,21 +90,13 @@ void StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
 void StandardInput::InstantiatedTerms::instantiate_QF_LIA(){
   std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds, &new_minus
-        , &new_adds, &new_subtracts
-        , &new_mults, &new_divs
-        //, &new_mods, &new_rems
-        });
+        , &new_adds, &new_subtracts});
 
   UNARY_INSTANTIATION(term, new_succs, term + 1);
   UNARY_INSTANTIATION(term, new_preds, term - 1);
   UNARY_INSTANTIATION(term, new_minus, -term);
   BINARY_INSTANTIATIONS(term1, term2, new_adds, term1 + term2);
   BINARY_INSTANTIATIONS(term1, term2, new_subtracts, term1 - term2);
-  BINARY_INSTANTIATIONS(term1, term2, new_mults, term1 * term2);
-  BINARY_INSTANTIATIONS(term1, term2, new_divs, term1 / term2);
-  // TODO: decide if the following should be added
-  //BINARY_INSTANTIATIONS(term1, term2, new_mods, z3::mod(term1,term2));
-  //BINARY_INSTANTIATIONS(term1, term2, new_rems, z3::rem(term1,term2));
 
   PUSH_INSTANTIATIONS(collection);
 }
