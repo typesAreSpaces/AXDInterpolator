@@ -21,8 +21,8 @@ DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-#FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/MemSafety-Arrays/array-examples/relax-1.c_valid-memsafety.prp.smt2
-FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/MemSafety-Arrays/array-examples/data_structures_set_multi_proc_trivial_ground.c_valid-memsafety.prp.smt2
+FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/MemSafety-Arrays/array-examples/relax-1.c_valid-memsafety.prp.smt2
+#FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/MemSafety-Arrays/array-examples/data_structures_set_multi_proc_trivial_ground.c_valid-memsafety.prp.smt2
 
 all: test
 

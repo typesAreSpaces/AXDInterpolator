@@ -8,7 +8,7 @@ inline bool exists_file (const std::string& name) {
 
 int main(int argc, char * argv[]){
 
-  if(argc != 2){
+  if(argc != 3){
     std::cerr << "Invalid number of inputs.\n";
     return 0;
   }
@@ -19,7 +19,23 @@ int main(int argc, char * argv[]){
     return 0;
   }
 
-  UAutomizerFileReader reader;
+  SMT_SOLVER curr_solver;
+  switch(*argv[1]){
+    case '0':
+      curr_solver = Z3;
+      break;
+    case '1':
+      curr_solver = MATHSAT;
+      break;
+    case '2':
+      curr_solver = SMTINTERPOL;
+      break;
+    default:
+      curr_solver = MATHSAT;
+      break;
+  }
+
+  UAutomizerFileReader reader(curr_solver);
   reader.process(file);
 
   return 0;

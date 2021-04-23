@@ -8,11 +8,15 @@
 #include <cstdlib>
 #include <z3++.h>
 
+enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
+enum SMT_SOLVER { Z3, MATHSAT, SMTINTERPOL };
+
 class UAutomizerFileReader {
 
   std::string line, current_frame, current_file;
   int nesting_level, max_nesting_level;
   std::vector<std::string> stack_of_frames;
+  SMT_SOLVER curr_solver;
 
   bool isPushCmd() const;
   bool isPopCmd() const;
@@ -22,7 +26,7 @@ class UAutomizerFileReader {
   void reset(); 
 
   public:
-  UAutomizerFileReader();
+  UAutomizerFileReader(SMT_SOLVER);
     
   void process(char const *);
 };

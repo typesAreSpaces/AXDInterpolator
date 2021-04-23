@@ -1,13 +1,14 @@
 #include "UAutomizerFileReader.h"
 #include <z3++.h>
 
-UAutomizerFileReader::UAutomizerFileReader() : 
+UAutomizerFileReader::UAutomizerFileReader(SMT_SOLVER smt_solver) : 
   line(""),
   current_frame(""),
   current_file(""),
   nesting_level(0),
   max_nesting_level(0),
-  stack_of_frames({}) 
+  stack_of_frames({}),
+  curr_solver(smt_solver)
 {
 }
 
@@ -94,12 +95,17 @@ void UAutomizerFileReader::action() const {
       << "(check-sat)\n";
     axdinterpolator_file.close();
 
-    system((
-          "pushd ./../../ > /dev/null;"
-          "./bin/axd_interpolator QF_TO ./tests/benchmark/" 
+    int ret = system((
+          "./../../bin/axd_interpolator QF_TO " 
           + file_for_implementation + " 1 1000;" 
-          "popd > /dev/null;"
           ).c_str());
+    if(ret == 134){
+      char command[1000];
+      sprintf(command, 
+          "echo \"%s\" \"%u\"  %u >> /home/jose/benchmark_results.txt", 
+          file_for_implementation.c_str(), curr_solver, TIMEOUT);
+      system(command);
+    }
   }
 
   //int ret = system("[ -f /home/jose/Documents/GithubProjects/AXDInterpolator/ok.txt ]");
