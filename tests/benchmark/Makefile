@@ -40,7 +40,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 # ------------------------------------------
 #  Rules to test a single or many smt2 files
 test: ./bin/benchmark
-	./bin/benchmark $(FILE_TEST)
+	./bin/benchmark $(FILE_TEST) 1
 # ------------------------------------------
 
 # ----------------------
