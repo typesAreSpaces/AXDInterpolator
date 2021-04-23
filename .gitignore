@@ -2,13 +2,11 @@
 dependencies/.DS_Store
 .clangd/*
 *.o
-bin/mathsat
-bin/z3
-bin/axd_interpolator
+bin/*
 include/z3*
 lib/libz3*
 output/*.smt2
 renamed_AXDInterpolant
 sessions/*
-tests/benchmark/bin/benchmark
+tests/benchmark/bin/*
 tests/benchmark/.clangd/*
