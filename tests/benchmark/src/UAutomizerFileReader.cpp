@@ -58,6 +58,9 @@ void UAutomizerFileReader::action() const {
     assert(cnf_assertions.size() == 1);
     z3::expr const & curr_conjunction = cnf_assertions[0].as_expr();
 
+    if(curr_conjunction.decl().decl_kind() != Z3_OP_AND)
+      return;
+
     unsigned half_cnf = curr_conjunction.num_args()/2;
     for(unsigned i = 0; i < half_cnf; i++)
       part_a.push_back(curr_conjunction.arg(i));

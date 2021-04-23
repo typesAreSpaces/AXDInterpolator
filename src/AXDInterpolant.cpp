@@ -44,6 +44,12 @@ AXDInterpolant::AXDInterpolant(
 #endif
 
   m_out << "Solving file " << m_file_name << std::endl;
+  m_out << "Input formula" << std::endl;
+  m_out << "Part A" << std::endl;
+  m_out << part_a << std::endl;
+  m_out << "Part B" << std::endl;
+  m_out << part_b << std::endl;
+
   m_file_name = m_file_name
     .substr(0, m_file_name.find_last_of("."))
     .substr(m_file_name.find_last_of("\\/") + 1);
