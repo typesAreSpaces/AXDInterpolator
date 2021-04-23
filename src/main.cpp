@@ -98,8 +98,8 @@ int main(int argc, char * argv[]){
 #endif
           char command[1000];
           sprintf(command, 
-              "echo \"%s\" \"%s\"  %u >> /home/jose/benchmark_results.txt", 
-              argv[2], argv[1], SUCCESS);
+              "echo \"%s\" \"%c\"  %u >> /home/jose/benchmark_results.txt", 
+              argv[2], *argv[3], SUCCESS);
           system(command);
           return 0;
         }
@@ -107,8 +107,8 @@ int main(int argc, char * argv[]){
           std::cout << e << std::endl;
           char command[1000];
           sprintf(command, 
-              "echo \"%s\" \"%s\"  %u >> /home/jose/benchmark_results.txt", 
-              argv[2], argv[1], FAILED);
+              "echo \"%s\" \"%c\"  %u >> /home/jose/benchmark_results.txt", 
+              argv[2], *argv[3], FAILED);
           system(command);
           return 0;
         }
