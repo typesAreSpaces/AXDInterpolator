@@ -5,6 +5,8 @@
 #include <string>
 #include <fstream>
 
+enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
+
 inline bool exists_file (const std::string& name) {
   struct stat buffer;   
   return (stat (name.c_str(), &buffer) == 0); 
@@ -94,10 +96,20 @@ int main(int argc, char * argv[]){
 #if EXTERNAL_SUCCESS_FILE
           system("touch ok.txt");
 #endif
+          char command[1000];
+          sprintf(command, 
+              "echo \"%s\" \"%s\"  %u >> /home/jose/benchmark_results.txt", 
+              argv[2], argv[1], SUCCESS);
+          system(command);
           return 0;
         }
         catch(char const * e){
           std::cout << e << std::endl;
+          char command[1000];
+          sprintf(command, 
+              "echo \"%s\" \"%s\"  %u >> /home/jose/benchmark_results.txt", 
+              argv[2], argv[1], FAILED);
+          system(command);
           return 0;
         }
       }
