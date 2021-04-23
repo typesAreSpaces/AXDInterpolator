@@ -1,9 +1,10 @@
-IDIR=./include
-ODIR=./obj
-SDIR=./src
-LDIR=./lib
-TEST_DIR=./tests/smt2-files
 CURRENT_DIR=$(shell pwd)
+IDIR=$(CURRENT_DIR)/include
+ODIR=$(CURRENT_DIR)/obj
+SDIR=$(CURRENT_DIR)/src
+LDIR=$(CURRENT_DIR)/lib
+TEST_DIR=$(CURRENT_DIR)/tests/smt2-files
+
 CC=g++
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
@@ -52,21 +53,21 @@ all: tests/one
 # -------------------------------------------------------------------------------
 #  Rules to build the project
 $(LDIR)/libz3.$(SO_EXT):
-	@mkdir -p ./lib
+	@mkdir -p $(CURRENT_DIR)/lib
 	cd dependencies/z3-interp-plus;\
 		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS_H)
 
 renamed_AXDInterpolant:
-	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" ./include/AXDInterpolant.h
+	perl -i -pe"s|replace_once|$(CURRENT_DIR)|g" $(CURRENT_DIR)/include/AXDInterpolant.h
 	touch renamed_AXDInterpolant
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT) renamed_AXDInterpolant
-	@mkdir -p ./obj
+	@mkdir -p $(CURRENT_DIR)/obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
 bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
-	@mkdir -p ./bin
+	@mkdir -p $(CURRENT_DIR)/bin
 	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
 # -------------------------------------------------------------------------------
 
