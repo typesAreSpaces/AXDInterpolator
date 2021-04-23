@@ -96,20 +96,20 @@ int main(int argc, char * argv[]){
 #if EXTERNAL_SUCCESS_FILE
           system("touch ok.txt");
 #endif
-          char command[1000];
-          sprintf(command, 
-              "echo \"%s\" \"%c\"  %u >> /home/jose/benchmark_results.txt", 
+          char log_command[1000];
+          sprintf(log_command, 
+              "echo \"%s\" \"%c\" %u >> /home/jose/benchmark_results.txt", 
               argv[2], *argv[3], SUCCESS);
-          system(command);
+          system(log_command);
           return 0;
         }
         catch(char const * e){
           std::cout << e << std::endl;
-          char command[1000];
-          sprintf(command, 
-              "echo \"%s\" \"%c\"  %u >> /home/jose/benchmark_results.txt", 
+          char log_command[1000];
+          sprintf(log_command, 
+              "echo \"%s\" \"%c\" %u >> /home/jose/benchmark_results.txt", 
               argv[2], *argv[3], FAILED);
-          system(command);
+          system(log_command);
           return 0;
         }
       }

@@ -95,16 +95,19 @@ void UAutomizerFileReader::action() const {
       << "(check-sat)\n";
     axdinterpolator_file.close();
 
-    int ret = system((
-          "./../../bin/axd_interpolator QF_TO " 
-          + file_for_implementation + " 1 1000;" 
-          ).c_str());
+    char exec_command[1000];
+    sprintf(exec_command, 
+    "./../../bin/axd_interpolator QF_TO %s %u 1000;", 
+    file_for_implementation.c_str(), curr_solver);
+      int ret = system(exec_command);
     if(ret == 134){
-      char command[1000];
-      sprintf(command, 
+      char log_command[1000];
+      sprintf(log_command, 
           "echo \"%s\" \"%u\"  %u >> /home/jose/benchmark_results.txt", 
           file_for_implementation.c_str(), curr_solver, TIMEOUT);
-      system(command);
+      system(log_command);
+      system(("rm -rf " + temp_file).c_str());
+      system(("rm -rf " + file_for_implementation).c_str());
     }
   }
 

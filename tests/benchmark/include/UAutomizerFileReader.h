@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <vector>
 #include <cstring>
+#include <stdio.h>
 #include <string>
 #include <cstdlib>
 #include <z3++.h>
