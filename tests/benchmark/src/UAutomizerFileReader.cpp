@@ -26,6 +26,7 @@ bool UAutomizerFileReader::isEchoCmd() const {
 void UAutomizerFileReader::action() const {
   std::string temp_file = "temp_" + current_file;
   std::string file_for_implementation = "axdinterpolator_" + current_file;
+
   // This std::ostream writes the top frame of formulas
   // in the stack_of_frames in order to check for satisfiability
   std::ofstream smt_file            (temp_file.c_str());
