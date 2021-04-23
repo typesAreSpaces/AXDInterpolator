@@ -103,7 +103,7 @@ void UAutomizerFileReader::action() const {
     if(ret == 134){
       char log_command[1000];
       sprintf(log_command, 
-          "echo \"%s\" \"%u\"  %u >> /home/jose/benchmark_results.txt", 
+          "echo \"%s\" \"%u\" %u >> /home/jose/benchmark_results.txt", 
           file_for_implementation.c_str(), curr_solver, TIMEOUT);
       system(log_command);
       system(("rm -rf " + temp_file).c_str());

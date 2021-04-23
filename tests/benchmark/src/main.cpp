@@ -20,7 +20,7 @@ int main(int argc, char * argv[]){
   }
 
   SMT_SOLVER curr_solver;
-  switch(*argv[1]){
+  switch(*argv[2]){
     case '0':
       curr_solver = Z3;
       break;
