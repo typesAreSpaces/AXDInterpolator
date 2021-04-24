@@ -18,6 +18,7 @@ class UAutomizerFileReader {
   int nesting_level, max_nesting_level;
   std::vector<std::string> stack_of_frames;
   SMT_SOLVER curr_solver;
+  unsigned num_samples;
 
   bool isPushCmd() const;
   bool isPopCmd() const;
@@ -27,7 +28,7 @@ class UAutomizerFileReader {
   void reset(); 
 
   public:
-  UAutomizerFileReader(SMT_SOLVER);
+  UAutomizerFileReader(SMT_SOLVER, unsigned);
     
   void process(char const *);
 };

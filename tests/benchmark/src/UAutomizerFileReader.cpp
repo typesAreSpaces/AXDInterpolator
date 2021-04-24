@@ -1,14 +1,15 @@
 #include "UAutomizerFileReader.h"
 #include <z3++.h>
 
-UAutomizerFileReader::UAutomizerFileReader(SMT_SOLVER smt_solver) : 
+UAutomizerFileReader::UAutomizerFileReader(SMT_SOLVER smt_solver, unsigned num_samples) : 
   line(""),
   current_frame(""),
   current_file(""),
   nesting_level(0),
   max_nesting_level(0),
   stack_of_frames({}),
-  curr_solver(smt_solver)
+  curr_solver(smt_solver),
+  num_samples(num_samples)
 {
 }
 
@@ -148,6 +149,12 @@ void UAutomizerFileReader::process(char const * file_path){
     }
     else if(isPopCmd()){
       nesting_level--;
+      if(num_samples == 0){
+        smt_file.close();
+        reset();
+        return;
+      }
+      num_samples--;
       action();
       current_frame = stack_of_frames.back();
       stack_of_frames.pop_back();
