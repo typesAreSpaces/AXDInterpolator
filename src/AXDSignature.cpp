@@ -74,6 +74,22 @@ void AXDSignature::processArrayDecls(std::string & decls){
     element_sorts.push(temp_expr.arg(0).get_sort().array_range());
     decls = match.suffix().str();
   }
+
+  z3::sort_vector stack(ctx);
+  for(auto const & elem : element_sorts)
+    if(elem.is_array())
+      stack.push_back(elem);
+    
+  // Include the range sort recursively
+  // of all array sorts
+  while(stack.size() != 0){
+    auto const & curr_sort = stack.back();
+    stack.pop_back();
+    if(curr_sort.is_array()){
+      element_sorts.push(curr_sort.array_range());
+      stack.push_back(curr_sort.array_range());
+    }
+  }
 }
 
 void AXDSignature::indexElementSorts(){

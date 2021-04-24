@@ -127,18 +127,18 @@ void Preprocessor::flattenTerm(
           sig.setTheory(AXDSignature::QF_LIA);
 #endif
         {
-          z3::expr_vector queue_args(sig.ctx);
+          z3::expr_vector stack_args(sig.ctx);
           for(unsigned i = 0; i < term.num_args(); i++)
-            queue_args.push_back(term.arg(i));
+            stack_args.push_back(term.arg(i));
 
-          while(queue_args.size() != 0){
-            z3::expr const & curr = queue_args.back();
-            queue_args.pop_back();
+          while(stack_args.size() != 0){
+            z3::expr const & curr = stack_args.back();
+            stack_args.pop_back();
             if(curr.num_args() == 0)
               updateIndexVars(curr, side);
             else{
               for(unsigned i = 0; i < curr.num_args(); i++)
-                queue_args.push_back(curr.arg(i));
+                stack_args.push_back(curr.arg(i));
             }
           }
         }
