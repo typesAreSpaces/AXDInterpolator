@@ -95,7 +95,7 @@ int main(int argc, char * argv[]){
           if(emit_statistics){
             char log_command[1000];
             sprintf(log_command, 
-                "echo \"%s\" \"%c\" %u >> \"%s\"", 
+                "echo File: \"%s\" Solver Code: \"%c\" Exit Code: %u >> \"%s\"", 
                 argv[2], *argv[3], SUCCESS, argv[5]);
             system(log_command);
           }
@@ -105,7 +105,7 @@ int main(int argc, char * argv[]){
           std::cout << e << std::endl;
           char log_command[1000];
           sprintf(log_command, 
-              "echo \"%s\" \"%c\" %u >> \"%s\"", 
+              "echo File: \"%s\" Solver Code: \"%c\" Exit Code: %u >> \"%s\"", 
               argv[2], *argv[3], FAILED, argv[5]);
           system(log_command);
           return 0;
