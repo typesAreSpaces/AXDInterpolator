@@ -1,8 +1,8 @@
-IDIR=./include
-ODIR=./obj
-SDIR=./src
-LDIR=./../../lib
 CURRENT_DIR=$(shell pwd)
+IDIR=$(CURRENT_DIR)/include
+ODIR=$(CURRENT_DIR)/obj
+SDIR=$(CURRENT_DIR)/src
+LDIR=$(CURRENT_DIR)/../../lib
 CC=g++
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
@@ -21,33 +21,37 @@ DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-#FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/MemSafety-Arrays/array-examples/relax-1.c_valid-memsafety.prp.smt2
+FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/MemSafety-Arrays/array-examples/relax-1.c_valid-memsafety.prp.smt2
 #FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/MemSafety-Arrays/array-examples/data_structures_set_multi_proc_trivial_ground.c_valid-memsafety.prp.smt2
-FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/ReachSafety-Arrays/array-cav19/array_tiling_poly6.c_unreach-call.prp.smt2
+#FILE_TEST=/media/Documents/MaxDiff-Experiments/verification-files/ReachSafety-Arrays/array-cav19/array_tiling_poly6.c_unreach-call.prp.smt2
 
 all: test
 
 # --------------------------------------------------------
 #  Rules to build the project
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
-	@mkdir -p ./obj
+	@mkdir -p $(CURRENT_DIR)/obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
-./bin/benchmark: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
-	@mkdir -p ./bin
+bin/benchmark: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
+	@mkdir -p $(CURRENT_DIR)/bin
 	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
+
+../../bin/axd_interpolator:
+	make -j8 -C ../../ bin/axd_interpolator
 # --------------------------------------------------------
 
 # ------------------------------------------
 #  Rules to test a single or many smt2 files
-test: ./bin/benchmark
-	./bin/benchmark $(FILE_TEST) 1
+test: bin/benchmark ../../bin/axd_interpolator
+	$(CURRENT_DIR)/bin/benchmark $(FILE_TEST) 1 $(CURRENT_DIR)/output.txt
 # ------------------------------------------
 
 # ----------------------
 #  Cleaning
 .PHONY: clean
 clean:
+	make -C ../../ clean
 	rm -rf $(ODIR)/*
-	rm -rf ./bin/benchmark
+	rm -rf $(CURRENT_DIR)/bin/benchmark
 # ----------------------

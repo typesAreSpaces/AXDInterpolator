@@ -19,6 +19,7 @@ class UAutomizerFileReader {
   std::vector<std::string> stack_of_frames;
   SMT_SOLVER curr_solver;
   unsigned num_samples;
+  char * const file_statistics;
 
   bool isPushCmd() const;
   bool isPopCmd() const;
@@ -28,7 +29,7 @@ class UAutomizerFileReader {
   void reset(); 
 
   public:
-  UAutomizerFileReader(SMT_SOLVER, unsigned);
+  UAutomizerFileReader(SMT_SOLVER, unsigned, char * const);
     
   void process(char const *);
 };

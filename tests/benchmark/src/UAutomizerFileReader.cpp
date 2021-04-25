@@ -1,7 +1,10 @@
 #include "UAutomizerFileReader.h"
 #include <z3++.h>
 
-UAutomizerFileReader::UAutomizerFileReader(SMT_SOLVER smt_solver, unsigned num_samples) : 
+UAutomizerFileReader::UAutomizerFileReader(
+    SMT_SOLVER smt_solver, 
+    unsigned num_samples, 
+    char * const file) : 
   line(""),
   current_frame(""),
   current_file(""),
@@ -9,7 +12,8 @@ UAutomizerFileReader::UAutomizerFileReader(SMT_SOLVER smt_solver, unsigned num_s
   max_nesting_level(0),
   stack_of_frames({}),
   curr_solver(smt_solver),
-  num_samples(num_samples)
+  num_samples(num_samples),
+  file_statistics(file)
 {
 }
 
@@ -98,14 +102,14 @@ void UAutomizerFileReader::action() const {
 
     char exec_command[1000];
     sprintf(exec_command, 
-    "./../../bin/axd_interpolator QF_TO %s %u 1000;", 
-    file_for_implementation.c_str(), curr_solver);
+    "./../../bin/axd_interpolator QF_TO %s %u 1000 %s;", 
+    file_for_implementation.c_str(), curr_solver, file_statistics);
       int ret = system(exec_command);
     if(ret == 134){
       char log_command[1000];
       sprintf(log_command, 
-          "echo \"%s\" \"%u\" %u >> /home/jose/benchmark_results.txt", 
-          file_for_implementation.c_str(), curr_solver, TIMEOUT);
+          "echo \"%s\" \"%u\" %u >> \"%s\"", 
+          file_for_implementation.c_str(), curr_solver, TIMEOUT, file_statistics);
       system(log_command);
       system(("rm -rf " + temp_file).c_str());
       system(("rm -rf " + file_for_implementation).c_str());
