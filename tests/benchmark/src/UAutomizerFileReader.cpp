@@ -105,7 +105,7 @@ void UAutomizerFileReader::action() const {
         "./../../bin/axd_interpolator QF_TO %s %u 1000 %s;", 
         file_for_implementation.c_str(), curr_solver, file_statistics);
     int ret = system(exec_command);
-    if(ret != 0 && ret != 1){
+    if(WEXITSTATUS(ret) != 0){
       char log_command[1000];
       sprintf(log_command, 
           "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"", 

@@ -29,7 +29,7 @@ int main(int argc, char * argv[]){
           std::cout
             << "File not found." 
             << std::endl;
-          return 0;
+          return 1;
         }
 
         input_parser.from_file(argv[2]);
@@ -51,7 +51,7 @@ int main(int argc, char * argv[]){
           std::cout 
             << "No assertions in input file" 
             << std::endl;
-          return 0;
+          return 2;
         }
         assert(input_formula.size() == 2);
         z3::goal goal_a(ctx);
@@ -87,7 +87,7 @@ int main(int argc, char * argv[]){
                   std::cout
                     << "Not valid SMT solver option."
                     << std::endl;
-                  return 0;
+                  return 3;
               }
               std::cout << axd << std::endl;
             }
@@ -108,7 +108,7 @@ int main(int argc, char * argv[]){
               "echo File: \"%s\" Solver Code: \"%c\" Exit Code: %u >> \"%s\"", 
               argv[2], *argv[3], FAILED, argv[5]);
           system(log_command);
-          return 0;
+          return 4;
         }
       }
 
@@ -116,6 +116,6 @@ int main(int argc, char * argv[]){
       std::cout
         << "Invalid number of arguments." 
         << std::endl;
-      return 0;
+      return 5;
   }
 }
