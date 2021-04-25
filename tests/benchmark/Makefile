@@ -33,12 +33,12 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p $(CURRENT_DIR)/obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
-bin/benchmark: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
-	@mkdir -p $(CURRENT_DIR)/bin
-	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
-
 ../../bin/axd_interpolator:
 	make -j8 -C ../../ bin/axd_interpolator
+
+bin/benchmark: $(OBJS) $(LDIR)/libz3.$(SO_EXT) ../../bin/axd_interpolator
+	@mkdir -p $(CURRENT_DIR)/bin
+	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
 # --------------------------------------------------------
 
 # ------------------------------------------
