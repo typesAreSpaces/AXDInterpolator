@@ -122,6 +122,7 @@ clean:
 	rm -rf renamed_AXDInterpolant
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
+	rm -rf $(CURRENT_DIR)/bin/axd_interpolator
 	cd output && make clean
 
 .PHONY: z3_clean

@@ -21,8 +21,11 @@ int main(int argc, char * argv[]){
 #if EXTERNAL_SUCCESS_FILE
   system("rm -rf ok.txt");
 #endif
+  bool emit_statistics = false;
 
   switch(argc){
+    case 6:
+     emit_statistics = true; 
     case 5:
       {
         z3::solver input_parser(ctx);
@@ -96,11 +99,13 @@ int main(int argc, char * argv[]){
 #if EXTERNAL_SUCCESS_FILE
           system("touch ok.txt");
 #endif
-          char log_command[1000];
-          sprintf(log_command, 
-              "echo \"%s\" \"%c\" %u >> /home/jose/benchmark_results.txt", 
-              argv[2], *argv[3], SUCCESS);
-          system(log_command);
+          if(emit_statistics){
+            char log_command[1000];
+            sprintf(log_command, 
+                "echo \"%s\" \"%c\" %u >> \"%s\"", 
+                argv[2], *argv[3], SUCCESS, argv[5]);
+            system(log_command);
+          }
           return 0;
         }
         catch(char const * e){
