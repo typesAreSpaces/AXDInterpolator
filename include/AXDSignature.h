@@ -7,7 +7,6 @@
 #define FRESH_INDEX_PREFIX    "fresh_index_"
 #define FRESH_COMMON_PREFIX   "fresh_"
 #define DETECT_THEORY         1
-#define EXTERNAL_SUCCESS_FILE 0
 
 //#define m_out std::cerr
 #define m_out std::cout

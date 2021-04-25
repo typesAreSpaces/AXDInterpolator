@@ -15,12 +15,8 @@ inline bool exists_file (const std::string& name) {
 int main(int argc, char * argv[]){
 
   z3::context ctx;
-  //z3::set_param("proof", true);
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
-#if EXTERNAL_SUCCESS_FILE
-  system("rm -rf ok.txt");
-#endif
   bool emit_statistics = false;
 
   switch(argc){
@@ -96,9 +92,6 @@ int main(int argc, char * argv[]){
               std::cout << axd << std::endl;
             }
           }
-#if EXTERNAL_SUCCESS_FILE
-          system("touch ok.txt");
-#endif
           if(emit_statistics){
             char log_command[1000];
             sprintf(log_command, 
@@ -112,8 +105,8 @@ int main(int argc, char * argv[]){
           std::cout << e << std::endl;
           char log_command[1000];
           sprintf(log_command, 
-              "echo \"%s\" \"%c\" %u >> /home/jose/benchmark_results.txt", 
-              argv[2], *argv[3], FAILED);
+              "echo \"%s\" \"%c\" %u >> \"%s\"", 
+              argv[2], *argv[3], FAILED, argv[5]);
           system(log_command);
           return 0;
         }
