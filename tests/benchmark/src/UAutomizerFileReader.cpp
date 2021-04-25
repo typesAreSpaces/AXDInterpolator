@@ -12,6 +12,10 @@ UAutomizerFileReader::UAutomizerFileReader(
   max_nesting_level(0),
   stack_of_frames({}),
   curr_solver(smt_solver),
+  name_solver(
+      smt_solver == Z3 ? "Z3" 
+      : smt_solver == MATHSAT ? "MATHSAT" 
+      : "SMTINTERPOL"),
   num_samples(num_samples),
   file_statistics(file)
 {
@@ -30,17 +34,13 @@ bool UAutomizerFileReader::isEchoCmd() const {
 }
 
 void UAutomizerFileReader::action() const {
-  std::string temp_file = "temp_" + current_file;
-  std::string file_for_implementation = "axdinterpolator_" + current_file;
-
+  // TODO: Add an identifier for the solver used
+  std::string temp_file = 
+    "temp_" + name_solver + "_" + current_file; 
   // This std::ostream writes the top frame of formulas
   // in the stack_of_frames in order to check for satisfiability
-  std::ofstream smt_file            (temp_file.c_str());
-  // If formulas in the above frame are unsatisfiable, then
-  // we generate a smtlib2 file for axd_interpolator
-  // to consume
-  std::ofstream axdinterpolator_file(file_for_implementation.c_str());
-
+  std::ofstream smt_file (temp_file.c_str());
+  
   for(auto const & x : stack_of_frames)
     smt_file << x << std::endl;
   smt_file << current_frame << std::endl;
@@ -51,10 +51,17 @@ void UAutomizerFileReader::action() const {
   input_parser.from_file(temp_file.c_str());
 
   if(input_parser.check() == z3::unsat){
+    // TODO: Add an identifier for the solver used
+    std::string file_for_implementation = 
+      "axdinterpolator_" +  name_solver + "_" + current_file;
+    // If formulas in the current frame are unsatisfiable, 
+    // then generate a smtlib2 file for axd_interpolator
+    // to consume
+    std::ofstream axdinterpolator_file(file_for_implementation.c_str());
+
     z3::expr_vector curr_assertions = input_parser.assertions();
     z3::expr_vector part_a(ctx), part_b(ctx);
 
-    // ---------------------------------------------------------------------
     auto const & to_cnf_tactic = 
       z3::tactic(ctx, "tseitin-cnf");
 
@@ -65,17 +72,25 @@ void UAutomizerFileReader::action() const {
     assert(cnf_assertions.size() == 1);
     z3::expr const & curr_conjunction = cnf_assertions[0].as_expr();
 
-    if(curr_conjunction.decl().decl_kind() != Z3_OP_AND)
+    unsigned total_size_cnf = curr_conjunction.num_args();
+    unsigned half_size_cnf = total_size_cnf/2;
+    if(curr_conjunction.decl().decl_kind() != Z3_OP_AND
+        // This checks that the size of part_a isnt zero
+        || half_size_cnf == 0
+        // This checks that the size of part_b isnt zero
+        || (total_size_cnf - half_size_cnf) == 0 
+      ){
+      // Cancel everything
+      axdinterpolator_file.close();
+      system(("rm -rf " + file_for_implementation).c_str());
+      system(("rm -rf " + temp_file).c_str());
       return;
+    }
 
-    unsigned half_cnf = curr_conjunction.num_args()/2;
-    for(unsigned i = 0; i < half_cnf; i++)
+    for(unsigned i = 0; i < half_size_cnf; i++)
       part_a.push_back(curr_conjunction.arg(i));
-    for(unsigned i = half_cnf; i < curr_conjunction.num_args(); i++)
+    for(unsigned i = half_size_cnf; i < total_size_cnf; i++)
       part_b.push_back(curr_conjunction.arg(i));
-
-    if(part_a.size() == 0 || part_b.size() == 0)
-      return;
 
     part_a.push_back(ctx.bool_val(true));
     part_b.push_back(ctx.bool_val(true));
@@ -84,7 +99,6 @@ void UAutomizerFileReader::action() const {
       part_a.push_back(curr_assertions[i]);
     for(unsigned i = half_size; i < curr_assertions.size(); i++)
       part_b.push_back(curr_assertions[i]);
-    // ---------------------------------------------------------------------
 
     axdinterpolator_file 
       << input_parser.to_smt2_decls_only();
@@ -111,13 +125,12 @@ void UAutomizerFileReader::action() const {
           "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"", 
           file_for_implementation.c_str(), curr_solver, ret, file_statistics);
       system(log_command);
-      system(("rm -rf " + temp_file).c_str());
-      system(("rm -rf " + file_for_implementation).c_str());
     }
+
+    system(("rm -rf " + file_for_implementation).c_str());
   }
 
   system(("rm -rf " + temp_file).c_str());
-  system(("rm -rf " + file_for_implementation).c_str());
 }
 
 void UAutomizerFileReader::reset(){

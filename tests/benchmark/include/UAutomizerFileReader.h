@@ -18,6 +18,7 @@ class UAutomizerFileReader {
   int nesting_level, max_nesting_level;
   std::vector<std::string> stack_of_frames;
   SMT_SOLVER curr_solver;
+  std::string const name_solver;
   unsigned num_samples;
   char * const file_statistics;
 
