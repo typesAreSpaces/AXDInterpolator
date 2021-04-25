@@ -102,28 +102,19 @@ void UAutomizerFileReader::action() const {
 
     char exec_command[1000];
     sprintf(exec_command, 
-    "./../../bin/axd_interpolator QF_TO %s %u 1000 %s;", 
-    file_for_implementation.c_str(), curr_solver, file_statistics);
-      int ret = system(exec_command);
-    if(ret == 134){
+        "./../../bin/axd_interpolator QF_TO %s %u 1000 %s;", 
+        file_for_implementation.c_str(), curr_solver, file_statistics);
+    int ret = system(exec_command);
+    if(ret != 0){
       char log_command[1000];
       sprintf(log_command, 
-          "echo \"%s\" \"%u\" %u >> \"%s\"", 
-          file_for_implementation.c_str(), curr_solver, TIMEOUT, file_statistics);
+          "echo \"%s\" \"%u\" %d >> \"%s\"", 
+          file_for_implementation.c_str(), curr_solver, ret, file_statistics);
       system(log_command);
       system(("rm -rf " + temp_file).c_str());
       system(("rm -rf " + file_for_implementation).c_str());
     }
   }
-
-  //int ret = system("[ -f /home/jose/Documents/GithubProjects/AXDInterpolator/ok.txt ]");
-  //if(WEXITSTATUS(ret) != 0){
-  //std::cout << "You will stop. Please input an integer to continue..." << std::endl;
-  //int stop;
-  //std::cin >> stop;
-  //system(("mv temp_" + current_file + " ouch1.smt2").c_str());
-  //system(("mv axdinterpolator_" + current_file + " ouch2.smt2").c_str());
-  //}
 
   system(("rm -rf " + temp_file).c_str());
   system(("rm -rf " + file_for_implementation).c_str());
