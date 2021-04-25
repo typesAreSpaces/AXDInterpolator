@@ -116,16 +116,14 @@ void UAutomizerFileReader::action() const {
 
     char exec_command[1000];
     sprintf(exec_command, 
-        "./../../bin/axd_interpolator QF_TO %s %u 1000 %s;", 
-        file_for_implementation.c_str(), curr_solver, file_statistics);
+        "./../../bin/axd_interpolator QF_TO %s %u 1000;", 
+        file_for_implementation.c_str(), curr_solver);
     int ret = system(exec_command);
-    if(WEXITSTATUS(ret) != 0){
-      char log_command[1000];
-      sprintf(log_command, 
-          "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"", 
-          file_for_implementation.c_str(), curr_solver, ret, file_statistics);
-      system(log_command);
-    }
+    char log_command[1000];
+    sprintf(log_command, 
+        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"", 
+        file_for_implementation.c_str(), curr_solver, ret, file_statistics);
+    system(log_command);
 
     system(("rm -rf " + file_for_implementation).c_str());
   }

@@ -17,11 +17,8 @@ int main(int argc, char * argv[]){
   z3::context ctx;
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth",      1000000);
-  bool emit_statistics = false;
 
   switch(argc){
-    case 6:
-     emit_statistics = true; 
     case 5:
       {
         z3::solver input_parser(ctx);
@@ -92,22 +89,10 @@ int main(int argc, char * argv[]){
               std::cout << axd << std::endl;
             }
           }
-          if(emit_statistics){
-            char log_command[1000];
-            sprintf(log_command, 
-                "echo File: \"%s\" Solver Code: \"%c\" Exit Code: %u >> \"%s\"", 
-                argv[2], *argv[3], SUCCESS, argv[5]);
-            system(log_command);
-          }
           return 0;
         }
         catch(char const * e){
           std::cout << e << std::endl;
-          char log_command[1000];
-          sprintf(log_command, 
-              "echo File: \"%s\" Solver Code: \"%c\" Exit Code: %u >> \"%s\"", 
-              argv[2], *argv[3], FAILED, argv[5]);
-          system(log_command);
           return 4;
         }
       }
