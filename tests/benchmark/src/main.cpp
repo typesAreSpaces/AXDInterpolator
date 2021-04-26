@@ -35,7 +35,7 @@ int main(int argc, char * argv[]){
       break;
   }
 
-  UAutomizerFileReader reader(curr_solver, 500, argv[3]);
+  UAutomizerFileReader reader(curr_solver, 1000, argv[3]);
   reader.process(file);
 
   return 0;
