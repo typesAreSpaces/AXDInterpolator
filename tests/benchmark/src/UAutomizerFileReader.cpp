@@ -99,16 +99,45 @@ bool UAutomizerFileReader::hasQuantifier(z3::expr const & e) const {
   return false;
 }
 
-void UAutomizerFileReader::fromImplToNamed(std::string & s) const {
-  s.erase(std::remove(s.begin(), s.end(), '\n'),
-            s.end());
-  std::cout << ">> Hmmm" << std::endl;
-  //std::regex part_a_regex("(\\(assert )(.*)(\\(=> )(.*)( )(.*)(\\))(.*)(\\))");
-  std::regex assert_regex("(.*)(\\(assert )(.*)(\\))(check-sat)");
-  s = std::regex_replace(s, assert_regex, "\n(assert (! $2 :named part_a) )\n");
-  std::cout << s << std::endl;
-  int stop;
-  std::cin >> stop;
+std::string UAutomizerFileReader::fromImplToNamed(std::string const & s) const {
+  std::stringstream decl_strm(s);
+  std::string curr_line, collected_assertion = "", ret = "";
+  bool matching_assert = false, matching_part_a = true;
+  unsigned num_balanced_paren = 0;
+
+  while(std::getline(decl_strm, curr_line)){
+    
+    if(curr_line.find("assert") != std::string::npos)
+      matching_assert = true;
+
+    if(matching_assert){
+      for(auto const & c : curr_line){
+        if(c == '(')
+          num_balanced_paren++;
+        if(c == ')')
+          num_balanced_paren--;
+      }
+
+      collected_assertion += curr_line;
+      if(num_balanced_paren == 0){
+        matching_assert = false;
+        collected_assertion = collected_assertion.substr(8);
+        collected_assertion.pop_back();
+        if(matching_part_a){
+          collected_assertion = "(assert (! " + collected_assertion +" :named part_a))";
+          matching_part_a = false;
+        }
+        else
+          collected_assertion = "(assert (! " + collected_assertion +" :named part_b))";
+
+        ret += collected_assertion + "\n";
+        collected_assertion = "";
+      }
+    }
+    else
+      ret += curr_line + "\n";
+  }
+  return ret;
 }
 
 bool UAutomizerFileReader::isPushCmd() const {
@@ -301,32 +330,22 @@ void UAutomizerFileReader::testOtherSolvers() const {
         BENCHMARK_COMMAND(
             // WRITER
             z3::solver tseitin_solver(ctx);
-            tseitin_solver.add(z3::mk_and(part_a), "part_a");
-            tseitin_solver.add(ctx.bool_const("part_a"));
-            tseitin_solver.add(ctx.bool_const("part_b"));
-            tseitin_solver.add(z3::mk_and(part_b), "part_b");
+            tseitin_solver.add(z3::mk_and(part_a));
+            tseitin_solver.add(z3::mk_and(part_b));
             axdinterpolator_file 
             << "(set-option :print-success false)\n" 
             << "(set-option :produce-interpolants true)" 
             << std::endl;
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << tseitin_solver.to_smt2();
-
-            std::string test = tseitin_solver.to_smt2();
-            fromImplToNamed(test);
-
-            std::cout << test << std::endl;
-            int stop;
-            std::cin >> stop;
-
+            axdinterpolator_file << fromImplToNamed(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolants part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
-            // EXEC_COMMAND
-            std::string temp_file_name = "smtinterpol_inter_temp_" + current_file;
+              // EXEC_COMMAND
+              std::string temp_file_name = "smtinterpol_inter_temp_" + current_file;
             sprintf(exec_command, "java -jar ./../../bin/smtinterpol-2.5-663-gf15aa217.jar -w %s > %s",
-              file_for_implementation.c_str(), temp_file_name.c_str());,
-            // LOG_COMMAND
+                file_for_implementation.c_str(), temp_file_name.c_str());,
+              // LOG_COMMAND
               std::ifstream result(temp_file_name.c_str());
             std::string line("");
             std::string interpolant_from_file("");

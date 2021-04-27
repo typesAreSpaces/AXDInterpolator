@@ -24,7 +24,7 @@ class UAutomizerFileReader {
   char * const file_statistics;
 
   bool hasQuantifier(z3::expr const &) const;
-  void fromImplToNamed(std::string &) const;
+  std::string fromImplToNamed(std::string const &) const;
 
   bool isPushCmd() const;
   bool isPopCmd() const;
