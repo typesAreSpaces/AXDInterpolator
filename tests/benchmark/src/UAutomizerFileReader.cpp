@@ -137,7 +137,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
         "./../../bin/axd_interpolator QF_TO %s %u 1000;",
         file_for_implementation.c_str(), curr_solver);,
       sprintf(log_command, 
-        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: 0>> \"%s\"",
+        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: 0 >> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);
       );
   system(("rm -rf " + temp_file).c_str());
