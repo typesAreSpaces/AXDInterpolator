@@ -140,6 +140,47 @@ std::string UAutomizerFileReader::fromImplToNamed(std::string const & s) const {
   return ret;
 }
 
+std::string UAutomizerFileReader::fromImplToNamedMathsat(std::string const & s) const {
+  std::stringstream decl_strm(s);
+  std::string curr_line, collected_assertion = "", ret = "";
+  bool matching_assert = false, matching_part_a = true;
+  unsigned num_balanced_paren = 0;
+
+  while(std::getline(decl_strm, curr_line)){
+    
+    if(curr_line.find("assert") != std::string::npos)
+      matching_assert = true;
+
+    if(matching_assert){
+      for(auto const & c : curr_line){
+        if(c == '(')
+          num_balanced_paren++;
+        if(c == ')')
+          num_balanced_paren--;
+      }
+
+      collected_assertion += curr_line;
+      if(num_balanced_paren == 0){
+        matching_assert = false;
+        collected_assertion = collected_assertion.substr(8);
+        collected_assertion.pop_back();
+        if(matching_part_a){
+          collected_assertion = "(assert (! " + collected_assertion +" :interpolation-group part_a))";
+          matching_part_a = false;
+        }
+        else
+          collected_assertion = "(assert (! " + collected_assertion +" :interpolation-group part_b))";
+
+        ret += collected_assertion + "\n";
+        collected_assertion = "";
+      }
+    }
+    else
+      ret += curr_line + "\n";
+  }
+  return ret;
+}
+
 bool UAutomizerFileReader::isPushCmd() const {
   return line.find("push") != std::string::npos;
 }
@@ -256,21 +297,19 @@ void UAutomizerFileReader::testOtherSolvers() const {
         BENCHMARK_COMMAND(
             // WRITER
             z3::solver tseitin_solver(ctx);
-            tseitin_solver.add(ctx.bool_const("part_a"));
-            tseitin_solver.add(z3::mk_and(part_a), "part_a");
-            tseitin_solver.add(ctx.bool_const("part_b"));
-            tseitin_solver.add(z3::mk_and(part_b), "part_b");
+            tseitin_solver.add(z3::mk_and(part_a));
+            tseitin_solver.add(z3::mk_and(part_b));
             axdinterpolator_file 
             << "(set-option :produce-interpolants true)" 
             << std::endl;
-            axdinterpolator_file 
-            << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << tseitin_solver.to_smt2();
-            axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
+            //axdinterpolator_file 
+            //<< "(set-logic QF_AUFLIA)" << std::endl;
+            axdinterpolator_file << fromImplToNamedMathsat(tseitin_solver.to_smt2());
+            axdinterpolator_file << "(get-interpolant (part_a))" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
             std::string temp_file_name = "z3_inter_temp_" + current_file;
-            sprintf(exec_command, "./../../bin/z3 %s > %s;",
+            sprintf(exec_command, "./../../bin/mathsat %s > %s;",
               file_for_implementation.c_str(), temp_file_name.c_str());,
             // LOG_COMMAND
             std::ifstream result(temp_file_name.c_str());
@@ -283,40 +322,50 @@ void UAutomizerFileReader::testOtherSolvers() const {
             std::getline(result, line);
 
             if(line == "unsat"){
-              std::getline(result, line);
 
               interpolant_from_file += tseitin_solver.to_smt2_decls_only();
               interpolant_from_file += "(assert (and true\n";
+              std::string _interpolant_result = "";
               while(std::getline(result, line))
-                interpolant_from_file += line + "\n";
-              // Only one parenthesis is needed to close
-              // the above since the content of (interpolant *)
-              // includes an additional parenthesis
-              interpolant_from_file += ")\n";
-              interpolant_from_file += "(check-sat)\n";
-              system(("rm -rf " + temp_file_name).c_str());
+                _interpolant_result += line + "\n";
 
-              z3::solver z3_interpolant_parser(ctx);
-              z3_interpolant_parser.from_string(interpolant_from_file.c_str());
+              if(_interpolant_result.find("build ie-local interpolant") != std::string::npos){
+                system(("rm -rf " + temp_file_name).c_str());
+                sprintf(log_command, 
+                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                    file_for_implementation.c_str(), 4, 1, 0, file_statistics);
+              }
+              else {
+                interpolant_from_file += _interpolant_result;
+                // Only one parenthesis is needed to close
+                // the above since the content of (interpolant *)
+                // includes an additional parenthesis
+                interpolant_from_file += "))\n";
+                interpolant_from_file += "(check-sat)\n";
+                system(("rm -rf " + temp_file_name).c_str());
 
-              auto const & interpolant_result = z3_interpolant_parser.assertions();
-              std::cout << interpolant_result << std::endl;
-              unsigned is_quantified = 0;
-              for(auto const & arg : interpolant_result)
-                if(hasQuantifier(arg)){
-                  is_quantified = 1;
-                  break;
-                }
+                z3::solver mathsat_interpolant_parser(ctx);
+                mathsat_interpolant_parser.from_string(interpolant_from_file.c_str());
 
-              sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
+                auto const & interpolant_result = mathsat_interpolant_parser.assertions();
+                std::cout << interpolant_result << std::endl;
+                unsigned is_quantified = 0;
+                for(auto const & arg : interpolant_result)
+                  if(hasQuantifier(arg)){
+                    is_quantified = 1;
+                    break;
+                  }
+
+                sprintf(log_command, 
+                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                    file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
+              }
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 4, ret, 0, file_statistics);
+                  file_for_implementation.c_str(), 4, 1, 0, file_statistics);
             }
 
             );
@@ -341,12 +390,13 @@ void UAutomizerFileReader::testOtherSolvers() const {
             axdinterpolator_file << fromImplToNamed(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolants part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
-              // EXEC_COMMAND
-              std::string temp_file_name = "smtinterpol_inter_temp_" + current_file;
-            sprintf(exec_command, "java -jar ./../../bin/smtinterpol-2.5-663-gf15aa217.jar -w %s > %s",
-                file_for_implementation.c_str(), temp_file_name.c_str());,
-              // LOG_COMMAND
-              std::ifstream result(temp_file_name.c_str());
+            // EXEC_COMMAND
+            std::string temp_file_name = "smtinterpol_inter_temp_" + current_file;
+            sprintf(exec_command, 
+              "java -jar ./../../bin/smtinterpol-2.5-663-gf15aa217.jar -w %s > %s",
+              file_for_implementation.c_str(), temp_file_name.c_str());,
+            // LOG_COMMAND
+            std::ifstream result(temp_file_name.c_str());
             std::string line("");
             std::string interpolant_from_file("");
             // We consume one line because
@@ -355,7 +405,6 @@ void UAutomizerFileReader::testOtherSolvers() const {
             std::getline(result, line);
 
             if(line == "unsat"){
-
               interpolant_from_file += tseitin_solver.to_smt2_decls_only();
               interpolant_from_file += "(assert \n";
               std::getline(result, line);
@@ -374,7 +423,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
               smtinterpol_interpolant_parser.from_string(interpolant_from_file.c_str());
 
               auto const & interpolant_result = smtinterpol_interpolant_parser.assertions();
-              std::cout << interpolant_result << std::endl;
+              std::cerr << interpolant_result << std::endl;
               unsigned is_quantified = 0;
               for(auto const & arg : interpolant_result)
                 if(hasQuantifier(arg)){
@@ -390,7 +439,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 6, ret, 0, file_statistics);
+                  file_for_implementation.c_str(), 6, 1, 0, file_statistics);
             }
 
             );
