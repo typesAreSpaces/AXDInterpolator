@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <string>
 #include <cstdlib>
+#include <regex>
 #include <z3++.h>
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
@@ -23,6 +24,7 @@ class UAutomizerFileReader {
   char * const file_statistics;
 
   bool hasQuantifier(z3::expr const &) const;
+  void fromImplToNamed(std::string &) const;
 
   bool isPushCmd() const;
   bool isPopCmd() const;

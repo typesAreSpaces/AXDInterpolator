@@ -1,4 +1,5 @@
 #include "UAutomizerFileReader.h"
+#include <regex>
 #include <z3++.h>
 
 #define TEMP_FILE_SETUP\
@@ -96,6 +97,18 @@ bool UAutomizerFileReader::hasQuantifier(z3::expr const & e) const {
       if (hasQuantifier(e.arg(i)))
         return true;
   return false;
+}
+
+void UAutomizerFileReader::fromImplToNamed(std::string & s) const {
+  s.erase(std::remove(s.begin(), s.end(), '\n'),
+            s.end());
+  std::cout << ">> Hmmm" << std::endl;
+  //std::regex part_a_regex("(\\(assert )(.*)(\\(=> )(.*)( )(.*)(\\))(.*)(\\))");
+  std::regex assert_regex("(.*)(\\(assert )(.*)(\\))(check-sat)");
+  s = std::regex_replace(s, assert_regex, "\n(assert (! $2 :named part_a) )\n");
+  std::cout << s << std::endl;
+  int stop;
+  std::cin >> stop;
 }
 
 bool UAutomizerFileReader::isPushCmd() const {
@@ -288,8 +301,8 @@ void UAutomizerFileReader::testOtherSolvers() const {
         BENCHMARK_COMMAND(
             // WRITER
             z3::solver tseitin_solver(ctx);
-            tseitin_solver.add(ctx.bool_const("part_a"));
             tseitin_solver.add(z3::mk_and(part_a), "part_a");
+            tseitin_solver.add(ctx.bool_const("part_a"));
             tseitin_solver.add(ctx.bool_const("part_b"));
             tseitin_solver.add(z3::mk_and(part_b), "part_b");
             axdinterpolator_file 
@@ -299,6 +312,14 @@ void UAutomizerFileReader::testOtherSolvers() const {
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
             axdinterpolator_file << tseitin_solver.to_smt2();
+
+            std::string test = tseitin_solver.to_smt2();
+            fromImplToNamed(test);
+
+            std::cout << test << std::endl;
+            int stop;
+            std::cin >> stop;
+
             axdinterpolator_file << "(get-interpolants part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
@@ -309,14 +330,12 @@ void UAutomizerFileReader::testOtherSolvers() const {
               std::ifstream result(temp_file_name.c_str());
             std::string line("");
             std::string interpolant_from_file("");
-            // We consume two lines because
-            // z3 outputs "check-sat" followed
-            // a line containing "(interpolants", followed
+            // We consume one line because
+            // mathsat outputs "check-sat" followed
             // by the interpolant
             std::getline(result, line);
 
             if(line == "unsat"){
-              std::getline(result, line);
 
               interpolant_from_file += tseitin_solver.to_smt2_decls_only();
               interpolant_from_file += "(assert \n";
@@ -332,10 +351,10 @@ void UAutomizerFileReader::testOtherSolvers() const {
               interpolant_from_file += "(check-sat)\n";
               system(("rm -rf " + temp_file_name).c_str());
 
-              z3::solver z3_interpolant_parser(ctx);
-              z3_interpolant_parser.from_string(interpolant_from_file.c_str());
+              z3::solver smtinterpol_interpolant_parser(ctx);
+              smtinterpol_interpolant_parser.from_string(interpolant_from_file.c_str());
 
-              auto const & interpolant_result = z3_interpolant_parser.assertions();
+              auto const & interpolant_result = smtinterpol_interpolant_parser.assertions();
               std::cout << interpolant_result << std::endl;
               unsigned is_quantified = 0;
               for(auto const & arg : interpolant_result)
@@ -346,13 +365,13 @@ void UAutomizerFileReader::testOtherSolvers() const {
 
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
+                  file_for_implementation.c_str(), 6, ret, is_quantified, file_statistics);
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 4, ret, 0, file_statistics);
+                  file_for_implementation.c_str(), 6, ret, 0, file_statistics);
             }
 
             );
