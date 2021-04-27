@@ -46,18 +46,12 @@
       return;\
     }\
     \
+    part_a.push_back(ctx.bool_val(true));\
+    part_b.push_back(ctx.bool_val(true));\
     for(unsigned i = 0; i < half_size_cnf; i++)\
     part_a.push_back(curr_conjunction.arg(i));\
     for(unsigned i = half_size_cnf; i < total_size_cnf; i++)\
     part_b.push_back(curr_conjunction.arg(i));\
-    \
-    part_a.push_back(ctx.bool_val(true));\
-    part_b.push_back(ctx.bool_val(true));\
-    unsigned half_size = curr_assertions.size()/2;\
-    for(unsigned i = 0; i < half_size; i++)\
-    part_a.push_back(curr_assertions[i]);\
-    for(unsigned i = half_size; i < curr_assertions.size(); i++)\
-    part_b.push_back(curr_assertions[i]);\
     \
     WRITER;\
     \
@@ -120,19 +114,13 @@ void UAutomizerFileReader::testAXDInterpolator() const {
 
   TEMP_FILE_SETUP;
   BENCHMARK_COMMAND(
-      axdinterpolator_file
-      << input_parser.to_smt2_decls_only();
-      axdinterpolator_file 
-      << "(assert "
-      << z3::mk_and(part_a)
-      << ")\n";
-      axdinterpolator_file 
-      << "(assert "
-      << z3::mk_and(part_b)
-      << ")\n";
-      axdinterpolator_file 
-      << "(check-sat)\n";
+      z3::solver tseitin_solver(ctx);
+      tseitin_solver.add(z3::mk_and(part_a));
+      tseitin_solver.add(z3::mk_and(part_b));
+
+      axdinterpolator_file << tseitin_solver.to_smt2();
       axdinterpolator_file.close();,
+
       sprintf(exec_command,
         "./../../bin/axd_interpolator QF_TO %s %u 1000;",
         file_for_implementation.c_str(), curr_solver);,
@@ -150,34 +138,26 @@ void UAutomizerFileReader::testOtherSolvers() const {
       {
         TEMP_FILE_SETUP;
         BENCHMARK_COMMAND(
+            // WRITER
+            z3::solver tseitin_solver(ctx);
+            tseitin_solver.add(ctx.bool_const("part_a"));
+            tseitin_solver.add(z3::mk_and(part_a), "part_a");
+            tseitin_solver.add(ctx.bool_const("part_b"));
+            tseitin_solver.add(z3::mk_and(part_b), "part_b");
             axdinterpolator_file 
             << "(set-option :produce-interpolants true)" 
             << std::endl;
-            //axdinterpolator_file 
-            //<< "(set-logic QF_AULIA)" << ")" << std::endl;
-
-            axdinterpolator_file << input_parser.to_smt2_decls_only();
-            axdinterpolator_file << "(assert (! (and" << std::endl;
-
-            axdinterpolator_file << "true" << std::endl;
-            axdinterpolator_file << z3::mk_and(part_a) << std::endl;
-            axdinterpolator_file << ") :named part_a))" << std::endl;
-            axdinterpolator_file << "(assert (! (and" << std::endl;
-
-            axdinterpolator_file << "true" << std::endl;
-            axdinterpolator_file << z3::mk_and(part_b) << std::endl;
-            axdinterpolator_file << ") :named part_b))" << std::endl;
-            axdinterpolator_file << "(check-sat)" << std::endl;
+            axdinterpolator_file 
+            << "(set-logic QF_AUFLIA)" << std::endl;
+            axdinterpolator_file << tseitin_solver.to_smt2();
             axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
-
-            axdinterpolator_file.close();
-            ,
-              sprintf(exec_command,
-                  "./../../bin/z3 %s > z3_inter_temp.smt2;",
-                  file_for_implementation.c_str());
-            ,
-
-              std::ifstream result("z3_inter_temp.smt2");
+            axdinterpolator_file.close();,
+            // EXEC_COMMAND
+            std::string temp_file_name = "z3_inter_temp_" + current_file;
+            sprintf(exec_command, "./../../bin/z3 %s > %s;",
+              file_for_implementation.c_str(), temp_file_name.c_str());,
+            // LOG_COMMAND
+            std::ifstream result(temp_file_name.c_str());
             std::string line("");
             std::string interpolant_from_file("");
             // We consume two lines because
@@ -185,80 +165,199 @@ void UAutomizerFileReader::testOtherSolvers() const {
             // a line containing "(interpolants", followed
             // by the interpolant
             std::getline(result, line);
-            std::getline(result, line);
 
-            interpolant_from_file += input_parser.to_smt2_decls_only();
-            interpolant_from_file += "(assert (and\n";
-            while(std::getline(result, line)){
-              interpolant_from_file += line + "\n";
+            if(line == "unsat"){
+              std::getline(result, line);
+
+              interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+              interpolant_from_file += "(assert (and true\n";
+              while(std::getline(result, line))
+                interpolant_from_file += line + "\n";
+              // Only one parenthesis is needed to close
+              // the above since the content of (interpolant *)
+              // includes an additional parenthesis
+              interpolant_from_file += ")\n";
+              interpolant_from_file += "(check-sat)\n";
+              system(("rm -rf " + temp_file_name).c_str());
+
+              z3::solver z3_interpolant_parser(ctx);
+              z3_interpolant_parser.from_string(interpolant_from_file.c_str());
+
+              auto const & interpolant_result = z3_interpolant_parser.assertions();
+              std::cout << interpolant_result << std::endl;
+              unsigned is_quantified = 0;
+              for(auto const & arg : interpolant_result)
+                if(hasQuantifier(arg)){
+                  is_quantified = 1;
+                  break;
+                }
+
+              sprintf(log_command, 
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                  file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
             }
-            // Only one parenthesis is needed to close
-            // the above since the content of (interpolant *)
-            // includes an additional parenthesis
-            interpolant_from_file += ")\n";
-            interpolant_from_file += "(check-sat)\n";
-            system("rm -rf z3_inter_temp.smt2");
+            else{
+              system(("rm -rf " + temp_file_name).c_str());
+              sprintf(log_command, 
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                  file_for_implementation.c_str(), 4, ret, 0, file_statistics);
+            }
 
-            z3::solver z3_interpolant_parser(ctx);
-            z3_interpolant_parser.from_string(interpolant_from_file.c_str());
-
-            auto const & interpolant_result = z3_interpolant_parser.assertions();
-            unsigned is_quantified = 0;
-            for(auto const & arg : interpolant_result)
-              if(hasQuantifier(arg)){
-                is_quantified = 1;
-                break;
-              }
-
-            sprintf(log_command, 
-                "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
             );
+
             system(("rm -rf " + temp_file).c_str());
       }
       return;
     case MATHSAT:
       {
         TEMP_FILE_SETUP;
-        //BENCHMARK_COMMAND(
-        //axdinterpolator_file
-        //<< input_parser.to_smt2_decls_only();
-        //axdinterpolator_file 
-        //<< "(assert "
-        //<< z3::mk_and(part_a)
-        //<< ")\n";
-        //axdinterpolator_file 
-        //<< "(assert "
-        //<< z3::mk_and(part_b)
-        //<< ")\n";
-        //axdinterpolator_file 
-        //<< "(check-sat)\n";
-        //axdinterpolator_file.close();,
-        //5 
-        //);
-        system(("rm -rf " + temp_file).c_str());
+        BENCHMARK_COMMAND(
+            // WRITER
+            z3::solver tseitin_solver(ctx);
+            tseitin_solver.add(ctx.bool_const("part_a"));
+            tseitin_solver.add(z3::mk_and(part_a), "part_a");
+            tseitin_solver.add(ctx.bool_const("part_b"));
+            tseitin_solver.add(z3::mk_and(part_b), "part_b");
+            axdinterpolator_file 
+            << "(set-option :produce-interpolants true)" 
+            << std::endl;
+            axdinterpolator_file 
+            << "(set-logic QF_AUFLIA)" << std::endl;
+            axdinterpolator_file << tseitin_solver.to_smt2();
+            axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
+            axdinterpolator_file.close();,
+            // EXEC_COMMAND
+            std::string temp_file_name = "z3_inter_temp_" + current_file;
+            sprintf(exec_command, "./../../bin/z3 %s > %s;",
+              file_for_implementation.c_str(), temp_file_name.c_str());,
+            // LOG_COMMAND
+            std::ifstream result(temp_file_name.c_str());
+            std::string line("");
+            std::string interpolant_from_file("");
+            // We consume two lines because
+            // z3 outputs "check-sat" followed
+            // a line containing "(interpolants", followed
+            // by the interpolant
+            std::getline(result, line);
+
+            if(line == "unsat"){
+              std::getline(result, line);
+
+              interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+              interpolant_from_file += "(assert (and true\n";
+              while(std::getline(result, line))
+                interpolant_from_file += line + "\n";
+              // Only one parenthesis is needed to close
+              // the above since the content of (interpolant *)
+              // includes an additional parenthesis
+              interpolant_from_file += ")\n";
+              interpolant_from_file += "(check-sat)\n";
+              system(("rm -rf " + temp_file_name).c_str());
+
+              z3::solver z3_interpolant_parser(ctx);
+              z3_interpolant_parser.from_string(interpolant_from_file.c_str());
+
+              auto const & interpolant_result = z3_interpolant_parser.assertions();
+              std::cout << interpolant_result << std::endl;
+              unsigned is_quantified = 0;
+              for(auto const & arg : interpolant_result)
+                if(hasQuantifier(arg)){
+                  is_quantified = 1;
+                  break;
+                }
+
+              sprintf(log_command, 
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                  file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
+            }
+            else{
+              system(("rm -rf " + temp_file_name).c_str());
+              sprintf(log_command, 
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                  file_for_implementation.c_str(), 4, ret, 0, file_statistics);
+            }
+
+            );
+
+            system(("rm -rf " + temp_file).c_str());
       }
       return;
     case SMTINTERPOL:
       {
         TEMP_FILE_SETUP;
-        //BENCHMARK_COMMAND(
-        //axdinterpolator_file
-        //<< input_parser.to_smt2_decls_only();
-        //axdinterpolator_file 
-        //<< "(assert "
-        //<< z3::mk_and(part_a)
-        //<< ")\n";
-        //axdinterpolator_file 
-        //<< "(assert "
-        //<< z3::mk_and(part_b)
-        //<< ")\n";
-        //axdinterpolator_file 
-        //<< "(check-sat)\n";
-        //axdinterpolator_file.close();,
-        //6 
-        //);
-        system(("rm -rf " + temp_file).c_str());
+        BENCHMARK_COMMAND(
+            // WRITER
+            z3::solver tseitin_solver(ctx);
+            tseitin_solver.add(ctx.bool_const("part_a"));
+            tseitin_solver.add(z3::mk_and(part_a), "part_a");
+            tseitin_solver.add(ctx.bool_const("part_b"));
+            tseitin_solver.add(z3::mk_and(part_b), "part_b");
+            axdinterpolator_file 
+            << "(set-option :print-success false)\n" 
+            << "(set-option :produce-interpolants true)" 
+            << std::endl;
+            axdinterpolator_file 
+            << "(set-logic QF_AUFLIA)" << std::endl;
+            axdinterpolator_file << tseitin_solver.to_smt2();
+            axdinterpolator_file << "(get-interpolants part_a part_b)" << std::endl;
+            axdinterpolator_file.close();,
+            // EXEC_COMMAND
+            std::string temp_file_name = "smtinterpol_inter_temp_" + current_file;
+            sprintf(exec_command, "java -jar ./../../bin/smtinterpol-2.5-663-gf15aa217.jar -w %s > %s",
+              file_for_implementation.c_str(), temp_file_name.c_str());,
+            // LOG_COMMAND
+              std::ifstream result(temp_file_name.c_str());
+            std::string line("");
+            std::string interpolant_from_file("");
+            // We consume two lines because
+            // z3 outputs "check-sat" followed
+            // a line containing "(interpolants", followed
+            // by the interpolant
+            std::getline(result, line);
+
+            if(line == "unsat"){
+              std::getline(result, line);
+
+              interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+              interpolant_from_file += "(assert \n";
+              std::getline(result, line);
+              interpolant_from_file += line.erase(0, 1) + "\n";
+              // The following removes the last parenthesis 
+              // and the extra '\n'
+              interpolant_from_file.erase(interpolant_from_file.size() - 2, 2);
+              // Only one parenthesis is needed to close
+              // the above since the content of (interpolant *)
+              // includes an additional parenthesis
+              interpolant_from_file += ")\n";
+              interpolant_from_file += "(check-sat)\n";
+              system(("rm -rf " + temp_file_name).c_str());
+
+              z3::solver z3_interpolant_parser(ctx);
+              z3_interpolant_parser.from_string(interpolant_from_file.c_str());
+
+              auto const & interpolant_result = z3_interpolant_parser.assertions();
+              std::cout << interpolant_result << std::endl;
+              unsigned is_quantified = 0;
+              for(auto const & arg : interpolant_result)
+                if(hasQuantifier(arg)){
+                  is_quantified = 1;
+                  break;
+                }
+
+              sprintf(log_command, 
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                  file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
+            }
+            else{
+              system(("rm -rf " + temp_file_name).c_str());
+              sprintf(log_command, 
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                  file_for_implementation.c_str(), 4, ret, 0, file_statistics);
+            }
+
+            );
+
+            system(("rm -rf " + temp_file).c_str());
       }
       return;
   }
