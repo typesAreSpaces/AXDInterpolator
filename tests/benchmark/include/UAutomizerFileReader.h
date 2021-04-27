@@ -22,11 +22,14 @@ class UAutomizerFileReader {
   unsigned num_samples;
   char * const file_statistics;
 
+  bool hasQuantifier(z3::expr const &) const;
+
   bool isPushCmd() const;
   bool isPopCmd() const;
   bool isEchoCmd() const; 
 
-  void action() const; 
+  void testAXDInterpolator() const; 
+  void testOtherSolvers() const; 
   void reset(); 
 
   public:
