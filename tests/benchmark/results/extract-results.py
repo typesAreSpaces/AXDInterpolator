@@ -109,10 +109,11 @@ class ResultsReader:
             num_timeout += entry['134']
         return (num_success, num_failed, num_timeout)
 
-    def to_latex(self, caption, label):
+    def axdInterpolatorTable(self, caption, label):
         table = "\\begin{table}[htp]\n"
         table += "\t\\begin{centering}\n"
         table += "\t\t\\begin{tabular}{l|ccc|ccc|ccc}\n"
+        table += "\t\t\t & \\multicolumn{9}{c}{AXD Interpolator} \n"
         table += "\t\t\t & \\multicolumn{3}{c}{Z3} & \\multicolumn{3}{c}{MathSat} & \\multicolumn{3}{c}{SMTInterpol} \\\\ \n"
         table += "\t\t\t \\hline \n"
         table += "\t\t\t  & Success & Failed & Timeout & Success & Failed & Timeout & Success & Failed & Timeout \\\\ \n"
@@ -123,10 +124,6 @@ class ResultsReader:
             axd_z3_entry = self.table[subtrack]['0']
             axd_mathsat_entry = self.table[subtrack]['1']
             axd_smtinterpol_entry = self.table[subtrack]['2']
-            # TODO: incorporate these entries
-            z3_entry = self.table[subtrack]['3']
-            mathsat_entry = self.table[subtrack]['4']
-            smtinterpol_entry = self.table[subtrack]['5']
 
             (axd_z3_num_success, axd_z3_num_failed, axd_z3_num_timeout) = self.makeTableEntry(axd_z3_entry)
             (axd_mathsat_num_success, axd_mathsat_num_failed, axd_mathsat_num_timeout) = self.makeTableEntry(axd_mathsat_entry)
@@ -145,6 +142,39 @@ class ResultsReader:
         table += "\\end{table}"
         return table
 
+    def otherSolversTable(self, caption, label):
+        table = "\\begin{table}[htp]\n"
+        table += "\t\\begin{centering}\n"
+        table += "\t\t\\begin{tabular}{l|ccc|ccc|ccc}\n"
+        table += "\t\t\t & \\multicolumn{3}{c}{Z3} & \\multicolumn{3}{c}{MathSat} & \\multicolumn{3}{c}{SMTInterpol} \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        table += "\t\t\t  & Success & Failed & Timeout & Success & Failed & Timeout & Success & Failed & Timeout \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        for subtrack in self.table:
+            table += f"\t\t\t{subtrack} "
+
+            z3_entry = self.table[subtrack]['3']
+            mathsat_entry = self.table[subtrack]['4']
+            smtinterpol_entry = self.table[subtrack]['5']
+
+            (z3_num_success, z3_num_failed, z3_num_timeout) = self.makeTableEntry(z3_entry)
+            (mathsat_num_success, mathsat_num_failed, mathsat_num_timeout) = self.makeTableEntry(mathsat_entry)
+            (smtinterpol_num_success, smtinterpol_num_failed, smtinterpol_num_timeout) = self.makeTableEntry(smtinterpol_entry)
+            
+            entry_for_z3 = f"& {z3_num_success} & {z3_num_failed} & {z3_num_timeout} "
+            entry_for_mathsat = f"& {mathsat_num_success} & {mathsat_num_failed} & {mathsat_num_timeout} "
+            entry_for_smtinterpol = f"& {smtinterpol_num_success} & {smtinterpol_num_failed} & {smtinterpol_num_timeout} "
+
+            table += entry_for_z3 + entry_for_mathsat + entry_for_smtinterpol
+            table += "\\\\ \n" 
+        table += "\t\t\\end{tabular}\n"
+        table += "\t\t\\caption{" + caption + "}\n"
+        table += "\t\t\\label{" + label + "}\n"
+        table += "\t\\end{centering}\n"
+        table += "\\end{table}"
+        return table
+
+
 if __name__ == "__main__":
     verification_files_dir = "/media/Documents/MaxDiff-Experiments/verification-files"
     results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000_St-360_Sv-4500000-samples-500"
@@ -155,6 +185,6 @@ if __name__ == "__main__":
     reachsafety_ = ResultsReader(
             f"{results_dir}/benchmark_reachsafety_results.txt", 
             f"{verification_files_dir}/ReachSafety-Arrays")
-    print(memsafety_.to_latex("Memsafety results", "label1"))
+    print(memsafety_.axdInterpolatorTable("Memsafety results - Our implementation", "label1"))
     print("")
-    print(reachsafety_.to_latex("Reachsafety results", "label2"))
+    print(memsafety_.otherSolversTable("Memsafety results - Other Solvers", "label2"))
