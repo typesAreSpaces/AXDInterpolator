@@ -22,6 +22,7 @@ class UAutomizerFileReader {
   std::string const name_solver;
   unsigned num_samples;
   char * const file_statistics;
+  bool test_our_implementation;
 
   bool        hasQuantifier(z3::expr const &) const;
   std::string nameAssertionsZ3(std::string const &) const;
@@ -36,7 +37,7 @@ class UAutomizerFileReader {
   void reset(); 
 
   public:
-  UAutomizerFileReader(SMT_SOLVER, unsigned, char * const);
+  UAutomizerFileReader(SMT_SOLVER, unsigned, char * const, bool);
     
   void process(char const *);
 };

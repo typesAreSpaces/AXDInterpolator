@@ -70,7 +70,8 @@
 UAutomizerFileReader::UAutomizerFileReader(
     SMT_SOLVER smt_solver, 
     unsigned num_samples, 
-    char * const file) : 
+    char * const file, 
+    bool test_our_implementation) : 
   line(""),
   current_frame(""),
   current_file(""),
@@ -83,7 +84,8 @@ UAutomizerFileReader::UAutomizerFileReader(
       : smt_solver == MATHSAT ? "MATHSAT" 
       : "SMTINTERPOL"),
   num_samples(num_samples),
-  file_statistics(file)
+  file_statistics(file),
+  test_our_implementation(test_our_implementation)
 {
 }
 
@@ -351,7 +353,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
-                  file_for_implementation.c_str(), 4, 1, 0, file_statistics);
+                  file_for_implementation.c_str(), 4, 1, file_statistics);
             }
 
             );
@@ -460,8 +462,10 @@ void UAutomizerFileReader::process(char const * file_path){
         return;
       }
       num_samples--;
-      //testAXDInterpolator();
-      testOtherSolvers();
+      if(test_our_implementation)
+        testAXDInterpolator();
+      else
+        testOtherSolvers();
       current_frame = stack_of_frames.back();
       stack_of_frames.pop_back();
     }
