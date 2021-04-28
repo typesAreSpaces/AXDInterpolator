@@ -210,7 +210,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
         "./../../bin/axd_interpolator QF_TO %s %u 1000;",
         file_for_implementation.c_str(), curr_solver);,
       sprintf(log_command, 
-        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);
       );
   system(("rm -rf " + temp_file).c_str());
@@ -270,13 +270,13 @@ void UAutomizerFileReader::testOtherSolvers() const {
               std::cout << interpolant_result << std::endl;
 
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                   file_for_implementation.c_str(), 3, ret, file_statistics);
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                   file_for_implementation.c_str(), 3, ret, file_statistics);
             }
 
@@ -326,7 +326,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
               if(_interpolant_result.find("build ie-local interpolant") != std::string::npos){
                 system(("rm -rf " + temp_file_name).c_str());
                 sprintf(log_command, 
-                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                     file_for_implementation.c_str(), 4, 1, file_statistics);
               }
               else {
@@ -345,14 +345,14 @@ void UAutomizerFileReader::testOtherSolvers() const {
                 std::cout << interpolant_result << std::endl;
                 
                 sprintf(log_command, 
-                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                     file_for_implementation.c_str(), 4, ret, file_statistics);
               }
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                   file_for_implementation.c_str(), 4, 1, file_statistics);
             }
 
@@ -414,13 +414,13 @@ void UAutomizerFileReader::testOtherSolvers() const {
               std::cerr << interpolant_result << std::endl;
               
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                   file_for_implementation.c_str(), 5, ret, file_statistics);
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                   file_for_implementation.c_str(), 5, 1, file_statistics);
             }
 

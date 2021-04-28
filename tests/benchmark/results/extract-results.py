@@ -70,7 +70,7 @@ class ResultsReader:
 
             curr_file = curr_file[second_underscore + 1 : ]
             curr_solver_code = curr_line[4]
-            curr_exit_code = curr_line[7]
+            curr_exit_code = curr_line[7][0:-1]
             curr_subtrack = self.db.whichSubtrack(curr_file)
 
             self.exit_codes.add(curr_exit_code)
@@ -179,18 +179,20 @@ class ResultsReader:
 
 if __name__ == "__main__":
     verification_files_dir = "/media/Documents/MaxDiff-Experiments/verification-files"
-    results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000_St-360_Sv-4500000-samples-500"
+    # results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000_St-360_Sv-4500000-samples-500"
 
-    memsafety_ = ResultsReader(
-            f"{results_dir}/benchmark_memsafety_results.txt", 
-            f"{verification_files_dir}/MemSafety-Arrays")
-    reachsafety_ = ResultsReader(
-            f"{results_dir}/benchmark_reachsafety_results.txt", 
-            f"{verification_files_dir}/ReachSafety-Arrays")
-    print(memsafety_.axdInterpolatorTable("Memsafety-track results - Our implementation", "label1"))
-    print("")
-    print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label2"))
-    print("")
-    print(reachsafety_.axdInterpolatorTable("Reachsafety-track results - Our implementation", "label1"))
-    print("")
-    print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
+    # memsafety_ = ResultsReader(
+            # f"{results_dir}/benchmark_memsafety_results.txt", 
+            # f"{verification_files_dir}/MemSafety-Arrays")
+    # reachsafety_ = ResultsReader(
+            # f"{results_dir}/benchmark_reachsafety_results.txt", 
+            # f"{verification_files_dir}/ReachSafety-Arrays")
+    # print(memsafety_.axdInterpolatorTable("Memsafety-track results - Our implementation", "label1"))
+    # print("")
+    # print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label2"))
+    # print("")
+    # print(reachsafety_.axdInterpolatorTable("Reachsafety-track results - Our implementation", "label1"))
+    # print("")
+    # print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
+    a = ResultsReader("/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/benchmark_memsafety_results-z3.txt", f"{verification_files_dir}/MemSafety-Arrays")
+    print(a.otherSolversTable("Memsafety-track results - Z3", "label"))
