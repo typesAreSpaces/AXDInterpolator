@@ -111,10 +111,11 @@ class ResultsReader:
 
     def axdInterpolatorTable(self, caption, label):
         table = "\\begin{table}[htp]\n"
+        table += "\t\\small\n"
         table += "\t\\begin{centering}\n"
         table += "\t\t\\begin{tabular}{l|ccc|ccc|ccc}\n"
-        table += "\t\t\t & \\multicolumn{9}{c}{AXD Interpolator} \n"
-        table += "\t\t\t & \\multicolumn{3}{c}{Z3} & \\multicolumn{3}{c}{MathSat} & \\multicolumn{3}{c}{SMTInterpol} \\\\ \n"
+        table += "\t\t\t & \\multicolumn{9}{c}{AXD Interpolator} \\\\ \n"
+        table += "\t\t\t Subtracks & \\multicolumn{3}{c}{Using iZ3} & \\multicolumn{3}{c}{Using MathSat} & \\multicolumn{3}{c}{Using SMTInterpol} \\\\ \n"
         table += "\t\t\t \\hline \n"
         table += "\t\t\t  & Success & Failed & Timeout & Success & Failed & Timeout & Success & Failed & Timeout \\\\ \n"
         table += "\t\t\t \\hline \n"
@@ -144,9 +145,10 @@ class ResultsReader:
 
     def otherSolversTable(self, caption, label):
         table = "\\begin{table}[htp]\n"
+        table += "\t\\small\n"
         table += "\t\\begin{centering}\n"
         table += "\t\t\\begin{tabular}{l|ccc|ccc|ccc}\n"
-        table += "\t\t\t & \\multicolumn{3}{c}{Z3} & \\multicolumn{3}{c}{MathSat} & \\multicolumn{3}{c}{SMTInterpol} \\\\ \n"
+        table += "\t\t\t Subtracks & \\multicolumn{3}{c}{Z3} & \\multicolumn{3}{c}{MathSat} & \\multicolumn{3}{c}{SMTInterpol} \\\\ \n"
         table += "\t\t\t \\hline \n"
         table += "\t\t\t  & Success & Failed & Timeout & Success & Failed & Timeout & Success & Failed & Timeout \\\\ \n"
         table += "\t\t\t \\hline \n"
@@ -185,6 +187,10 @@ if __name__ == "__main__":
     reachsafety_ = ResultsReader(
             f"{results_dir}/benchmark_reachsafety_results.txt", 
             f"{verification_files_dir}/ReachSafety-Arrays")
-    print(memsafety_.axdInterpolatorTable("Memsafety results - Our implementation", "label1"))
+    print(memsafety_.axdInterpolatorTable("Memsafety-track results - Our implementation", "label1"))
     print("")
-    print(memsafety_.otherSolversTable("Memsafety results - Other Solvers", "label2"))
+    print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label2"))
+    print("")
+    print(reachsafety_.axdInterpolatorTable("Reachsafety-track results - Our implementation", "label1"))
+    print("")
+    print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
