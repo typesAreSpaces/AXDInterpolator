@@ -223,16 +223,14 @@ void UAutomizerFileReader::testOtherSolvers() const {
         BENCHMARK_COMMAND(
             // WRITER
             z3::solver tseitin_solver(ctx);
-            tseitin_solver.add(ctx.bool_const("part_a"));
-            tseitin_solver.add(z3::mk_and(part_a), "part_a");
-            tseitin_solver.add(ctx.bool_const("part_b"));
-            tseitin_solver.add(z3::mk_and(part_b), "part_b");
+            tseitin_solver.add(z3::mk_and(part_a));
+            tseitin_solver.add(z3::mk_and(part_b));
             axdinterpolator_file 
             << "(set-option :produce-interpolants true)" 
             << std::endl;
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << tseitin_solver.to_smt2();
+            axdinterpolator_file << fromImplToNamedMathsat(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
@@ -308,7 +306,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             axdinterpolator_file << "(get-interpolant (part_a))" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
-            std::string temp_file_name = "z3_inter_temp_" + current_file;
+            std::string temp_file_name = "mathsat_inter_temp_" + current_file;
             sprintf(exec_command, "./../../bin/mathsat %s > %s;",
               file_for_implementation.c_str(), temp_file_name.c_str());,
             // LOG_COMMAND
