@@ -1,0 +1,158 @@
+#!/usr/bin/python
+
+import os
+import subprocess
+
+class BuildFileDB:
+
+    def __init__(self, file_name):
+        self.files = {}
+        self.file_name = file_name
+        self.add(file_name)
+
+    def executeCommand(self, execstr):
+        proc = subprocess.Popen([execstr], stdout=subprocess.PIPE, shell=True)
+        (out, err) = proc.communicate()
+        p_status = proc.wait()
+        if(p_status != 0):
+            print(f"Unable to execute {execstr}")
+            return ""
+        return str(out)
+    
+    def show(self):
+        for subtrack in self.files:
+            print(f"Subtrack: {subtrack} Size: {len(self.files[subtrack])}")
+            for _file in self.files[subtrack]:
+                print(_file)
+
+    def add(self, file_name):
+        directories = self.executeCommand(f"ls {file_name}")[2:-1]
+        for directory in directories.split("\\n"):
+            if(directory == ''):
+                continue
+            curr_dir = file_name + "/" + directory;
+            if(os.path.isdir(curr_dir)):
+                files = self.executeCommand(f"ls {curr_dir}")[2:-1]
+                for _file in files.split("\\n"):
+                    if(_file == ''):
+                        continue
+                    if(not (directory in self.files)):
+                        self.files[directory] = set()
+                    self.files[directory].add(_file)
+
+    def whichSubtrack(self, _file):
+        for subtrack in self.files:
+            if(_file in self.files[subtrack]):
+                return subtrack
+        return None
+
+class ResultsReader:
+
+    def __init__(self, file_name, db_dir):
+        self.db = BuildFileDB(db_dir)
+        self.file_name = file_name
+        # self.table is a map from subtrack to a 
+        # map of solver -> exit -> num_samples
+        # subtrack -> solver -> exit code -> num_samples
+        self.exit_codes = set()
+        self.table = {}
+        self.fillTable()
+    
+    def fillTable(self):
+        temp_file = open(self.file_name, 'r')
+        while True:
+            line = temp_file.readline()
+            if not line:
+                break
+            curr_line = line.split(" ")
+            curr_file = curr_line[1]
+            second_underscore = curr_file.find("_", curr_file.find("_") + 1)
+
+            curr_file = curr_file[second_underscore + 1 : ]
+            curr_solver_code = curr_line[4]
+            curr_exit_code = curr_line[7][0:-1]
+            curr_subtrack = self.db.whichSubtrack(curr_file)
+
+            self.exit_codes.add(curr_exit_code)
+
+            if(not (curr_subtrack in self.table)):
+                self.table[curr_subtrack] = {}
+            if(not (curr_solver_code in self.table[curr_subtrack])):
+                self.table[curr_subtrack][curr_solver_code] = {}
+            if(not (curr_exit_code in self.table[curr_subtrack][curr_solver_code])):
+                self.table[curr_subtrack][curr_solver_code][curr_exit_code] = 0
+            self.table[curr_subtrack][curr_solver_code][curr_exit_code] = self.table[curr_subtrack][curr_solver_code][curr_exit_code] + 1
+        temp_file.close()
+
+    def show(self):
+        for subtrack in self.table:
+            print(f"Subtrack: {subtrack}")
+            for solver_code in self.table[subtrack]:
+                print(f">>>Solver code: {solver_code}")
+                for exit_code in self.exit_codes:
+                    if(not (exit_code in self.table[subtrack][solver_code])):
+                        print(f"Exit Code: {exit_code} Num Samples: 0")
+                    else:
+                        print(f"Exit Code: {exit_code} Num Samples: {self.table[subtrack][solver_code][exit_code]}")
+            print("")
+
+    def makeTableEntry(self, entry):
+        num_success = 0
+        if('0' in entry):
+            num_success += entry['0']
+        num_failed = 0
+        for exit_code in entry:
+            if(exit_code != '0' and exit_code != '134'):
+                num_failed += entry[exit_code]
+        num_timeout = 0
+        if('134' in entry):
+            num_timeout += entry['134']
+        return (num_success, num_failed, num_timeout)
+
+    def to_latex(self, caption, label):
+        table = "\\begin{table}[htp]\n"
+        table += "\t\\begin{centering}\n"
+        table += "\t\t\\begin{tabular}{l|ccc|ccc|ccc}\n"
+        table += "\t\t\t & \\multicolumn{3}{c}{Z3} & \\multicolumn{3}{c}{MathSat} & \\multicolumn{3}{c}{SMTInterpol} \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        table += "\t\t\t  & Success & Failed & Timeout & Success & Failed & Timeout & Success & Failed & Timeout \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        for subtrack in self.table:
+            table += f"\t\t\t{subtrack} "
+            # TODO: keep working here 
+            # Add entries for Z3, Mathsat, Smtinterpol solvers
+            # The ones here are from axdinterpolator[SMT-SOLVER]
+            z3_entry = self.table[subtrack]['0']
+            mathsat_entry = self.table[subtrack]['1']
+            smtinterpol_entry = self.table[subtrack]['2']
+
+            (z3_num_success, z3_num_failed, z3_num_timeout) = self.makeTableEntry(z3_entry)
+            (mathsat_num_success, mathsat_num_failed, mathsat_num_timeout) = self.makeTableEntry(mathsat_entry)
+            (smtinterpol_num_success, smtinterpol_num_failed, smtinterpol_num_timeout) = self.makeTableEntry(smtinterpol_entry)
+            
+            entry_for_z3 = f"& {z3_num_success} & {z3_num_failed} & {z3_num_timeout} "
+            entry_for_mathsat = f"& {mathsat_num_success} & {mathsat_num_failed} & {mathsat_num_timeout} "
+            entry_for_smtinterpol = f"& {smtinterpol_num_success} & {smtinterpol_num_failed} & {smtinterpol_num_timeout} "
+
+            table += entry_for_z3 + entry_for_mathsat + entry_for_smtinterpol
+            table += "\\\\ \n" 
+        table += "\t\t\\end{tabular}\n"
+        table += "\t\t\\caption{" + caption + "}\n"
+        table += "\t\t\\label{" + label + "}\n"
+        table += "\t\\end{centering}\n"
+        table += "\\end{table}"
+        return table
+
+if __name__ == "__main__":
+    verification_files_dir = "/media/Documents/MaxDiff-Experiments/verification-files"
+    results_dir = "/home/jose/results/fuel-1000_St-360_Sv-4500000-samples-500"
+
+    memsafety_ = ResultsReader(
+            f"{results_dir}/benchmark_memsafety_results.txt", 
+            f"{verification_files_dir}/MemSafety-Arrays")
+    reachsafety_ = ResultsReader(
+            f"{results_dir}/benchmark_reachsafety_results.txt", 
+            f"{verification_files_dir}/ReachSafety-Arrays")
+    print(memsafety_.to_latex("Memsafety results", "label1"))
+    print("")
+    print(reachsafety_.to_latex("Reachsafety results", "label2"))
