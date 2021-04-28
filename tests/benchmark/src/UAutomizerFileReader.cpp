@@ -230,7 +230,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             << std::endl;
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << fromImplToNamedMathsat(tseitin_solver.to_smt2());
+            axdinterpolator_file << fromImplToNamed(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
