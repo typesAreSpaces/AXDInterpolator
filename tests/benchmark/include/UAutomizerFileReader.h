@@ -23,9 +23,9 @@ class UAutomizerFileReader {
   unsigned num_samples;
   char * const file_statistics;
 
-  bool hasQuantifier(z3::expr const &) const;
-  std::string fromImplToNamed(std::string const &) const;
-  std::string fromImplToNamedMathsat(std::string const &) const;
+  bool        hasQuantifier(z3::expr const &) const;
+  std::string nameAssertionsZ3(std::string const &) const;
+  std::string nameAssertionsMathsat(std::string const &) const;
 
   bool isPushCmd() const;
   bool isPopCmd() const;

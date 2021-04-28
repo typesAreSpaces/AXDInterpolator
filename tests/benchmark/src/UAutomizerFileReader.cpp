@@ -99,7 +99,7 @@ bool UAutomizerFileReader::hasQuantifier(z3::expr const & e) const {
   return false;
 }
 
-std::string UAutomizerFileReader::fromImplToNamed(std::string const & s) const {
+std::string UAutomizerFileReader::nameAssertionsZ3(std::string const & s) const {
   std::stringstream decl_strm(s);
   std::string curr_line, collected_assertion = "", ret = "";
   bool matching_assert = false, matching_part_a = true;
@@ -140,7 +140,7 @@ std::string UAutomizerFileReader::fromImplToNamed(std::string const & s) const {
   return ret;
 }
 
-std::string UAutomizerFileReader::fromImplToNamedMathsat(std::string const & s) const {
+std::string UAutomizerFileReader::nameAssertionsMathsat(std::string const & s) const {
   std::stringstream decl_strm(s);
   std::string curr_line, collected_assertion = "", ret = "";
   bool matching_assert = false, matching_part_a = true;
@@ -208,7 +208,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
         "./../../bin/axd_interpolator QF_TO %s %u 1000;",
         file_for_implementation.c_str(), curr_solver);,
       sprintf(log_command, 
-        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: 0 >> \"%s\"",
+        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);
       );
   system(("rm -rf " + temp_file).c_str());
@@ -230,7 +230,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             << std::endl;
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << fromImplToNamedMathsat(tseitin_solver.to_smt2());
+            axdinterpolator_file << nameAssertionsMathsat(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
@@ -266,22 +266,16 @@ void UAutomizerFileReader::testOtherSolvers() const {
 
               auto const & interpolant_result = z3_interpolant_parser.assertions();
               std::cout << interpolant_result << std::endl;
-              unsigned is_quantified = 0;
-              for(auto const & arg : interpolant_result)
-                if(hasQuantifier(arg)){
-                  is_quantified = 1;
-                  break;
-                }
 
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 3, ret, is_quantified, file_statistics);
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  file_for_implementation.c_str(), 3, ret, file_statistics);
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 3, ret, 0, file_statistics);
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  file_for_implementation.c_str(), 3, ret, file_statistics);
             }
 
             );
@@ -302,7 +296,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             << std::endl;
             //axdinterpolator_file 
             //<< "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << fromImplToNamedMathsat(tseitin_solver.to_smt2());
+            axdinterpolator_file << nameAssertionsMathsat(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolant (part_a))" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
@@ -330,8 +324,8 @@ void UAutomizerFileReader::testOtherSolvers() const {
               if(_interpolant_result.find("build ie-local interpolant") != std::string::npos){
                 system(("rm -rf " + temp_file_name).c_str());
                 sprintf(log_command, 
-                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                    file_for_implementation.c_str(), 4, 1, 0, file_statistics);
+                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                    file_for_implementation.c_str(), 4, 1, file_statistics);
               }
               else {
                 interpolant_from_file += _interpolant_result;
@@ -347,22 +341,16 @@ void UAutomizerFileReader::testOtherSolvers() const {
 
                 auto const & interpolant_result = mathsat_interpolant_parser.assertions();
                 std::cout << interpolant_result << std::endl;
-                unsigned is_quantified = 0;
-                for(auto const & arg : interpolant_result)
-                  if(hasQuantifier(arg)){
-                    is_quantified = 1;
-                    break;
-                  }
-
+                
                 sprintf(log_command, 
-                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                    file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
+                    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                    file_for_implementation.c_str(), 4, ret, file_statistics);
               }
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
                   file_for_implementation.c_str(), 4, 1, 0, file_statistics);
             }
 
@@ -385,7 +373,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             << std::endl;
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << fromImplToNamed(tseitin_solver.to_smt2());
+            axdinterpolator_file << nameAssertionsZ3(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolants part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
@@ -422,22 +410,16 @@ void UAutomizerFileReader::testOtherSolvers() const {
 
               auto const & interpolant_result = smtinterpol_interpolant_parser.assertions();
               std::cerr << interpolant_result << std::endl;
-              unsigned is_quantified = 0;
-              for(auto const & arg : interpolant_result)
-                if(hasQuantifier(arg)){
-                  is_quantified = 1;
-                  break;
-                }
-
+              
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 5, ret, is_quantified, file_statistics);
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  file_for_implementation.c_str(), 5, ret, file_statistics);
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
-                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 5, 1, 0, file_statistics);
+                  "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d>> \"%s\"",
+                  file_for_implementation.c_str(), 5, 1, file_statistics);
             }
 
             );

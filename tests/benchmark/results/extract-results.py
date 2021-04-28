@@ -70,7 +70,7 @@ class ResultsReader:
 
             curr_file = curr_file[second_underscore + 1 : ]
             curr_solver_code = curr_line[4]
-            curr_exit_code = curr_line[7][0:-1]
+            curr_exit_code = curr_line[7]
             curr_subtrack = self.db.whichSubtrack(curr_file)
 
             self.exit_codes.add(curr_exit_code)
