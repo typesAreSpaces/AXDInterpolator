@@ -119,22 +119,24 @@ class ResultsReader:
         table += "\t\t\t \\hline \n"
         for subtrack in self.table:
             table += f"\t\t\t{subtrack} "
-            # TODO: keep working here 
-            # Add entries for Z3, Mathsat, Smtinterpol solvers
-            # The ones here are from axdinterpolator[SMT-SOLVER]
-            z3_entry = self.table[subtrack]['0']
-            mathsat_entry = self.table[subtrack]['1']
-            smtinterpol_entry = self.table[subtrack]['2']
 
-            (z3_num_success, z3_num_failed, z3_num_timeout) = self.makeTableEntry(z3_entry)
-            (mathsat_num_success, mathsat_num_failed, mathsat_num_timeout) = self.makeTableEntry(mathsat_entry)
-            (smtinterpol_num_success, smtinterpol_num_failed, smtinterpol_num_timeout) = self.makeTableEntry(smtinterpol_entry)
+            axd_z3_entry = self.table[subtrack]['0']
+            axd_mathsat_entry = self.table[subtrack]['1']
+            axd_smtinterpol_entry = self.table[subtrack]['2']
+            # TODO: incorporate these entries
+            z3_entry = self.table[subtrack]['3']
+            mathsat_entry = self.table[subtrack]['4']
+            smtinterpol_entry = self.table[subtrack]['5']
+
+            (axd_z3_num_success, axd_z3_num_failed, axd_z3_num_timeout) = self.makeTableEntry(axd_z3_entry)
+            (axd_mathsat_num_success, axd_mathsat_num_failed, axd_mathsat_num_timeout) = self.makeTableEntry(axd_mathsat_entry)
+            (axd_smtinterpol_num_success, axd_smtinterpol_num_failed, axd_smtinterpol_num_timeout) = self.makeTableEntry(axd_smtinterpol_entry)
             
-            entry_for_z3 = f"& {z3_num_success} & {z3_num_failed} & {z3_num_timeout} "
-            entry_for_mathsat = f"& {mathsat_num_success} & {mathsat_num_failed} & {mathsat_num_timeout} "
-            entry_for_smtinterpol = f"& {smtinterpol_num_success} & {smtinterpol_num_failed} & {smtinterpol_num_timeout} "
+            entry_for_axd_z3 = f"& {axd_z3_num_success} & {axd_z3_num_failed} & {axd_z3_num_timeout} "
+            entry_for_axd_mathsat = f"& {axd_mathsat_num_success} & {axd_mathsat_num_failed} & {axd_mathsat_num_timeout} "
+            entry_for_axd_smtinterpol = f"& {axd_smtinterpol_num_success} & {axd_smtinterpol_num_failed} & {axd_smtinterpol_num_timeout} "
 
-            table += entry_for_z3 + entry_for_mathsat + entry_for_smtinterpol
+            table += entry_for_axd_z3 + entry_for_axd_mathsat + entry_for_axd_smtinterpol
             table += "\\\\ \n" 
         table += "\t\t\\end{tabular}\n"
         table += "\t\t\\caption{" + caption + "}\n"
