@@ -230,7 +230,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             << std::endl;
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << fromImplToNamed(tseitin_solver.to_smt2());
+            axdinterpolator_file << fromImplToNamedMathsat(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
@@ -275,13 +275,13 @@ void UAutomizerFileReader::testOtherSolvers() const {
 
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 4, ret, is_quantified, file_statistics);
+                  file_for_implementation.c_str(), 3, ret, is_quantified, file_statistics);
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 4, ret, 0, file_statistics);
+                  file_for_implementation.c_str(), 3, ret, 0, file_statistics);
             }
 
             );
@@ -306,7 +306,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             axdinterpolator_file << "(get-interpolant (part_a))" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
-            std::string temp_file_name = "mathsat_inter_temp_" + current_file;
+            std::string temp_file_name = "z3_inter_temp_" + current_file;
             sprintf(exec_command, "./../../bin/mathsat %s > %s;",
               file_for_implementation.c_str(), temp_file_name.c_str());,
             // LOG_COMMAND
@@ -431,13 +431,13 @@ void UAutomizerFileReader::testOtherSolvers() const {
 
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 6, ret, is_quantified, file_statistics);
+                  file_for_implementation.c_str(), 5, ret, is_quantified, file_statistics);
             }
             else{
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d Quantifiers?: %u >> \"%s\"",
-                  file_for_implementation.c_str(), 6, 1, 0, file_statistics);
+                  file_for_implementation.c_str(), 5, 1, 0, file_statistics);
             }
 
             );
