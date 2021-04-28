@@ -232,7 +232,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
             << std::endl;
             axdinterpolator_file 
             << "(set-logic QF_AUFLIA)" << std::endl;
-            axdinterpolator_file << nameAssertionsMathsat(tseitin_solver.to_smt2());
+            axdinterpolator_file << nameAssertionsZ3(tseitin_solver.to_smt2());
             axdinterpolator_file << "(get-interpolant part_a part_b)" << std::endl;
             axdinterpolator_file.close();,
             // EXEC_COMMAND
