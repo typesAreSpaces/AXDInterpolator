@@ -96,6 +96,19 @@ class ResultsReader:
                         print(f"Exit Code: {exit_code} Num Samples: {self.table[subtrack][solver_code][exit_code]}")
             print("")
 
+    def makeTableEntry(self, entry):
+        num_success = 0
+        if('0' in entry):
+            num_success += entry['0']
+        num_failed = 0
+        for exit_code in entry:
+            if(exit_code != '0' and exit_code != '134'):
+                num_failed += entry[exit_code]
+        num_timeout = 0
+        if('134' in entry):
+            num_timeout += entry['134']
+        return (num_success, num_failed, num_timeout)
+
     def to_latex(self, caption, label):
         table = "\\begin{table}[htp]\n"
         table += "\t\\begin{centering}\n"
@@ -106,41 +119,17 @@ class ResultsReader:
         table += "\t\t\t \\hline \n"
         for subtrack in self.table:
             table += f"\t\t\t{subtrack} "
+            # TODO: keep working here 
+            # Add entries for Z3, Mathsat, Smtinterpol solvers
+            # The ones here are from axdinterpolator[SMT-SOLVER]
             z3_entry = self.table[subtrack]['0']
             mathsat_entry = self.table[subtrack]['1']
             smtinterpol_entry = self.table[subtrack]['2']
 
-            z3_num_success = 0
-            if('0' in z3_entry):
-                z3_num_success += z3_entry['0']
-            z3_num_failed = 0
-            for exit_code in z3_entry:
-                if(exit_code != '0' and exit_code != '134'):
-                    z3_num_failed += z3_entry[exit_code]
-            z3_num_timeout = 0
-            if('134' in z3_entry):
-                z3_num_timeout += z3_entry['134']
-            mathsat_num_success = 0
-            if('0' in mathsat_entry):
-                mathsat_num_success += mathsat_entry['0']
-            mathsat_num_failed = 0
-            for exit_code in mathsat_entry:
-                if(exit_code != '0' and exit_code != '134'):
-                    mathsat_num_failed += mathsat_entry[exit_code]
-            mathsat_num_timeout = 0
-            if('134' in mathsat_entry):
-                mathsat_num_timeout += mathsat_entry['134']
-            smtinterpol_num_success = 0
-            if('0' in smtinterpol_entry):
-                smtinterpol_num_success += smtinterpol_entry['0']
-            smtinterpol_num_failed = 0
-            for exit_code in smtinterpol_entry:
-                if(exit_code != '0' and exit_code != '134'):
-                    smtinterpol_num_failed += smtinterpol_entry[exit_code]
-            smtinterpol_num_timeout = 0
-            if('134' in smtinterpol_entry):
-                smtinterpol_num_timeout += smtinterpol_entry['134']
-
+            (z3_num_success, z3_num_failed, z3_num_timeout) = self.makeTableEntry(z3_entry)
+            (mathsat_num_success, mathsat_num_failed, mathsat_num_timeout) = self.makeTableEntry(mathsat_entry)
+            (smtinterpol_num_success, smtinterpol_num_failed, smtinterpol_num_timeout) = self.makeTableEntry(smtinterpol_entry)
+            
             entry_for_z3 = f"& {z3_num_success} & {z3_num_failed} & {z3_num_timeout} "
             entry_for_mathsat = f"& {mathsat_num_success} & {mathsat_num_failed} & {mathsat_num_timeout} "
             entry_for_smtinterpol = f"& {smtinterpol_num_success} & {smtinterpol_num_failed} & {smtinterpol_num_timeout} "
@@ -156,7 +145,7 @@ class ResultsReader:
 
 if __name__ == "__main__":
     verification_files_dir = "/media/Documents/MaxDiff-Experiments/verification-files"
-    results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000_St-360_Sv_4500000-samples-500-again"
+    results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000_St-360_Sv-4500000-samples-500"
 
     memsafety_ = ResultsReader(
             f"{results_dir}/benchmark_memsafety_results.txt", 
