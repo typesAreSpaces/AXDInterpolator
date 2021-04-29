@@ -1,4 +1,5 @@
 #include "UAutomizerFileReader.h"
+#include <cassert>
 #include <regex>
 #include <z3++.h>
 
@@ -14,8 +15,15 @@
 
 #define BENCHMARK_COMMAND(WRITER, EXEC_COMMAND, LOG_COMMAND)\
   z3::context ctx;\
-  z3::solver input_parser(ctx);\
+  z3::solver input_parser(ctx, "QF_LIA");\
   input_parser.from_file(temp_file.c_str());\
+  \
+  for(auto const & x : input_parser.assertions()){\
+    if(hasQuantifierAndNonLinear(x)){\
+      system(("rm -rf " + temp_file).c_str());\
+      return;\
+    }\
+  }\
   \
   if(input_parser.check() == z3::unsat){\
     std::string file_for_implementation =\
@@ -89,15 +97,36 @@ UAutomizerFileReader::UAutomizerFileReader(
 {
 }
 
-bool UAutomizerFileReader::hasQuantifier(z3::expr const & e) const {
+bool UAutomizerFileReader::hasQuantifierAndNonLinear(z3::expr const & e) const {
   if(e.is_quantifier())
     return true;
   if(e.is_var())
     return true;
-  if(e.is_app())
-    for(unsigned i = 0; i < e.num_args(); i++)
-      if (hasQuantifier(e.arg(i)))
+  if(e.is_app()){
+    switch(e.decl().decl_kind()){
+      case Z3_OP_REM:
+      case Z3_OP_MOD:
+      case Z3_OP_DIV:
+      case Z3_OP_IDIV:
         return true;
+      case Z3_OP_MUL:
+        {
+          unsigned num_numerals = 0, curr_num_args = e.num_args();
+          for(unsigned i = 0; i < curr_num_args; i++)
+            if(e.is_numeral())
+              num_numerals++;
+
+          if(curr_num_args - num_numerals >= 2)
+            return true;
+          return false;
+        }
+      default:
+        for(unsigned i = 0; i < e.num_args(); i++)
+          if (hasQuantifierAndNonLinear(e.arg(i)))
+            return true;
+        break;
+    }
+  }
   return false;
 }
 
@@ -108,7 +137,7 @@ std::string UAutomizerFileReader::nameAssertionsZ3(std::string const & s) const 
   unsigned num_balanced_paren = 0;
 
   while(std::getline(decl_strm, curr_line)){
-    
+
     if(curr_line.find("assert") != std::string::npos)
       matching_assert = true;
 
@@ -149,7 +178,7 @@ std::string UAutomizerFileReader::nameAssertionsMathsat(std::string const & s) c
   unsigned num_balanced_paren = 0;
 
   while(std::getline(decl_strm, curr_line)){
-    
+
     if(curr_line.find("assert") != std::string::npos)
       matching_assert = true;
 
@@ -199,7 +228,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
 
   TEMP_FILE_SETUP;
   BENCHMARK_COMMAND(
-      z3::solver tseitin_solver(ctx);
+      z3::solver tseitin_solver(ctx, "QF_LIA");
       tseitin_solver.add(z3::mk_and(part_a));
       tseitin_solver.add(z3::mk_and(part_b));
 
@@ -207,7 +236,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
       axdinterpolator_file.close();,
 
       sprintf(exec_command,
-        "./../../bin/axd_interpolator QF_TO %s %u 1000;",
+        "./../../bin/axd_interpolator QF_LIA %s %u 1000;",
         file_for_implementation.c_str(), curr_solver);,
       sprintf(log_command, 
         "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
@@ -224,7 +253,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
         TEMP_FILE_SETUP;
         BENCHMARK_COMMAND(
             // WRITER
-            z3::solver tseitin_solver(ctx);
+            z3::solver tseitin_solver(ctx, "QF_LIA");
             tseitin_solver.add(z3::mk_and(part_a));
             tseitin_solver.add(z3::mk_and(part_b));
             axdinterpolator_file 
@@ -263,7 +292,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
               interpolant_from_file += "(check-sat)\n";
               system(("rm -rf " + temp_file_name).c_str());
 
-              z3::solver z3_interpolant_parser(ctx);
+              z3::solver z3_interpolant_parser(ctx, "QF_LIA");
               z3_interpolant_parser.from_string(interpolant_from_file.c_str());
 
               auto const & interpolant_result = z3_interpolant_parser.assertions();
@@ -290,7 +319,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
         TEMP_FILE_SETUP;
         BENCHMARK_COMMAND(
             // WRITER
-            z3::solver tseitin_solver(ctx);
+            z3::solver tseitin_solver(ctx, "QF_LIA");
             tseitin_solver.add(z3::mk_and(part_a));
             tseitin_solver.add(z3::mk_and(part_b));
             axdinterpolator_file 
@@ -338,12 +367,12 @@ void UAutomizerFileReader::testOtherSolvers() const {
                 interpolant_from_file += "(check-sat)\n";
                 system(("rm -rf " + temp_file_name).c_str());
 
-                z3::solver mathsat_interpolant_parser(ctx);
+                z3::solver mathsat_interpolant_parser(ctx, "QF_LIA");
                 mathsat_interpolant_parser.from_string(interpolant_from_file.c_str());
 
                 auto const & interpolant_result = mathsat_interpolant_parser.assertions();
                 std::cout << interpolant_result << std::endl;
-                
+
                 sprintf(log_command, 
                     "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                     file_for_implementation.c_str(), 4, ret, file_statistics);
@@ -366,7 +395,7 @@ void UAutomizerFileReader::testOtherSolvers() const {
         TEMP_FILE_SETUP;
         BENCHMARK_COMMAND(
             // WRITER
-            z3::solver tseitin_solver(ctx);
+            z3::solver tseitin_solver(ctx, "QF_LIA");
             tseitin_solver.add(z3::mk_and(part_a));
             tseitin_solver.add(z3::mk_and(part_b));
             axdinterpolator_file 
@@ -407,12 +436,12 @@ void UAutomizerFileReader::testOtherSolvers() const {
               interpolant_from_file += "(check-sat)\n";
               system(("rm -rf " + temp_file_name).c_str());
 
-              z3::solver smtinterpol_interpolant_parser(ctx);
+              z3::solver smtinterpol_interpolant_parser(ctx, "QF_LIA");
               smtinterpol_interpolant_parser.from_string(interpolant_from_file.c_str());
 
               auto const & interpolant_result = smtinterpol_interpolant_parser.assertions();
               std::cerr << interpolant_result << std::endl;
-              
+
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                   file_for_implementation.c_str(), 5, ret, file_statistics);

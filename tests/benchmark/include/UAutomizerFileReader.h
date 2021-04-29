@@ -24,7 +24,7 @@ class UAutomizerFileReader {
   char * const file_statistics;
   bool test_our_implementation;
 
-  bool        hasQuantifier(z3::expr const &) const;
+  bool        hasQuantifierAndNonLinear(z3::expr const &) const;
   std::string nameAssertionsZ3(std::string const &) const;
   std::string nameAssertionsMathsat(std::string const &) const;
 

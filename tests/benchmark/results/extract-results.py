@@ -176,6 +176,32 @@ class ResultsReader:
         table += "\\end{table}"
         return table
 
+    def oneEntryTable(self, caption, label, entry, solver_name):
+        table = "\\begin{table}[htp]\n"
+        table += "\t\\small\n"
+        table += "\t\\begin{centering}\n"
+        table += "\t\t\\begin{tabular}{l|ccc}\n"
+        table += "\t\t\t Subtracks & \\multicolumn{3}{c}{solver_name} \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        table += "\t\t\t  & Success & Failed & Timeout \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        for subtrack in self.table:
+            table += f"\t\t\t{subtrack} "
+
+            _entry = self.table[subtrack][entry]
+
+            (_num_success, _num_failed, _num_timeout) = self.makeTableEntry(_entry)
+            
+            entry_for_ = f"& {_num_success} & {_num_failed} & {_num_timeout} "
+
+            table += entry_for_
+            table += "\\\\ \n" 
+        table += "\t\t\\end{tabular}\n"
+        table += "\t\t\\caption{" + caption + "}\n"
+        table += "\t\t\\label{" + label + "}\n"
+        table += "\t\\end{centering}\n"
+        table += "\\end{table}"
+        return table
 
 if __name__ == "__main__":
     verification_files_dir = "/media/Documents/MaxDiff-Experiments/verification-files"
@@ -195,4 +221,4 @@ if __name__ == "__main__":
     # print("")
     # print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
     a = ResultsReader("/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/benchmark_memsafety_results-z3.txt", f"{verification_files_dir}/MemSafety-Arrays")
-    print(a.otherSolversTable("Memsafety-track results - Z3", "label"))
+    print(a.oneEntryTable("Memsafety-track results - Z3", "label", '0', "Z3"))
