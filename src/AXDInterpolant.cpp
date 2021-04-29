@@ -26,7 +26,7 @@ AXDInterpolant::AXDInterpolant(
   state_output(undefined),
   current_interpolant(sig.ctx.bool_val(true)),
   solver(sig.ctx, 
-      sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_LIA"
+      sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_UFLIA"
       )
 {
 #if _DEBUG_AXD_CONSTRUCTOR_
@@ -65,7 +65,7 @@ void AXDInterpolant::loop(){
 
     if(solver.check() == z3::unsat){
 #if _DEBUG_AXD_LOOP_ 
-      m_out << "Iteration #0" << std::endl;
+      m_out << "Iteration #0 no common array symbols" << std::endl;
       m_out << "Current A-part part 2: " << std::endl;
       SmtSolverOutStreamSetup(m_out, part_a);
       m_out << "Current B-part part 2: " << std::endl;

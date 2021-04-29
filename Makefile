@@ -23,8 +23,8 @@ DEPS=$(wildcard $(IDIR)/*.h)
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-#METHOD=0# Z3
-METHOD=1# MATHSAT
+METHOD=0# Z3
+#METHOD=1# MATHSAT
 #METHOD=2# SMTINTERPOL
 
 ALLOWED_ATTEMPS=100
@@ -41,8 +41,8 @@ THEORY=QF_LIA
 #FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
 #FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
-FILE_TEST=$(TEST_DIR)/debug_this_one.smt2
+FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
+#FILE_TEST=$(TEST_DIR)/debug_this_one.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=$(TEST_DIR)/length_example.smt2
