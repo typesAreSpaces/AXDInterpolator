@@ -52,6 +52,7 @@ test: bin/benchmark ../../bin/axd_interpolator
 .PHONY: clean
 clean:
 	make -C ../../ clean
+	rm -rf *.smt2
 	rm -rf $(ODIR)/*
 	rm -rf $(CURRENT_DIR)/bin/benchmark
 # ----------------------
