@@ -236,8 +236,14 @@ void UAutomizerFileReader::testAXDInterpolator() const {
       axdinterpolator_file.close();,
 
       sprintf(exec_command,
-        "./../../bin/axd_interpolator QF_LIA %s %u 1000;",
+        "./../../bin/axd_interpolator QF_LIA %s %u 1000000;",
         file_for_implementation.c_str(), curr_solver);,
+      if(ret != 0 && ret != 134){
+      char complain_command[1000];
+      sprintf(complain_command, "echo File: \"%s\" Solver Code: \"%u\" Sample Id: %d Exit Code: %d >> /home/jose/bad_cases.txt",
+          file_for_implementation.c_str(), curr_solver, 500 - num_samples, ret);
+      system(complain_command);
+      }
       sprintf(log_command, 
         "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);
