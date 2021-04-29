@@ -186,6 +186,7 @@ class ResultsReader:
         table += "\t\t\t  & Success & Failed & Timeout \\\\ \n"
         table += "\t\t\t \\hline \n"
         for subtrack in self.table:
+            print(subtrack)
             table += f"\t\t\t{subtrack} "
 
             _entry = self.table[subtrack][entry]
@@ -221,4 +222,4 @@ if __name__ == "__main__":
     # print("")
     # print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
     a = ResultsReader("/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/benchmark_memsafety_results-z3.txt", f"{verification_files_dir}/MemSafety-Arrays")
-    print(a.oneEntryTable("Memsafety-track results - Z3", "label", '0', "Z3"))
+    print(a.oneEntryTable("Memsafety-track results - Z3", "label", '3', "Z3"))
