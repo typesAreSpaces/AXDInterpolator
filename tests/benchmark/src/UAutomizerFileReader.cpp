@@ -1,6 +1,7 @@
 #include "UAutomizerFileReader.h"
 #include <cassert>
 #include <regex>
+#include <string>
 #include <z3++.h>
 
 #define TEMP_FILE_SETUP\
@@ -19,7 +20,7 @@
   input_parser.from_file(temp_file.c_str());\
   \
   for(auto const & x : input_parser.assertions()){\
-    if(hasQuantifierAndNonLinear(x)){\
+    if(hasNonSupportedSymbols(x)){\
       system(("rm -rf " + temp_file).c_str());\
       return;\
     }\
@@ -97,12 +98,14 @@ UAutomizerFileReader::UAutomizerFileReader(
 {
 }
 
-bool UAutomizerFileReader::hasQuantifierAndNonLinear(z3::expr const & e) const {
+bool UAutomizerFileReader::hasNonSupportedSymbols(z3::expr const & e) const {
   if(e.is_quantifier())
     return true;
   if(e.is_var())
     return true;
   if(e.is_app()){
+    if(e.is_bv())
+      return true;
     switch(e.decl().decl_kind()){
       case Z3_OP_REM:
       case Z3_OP_MOD:
@@ -122,7 +125,7 @@ bool UAutomizerFileReader::hasQuantifierAndNonLinear(z3::expr const & e) const {
         }
       default:
         for(unsigned i = 0; i < e.num_args(); i++)
-          if (hasQuantifierAndNonLinear(e.arg(i)))
+          if (hasNonSupportedSymbols(e.arg(i)))
             return true;
         break;
     }
@@ -240,16 +243,20 @@ void UAutomizerFileReader::testAXDInterpolator() const {
         file_for_implementation.c_str(), curr_solver);,
       if(ret != 0 && ret != 152){
       char complain_command[1000];
-      sprintf(complain_command, "echo File: \"%s\" Solver Code: \"%u\" Sample Id: %d Exit Code: %d >> /home/jose/bad_cases.txt",
+      sprintf(
+          complain_command, 
+          "echo File: \"%s\" Solver Code: \"%u\" Sample Id: %d Exit Code: %d >> /home/jose/bad_cases.txt",
           file_for_implementation.c_str(), curr_solver, 500 - num_samples, ret);
       system(complain_command);
-      system(("mv " + file_for_implementation + " ~/").c_str());
+      system(("mv " 
+            + file_for_implementation 
+            + " ~/" + file_for_implementation + std::to_string(500 - num_samples)).c_str());
       }
       sprintf(log_command, 
         "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);
       );
-  system(("rm -rf " + temp_file).c_str());
+      system(("rm -rf " + temp_file).c_str());
 }
 
 void UAutomizerFileReader::testOtherSolvers() const {
