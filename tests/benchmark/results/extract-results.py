@@ -215,11 +215,11 @@ if __name__ == "__main__":
     reachsafety_ = ResultsReader(
             f"{results_dir}/benchmark_reachsafety_results.txt", 
             f"{verification_files_dir}/ReachSafety-Arrays")
-    # print(memsafety_.axdInterpolatorTable("Memsafety-track results - Our implementation", "label1"))
-    # print("")
+    print(memsafety_.axdInterpolatorTable("Memsafety-track results - Our implementation", "label1"))
+    print("")
     print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label2"))
-    # print("")
-    # print(reachsafety_.axdInterpolatorTable("Reachsafety-track results - Our implementation", "label1"))
+    print("")
+    print(reachsafety_.axdInterpolatorTable("Reachsafety-track results - Our implementation", "label1"))
     # print("")
     print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
     # a = ResultsReader("/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/benchmark_memsafety_results-z3.txt", f"{verification_files_dir}/MemSafety-Arrays")
