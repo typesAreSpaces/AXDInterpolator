@@ -104,9 +104,12 @@ bool UAutomizerFileReader::hasNonSupportedSymbols(z3::expr const & e) const {
   if(e.is_var())
     return true;
   if(e.is_app()){
+    if(e.is_array() && e.get_sort().array_domain().is_bv())
+      return true;
     if(e.is_bv())
       return true;
     switch(e.decl().decl_kind()){
+      case Z3_OP_ITE:
       case Z3_OP_REM:
       case Z3_OP_MOD:
       case Z3_OP_DIV:
@@ -603,6 +606,12 @@ void UAutomizerFileReader::processSingleFile(char const * file_path){
     char log_command[1000];
     //LOG_COMMAND;
     if(ret != 0 && ret != 152){
+
+      std::cout << ret << std::endl;
+      int stop;
+      std::cout << "stop ..." << std::endl;
+      std::cin >> stop;
+
       char complain_command[1000];
       sprintf(
           complain_command, 

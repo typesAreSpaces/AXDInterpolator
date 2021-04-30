@@ -59,7 +59,7 @@ AXDInterpolant::AXDInterpolant(
 
 void AXDInterpolant::loop(){
 
-  if(common_array_vars.getSize() < 2){
+  if(!common_array_vars.areCommonPairsAvaible()){
     SmtSolverSetup(solver, part_a);
     SmtSolverSetup(solver, part_b);
 
