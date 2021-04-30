@@ -10,7 +10,7 @@
 #include <regex>
 #include <z3++.h>
 
-#define SINGLE_FORMULA 1
+#define SINGLE_FORMULA 0
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 enum SMT_SOLVER { Z3, MATHSAT, SMTINTERPOL };
