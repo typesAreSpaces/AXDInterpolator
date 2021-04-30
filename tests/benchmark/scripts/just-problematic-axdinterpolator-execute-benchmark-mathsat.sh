@@ -8,7 +8,7 @@ OUTPUT_FILE=$BENCHMARK_DIR/benchmark_problematic_results-axdinterpolator.txt
 [ ! -f $OUTPUT_FILE ] && touch $OUTPUT_FILE
 make -j8 -C $BENCHMARK_DIR bin/benchmark
 
-for file in $VERIFICATION_FILES_DIR/.*smt2*; do
+for file in $VERIFICATION_FILES_DIR/*smt2*; do
   pushd $BENCHMARK_DIR >> /dev/null
   ./bin/benchmark $file 1 $OUTPUT_FILE 0
   popd >> /dev/null
