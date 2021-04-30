@@ -534,12 +534,93 @@ void UAutomizerFileReader::process(char const * file_path){
 
 void UAutomizerFileReader::processSingleFile(char const * file_path){
 
+  std::string string_path = file_path;
+  current_file = 
+    string_path.substr(string_path.find_last_of("/\\") + 1);
+
+  std::cout << file_path << std::endl;
+
   z3::context ctx;
-  z3::solver  parser(ctx);
+  z3::solver  input_parser(ctx);
 
-  parser.from_file(file_path);
+  input_parser.from_file(file_path);
 
-  std::cout << parser.assertions() << std::endl;
-  
+  for(auto const & x : input_parser.assertions())
+    if(hasNonSupportedSymbols(x))
+      return;
+
+  if(input_parser.check() == z3::unsat){
+    std::string file_for_implementation =
+      "axdinterpolator_" +  name_solver + "_" + current_file;
+    std::ofstream axdinterpolator_file(file_for_implementation.c_str());
+
+    z3::expr_vector curr_assertions = input_parser.assertions();
+    z3::expr_vector part_a(ctx), part_b(ctx);
+
+    auto const & to_cnf_tactic = 
+      z3::tactic(ctx, "tseitin-cnf");
+
+    z3::goal goal_assertions(ctx);
+    goal_assertions.add(z3::mk_and(curr_assertions));
+    auto const & cnf_assertions = to_cnf_tactic(goal_assertions);
+
+    assert(cnf_assertions.size() == 1);
+    z3::expr const & curr_conjunction = cnf_assertions[0].as_expr();
+
+    unsigned total_size_cnf = curr_conjunction.num_args();
+    unsigned half_size_cnf = total_size_cnf/2;
+    if(curr_conjunction.decl().decl_kind() != Z3_OP_AND
+        || half_size_cnf == 0
+        || (total_size_cnf - half_size_cnf) == 0 
+      ){
+      axdinterpolator_file.close();
+      system(("rm -rf " + file_for_implementation).c_str());
+      return;
+    }
+
+    part_a.push_back(ctx.bool_val(true));
+    part_b.push_back(ctx.bool_val(true));
+    for(unsigned i = 0; i < half_size_cnf; i++)
+      part_a.push_back(curr_conjunction.arg(i));
+    for(unsigned i = half_size_cnf; i < total_size_cnf; i++)
+      part_b.push_back(curr_conjunction.arg(i));
+
+    //WRITER;
+    z3::solver tseitin_solver(ctx, "QF_AUFLIA");
+    tseitin_solver.add(z3::mk_and(part_a));
+    tseitin_solver.add(z3::mk_and(part_b));
+
+    axdinterpolator_file << tseitin_solver.to_smt2();
+    axdinterpolator_file.close();
+
+    char exec_command[1000];
+    //EXEC_COMMAND;
+    sprintf(exec_command,
+        "./../../bin/axd_interpolator QF_LIA %s %u 1000000;",
+        file_for_implementation.c_str(), curr_solver);
+
+    int ret = system(exec_command);
+    char log_command[1000];
+    //LOG_COMMAND;
+    if(ret != 0 && ret != 152){
+      char complain_command[1000];
+      sprintf(
+          complain_command, 
+          "echo File: \"%s\" Solver Code: \"%u\" Sample Id: %d Exit Code: %d >> /home/jose/bad_cases.txt",
+          file_for_implementation.c_str(), curr_solver, 500 - num_samples, ret);
+      system(complain_command);
+      system(("mv " 
+            + file_for_implementation 
+            + " ~/" + file_for_implementation + std::to_string(500 - num_samples)).c_str());
+    }
+    sprintf(log_command, 
+        "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
+        file_for_implementation.c_str(), curr_solver, ret, file_statistics);
+
+    system(log_command);
+
+    system(("rm -rf " + file_for_implementation).c_str());
+  }
+
   reset();
 }
