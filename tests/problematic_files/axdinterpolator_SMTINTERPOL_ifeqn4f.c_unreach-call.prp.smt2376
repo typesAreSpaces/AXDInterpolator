@@ -1,0 +1,14 @@
+; 
+(set-info :status unknown)
+(declare-fun c_ULTIMATE.start_main_~b~0.offset () Int)
+(declare-fun c_ULTIMATE.start_main_~b~0.base () Int)
+(declare-fun |c_#memory_int| () (Array Int (Array Int Int)))
+(assert
+ (let ((?x9 (select (select |c_#memory_int| c_ULTIMATE.start_main_~b~0.base) c_ULTIMATE.start_main_~b~0.offset)))
+ (let (($x11 (= ?x9 1)))
+ (and true $x11))))
+(assert
+ (let (($x13 (= c_ULTIMATE.start_main_~b~0.offset 0)))
+ (let (($x15 (not $x13)))
+ (and true $x13 $x15))))
+(check-sat)

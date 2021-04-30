@@ -1,0 +1,12 @@
+; 
+(set-info :status unknown)
+(declare-fun |c_#valid| () (Array (_ BitVec 32) (_ BitVec 1)))
+(declare-fun |c_old(#valid)| () (Array (_ BitVec 32) (_ BitVec 1)))
+(assert
+ (let (($x25 (= |c_old(#valid)| |c_#valid|)))
+ (and true $x25)))
+(assert
+ (let (($x25 (= |c_old(#valid)| |c_#valid|)))
+ (let (($x26 (not $x25)))
+ (and true $x26))))
+(check-sat)

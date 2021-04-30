@@ -1,0 +1,18 @@
+; 
+(set-info :status unknown)
+(declare-fun |c_#memory_int_primed| () (Array Int (Array Int Int)))
+(declare-fun |c_ULTIMATE.start_main_~#sum~0.offset| () Int)
+(declare-fun |c_ULTIMATE.start_main_~#sum~0.base| () Int)
+(declare-fun |c_#memory_int| () (Array Int (Array Int Int)))
+(declare-fun c_ULTIMATE.start_main_~i~0 () Int)
+(declare-fun c_~N~0 () Int)
+(assert
+ (let ((?x12 (store (select |c_#memory_int| |c_ULTIMATE.start_main_~#sum~0.base|) |c_ULTIMATE.start_main_~#sum~0.offset| 0)))
+ (let (($x15 (= (store |c_#memory_int| |c_ULTIMATE.start_main_~#sum~0.base| ?x12) |c_#memory_int_primed|)))
+ (let (($x7 (= c_ULTIMATE.start_main_~i~0 0)))
+ (and true $x7 $x15)))))
+(assert
+ (let (($x42 (or (not (<= 1 c_~N~0)) (not (= c_ULTIMATE.start_main_~i~0 0)))))
+ (let (($x19 (<= 1 c_~N~0)))
+ (and true $x19 $x42))))
+(check-sat)
