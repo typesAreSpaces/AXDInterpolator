@@ -21,6 +21,7 @@ int main(int argc, char * argv[]){
 
   char const * file = argv[1];
   if(!exists_file(file)){
+    std::cout << argv[1] << std::endl;
     std::cerr << "File doesnt exists.\n";
     return 0;
   }
@@ -43,7 +44,11 @@ int main(int argc, char * argv[]){
 
   UAutomizerFileReader reader(
       curr_solver, 500, argv[3], *argv[4] == '0');
+#if SINGLE_FORMULA
+  reader.processSingleFile(file);
+#else
   reader.process(file);
+#endif
 
   return 0;
 }

@@ -531,3 +531,15 @@ void UAutomizerFileReader::process(char const * file_path){
   smt_file.close();
   reset();
 }
+
+void UAutomizerFileReader::processSingleFile(char const * file_path){
+
+  z3::context ctx;
+  z3::solver  parser(ctx);
+
+  parser.from_file(file_path);
+
+  std::cout << parser.assertions() << std::endl;
+  
+  reset();
+}

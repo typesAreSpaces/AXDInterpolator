@@ -10,6 +10,8 @@
 #include <regex>
 #include <z3++.h>
 
+#define SINGLE_FORMULA 1
+
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 enum SMT_SOLVER { Z3, MATHSAT, SMTINTERPOL };
 
@@ -40,4 +42,5 @@ class UAutomizerFileReader {
   UAutomizerFileReader(SMT_SOLVER, unsigned, char * const, bool);
     
   void process(char const *);
+  void processSingleFile(char const *);
 };
