@@ -243,6 +243,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
       sprintf(complain_command, "echo File: \"%s\" Solver Code: \"%u\" Sample Id: %d Exit Code: %d >> /home/jose/bad_cases.txt",
           file_for_implementation.c_str(), curr_solver, 500 - num_samples, ret);
       system(complain_command);
+      system(("mv " + file_for_implementation + " ~/").c_str());
       }
       sprintf(log_command, 
         "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
