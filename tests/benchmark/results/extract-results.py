@@ -102,14 +102,15 @@ class ResultsReader:
             num_success += entry['0']
         num_failed = 0
         for exit_code in entry:
-            if(exit_code != '0' and exit_code != '134'):
+            if(exit_code != '0' and exit_code != '152'):
                 num_failed += entry[exit_code]
         num_timeout = 0
-        if('134' in entry):
-            num_timeout += entry['134']
+        if('152' in entry):
+            num_timeout += entry['152']
         return (num_success, num_failed, num_timeout)
 
     def axdInterpolatorTable(self, caption, label):
+        print(self.exit_codes)
         table = "\\begin{table}[htp]\n"
         table += "\t\\small\n"
         table += "\t\\begin{centering}\n"
@@ -210,17 +211,17 @@ if __name__ == "__main__":
     results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark"
 
     memsafety_ = ResultsReader(
-            f"{results_dir}/benchmark_memsafety_results.txt", 
+            f"{results_dir}/benchmark_memsafety_results-axdinterpolator.txt", 
             f"{verification_files_dir}/MemSafety-Arrays")
     reachsafety_ = ResultsReader(
-            f"{results_dir}/benchmark_reachsafety_results.txt", 
+            f"{results_dir}/benchmark_reachsafety_results-axdinterpolator.txt", 
             f"{verification_files_dir}/ReachSafety-Arrays")
     print(memsafety_.axdInterpolatorTable("Memsafety-track results - Our implementation", "label1"))
     print("")
-    print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label2"))
+    # print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label2"))
     print("")
     print(reachsafety_.axdInterpolatorTable("Reachsafety-track results - Our implementation", "label1"))
     # print("")
-    print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
+    # print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
     # a = ResultsReader("/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/benchmark_memsafety_results-z3.txt", f"{verification_files_dir}/MemSafety-Arrays")
     # print(a.oneEntryTable("Memsafety-track results - Z3", "label", '3', "Z3"))
