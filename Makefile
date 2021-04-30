@@ -27,7 +27,7 @@ METHOD=0# Z3
 #METHOD=1# MATHSAT
 #METHOD=2# SMTINTERPOL
 
-ALLOWED_ATTEMPS=100
+ALLOWED_ATTEMPS=1000000
 
 #THEORY=QF_TO
 #THEORY=QF_IDL
@@ -41,7 +41,8 @@ THEORY=QF_LIA
 #FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
 #FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
-FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
+#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
+FILE_TEST=$(TEST_DIR)/axdinterpolator_Z3_standard_seq_init_ground.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(TEST_DIR)/jhala.smt2
 #FILE_TEST=$(TEST_DIR)/debug_this_one.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
