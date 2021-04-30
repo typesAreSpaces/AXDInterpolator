@@ -134,8 +134,9 @@ void Preprocessor::flattenTerm(
           while(stack_args.size() != 0){
             z3::expr const & curr = stack_args.back();
             stack_args.pop_back();
-            if(curr.num_args() == 0)
-              updateIndexVars(curr, side);
+            if(curr.num_args() == 0){
+              updateVarsDB(curr, side);
+            }
             else{
               for(unsigned i = 0; i < curr.num_args(); i++)
                 stack_args.push_back(curr.arg(i));
