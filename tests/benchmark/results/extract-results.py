@@ -207,8 +207,7 @@ class ResultsReader:
 
 if __name__ == "__main__":
     verification_files_dir = "/media/Documents/MaxDiff-Experiments/verification-files"
-    # results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000_St-360_Sv-4500000-samples-500"
-    results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000000_St-360_Sv-4500000-samples-500-April-29-2021"
+    results_dir = "/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/results/fuel-1000000_St-360_Sv-4500000-samples-500-April-30-2021"
 
     memsafety_ = ResultsReader(
             f"{results_dir}/benchmark_memsafety_results-axdinterpolator.txt", 
@@ -218,10 +217,4 @@ if __name__ == "__main__":
             f"{verification_files_dir}/ReachSafety-Arrays")
     print(memsafety_.axdInterpolatorTable("Memsafety-track results - Our implementation", "label1"))
     print("")
-    # print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label2"))
-    print("")
     print(reachsafety_.axdInterpolatorTable("Reachsafety-track results - Our implementation", "label1"))
-    # print("")
-    # print(reachsafety_.otherSolversTable("Reachsafety-track results - Other Solvers", "label2"))
-    # a = ResultsReader("/home/jose/Documents/GithubProjects/AXDInterpolator/tests/benchmark/benchmark_memsafety_results-z3.txt", f"{verification_files_dir}/MemSafety-Arrays")
-    # print(a.oneEntryTable("Memsafety-track results - Z3", "label", '3', "Z3"))
