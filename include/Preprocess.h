@@ -33,6 +33,7 @@ class Preprocessor {
     void insert(z3::expr const &);
     bool isEmpty() const;
     unsigned getSize() const;
+    bool areCommonPairsAvaible() const;
 
     Container::const_iterator begin() const;
     Container::const_iterator end() const;

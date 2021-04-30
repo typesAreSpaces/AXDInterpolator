@@ -31,6 +31,14 @@ unsigned Preprocessor::ArrayVars::getSize() const {
   return size;
 }
 
+bool Preprocessor::ArrayVars::areCommonPairsAvaible() const {
+  for(auto const & entry : vars){
+    if(entry.second.size() >= 2)
+      return true;
+  }
+  return false;
+}
+
 Preprocessor::ArrayVars::Container::const_iterator Preprocessor::ArrayVars::begin() const {
   return vars.begin();
 }
