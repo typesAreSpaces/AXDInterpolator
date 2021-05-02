@@ -29,27 +29,23 @@ METHOD=1# MATHSAT
 
 ALLOWED_ATTEMPS=1000000
 
-#THEORY=QF_TO
+THEORY=QF_TO
 #THEORY=QF_IDL
 #THEORY=QF_UTVPI
-THEORY=QF_LIA
+#THEORY=QF_LIA
 
+FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
+FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
 FILE_TEST=$(TEST_DIR)/simple.smt2
 FILE_TEST=$(TEST_DIR)/simple2.smt2
 FILE_TEST=$(TEST_DIR)/simple3.smt2
 FILE_TEST=$(TEST_DIR)/simple4.smt2
-FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
-FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
-FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
-FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
-FILE_TEST=$(TEST_DIR)/axdinterpolator_Z3_brs2f.c_unreach-call.prp.smt2
 FILE_TEST=$(TEST_DIR)/jhala.smt2
-FILE_TEST=$(TEST_DIR)/debug_this_one.smt2
+FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
+FILE_TEST=$(TEST_DIR)/length_example.smt2
 FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
 FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
-FILE_TEST=$(TEST_DIR)/length_example.smt2
-FILE_TEST=$(TEST_DIR)/axdinterpolator_Z3_standard_seq_init_ground.c_valid-memsafety.prp.smt2
-FILE_TEST=/home/jose/Documents/GithubProjects/AXDInterpolator/tests/problematic_files/axdinterpolator_MATHSAT_array-realloc-1.c_valid-memsafety.prp.smt2194 
+FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
 
 all: tests/one
 #all: tests/all
