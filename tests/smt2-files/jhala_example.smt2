@@ -37,18 +37,6 @@
 (define-fun _my_interpolant_by_hand () Bool
 (or (= (diff a b) 0) (and (= (select a diff2ab) (select b diff2ab))))
 )
-(define-fun _interpolant_computed_by_axdinterpolator_with_mathsat () Bool
-(let ((a!1 (and (or (= (diff a b) 0) (= (select a 0) (select b 0)))
-                (<= (diff a b) diff2ab)
-                (<= diff2ab 0)))
-      (a!2 (and (= (select b (diff a b)) (select a (diff a b)))
-                (<= diff2ab 0))))
-(let ((a!3 (and (not (= (select a 0) (select b 0))) (not a!1) (not a!2))))
-  (and (<= diff2ab 0)
-       (or (<= (diff a b) diff2ab) (= (select a 0) (select b 0)))
-       (not a!3))))
-)
-
 (define-fun _interpolant_computed_by_axdinterpolator_with_z3 () Bool
 (let ((a!1 (or (not (<= (diff a b) 0)) (not (>= (diff a b) 0))))
       (a!3 (or (<= (select a diff2ab) (select b diff2ab))
@@ -86,8 +74,18 @@
        (<= diff2ab (diff a b))
        (>= (diff a b) 0))))))
 )
-
-(define-fun _interpolant_computed_by_axdinterpolator_with_smtinterpol () Bool
+(define-fun _interpolant_computed_by_axdinterpolator_with_mathsat () Bool
+(let ((a!1 (and (or (= (diff a b) 0) (= (select a 0) (select b 0)))
+                (<= (diff a b) diff2ab)
+                (<= diff2ab 0)))
+      (a!2 (and (= (select b (diff a b)) (select a (diff a b)))
+                (<= diff2ab 0))))
+(let ((a!3 (and (not (= (select a 0) (select b 0))) (not a!1) (not a!2))))
+  (and (<= diff2ab 0)
+       (or (<= (diff a b) diff2ab) (= (select a 0) (select b 0)))
+       (not a!3))))
+)
+(define-fun _interpolant_computed_by_axdinterpolator_with_SMTInterpol () Bool
 (let ((a!1 (and (= (select a diff2ab) (select b diff2ab))
                 (<= diff2ab 0))))
 (let ((a!2 (or (and (<= (diff a b) diff2ab)
@@ -95,6 +93,9 @@
                a!1)))
 (let ((a!3 (and a!2 (or (<= (diff a b) diff2ab) a!1))))
   (and (or a!1 a!3)))))
+)
+(define-fun _interpolant_computed_by_SMTInterpol () Bool
+(let ((.cse1 (diff b a))) (let ((.cse2 (= (store b .cse1 (select a .cse1)) a))) (and (let ((.cse0 (= b a))) (or .cse0 (and (or .cse0 (= .cse1 .cse1)) .cse2))) .cse2)))
 )
 
 (assert (forall ((y (Array Int Int)) (i Int) (e Int)) 
@@ -158,15 +159,51 @@
 (pop)
 
 (push)
-(assert (not (=> part_a  _interpolant_computed_by_axdinterpolator_with_smtinterpol))) 
+(assert (not (=> part_a  _interpolant_computed_by_axdinterpolator_with_SMTInterpol))) 
 (echo "A-part test using interpolant computed by AXDInterpolator using SMTInterpol")
 (check-sat)
 (pop)
 
 (push)
 (assert part_b)
-(assert _interpolant_computed_by_axdinterpolator_with_smtinterpol)
+(assert _interpolant_computed_by_axdinterpolator_with_SMTInterpol)
 (echo "B-part test using interpolant computed by AXDInterpolator using SMTInterpol")
+(check-sat)
+(pop)
+
+(push)
+(assert (not (=> _interpolant_computed_by_axdinterpolator_with_z3 _interpolant_computed_by_SMTInterpol)))
+(echo "If the following unsats, axdinterpolator with z3 result is stronger than SMTInterpol result")
+(check-sat)
+(pop)
+
+(push)
+(assert (not (=> _interpolant_computed_by_SMTInterpol _interpolant_computed_by_axdinterpolator_with_mathsat)))
+(echo "If the following unsats, SMTInterpol result is stronger than axdinterpolator with z3 result")
+(check-sat)
+(pop)
+
+(push)
+(assert (not (=> _interpolant_computed_by_axdinterpolator_with_mathsat _interpolant_computed_by_SMTInterpol)))
+(echo "If the following unsats, axdinterpolator with Mathsat result is stronger than SMTInterpol result")
+(check-sat)
+(pop)
+
+(push)
+(assert (not (=> _interpolant_computed_by_SMTInterpol _interpolant_computed_by_axdinterpolator_with_mathsat)))
+(echo "If the following unsats, SMTInterpol result is stronger than axdinterpolator with Mathsat result")
+(check-sat)
+(pop)
+
+(push)
+(assert (not (=> _interpolant_computed_by_axdinterpolator_with_SMTInterpol _interpolant_computed_by_SMTInterpol)))
+(echo "If the following unsats, axdinterpolator with SMTInterpol result is stronger than SMTInterpol result")
+(check-sat)
+(pop)
+
+(push)
+(assert (not (=> _interpolant_computed_by_SMTInterpol _interpolant_computed_by_axdinterpolator_with_SMTInterpol)))
+(echo "If the following unsats, SMTInterpol result is stronger than axdinterpolator with SMTInterpol result")
 (check-sat)
 (pop)
 
