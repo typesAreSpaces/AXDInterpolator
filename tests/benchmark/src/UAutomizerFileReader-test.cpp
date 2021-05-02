@@ -90,26 +90,11 @@ void UAutomizerFileReader::testOtherSolvers() const {
                   file_for_implementation.c_str(), 3, ret, file_statistics);
             }
             else{
-
-              std::cout << "Stop..." << std::endl;
-
-              std::cout << ">>>>>First Part" << std::endl;
-              std::cout << input_parser.to_smt2() << std::endl;
-
-              std::cout << ">>>> Second Part" << std::endl;
-              std::cout << tseitin_solver.to_smt2() << std::endl;
-              std::cout << ">>>>>HMMMM" << std::endl;
-              std::cout << nameAssertionsZ3(tseitin_solver.to_smt2());
-
-              int stop;
-              std::cin >> stop;
-
               system(("rm -rf " + temp_file_name).c_str());
               sprintf(log_command, 
                   "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
                   file_for_implementation.c_str(), 3, 1, file_statistics);
             }
-
             );
 
             system(("rm -rf " + temp_file).c_str());
