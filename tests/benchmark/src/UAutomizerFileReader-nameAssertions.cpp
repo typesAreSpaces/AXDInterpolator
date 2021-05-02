@@ -49,7 +49,7 @@ std::string UAutomizerFileReader::nameAssertionsMathsat(std::string const & s) c
 
   while(std::getline(decl_strm, curr_line)){
 
-    if(curr_line.find("assert") != std::string::npos)
+    if(curr_line.find("(assert") != std::string::npos)
       matching_assert = true;
 
     if(matching_assert){
