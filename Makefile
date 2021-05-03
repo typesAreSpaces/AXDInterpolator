@@ -29,10 +29,10 @@ METHOD=1# MATHSAT
 
 ALLOWED_ATTEMPS=1000000
 
-THEORY=QF_TO
+#THEORY=QF_TO
 #THEORY=QF_IDL
 #THEORY=QF_UTVPI
-#THEORY=QF_LIA
+THEORY=QF_LIA
 
 #FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
@@ -45,7 +45,10 @@ THEORY=QF_TO
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
 #FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
-FILE_TEST=$(TEST_DIR)/jhala.smt2
+#FILE_TEST=$(TEST_DIR)/jhala.smt2
+#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_1.smt2
+#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_2.smt2
+FILE_TEST=$(TEST_DIR)/strcpy_example_variant_3.smt2
 
 all: tests/one
 #all: tests/all
