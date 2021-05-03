@@ -17,7 +17,6 @@
 ;(declare-fun empty_arrayInt () (Array Int Int))
 (declare-fun length ((Array Int Int)) Int)
 
-
 (push)
 (assert (! (and 
 
