@@ -36,7 +36,6 @@
 (= a_primed a)
 (= b_primed (store b j (select a j)))
 
-
 (< j_primed n)
 (= j_primed_primed (+ j_primed 1))
 (= a_primed_primed a_primed)
@@ -45,7 +44,6 @@
 
 (distinct a b)
 (= j n)
-
 
 ) :named _part_b))
 
