@@ -90,3 +90,13 @@ The binary ``axd_interpolator`` outputs to the standard output any of the follow
 
 * If the formula is unsatisfiable, then it outputs *Unsatisfiable:* followed by the interpolant obtained.
 * If the formula is satisfiable, then the implementation outputs either *Satisfiable:* or *Unknown:*. The last option happens when the internal variable ``num_attempts`` reaches 0.
+
+## Replicating SMT 2021 submission results
+
+We included a script to obtain the tables reported in our submission for SMT 2021.
+For the latter, it is neccessary to include a softlink to a mathsat binary file as
+indicated above.
+
+1. Unzip the verification files in tests/verification-files with `unzip files.zip`
+2. `cd` into tests/benchmark/scripts and execute the script `./SMT-2021-submission-results.sh`
+3. The process will conclude with a Latex-compatible table as output.
