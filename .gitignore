@@ -10,3 +10,4 @@ renamed_AXDInterpolant
 sessions/*
 tests/benchmark/bin/*
 tests/benchmark/.clangd/*
+tests/verification-files/files/*
