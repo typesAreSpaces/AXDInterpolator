@@ -10,7 +10,7 @@
 #include <string>
 #include <cstdlib>
 #include <regex>
-#include <z3++.h>
+#include "z3++.h"
 
 #define SINGLE_FORMULA 0
 

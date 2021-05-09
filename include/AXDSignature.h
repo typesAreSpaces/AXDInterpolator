@@ -19,7 +19,7 @@
 #define sort_name(x)        x.decl().range().name().str()
 #define func_kind(x)        x.decl().decl_kind()
 
-#include <z3++.h>
+#include "z3++.h"
 #include <set>
 #include <cstring>
 #include <utility>
