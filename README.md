@@ -94,8 +94,12 @@ The binary ``axd_interpolator`` outputs to the standard output any of the follow
 ## Replicating SMT 2021 submission results
 
 We included a script to obtain the tables reported in our submission for SMT 2021.
-For the latter, it is neccessary to include a softlink to a mathsat binary file as
-indicated above.
+For the latter, the following items are neccessary:
+
+* Softlink to a mathsat binary file as indicated above.
+* Git with LFS support, git-lfs, or download the `files.zip` raw file from https://github.com/typesAreSpaces/AXDInterpolator/blob/master/tests/verification-files/files.zip. If the user downloads `files.zip` directly, the zip file should be moved to the tests/verification-files directory.
+
+The steps to execute the benchmarking script are the following:
 
 1. Unzip the verification files in tests/verification-files with `unzip files.zip`
 2. `cd` into tests/benchmark/scripts and execute the script `./SMT-2021-submission-results.sh`
