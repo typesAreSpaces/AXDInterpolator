@@ -13,6 +13,7 @@
 #include "z3++.h"
 
 #define SINGLE_FORMULA 0
+#define REPORT_BAD_CASES 0
 
 #define TEMP_FILE_SETUP\
   std::string temp_file =\

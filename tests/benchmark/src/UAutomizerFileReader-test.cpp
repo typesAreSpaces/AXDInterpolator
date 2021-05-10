@@ -14,6 +14,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
       sprintf(exec_command,
         "./../../bin/axd_interpolator QF_LIA %s %u 1000000;",
         file_for_implementation.c_str(), curr_solver);,
+#if REPORT_BAD_CASES
       if(ret != 0 && ret != 152){
       char complain_command[1000];
       sprintf(
@@ -25,6 +26,7 @@ void UAutomizerFileReader::testAXDInterpolator() const {
             + file_for_implementation 
             + " ~/" + file_for_implementation + std::to_string(500 - num_samples)).c_str());
       }
+#endif
       sprintf(log_command, 
         "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);

@@ -199,13 +199,8 @@ void UAutomizerFileReader::processSingleFile(char const * file_path){
     int ret = system(exec_command);
     char log_command[1000];
     //LOG_COMMAND;
+#if REPORT_BAD_CASES
     if(ret != 0 && ret != 152){
-
-      std::cout << ret << std::endl;
-      int stop;
-      std::cout << "stop ..." << std::endl;
-      std::cin >> stop;
-
       char complain_command[1000];
       sprintf(
           complain_command, 
@@ -216,6 +211,7 @@ void UAutomizerFileReader::processSingleFile(char const * file_path){
             + file_for_implementation 
             + " ~/" + file_for_implementation + std::to_string(500 - num_samples)).c_str());
     }
+#endif
     sprintf(log_command, 
         "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);
