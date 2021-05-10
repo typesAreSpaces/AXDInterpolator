@@ -92,30 +92,30 @@ if [ "$num_of_cores_allowed" == "3" ]; then
 fi
 
 if [ "$num_of_cores_allowed" == "6" ]; then
-  #./axdinterpolator-execute-benchmark-memsafety-z3.sh &
-  #pid_memsafety_z3=$!
-  #./axdinterpolator-execute-benchmark-memsafety-mathsat.sh &
-  #pid_memsafety_mathsat=$!
-  #./axdinterpolator-execute-benchmark-memsafety-smtinterpol.sh &
-  #pid_memsafety_smtinterpol=$!
-  #./axdinterpolator-execute-benchmark-reachsafety-z3.sh &
-  #pid_reachsafety_z3=$!
-  #./axdinterpolator-execute-benchmark-reachsafety-mathsat.sh &
-  #pid_reachsafety_mathsat=$!
-  #./axdinterpolator-execute-benchmark-reachsafety-smtinterpol.sh &
-  #pid_reachsafety_smtinterpol=$!
+  ./axdinterpolator-execute-benchmark-memsafety-z3.sh &
+  pid_memsafety_z3=$!
+  ./axdinterpolator-execute-benchmark-memsafety-mathsat.sh &
+  pid_memsafety_mathsat=$!
+  ./axdinterpolator-execute-benchmark-memsafety-smtinterpol.sh &
+  pid_memsafety_smtinterpol=$!
+  ./axdinterpolator-execute-benchmark-reachsafety-z3.sh &
+  pid_reachsafety_z3=$!
+  ./axdinterpolator-execute-benchmark-reachsafety-mathsat.sh &
+  pid_reachsafety_mathsat=$!
+  ./axdinterpolator-execute-benchmark-reachsafety-smtinterpol.sh &
+  pid_reachsafety_smtinterpol=$!
 
-  #wait $pid_memsafety_z3
-  #wait $pid_memsafety_mathsat
-  #wait $pid_memsafety_smtinterpol
-  #wait $pid_reachsafety_z3
-  #wait $pid_reachsafety_mathsat
-  #wait $pid_reachsafety_smtinterpol
+  wait $pid_memsafety_z3
+  wait $pid_memsafety_mathsat
+  wait $pid_memsafety_smtinterpol
+  wait $pid_reachsafety_z3
+  wait $pid_reachsafety_mathsat
+  wait $pid_reachsafety_smtinterpol
 
-  #cat $BENCHMARK_DIR/benchmark_memsafety_results* > $BENCHMARK_DIR/benchmark_memsafety_results_axdinterpolator.txt
-  #cat $BENCHMARK_DIR/benchmark_reachsafety_results* > $BENCHMARK_DIR/benchmark_reachsafety_results_axdinterpolator.txt
-  #rm -rf $BENCHMARK_DIR/benchmark_memsafety_results-*
-  #rm -rf $BENCHMARK_DIR/benchmark_reachsafety_results-*
+  cat $BENCHMARK_DIR/benchmark_memsafety_results* > $BENCHMARK_DIR/benchmark_memsafety_results_axdinterpolator.txt
+  cat $BENCHMARK_DIR/benchmark_reachsafety_results* > $BENCHMARK_DIR/benchmark_reachsafety_results_axdinterpolator.txt
+  rm -rf $BENCHMARK_DIR/benchmark_memsafety_results-*
+  rm -rf $BENCHMARK_DIR/benchmark_reachsafety_results-*
 
   ./execute-benchmark-memsafety-z3.sh &
   pid_memsafety_z3=$!
