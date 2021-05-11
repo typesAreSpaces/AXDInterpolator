@@ -64,7 +64,6 @@ class ResultsReader:
         return (num_success, num_failed, num_timeout)
 
     def axdInterpolatorTable(self, caption, label):
-        print(self.exit_codes)
         table = "\\begin{table}[htp]\n"
         table += "\t\\small\n"
         table += "\t\\begin{centering}\n"
