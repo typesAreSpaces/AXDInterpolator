@@ -96,6 +96,7 @@ The binary ``axd_interpolator`` outputs to the standard output any of the follow
 We included a script to obtain the tables reported in our submission for SMT 2021.
 For the latter, the following items are neccessary:
 
+* Python3
 * Softlink to a mathsat binary file as indicated above.
 * Git with LFS support, git-lfs, or download the `files.zip` raw file from https://github.com/typesAreSpaces/AXDInterpolator/blob/master/tests/verification-files/files.zip. If the user downloads `files.zip` directly, the zip file should be moved to the tests/verification-files directory.
 
