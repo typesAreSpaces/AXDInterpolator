@@ -1,6 +1,7 @@
 #!/bin/bash
 
 make -C ../ -j8 bin/benchmark
+unzip ../../verification-files/files.zip
 
 CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
