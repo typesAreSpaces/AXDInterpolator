@@ -5,7 +5,7 @@ SDIR=$(CURRENT_DIR)/src
 LDIR=$(CURRENT_DIR)/lib
 TEST_DIR=$(CURRENT_DIR)/tests/smt2-files
 
-CC=g++
+CXX=g++
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
 	PYTHON_CMD=python
@@ -16,6 +16,7 @@ ifeq ($(OS), Darwin)
 else
 ifeq ($(OS), CYGWIN_NT-10.0)
 	PYTHON_CMD=CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar python
+	CXX=x86_64-w64-mingw32-g++
 	SO_EXT=so
 	NUM_PROCS=$(shell nproc)
 else
@@ -76,11 +77,11 @@ renamed_AXDInterpolant:
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT) renamed_AXDInterpolant
 	@mkdir -p $(CURRENT_DIR)/obj
-	$(CC) -g -c -o $@ $(FLAGS) $<
+	$(CXX) -g -c -o $@ $(FLAGS) $<
 
 bin/axd_interpolator: $(OBJS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p $(CURRENT_DIR)/bin
-	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
+	$(CXX) -g -o $@ $(OBJS) $(FLAGS) -lpthread
 # -------------------------------------------------------------------------------
 
 # -------------------------------------------------------
