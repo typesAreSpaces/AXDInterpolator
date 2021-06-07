@@ -157,3 +157,4 @@ rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
 rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
 
 make -C ../ clean
+ulimit -St unlimited -Sv unlimited

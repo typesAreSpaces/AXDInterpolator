@@ -13,17 +13,11 @@ ifeq ($(OS), Darwin)
 	DYLD_LIBRARY_PATH=$(LDIR)
 	export DYLD_LIBRARY_PATH
 	NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
-else
-ifeq ($(OS), CYGWIN_NT-10.0)
-	PYTHON_CMD=CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar python
-	CXX=x86_64-w64-mingw32-g++
-	SO_EXT=dll
-	NUM_PROCS=$(shell nproc)
-else
+endif
+ifeq ($(OS), Linux)
 	PYTHON_CMD=python
 	SO_EXT=so
 	NUM_PROCS=$(shell nproc)
-endif
 endif
 NUM_PROCS_H=$$(($(NUM_PROCS)/2))
 
@@ -38,11 +32,13 @@ METHOD=0# Z3
 
 ALLOWED_ATTEMPS=1000000
 
+#-- Supported Theories
 #THEORY=QF_TO
 #THEORY=QF_IDL
 #THEORY=QF_UTVPI
 THEORY=QF_LIA
 
+#-- Sample files
 #FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
 #FILE_TEST=$(TEST_DIR)/simple.smt2
