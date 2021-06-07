@@ -17,7 +17,7 @@ else
 ifeq ($(OS), CYGWIN_NT-10.0)
 	PYTHON_CMD=CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar python
 	CXX=x86_64-w64-mingw32-g++
-	SO_EXT=so
+	SO_EXT=dll
 	NUM_PROCS=$(shell nproc)
 else
 	PYTHON_CMD=python
