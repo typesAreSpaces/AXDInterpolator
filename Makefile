@@ -15,8 +15,8 @@ ifeq ($(OS), Darwin)
 	NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
 else
 ifeq ($(OS), CYGWIN_NT-10.0)
-	PYTHON_CMD=CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar python
-	CXX=x86_64-w64-mingw32-g++
+	PYTHON_CMD=CXX=i686-pc-cygwin-g++ CC=i686-pc-cygwin-gcc AR=i686-pc-cygwin-gcc-ar python
+	CXX=i686-pc-cygwin-g++ 
 	SO_EXT=dll
 	NUM_PROCS=$(shell nproc)
 else
