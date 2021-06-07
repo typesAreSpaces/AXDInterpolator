@@ -8,13 +8,21 @@ TEST_DIR=$(CURRENT_DIR)/tests/smt2-files
 CC=g++
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
+	PYTHON_COMPILER=python
 	SO_EXT=dylib
 	DYLD_LIBRARY_PATH=$(LDIR)
 	export DYLD_LIBRARY_PATH
 	NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
 else
+ifeq ($(OS), CYGWIN_NT-10.0)
+	PYTHON_COMPILER=CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar python
 	SO_EXT=so
 	NUM_PROCS=$(shell nproc)
+else
+	PYTHON_COMPILER=python
+	SO_EXT=so
+	NUM_PROCS=$(shell nproc)
+endif
 endif
 NUM_PROCS_H=$$(($(NUM_PROCS)/2))
 
