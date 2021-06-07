@@ -8,18 +8,18 @@ TEST_DIR=$(CURRENT_DIR)/tests/smt2-files
 CC=g++
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
-	PYTHON_COMPILER=python
+	PYTHON_CMD=python
 	SO_EXT=dylib
 	DYLD_LIBRARY_PATH=$(LDIR)
 	export DYLD_LIBRARY_PATH
 	NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
 else
 ifeq ($(OS), CYGWIN_NT-10.0)
-	PYTHON_COMPILER=CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar python
+	PYTHON_CMD=CXX=x86_64-w64-mingw32-g++ CC=x86_64-w64-mingw32-gcc AR=x86_64-w64-mingw32-ar python
 	SO_EXT=so
 	NUM_PROCS=$(shell nproc)
 else
-	PYTHON_COMPILER=python
+	PYTHON_CMD=python
 	SO_EXT=so
 	NUM_PROCS=$(shell nproc)
 endif
@@ -67,7 +67,7 @@ all: tests/one
 $(LDIR)/libz3.$(SO_EXT):
 	@mkdir -p $(CURRENT_DIR)/lib
 	cd dependencies/z3-interp-plus;\
-		python scripts/mk_make.py --prefix=$(CURRENT_DIR);\
+		$(PYTHON_CMD) scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS_H)
 
 renamed_AXDInterpolant:
