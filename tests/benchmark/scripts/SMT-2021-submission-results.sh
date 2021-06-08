@@ -6,7 +6,6 @@ TESTS_DIR=$(dirname $BENCHMARK_DIR)
 
 ulimit -St 360 -Sv 4500000
 
-
 cd ../../../
 [ ! -f ./bin/mathsat ] && echo "Mathsat not in local bin folder" && cd ./tests/benchmark/scripts && exit
 
