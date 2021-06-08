@@ -8,7 +8,7 @@ ulimit -St 360 -Sv 4500000
 
 
 cd ../../../
-[ -f ./bin/mathsat ] && echo "Mathsat not in local bin folder" && cd ./tests/benchmark/scripts && exit
+[ ! -f ./bin/mathsat ] && echo "Mathsat not in local bin folder" && cd ./tests/benchmark/scripts && exit
 
 echo "How many cores can be used? 1, 3, or 6"
 read num_of_cores_allowed
