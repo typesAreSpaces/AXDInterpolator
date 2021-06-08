@@ -1,5 +1,8 @@
 #!/bin/bash
 
+cd ../../../ \
+  && [ -z "$(ls -A ./dependencies/z3-interp-plus)" ] \
+  && git submodule update --init --remote dependencies/z3-interp-plus
 make -C ../ -j8 bin/benchmark
 unzip ../../verification-files/files.zip
 mv files ../../verification-files/
