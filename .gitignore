@@ -12,3 +12,6 @@ tests/benchmark/bin/*
 tests/benchmark/.clangd/*
 tests/verification-files/files/*
 tests/benchmark/results/scripts/__pycache__/*
+*.cache/*
+tests/benchmark/.cache/*
+compile_commands.json

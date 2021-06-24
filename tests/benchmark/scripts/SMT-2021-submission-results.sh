@@ -1,15 +1,23 @@
 #!/bin/bash
 
-make -C ../ -j8 bin/benchmark
-
 CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
 TESTS_DIR=$(dirname $BENCHMARK_DIR)
 
 ulimit -St 360 -Sv 4500000
 
+cd ../../../
+[ ! -f ./bin/mathsat ] && echo "Mathsat not in local bin folder" && cd ./tests/benchmark/scripts && exit
+
 echo "How many cores can be used? 1, 3, or 6"
 read num_of_cores_allowed
+
+[ -z "$(ls -A ./dependencies/z3-interp-plus)" ] && git submodule update --init --remote dependencies/z3-interp-plus
+cd ./tests/verification-files
+[ ! -d files ] && unzip files.zip
+cd ../benchmark
+make -j8 bin/benchmark
+cd ./scripts
 
 if [ "$num_of_cores_allowed" == "1" ]; then
   ./axdinterpolator-execute-benchmark-memsafety-z3.sh
@@ -157,3 +165,4 @@ rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
 rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
 
 make -C ../ clean
+ulimit -St unlimited -Sv unlimited
