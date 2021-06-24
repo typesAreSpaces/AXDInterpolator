@@ -10,6 +10,6 @@ make -j8 -C $BENCHMARK_DIR bin/benchmark
 
 for file in $VERIFICATION_FILES_DIR/ReachSafety-Arrays/*/*.smt2; do
   pushd $BENCHMARK_DIR >> /dev/null
-  ./bin/benchmark $file 2 $OUTPUT_FILE 1
+  ./bin/benchmark $file 2 $OUTPUT_FILE 1 1
   popd >> /dev/null
 done

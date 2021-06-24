@@ -10,6 +10,6 @@ make -j8 -C $BENCHMARK_DIR bin/benchmark
 
 for file in $VERIFICATION_FILES_DIR/MemSafety-Arrays/*/*.smt2; do
   pushd $BENCHMARK_DIR >> /dev/null
-  ./bin/benchmark $file 0 $OUTPUT_FILE 0
+  ./bin/benchmark $file 0 $OUTPUT_FILE 0 0
   popd >> /dev/null
 done

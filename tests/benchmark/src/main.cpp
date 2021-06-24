@@ -8,7 +8,7 @@ inline bool exists_file (const std::string& name) {
 
 int main(int argc, char * argv[]){
 
-  if(argc != 5){
+  if(argc != 6){
     std::cerr << "Invalid number of inputs.\n";
     return 0;
   }
@@ -43,7 +43,7 @@ int main(int argc, char * argv[]){
   }
 
   UAutomizerFileReader reader(
-      curr_solver, 500, argv[3], *argv[4] == '0');
+      curr_solver, 500, argv[3], *argv[4] == '0', *argv[5] == '0');
 #if SINGLE_FORMULA
   reader.processSingleFile(file);
 #else
