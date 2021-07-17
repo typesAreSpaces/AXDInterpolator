@@ -47,7 +47,7 @@
 (assert (! (and error_state) :named part_b))
 
 (check-sat)
-(get-interpolants part_a part_b)
+(get-interpolant part_a part_b)
 (pop)
 
 (push)
@@ -55,7 +55,7 @@
 (assert (! (and transition_two_state error_state) :named part_b))
 
 (check-sat)
-(get-interpolants part_a part_b)
+(get-interpolant part_a part_b)
 (pop)
 
 (push)
@@ -63,6 +63,6 @@
 (assert (! (and transition_one_state transition_two_state error_state) :named part_b))
 
 (check-sat)
-(get-interpolants part_a part_b)
+(get-interpolant part_a part_b)
 (pop)
 

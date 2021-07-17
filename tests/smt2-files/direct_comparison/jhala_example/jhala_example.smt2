@@ -1,4 +1,5 @@
 (set-option :produce-interpolants true)
+(set-logic AUFLIA)
 (declare-fun a () (Array Int Int))
 (declare-fun b () (Array Int Int))
 (declare-fun i () Int)
