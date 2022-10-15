@@ -7,21 +7,21 @@ BDIR=$(CURRENT_DIR)/bin
 TEST_DIR=$(CURRENT_DIR)/tests/smt2-files
 Z3_DIR=dependencies/z3-interp-plus
 AXD_INTERPOLATOR=bin/axd_interpolator
+TAGS=compile_commands.json
 
 CXX=g++
 CXXFLAGS= 
 CCFLAGS=
+PYTHON_CMD=python
 
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
-	PYTHON_CMD=python
-	SO_EXT=dylib
 	DYLD_LIBRARY_PATH=$(LDIR)
 	export DYLD_LIBRARY_PATH
+	SO_EXT=dylib
 	_NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
 endif
 ifeq ($(OS), Linux)
-	PYTHON_CMD=python
 	SO_EXT=so
 	_NUM_PROCS=$(shell nproc)
 endif
@@ -73,7 +73,7 @@ $(AXD_INTERPOLATOR): $(OBJS) $(LDIR)/libz3.$(SO_EXT)
 # ---------------------------------------------------------
 # Generate TAGS
 
-compile_commands.json:
+$(TAGS):
 	compiledb -n make
 
 # ---------------------------------------------------------
@@ -162,14 +162,14 @@ clean:
 	rm -rf $(ODIR) output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
 	rm -rf $(CURRENT_DIR)/$(AXD_INTERPOLATOR)
+	rm -rf $(TAGS)
 	cd output; make clean
-	rm -rf compile_commands.json
 
 .PHONY: z3_clean
 z3_clean:
-	cd $(Z3_DIR)/build;\
-		make uninstall
-	rm -rf $(CURRENT_DIR)/$(Z3_DIR)
+	if [ -d "$(Z3_DIR)/build" ]; then \
+		cd $(Z3_DIR)/build; make uninstall; \
+	fi;
 	rm -rf $(LDIR)
 
 .PHONY: deep_clean
