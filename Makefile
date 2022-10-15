@@ -81,7 +81,7 @@ $(LDIR)/libz3.$(SO_EXT): $(CURRENT_DIR)/$(Z3_DIR)/README.md
 		$(PYTHON_CMD) scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS)
 
-$(IDIR)/AXDInterpolant.h: $(IDIR)/_AXDInterpolant.h
+$(IDIR)/_AXDInterpolant.h: $(IDIR)/AXDInterpolant.h
 	perl -pe "s|replace_once|$(CURRENT_DIR)|g" $< > $@
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
@@ -150,7 +150,7 @@ z3_check:
 #  Cleaning
 .PHONY: clean
 clean:
-	rm -rf $(ODIR)/* output/*.smt2
+	rm -rf $(ODIR) output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
 	rm -rf $(CURRENT_DIR)/$(AXD_INTERPOLATOR)
 	cd output; make clean
