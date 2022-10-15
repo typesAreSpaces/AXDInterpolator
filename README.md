@@ -11,12 +11,10 @@ iZ3 and Mathsat as such engines.
 
 ## Building the project
 
-The project requires some z3 dependencies. The
-latter can be achieved using the following command from
-the root of the project:
+In the root directory, execute the command:
 
 ```
-git submodule update --init --remote dependencies/z3-interp-plus
+make bin/axd_interpolator
 ```
 
 If the user wants to use the MATHSAT SMT solver, the 
@@ -27,19 +25,12 @@ directory. For the latter, use the following command:
 ln -s <mathsat-path> ./bin/mathsat
 ```
 
-In the root directory, execute the command:
-
-```
-make bin/axd_interpolator
-```
-
 If the above is successful, then binary file _axd_interpolator_
 will be located inside the _bin_ directory.
 
-## Setting up the input formula
+## Setting up an input formula
 
-Input formulas are encoded as a SMTLIB2 file 
-in the ./tests/smt2-files directory. If the input
+Input is processed as SMTLIB2 files. If the input
 includes function applications of our extended
 language, i.e. diff, length, empty_array, undefined,
 then the latter elements should be appended a string
@@ -70,16 +61,16 @@ The _axd_interpolator_ binaries receives 4 arguments:
   - Option 2 uses ``SMTINTERPOL``
 * The fourth argument specifies a number of attempts, i.e. a number that bounds the number of executions of the main loop of the implementation.
 
-The following is an example of an execution of the _axd_interpolator_ binary:
+The following is an example of an execution of the _axd_interpolator_ binary using ``Z3`` as interpolating engine:
 
 ```
-./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100
+./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 0 100
 ```
 
 ### Note:
 
-If Mac Os is used, the command requires the following to be
-appended:
+If macOS is used, the previous command requires ``DYLD_LIBRARY_PATH=./lib`` to be  
+appended, i.e.:
 
 ```
 DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100
