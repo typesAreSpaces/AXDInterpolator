@@ -9,6 +9,9 @@ Z3_DIR=dependencies/z3-interp-plus
 AXD_INTERPOLATOR=bin/axd_interpolator
 
 CXX=g++
+CXXFLAGS= 
+CCFLAGS=
+
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
 	PYTHON_CMD=python
@@ -27,7 +30,8 @@ NUM_PROCS=$(_NUM_PROCS)
 
 SRC=$(wildcard $(SDIR)/*.cpp)
 _DEPS=$(wildcard $(IDIR)/*.h)
-DEPS:=$(filter-out $(IDIR)/AXDInterpolant.h,$(_DEPS)) $(IDIR)/_AXDInterpolant.h
+DEPS:=$(filter-out $(IDIR)/AXDInterpolant.h,$(_DEPS)) \
+			$(IDIR)/_AXDInterpolant.h
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
@@ -64,23 +68,15 @@ all: tests/one
 #all: tests/all
 #all: tests/print_all
 
-# -------------------------------------------------------------------------------
+# ---------------------------------------------------------
 #  Rules to build the project
 
 $(CURRENT_DIR)/$(Z3_DIR)/README.md:
 	git submodule update --init --remote $(Z3_DIR) 
 	cd $(Z3_DIR); git checkout master
 
-$(LDIR):
-	mkdir -p $<
-
-$(ODIR):
-	mkdir -p $<
-
-$(BDIR):
-	mkdir -p $<
-
-$(LDIR)/libz3.$(SO_EXT): $(CURRENT_DIR)/$(Z3_DIR)/README.md $(LDIR)
+$(LDIR)/libz3.$(SO_EXT): $(CURRENT_DIR)/$(Z3_DIR)/README.md
+	mkdir -p $(LDIR)
 	cd $(Z3_DIR);\
 		$(PYTHON_CMD) scripts/mk_make.py --prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS)
@@ -88,14 +84,26 @@ $(LDIR)/libz3.$(SO_EXT): $(CURRENT_DIR)/$(Z3_DIR)/README.md $(LDIR)
 $(IDIR)/AXDInterpolant.h: $(IDIR)/_AXDInterpolant.h
 	perl -pe "s|replace_once|$(CURRENT_DIR)|g" $< > $@
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT) $(ODIR)
-	$(CXX) -g -c -o $@ $(FLAGS) $<
+$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
+	mkdir -p $(ODIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) $<
 
-$(AXD_INTERPOLATOR): $(OBJS) $(LDIR)/libz3.$(SO_EXT) $(BDIR)
-	$(CXX) -g -o $@ $(OBJS) $(FLAGS) -lpthread
-# -------------------------------------------------------------------------------
+debug: CXXFLAGS += -DDEBUG -g
+debug: CCFLAGS += -DDEBUG -g
+debug: $(AXD_INTERPOLATOR)
 
-# -------------------------------------------------------
+$(AXD_INTERPOLATOR): $(OBJS) $(LDIR)/libz3.$(SO_EXT)
+	mkdir -p $(BDIR)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(FLAGS) -lpthread
+# ---------------------------------------------------------
+
+# ---------------------------------------------------------
+# Generate TAGS
+compile_commands.json:
+	compiledb -n make
+# ---------------------------------------------------------
+
+# ---------------------------------------------------------
 #  Rules to test a single or many smt2 files
 tests/one: $(AXD_INTERPOLATOR)
 	./$(AXD_INTERPOLATOR) \
@@ -124,28 +132,29 @@ tests/print_all: $(AXD_INTERPOLATOR)
 		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
-# -------------------------------------------------------
+# ---------------------------------------------------------
 
-# ----------------------------
+# ---------------------------------------------------------
 #  Check output
 check: 
-	@make -C ./output
+	make -C ./output
 
 mathsat_check: 
 	SMT_SOLVER=MATHSAT make check
 
 z3_check: 
 	SMT_SOLVER=Z3 make check
-# ----------------------------
+# ---------------------------------------------------------
 
-# ------------------------------
+# ---------------------------------------------------------
 #  Cleaning
 .PHONY: clean
 clean:
 	rm -rf $(ODIR)/* output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
 	rm -rf $(CURRENT_DIR)/$(AXD_INTERPOLATOR)
-	# cd output && make clean
+	cd output; make clean
+	rm -rf compile_commands.json
 
 .PHONY: z3_clean
 z3_clean:
@@ -156,4 +165,4 @@ z3_clean:
 
 .PHONY: deep_clean
 deep_clean: clean z3_clean
-# ------------------------------
+# ---------------------------------------------------------
