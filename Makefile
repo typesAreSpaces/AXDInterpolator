@@ -35,7 +35,8 @@ DEPS:=$(filter-out $(IDIR)/AXDInterpolant.h,$(_DEPS)) \
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-all: tests/one
+all: $(AXD_INTERPOLATOR)
+#all: tests/one
 #all: tests/all
 #all: tests/print_all
 

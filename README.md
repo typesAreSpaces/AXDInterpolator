@@ -14,8 +14,11 @@ iZ3 and Mathsat as such engines.
 In the root directory, execute the command:
 
 ```
-make bin/axd_interpolator
+make
 ```
+
+If the above is successful, then the binary file _axd_interpolator_
+will be located inside the _bin_ directory.
 
 If the user wants to use the MATHSAT SMT solver, the 
 implementation requires a soft link inside the ``bin``
@@ -24,9 +27,6 @@ directory. For the latter, use the following command:
 ```
 ln -s <mathsat-path> ./bin/mathsat
 ```
-
-If the above is successful, then binary file _axd_interpolator_
-will be located inside the _bin_ directory.
 
 ## Setting up an input formula
 
