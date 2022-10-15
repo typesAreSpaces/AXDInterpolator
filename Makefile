@@ -35,35 +35,6 @@ DEPS:=$(filter-out $(IDIR)/AXDInterpolant.h,$(_DEPS)) \
 OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
 FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
 
-METHOD=0# Z3
-#METHOD=1# MATHSAT
-#METHOD=2# SMTINTERPOL
-
-ALLOWED_ATTEMPS=1000000
-
-#-- Supported Theories
-#THEORY=QF_TO
-#THEORY=QF_IDL
-#THEORY=QF_UTVPI
-THEORY=QF_LIA
-
-#-- Sample files
-#FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
-#FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
-#FILE_TEST=$(TEST_DIR)/simple.smt2
-#FILE_TEST=$(TEST_DIR)/simple2.smt2
-#FILE_TEST=$(TEST_DIR)/simple3.smt2
-#FILE_TEST=$(TEST_DIR)/simple4.smt2
-#FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
-#FILE_TEST=$(TEST_DIR)/length_example.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
-#FILE_TEST=$(TEST_DIR)/jhala.smt2
-FILE_TEST=$(TEST_DIR)/strcpy_example_variant_1.smt2
-#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_2.smt2
-#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_3.smt2
-
 all: tests/one
 #all: tests/all
 #all: tests/print_all
@@ -95,16 +66,49 @@ debug: $(AXD_INTERPOLATOR)
 $(AXD_INTERPOLATOR): $(OBJS) $(LDIR)/libz3.$(SO_EXT)
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(FLAGS) -lpthread
+
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 # Generate TAGS
+
 compile_commands.json:
 	compiledb -n make
+
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 #  Rules to test a single or many smt2 files
+
+METHOD=0# Z3
+#METHOD=1# MATHSAT
+#METHOD=2# SMTINTERPOL
+
+ALLOWED_ATTEMPS=1000000
+
+#-- Supported Theories
+#THEORY=QF_TO
+#THEORY=QF_IDL
+#THEORY=QF_UTVPI
+THEORY=QF_LIA
+
+#-- Sample files
+#FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
+#FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
+#FILE_TEST=$(TEST_DIR)/simple.smt2
+#FILE_TEST=$(TEST_DIR)/simple2.smt2
+#FILE_TEST=$(TEST_DIR)/simple3.smt2
+#FILE_TEST=$(TEST_DIR)/simple4.smt2
+#FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
+#FILE_TEST=$(TEST_DIR)/length_example.smt2
+#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
+#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
+#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
+#FILE_TEST=$(TEST_DIR)/jhala.smt2
+FILE_TEST=$(TEST_DIR)/strcpy_example_variant_1.smt2
+#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_2.smt2
+#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_3.smt2
+
 tests/one: $(AXD_INTERPOLATOR)
 	./$(AXD_INTERPOLATOR) \
 		$(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
@@ -132,10 +136,12 @@ tests/print_all: $(AXD_INTERPOLATOR)
 		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
+
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 #  Check output
+
 check: 
 	make -C ./output
 
@@ -144,10 +150,12 @@ mathsat_check:
 
 z3_check: 
 	SMT_SOLVER=Z3 make check
+
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 #  Cleaning
+
 .PHONY: clean
 clean:
 	rm -rf $(ODIR) output/*.smt2
@@ -165,4 +173,5 @@ z3_clean:
 
 .PHONY: deep_clean
 deep_clean: clean z3_clean
+
 # ---------------------------------------------------------
