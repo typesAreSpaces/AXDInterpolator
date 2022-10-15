@@ -1,6 +1,5 @@
 .DS_Store
 dependencies/.DS_Store
-dependencies/*
 .clangd/*
 *.o
 bin/*
