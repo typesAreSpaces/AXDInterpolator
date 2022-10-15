@@ -4,6 +4,7 @@ dependencies/.DS_Store
 *.o
 bin/*
 include/z3*
+include/_*
 lib/libz3*
 output/*.smt2
 renamed_AXDInterpolant

@@ -1,4 +1,4 @@
-#include "AXDInterpolant.h"
+#include "_AXDInterpolant.h"
 
 #define TEST_OUTPUT_CODE(PARSED_FROM_SOLVER_INTERPOLANT) \
   z3::expr_vector _part_a_vector(sig.ctx); \
