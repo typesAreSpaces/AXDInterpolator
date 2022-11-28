@@ -94,7 +94,6 @@ class UAutomizerFileReader {
   std::string line, current_frame, current_file;
   int nesting_level, max_nesting_level;
   unsigned num;
-  bool is_mem_safety_track;
   std::vector<std::string> stack_of_frames;
   SMT_SOLVER curr_solver;
   std::string const name_solver;
@@ -115,7 +114,7 @@ class UAutomizerFileReader {
   void reset(); 
 
   public:
-  UAutomizerFileReader(SMT_SOLVER, unsigned, char * const, bool, bool);
+  UAutomizerFileReader(SMT_SOLVER, unsigned, char * const, bool);
     
   void process(char const *);
   void processSingleFile(char const *);

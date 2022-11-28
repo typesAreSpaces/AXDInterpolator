@@ -4,14 +4,13 @@ UAutomizerFileReader::UAutomizerFileReader(
     SMT_SOLVER smt_solver, 
     unsigned num_samples, 
     char * const file, 
-    bool test_our_implementation, bool is_mem_safety_track) : 
+    bool test_our_implementation) : 
   line(""),
   current_frame(""),
   current_file(""),
   nesting_level(0),
   max_nesting_level(0),
   num(0),
-  is_mem_safety_track(is_mem_safety_track),
   stack_of_frames({}),
   curr_solver(smt_solver),
   name_solver(

@@ -81,13 +81,6 @@ void UAutomizerFileReader::testOtherSolvers() {
               interpolant_from_file += ")\n";
               interpolant_from_file += "(check-sat)\n";
 
-              //char check_input_command[10000];
-              //if(is_mem_safety_track)
-                //sprintf(check_input_command, "echo '%s' >> /home/jose/file_mem_safety.txt", interpolant_from_file.c_str());
-              //else
-                //sprintf(check_input_command, "echo '%s' >> /home/jose/file_reach_safety.txt", interpolant_from_file.c_str());
-              //system(check_input_command);
-
               system(("rm -rf " + temp_file_name).c_str());
 
               z3::solver z3_interpolant_parser(ctx, "QF_AUFLIA");
