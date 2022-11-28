@@ -4,8 +4,10 @@ ODIR=$(CURRENT_DIR)/obj
 SDIR=$(CURRENT_DIR)/src
 LDIR=$(CURRENT_DIR)/lib
 BDIR=$(CURRENT_DIR)/bin
+
 TEST_DIR=$(CURRENT_DIR)/tests/smt2-files
 Z3_DIR=dependencies/z3-interp-plus
+
 AXD_INTERPOLATOR=bin/axd_interpolator
 TAGS=compile_commands.json
 
@@ -42,7 +44,6 @@ all: $(AXD_INTERPOLATOR)
 
 # ---------------------------------------------------------
 #  Rules to build the project
-
 $(CURRENT_DIR)/$(Z3_DIR)/README.md:
 	git submodule update --init --remote $(Z3_DIR) 
 	cd $(Z3_DIR); git checkout master
@@ -67,20 +68,16 @@ debug: $(AXD_INTERPOLATOR)
 $(AXD_INTERPOLATOR): $(OBJS) $(LDIR)/libz3.$(SO_EXT)
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(FLAGS) -lpthread
-
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 # Generate TAGS
-
 $(TAGS):
 	compiledb -n make
-
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 #  Rules to test a single or many smt2 files
-
 METHOD=0# Z3
 #METHOD=1# MATHSAT
 #METHOD=2# SMTINTERPOL
@@ -137,12 +134,10 @@ tests/print_all: $(AXD_INTERPOLATOR)
 		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done
 	rm -rf tests/*.o $@
-
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 #  Check output
-
 check: 
 	make -C ./output
 
@@ -151,13 +146,12 @@ mathsat_check:
 
 z3_check: 
 	SMT_SOLVER=Z3 make check
-
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
 #  Cleaning
-
 .PHONY: clean
+
 clean:
 	rm -rf $(ODIR) output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
@@ -166,6 +160,7 @@ clean:
 	cd output; make clean
 
 .PHONY: z3_clean
+
 z3_clean:
 	if [ -d "$(Z3_DIR)/build" ]; then \
 		cd $(Z3_DIR)/build; make uninstall; \
@@ -173,6 +168,6 @@ z3_clean:
 	rm -rf $(LDIR)
 
 .PHONY: deep_clean
-deep_clean: clean z3_clean
 
+deep_clean: clean z3_clean
 # ---------------------------------------------------------

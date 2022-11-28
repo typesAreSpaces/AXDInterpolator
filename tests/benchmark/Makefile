@@ -42,6 +42,7 @@ FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/relax-1.c_val
 #FILE_TEST=$(FILE_TEST_PREFIX_PATH)/ReachSafety-Arrays/array-cav19/array_tiling_poly6.c_unreach-call.prp.smt2
 
 all: test
+	echo $(BIN_BENCHMARK)
 
 # --------------------------------------------------------
 #  Rules to build the project
