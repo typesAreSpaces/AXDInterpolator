@@ -3,6 +3,11 @@
 CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
 TESTS_DIR=$(dirname $BENCHMARK_DIR)
+VERIFICATION_FILES_DIR=$TESTS_DIR/verification-files/files
+
+[ ! -d $VERIFICATION_FILES_DIR ] \
+  && unzip $VERIFICATION_FILES_DIR.zip \
+  && mv files $VERIFICATION_FILES_DIR
 
 ulimit -St 360 -Sv 4500000
 
@@ -159,7 +164,7 @@ cat $BENCHMARK_DIR/benchmark_reachsafety_results_* > $BENCHMARK_DIR/benchmark_re
 rm $BENCHMARK_DIR/benchmark_memsafety_results_*
 rm $BENCHMARK_DIR/benchmark_reachsafety_results_*
 
-./../results/scripts/SMT-2021-submission-results.py $TESTS_DIR/verification-files/files $BENCHMARK_DIR
+./process-results/SMT-2021-submission-results.py $TESTS_DIR/verification-files/files $BENCHMARK_DIR
 
 rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
 rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
