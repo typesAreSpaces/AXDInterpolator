@@ -6,7 +6,7 @@ OUTPUT_FILE=$BENCHMARK_DIR/benchmark_memsafety_results-axdinterpolator.txt
 VERIFICATION_FILES_DIR=$(dirname $BENCHMARK_DIR)/verification-files/files
 
 [ ! -f $OUTPUT_FILE ] && touch $OUTPUT_FILE
-make -j8 -C $BENCHMARK_DIR bin/benchmark
+make -j8 -C $BENCHMARK_DIR $BENCHMARK_DIR/bin/benchmark
 
 for file in $VERIFICATION_FILES_DIR/MemSafety-Arrays/*/*.smt2; do
   pushd $BENCHMARK_DIR >> /dev/null
