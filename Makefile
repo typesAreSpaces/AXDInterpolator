@@ -14,7 +14,7 @@ TAGS=compile_commands.json
 CXX=g++
 CXXFLAGS= 
 CCFLAGS=
-PYTHON_CMD=python
+PYTHON_CMD=python3
 
 OS=$(shell uname)
 ifeq ($(OS), Darwin)
