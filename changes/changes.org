@@ -2,28 +2,30 @@
 #+AUTHOR: Jose Abel Castellanos Joo
 #+OPTIONS: toc:nil
 
-* diff --git a/src/api/api_ast.cpp b/src/api/api_ast.cpp
-** +  static Z3_ast qf_to_simplify(Z3_context c, Z3_ast _a, Z3_params _p) {
-** +  Z3_ast Z3_API Z3_qf_to_simplify(Z3_context c, Z3_ast _a) {
-** +  Z3_string Z3_API Z3_benchmark_to_smtlib_string_decls_only(Z3_context c,
-* diff --git a/src/api/c++/z3++.h b/src/api/c++/z3++.h
-** +      expr qf_to_simplify() const { Z3_ast r = Z3_qf_to_simplify(ctx(), m_ast); check_error(); return expr(ctx(), r); }
-** +      ast_vector_tpl(context& c, ast_vector_tpl const& src): object(c) { init(Z3_ast_vector_translate(src.ctx(), src, c)); }
-** +    std::string to_smt2_decls_only(char const* status = "unknown") {
-* diff --git a/src/api/z3_api.h b/src/api/z3_api.h
-** +  Z3_ast Z3_API Z3_qf_to_simplify(Z3_context c, Z3_ast a);
-** +  Z3_string Z3_API Z3_benchmark_to_smtlib_string_decls_only(Z3_context c,
-** +  Z3_ast Z3_API Z3_parse_smtlib2_string(Z3_context c,
-** +  Z3_ast Z3_API Z3_parse_smtlib2_file(Z3_context c,
-* diff --git a/src/ast/rewriter/arith_rewriter.cpp b/src/ast/rewriter/arith_rewriter.cpp
-** +br_status qf_to_rewriter::qf_to_normalizer(expr * arg1, expr * arg2, 
-** +br_status qf_to_rewriter::mk_le_core(expr * arg1, expr * arg2, expr_ref & result) {
-** +br_status qf_to_rewriter::mk_lt_core(expr * arg1, expr * arg2, expr_ref & result) {
-** +br_status qf_to_rewriter::mk_ge_core(expr * arg1, expr * arg2, expr_ref & result) {
-** +br_status qf_to_rewriter::mk_gt_core(expr * arg1, expr * arg2, expr_ref & result) { 
-* diff --git a/src/ast/rewriter/arith_rewriter.h b/src/ast/rewriter/arith_rewriter.h
-** +class qf_to_rewriter : public arith_rewriter {
-* diff --git a/src/ast/rewriter/th_rewriter.cpp b/src/ast/rewriter/th_rewriter.cpp
-** +  qf_to_rewriter      m_qf_to_rw;
-* diff --git a/src/ast/rewriter/th_rewriter.h b/src/ast/rewriter/th_rewriter.h
-** +  th_rewriter(ast_manager & m, params_ref const & p = params_ref(), bool is_qf_to = false);
+* [[./changes.txt][Diff changes]]
+* Summary
+** diff --git a/src/api/api_ast.cpp b/src/api/api_ast.cpp
+*** +  static Z3_ast qf_to_simplify(Z3_context c, Z3_ast _a, Z3_params _p) {
+*** +  Z3_ast Z3_API Z3_qf_to_simplify(Z3_context c, Z3_ast _a) {
+*** +  Z3_string Z3_API Z3_benchmark_to_smtlib_string_decls_only(Z3_context c,
+** diff --git a/src/api/c++/z3++.h b/src/api/c++/z3++.h
+*** +      expr qf_to_simplify() const { Z3_ast r = Z3_qf_to_simplify(ctx(), m_ast); check_error(); return expr(ctx(), r); }
+*** +      ast_vector_tpl(context& c, ast_vector_tpl const& src): object(c) { init(Z3_ast_vector_translate(src.ctx(), src, c)); }
+*** +    std::string to_smt2_decls_only(char const* status = "unknown") {
+** diff --git a/src/api/z3_api.h b/src/api/z3_api.h
+*** +  Z3_ast Z3_API Z3_qf_to_simplify(Z3_context c, Z3_ast a);
+*** +  Z3_string Z3_API Z3_benchmark_to_smtlib_string_decls_only(Z3_context c,
+*** +  Z3_ast Z3_API Z3_parse_smtlib2_string(Z3_context c,
+*** +  Z3_ast Z3_API Z3_parse_smtlib2_file(Z3_context c,
+** diff --git a/src/ast/rewriter/arith_rewriter.cpp b/src/ast/rewriter/arith_rewriter.cpp
+*** +br_status qf_to_rewriter::qf_to_normalizer(expr * arg1, expr * arg2, 
+*** +br_status qf_to_rewriter::mk_le_core(expr * arg1, expr * arg2, expr_ref & result) {
+*** +br_status qf_to_rewriter::mk_lt_core(expr * arg1, expr * arg2, expr_ref & result) {
+*** +br_status qf_to_rewriter::mk_ge_core(expr * arg1, expr * arg2, expr_ref & result) {
+*** +br_status qf_to_rewriter::mk_gt_core(expr * arg1, expr * arg2, expr_ref & result) { 
+** diff --git a/src/ast/rewriter/arith_rewriter.h b/src/ast/rewriter/arith_rewriter.h
+*** +class qf_to_rewriter : public arith_rewriter {
+** diff --git a/src/ast/rewriter/th_rewriter.cpp b/src/ast/rewriter/th_rewriter.cpp
+*** +  qf_to_rewriter      m_qf_to_rw;
+** diff --git a/src/ast/rewriter/th_rewriter.h b/src/ast/rewriter/th_rewriter.h
+*** +  th_rewriter(ast_manager & m, params_ref const & p = params_ref(), bool is_qf_to = false);
