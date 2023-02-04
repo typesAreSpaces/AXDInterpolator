@@ -5,8 +5,7 @@ AXDInterpolant::AXDInterpolant(
     AXDSignature & sig, 
     z3::expr const & _input_part_a,
     z3::expr const & _input_part_b,
-    char const * file_name,
-    unsigned allowed_attempts) : 
+    char const * file_name) : 
   Preprocessor(sig, _input_part_a, _input_part_b),
   part_a(
       sig,
@@ -19,7 +18,7 @@ AXDInterpolant::AXDInterpolant(
       part_b_index_vars, 
       part_b_array_vars),
   m_file_name(std::string(file_name)),
-  num_attempts(0), remaining_fuel(allowed_attempts),
+  num_attempts(0), remaining_fuel(1),
   is_interpolant_computed(false), 
   is_unsat(false), 
   is_valid_result(false),

@@ -51,6 +51,7 @@ class AXDInterpolant : public Preprocessor {
 
   StandardInput        part_a, part_b;
   std::string          m_file_name;
+  // TODO: Remove this as no fuel is needed
   unsigned             num_attempts, remaining_fuel;
   bool                 is_interpolant_computed,
                        is_unsat,
@@ -91,8 +92,7 @@ class AXDInterpolant : public Preprocessor {
       AXDSignature &, 
       z3::expr const &,
       z3::expr const &,
-      char const *, 
-      unsigned);
+      char const *);
 
   void z3OutputFile();
   void mathsatOutputFile();

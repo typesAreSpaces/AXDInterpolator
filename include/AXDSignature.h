@@ -62,7 +62,7 @@ struct AXDSignature {
 
   static bool isSpaceOrParen(char);
   void        extractNameFromSort(std::string &) const;
-  void        processArrayDecls(std::string &);
+  void        processArrayDecls(std::string);
   void        indexElementSorts();
 
   bool is_QF_TO() const;
@@ -116,7 +116,7 @@ struct AXDSignature {
   // returns the indexing-position of the abstract type ArraySortA
   std::map<unsigned, unsigned> array_sort_map;
 
-  AXDSignature(z3::context &, char const *, std::string &);
+  AXDSignature(z3::context &, char const *, std::string);
 };
 
 #endif

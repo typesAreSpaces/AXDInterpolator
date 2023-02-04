@@ -13,7 +13,7 @@
 AXDSignature::AXDSignature(
     z3::context & ctx, 
     char const * theory_string,
-    std::string & decls) :
+    std::string decls) :
   ctx(ctx),
   theory_name(QF_TO),
 
@@ -59,7 +59,7 @@ void AXDSignature::extractNameFromSort(std::string & s) const {
       s.end());
 }
 
-void AXDSignature::processArrayDecls(std::string & decls){
+void AXDSignature::processArrayDecls(std::string decls){
   std::smatch match;
   std::regex array_decl_regex(
       "\\(declare-fun .* \\(\\) \\(Array.*\\)\\)");
