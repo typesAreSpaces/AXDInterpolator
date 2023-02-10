@@ -1,12 +1,10 @@
-#include "util.h"
 #include "todo.h"
+#include "util.h"
+#include "z3++.h"
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 
-int main(int argc, char ** argv) {
-
-  // axdinterpolator::run(argc, argv);
- 
+void test1() {
   z3::context ctx;
   auto A = ctx.uninterpreted_sort("A");
   auto a = ctx.constant("a", A);
@@ -14,9 +12,30 @@ int main(int argc, char ** argv) {
   auto f = ctx.function("f", A, A, A);
   auto f_f_a_b_a = f(f(a, b), a);
   traverse(f_f_a_b_a);
+}
 
-  test();
+int main(int argc, char **argv) {
 
+  // axdinterpolator::run(argc, argv);
+
+  z3::context ctx;
+
+  auto mytype = ctx.uninterpreted_sort("B");
+  auto a = ctx.constant("a", mytype);
+  auto b = ctx.constant("b", mytype);
+  auto f = ctx.function("f", mytype, mytype, mytype);
+  auto expr1 = f(a, (f(a, b)));
+
+  z3::expr_vector v1(ctx);
+  v1.push_back(f(a, b));
+  v1.push_back(a);
+  std::cout << v1 << std::endl;
+
+  z3::expr_vector v2(ctx);
+  v2.push_back(a);
+  v2.push_back(b);
+  std::cout << v2 << std::endl;
+
+  M_O_instantiation(expr1, v2, v1);
   return 0;
-
 }
