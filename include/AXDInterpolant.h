@@ -90,8 +90,8 @@ class AXDInterpolant : public Preprocessor {
   public: 
   AXDInterpolant(
       AXDSignature &, 
-      z3::expr const &,
-      z3::expr const &,
+      z3::expr,
+      z3::expr,
       char const *);
 
   void z3OutputFile();

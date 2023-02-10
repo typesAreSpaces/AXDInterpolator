@@ -3,30 +3,38 @@
 
 AXDInterpolant::AXDInterpolant(
     AXDSignature & sig, 
-    z3::expr const & _input_part_a,
-    z3::expr const & _input_part_b,
+    z3::expr _input_part_a,
+    z3::expr _input_part_b,
     char const * file_name) : 
+
   Preprocessor(sig, _input_part_a, _input_part_b),
+
   part_a(
       sig,
       input_part_a,
       part_a_index_vars, 
       part_a_array_vars),
+
   part_b(
       sig,
       input_part_b,
       part_b_index_vars, 
       part_b_array_vars),
+
   m_file_name(std::string(file_name)),
+
+  // TODO: Remove this as no fuel is needed
   num_attempts(0), remaining_fuel(1),
+
   is_interpolant_computed(false), 
   is_unsat(false), 
   is_valid_result(false),
   state_output(undefined),
+
   current_interpolant(sig.ctx.bool_val(true)),
+
   solver(sig.ctx, 
-      sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_UFLIA"
-      )
+      sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_UFLIA")
 {
 #if _DEBUG_AXD_CONSTRUCTOR_
   std::cout << "After Processing" << std::endl;
@@ -49,7 +57,8 @@ AXDInterpolant::AXDInterpolant(
   m_out << "Part B" << std::endl;
   m_out << part_b << std::endl;
 
-  m_file_name = m_file_name
+  m_file_name =
+    m_file_name
     .substr(0, m_file_name.find_last_of("."))
     .substr(m_file_name.find_last_of("\\/") + 1);
 

@@ -22,12 +22,10 @@ int main(int argc, char *argv[]) {
 
     try {
       do {
-	const auto &formula_a = input.currentPartA();
-	const auto &formula_b = input.currentPartB();
-
-	AXDInterpolant axd(sig,
+        AXDInterpolant axd(sig,
 			   // Input formulas
-			   formula_a, formula_b,
+			   input.currentPartA(),
+			   input.currentPartB(),
 			   // smt2 file name
 			   smt_filename);
 
