@@ -1,9 +1,11 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-#include "z3++.h"
+#include "_AXDInterpolant.h"
 #include <sys/stat.h>
 #include <unistd.h>
+
+namespace axdinterpolator {
 
 class InputFormulaParser {
 
@@ -21,5 +23,9 @@ public:
   z3::expr currentPartB();
   bool next();
 };
+
+int run(int, char **);
+
+} // namespace axdinterpolator
 
 #endif

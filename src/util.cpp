@@ -1,11 +1,11 @@
 #include "util.h"
-#include "z3++.h"
 
-InputFormulaParser::InputFormulaParser(const char *theory,
-                                       const char *smt_filename,
-                                       const char *smt_engine_code,
+
+axdinterpolator::InputFormulaParser::InputFormulaParser(const char *theory,
+				       const char *smt_filename,
+				       const char *smt_engine_code,
 				       z3::context &ctx)
-  : input_parser(ctx), part_a_it(0), part_b_it(0), part_a(ctx), part_b(ctx) {
+    : input_parser(ctx), part_a_it(0), part_b_it(0), part_a(ctx), part_b(ctx) {
 
   if (!exists_file(smt_filename)) {
     std::cout << "File not found." << std::endl;
@@ -34,33 +34,29 @@ InputFormulaParser::InputFormulaParser(const char *theory,
   goal_a.add(input_formula[0]);
   goal_b.add(input_formula[1]);
 
-  auto const & _part_a = my_tactic(goal_a);
-  for(unsigned i = 0; i < _part_a.size(); i++)
+  auto const &_part_a = my_tactic(goal_a);
+  for (unsigned i = 0; i < _part_a.size(); i++)
     part_a.push_back(_part_a[i].as_expr());
 
-  auto const & _part_b = my_tactic(goal_b);
-  for(unsigned i = 0; i < _part_b.size(); i++)
+  auto const &_part_b = my_tactic(goal_b);
+  for (unsigned i = 0; i < _part_b.size(); i++)
     part_b.push_back(_part_b[i].as_expr());
 }
 
-bool InputFormulaParser::exists_file(const char *name) {
+bool axdinterpolator::InputFormulaParser::exists_file(const char *name) {
   struct stat buffer;
   return (stat(name, &buffer) == 0);
 }
 
-std::string InputFormulaParser::getDecls() {
+std::string axdinterpolator::InputFormulaParser::getDecls() {
   return input_parser.to_smt2_decls_only();
 }
 
-z3::expr InputFormulaParser::currentPartA() {
-  return part_a[part_a_it];
-}
+z3::expr axdinterpolator::InputFormulaParser::currentPartA() { return part_a[part_a_it]; }
 
-z3::expr InputFormulaParser::currentPartB() {
-  return part_b[part_b_it];
-}
+z3::expr axdinterpolator::InputFormulaParser::currentPartB() { return part_b[part_b_it]; }
 
-bool InputFormulaParser::next() {
+bool axdinterpolator::InputFormulaParser::next() {
 
   part_b_it++;
 
@@ -75,4 +71,63 @@ bool InputFormulaParser::next() {
   }
 
   return true;
+}
+
+int axdinterpolator::run(int argc, char **argv) {
+
+  z3::context ctx;
+  ctx.set(":pp-min-alias-size", 1000000);
+  ctx.set(":pp-max-depth", 1000000);
+
+  switch (argc) {
+  case 5: {
+
+    const char *theory = argv[1];
+    const char *smt_filename = argv[2];
+    const char *smt_engine_code = argv[3];
+
+    InputFormulaParser input(theory, smt_filename, smt_engine_code, ctx);
+
+    AXDSignature sig(ctx, theory, input.getDecls());
+
+    try {
+      do {
+	AXDInterpolant axd(sig,
+			   // Input formulas
+			   input.currentPartA(), input.currentPartB(),
+			   // smt2 file name
+			   smt_filename);
+
+	switch (*smt_engine_code) {
+	case '0':
+	  axd.z3OutputFile();
+	  break;
+	case '1':
+	  axd.mathsatOutputFile();
+	  break;
+	case '2':
+	  axd.smtInterpolOutputFile();
+	  break;
+	default:
+	  std::cout << "Not valid SMT solver option." << std::endl;
+	  // return 3;
+	}
+
+	std::cout << axd << std::endl;
+      } while (input.next());
+
+    } catch (char const *e) {
+      std::cout << e << std::endl;
+      // return 4;
+    }
+
+    return 0;
+  }
+
+  default:
+    std::cout << "Invalid number of arguments." << std::endl;
+    return 5;
+  }
+
+  return 0;
 }
