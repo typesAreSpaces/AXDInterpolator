@@ -14,11 +14,8 @@ void test1() {
   traverse(f_f_a_b_a);
 }
 
-int main(int argc, char **argv) {
-
-  // axdinterpolator::run(argc, argv);
-
-  z3::context ctx;
+void test2() {
+z3::context ctx;
 
   auto mytype = ctx.uninterpreted_sort("B");
   auto a = ctx.constant("a", mytype);
@@ -37,5 +34,12 @@ int main(int argc, char **argv) {
   std::cout << v2 << std::endl;
 
   M_O_instantiation(expr1, v2, v1);
+  
+}
+
+int main(int argc, char **argv) {
+
+  axdinterpolator::run(argc, argv);
+  test1();
   return 0;
 }
