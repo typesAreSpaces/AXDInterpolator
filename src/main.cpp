@@ -4,6 +4,16 @@
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 
+void test1();
+void test2();
+
+int main(int argc, char **argv) {
+
+  // axdinterpolator::run(argc, argv);
+  test1();
+  return 0;
+}
+
 void test1() {
   z3::context ctx;
   auto A = ctx.uninterpreted_sort("A");
@@ -34,12 +44,4 @@ z3::context ctx;
   std::cout << v2 << std::endl;
 
   M_O_instantiation(expr1, v2, v1);
-  
-}
-
-int main(int argc, char **argv) {
-
-  axdinterpolator::run(argc, argv);
-  test1();
-  return 0;
 }
