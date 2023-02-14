@@ -1,7 +1,7 @@
 #include "_AXDInterpolant.h"
 #include "z3++.h"
 
-AXDInterpolant::AXDInterpolant(
+axdinterpolator::AXDInterpolant::AXDInterpolant(
     AXDSignature & sig, 
     z3::expr _input_part_a,
     z3::expr _input_part_b,
@@ -65,7 +65,7 @@ AXDInterpolant::AXDInterpolant(
   loop();
 }
 
-void AXDInterpolant::loop(){
+void axdinterpolator::AXDInterpolant::loop(){
 
   if(!common_array_vars.areCommonPairsAvaible()){
     SmtSolverSetup(solver, part_a);
@@ -148,7 +148,7 @@ void AXDInterpolant::loop(){
   }
 }
 
-z3::expr AXDInterpolant::liftInterpolant(
+z3::expr axdinterpolator::AXDInterpolant::liftInterpolant(
     z3::expr_vector const & interpolant){
 
   z3::expr_vector _interpolant(sig.ctx);
@@ -169,7 +169,7 @@ z3::expr AXDInterpolant::liftInterpolant(
   return z3::mk_and(_interpolant).substitute(from, to);
 }
 
-void AXDInterpolant::liftInterpolantDiffSubs(
+void axdinterpolator::AXDInterpolant::liftInterpolantDiffSubs(
     z3::expr_vector & from,
     z3::expr_vector & to,
     StandardInput const & input
@@ -191,57 +191,50 @@ void AXDInterpolant::liftInterpolantDiffSubs(
   }
 }
 
-std::ostream & operator << (std::ostream & os, 
-    AXDInterpolant const & axd){
+namespace axdinterpolator {
 
-  if(!axd.remaining_fuel)
-    return os 
-      << "Unknown: Input formula might be "
-      "satisfiable or unsatisfiable.";
-  if(!axd.is_unsat)
-    return os 
-      << "Input formula is satisfiable.";
-  if(!axd.is_valid_result)
-    return os 
-      << "Input formula is unsatisfiable.\n"
-      "Solver used wasn't able to compute "
-      "an interpolant in the specified theory";
-  if(axd.is_interpolant_computed){
-    os 
-      << "Input formula is unsatisfiable." 
-      << std::endl;
-    switch(axd.state_output){
-      case AXDInterpolant::undefined:
-        os
-          << "State Output: not tested" 
-          << std::endl;
-        break;
-      case AXDInterpolant::fine:
-        os 
+std::ostream &operator<<(std::ostream &os,
+			 axdinterpolator::AXDInterpolant const &axd) {
+
+  if (!axd.remaining_fuel)
+    return os << "Unknown: Input formula might be "
+		 "satisfiable or unsatisfiable.";
+  if (!axd.is_unsat)
+    return os << "Input formula is satisfiable.";
+  if (!axd.is_valid_result)
+    return os << "Input formula is unsatisfiable.\n"
+		 "Solver used wasn't able to compute "
+		 "an interpolant in the specified theory";
+  if (axd.is_interpolant_computed) {
+    os << "Input formula is unsatisfiable." << std::endl;
+    switch (axd.state_output) {
+    case axdinterpolator::AXDInterpolant::undefined:
+      os << "State Output: not tested" << std::endl;
+      break;
+    case axdinterpolator::AXDInterpolant::fine:
+      os
 #if _TEST_OUTPUT_ORIGINAL_THY_
-          << "State Output: valid in the original theory" 
+	  << "State Output: valid in the original theory"
 #else
-          << "State Output: valid in the reduced theory" 
+	  << "State Output: valid in the reduced theory"
 #endif
-          << std::endl;
-        break;
-      case AXDInterpolant::notfine:
-        os 
-          << "State Output: not valid" 
-          << std::endl;
-        break;
+	  << std::endl;
+      break;
+    case axdinterpolator::AXDInterpolant::notfine:
+      os << "State Output: not valid" << std::endl;
+      break;
     }
-    return os 
+    return os
 #if _INCLUDE_OUTPUT_
-      << "Interpolant:" << std::endl
-      << axd.current_interpolant
+	   << "Interpolant:" << std::endl
+	   << axd.current_interpolant
 #endif
-      ;
-  }
-  else
-    return os 
-      << "Interpolant hasn't been computed.\n"
-      "Use .z3OutputFile or .mathsatOutputFile\n"
-      "or .directComputation on a AXDInterpolant\n" 
-      "object to obtain an interpolant.";
+	;
+  } else
+    return os << "Interpolant hasn't been computed.\n"
+		 "Use .z3OutputFile or .mathsatOutputFile\n"
+		 "or .directComputation on a AXDInterpolant\n"
+		 "object to obtain an interpolant.";
 }
+
+} // namespace axdinterpolator

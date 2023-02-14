@@ -1,6 +1,6 @@
 #include "Preprocess.h"
 
-z3::expr Preprocessor::normalizeInputDefault(z3::expr const & e){
+z3::expr axdinterpolator::Preprocessor::normalizeInputDefault(z3::expr const & e){
   assert(e.num_args() > 0);
 
   z3::func_decl f_name = e.decl();
@@ -43,7 +43,7 @@ z3::expr Preprocessor::normalizeInputDefault(z3::expr const & e){
   }
 }
 
-z3::expr Preprocessor::normalizeInput(z3::expr const & e){
+z3::expr axdinterpolator::Preprocessor::normalizeInput(z3::expr const & e){
   if(e.is_app())
     switch(e.num_args()){
       case 0:
@@ -92,7 +92,7 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
               }
             default:
               throw 
-                "Error @ Preprocessor::normalizeInput. " 
+                "Error @ axdinterpolator::Preprocessor::normalizeInput. " 
                 "Not is applied to a non predicate.";
           }
         }
@@ -129,6 +129,6 @@ z3::expr Preprocessor::normalizeInput(z3::expr const & e){
 
   throw 
     "Problem @ "
-    "Preprocessor::normalizeInput "
+    "axdinterpolator::Preprocessor::normalizeInput "
     "Not an application";
 }

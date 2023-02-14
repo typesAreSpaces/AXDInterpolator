@@ -54,19 +54,19 @@
     side_part.instantiate(VAR, axiom_18);\
   }
 
-void AXDInterpolant::SmtSolverSetup(
+void axdinterpolator::AXDInterpolant::SmtSolverSetup(
     z3::solver & solver, 
     StandardInput const & side_part){
   SETUP(solver, solver.add(assertion));
 }
 
-void AXDInterpolant::SmtSolverOutStreamSetup(
+void axdinterpolator::AXDInterpolant::SmtSolverOutStreamSetup(
     std::ostream & out, 
     StandardInput const & side_part){
   SETUP(out, out << assertion << std::endl);
 }
 
-void AXDInterpolant::AB_VectorsSetup(
+void axdinterpolator::AXDInterpolant::AB_VectorsSetup(
     z3::expr_vector & part_vector, 
     StandardInput const & side_part){
   SETUP(part_vector, part_vector.push_back(assertion));

@@ -5,7 +5,7 @@
 // part_a_vector and part_b_vector 
 // should have been updated using
 // setupPartA_B_Vectors
-bool AXDInterpolant::testOutput(
+bool axdinterpolator::AXDInterpolant::testOutput(
     z3::expr_vector const & interpolant, 
     z3::expr_vector & part_a_vector, 
     z3::expr_vector & part_b_vector){
@@ -48,7 +48,7 @@ bool AXDInterpolant::testOutput(
   return false;
 }
 
-void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
+void axdinterpolator::AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
 
   z3::expr i = sig.ctx.constant("i", sig.int_sort);
   z3::expr j = sig.ctx.constant("j", sig.int_sort);
@@ -86,7 +86,7 @@ void AXDInterpolant::testOutputArrayAxiomatization(z3::solver & s){
   return;
 }
 
-void AXDInterpolant::testOutputDiffLifting(
+void axdinterpolator::AXDInterpolant::testOutputDiffLifting(
     z3::solver & s, StandardInput const & input){
   // Adding equations of new symbols
   for(auto const & diff_entry : input.diff_map.m_map){

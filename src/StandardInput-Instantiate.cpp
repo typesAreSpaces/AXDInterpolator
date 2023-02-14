@@ -1,6 +1,6 @@
 #include "StandardInput.h"
 
-void StandardInput::instantiate(
+void axdinterpolator::StandardInput::instantiate(
     z3::solver & s, 
     z3::expr & e) const {
   for(auto const & index_term 
@@ -12,7 +12,7 @@ void StandardInput::instantiate(
   }
 }
 
-void StandardInput::instantiate(
+void axdinterpolator::StandardInput::instantiate(
     std::ostream & os, 
     z3::expr & e) const {
   for(auto const & index_term 
@@ -24,7 +24,7 @@ void StandardInput::instantiate(
   }
 }
 
-void StandardInput::instantiate(
+void axdinterpolator::StandardInput::instantiate(
     z3::expr_vector & v, 
     z3::expr & e) const {
   for(auto const & index_term 

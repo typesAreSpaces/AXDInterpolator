@@ -1,12 +1,12 @@
 #include "Preprocess.h"
 
-Preprocessor::ArrayVars::ArrayVars() :
+axdinterpolator::Preprocessor::ArrayVars::ArrayVars() :
   vars({}), 
   size(0)
 { 
 }
 
-void Preprocessor::ArrayVars::insert(
+void axdinterpolator::Preprocessor::ArrayVars::insert(
     z3::expr const & array_var){
   unsigned index = array_var.get_sort().id();
   unsigned old_entry_size, new_entry_size;
@@ -23,15 +23,15 @@ void Preprocessor::ArrayVars::insert(
   size += new_entry_size - old_entry_size;
 }
 
-bool Preprocessor::ArrayVars::isEmpty() const {
+bool axdinterpolator::Preprocessor::ArrayVars::isEmpty() const {
   return (size == 0);
 }
 
-unsigned Preprocessor::ArrayVars::getSize() const {
+unsigned axdinterpolator::Preprocessor::ArrayVars::getSize() const {
   return size;
 }
 
-bool Preprocessor::ArrayVars::areCommonPairsAvaible() const {
+bool axdinterpolator::Preprocessor::ArrayVars::areCommonPairsAvaible() const {
   for(auto const & entry : vars){
     if(entry.second.size() >= 2)
       return true;
@@ -39,16 +39,16 @@ bool Preprocessor::ArrayVars::areCommonPairsAvaible() const {
   return false;
 }
 
-Preprocessor::ArrayVars::Container::const_iterator Preprocessor::ArrayVars::begin() const {
+axdinterpolator::Preprocessor::ArrayVars::Container::const_iterator axdinterpolator::Preprocessor::ArrayVars::begin() const {
   return vars.begin();
 }
 
-Preprocessor::ArrayVars::Container::const_iterator Preprocessor::ArrayVars::end() const {
+axdinterpolator::Preprocessor::ArrayVars::Container::const_iterator axdinterpolator::Preprocessor::ArrayVars::end() const {
   return vars.end();
 }
 
 std::ostream & operator << (std::ostream & os, 
-    Preprocessor::ArrayVars const & vars){
+    axdinterpolator::Preprocessor::ArrayVars const & vars){
   for(auto const & entry : vars){
     os << "Id of sort: ";
     os << entry.first << std::endl;

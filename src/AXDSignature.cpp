@@ -10,7 +10,7 @@
               rd_es.push_back(ctx.function(("rd" + temp_name_sort).c_str(),\
                     curr_array_sort, int_sort, ELEMENT_SORT));
 
-AXDSignature::AXDSignature(
+axdinterpolator::AXDSignature::AXDSignature(
     z3::context & ctx, 
     char const * theory_string,
     std::string decls) :
@@ -49,17 +49,17 @@ AXDSignature::AXDSignature(
   indexElementSorts();
 }
 
-bool AXDSignature::isSpaceOrParen(char T){
+bool axdinterpolator::AXDSignature::isSpaceOrParen(char T){
   return T == ' ' || T == '(' || T == ')';
 }
 
-void AXDSignature::extractNameFromSort(std::string & s) const {
+void axdinterpolator::AXDSignature::extractNameFromSort(std::string & s) const {
   s.erase(
       std::remove_if(s.begin(), s.end(), isSpaceOrParen), 
       s.end());
 }
 
-void AXDSignature::processArrayDecls(std::string decls){
+void axdinterpolator::AXDSignature::processArrayDecls(std::string decls){
   std::smatch match;
   std::regex array_decl_regex(
       "\\(declare-fun .* \\(\\) \\(Array.*\\)\\)");
@@ -92,7 +92,7 @@ void AXDSignature::processArrayDecls(std::string decls){
   }
 }
 
-void AXDSignature::indexElementSorts(){
+void axdinterpolator::AXDSignature::indexElementSorts(){
   // [NOTICE]: curr_element_sort can be an Array type
   for(auto const & curr_element_sort : element_sorts){
 
@@ -139,25 +139,25 @@ void AXDSignature::indexElementSorts(){
   }
 }
 
-bool AXDSignature::is_QF_TO() const {
+bool axdinterpolator::AXDSignature::is_QF_TO() const {
   return theory_name == QF_TO;
 }
 
-bool AXDSignature::is_QF_IDL() const {
+bool axdinterpolator::AXDSignature::is_QF_IDL() const {
   return theory_name == QF_IDL;
 }
 
-bool AXDSignature::isArraySort(z3::sort const & s) const {
+bool axdinterpolator::AXDSignature::isArraySort(z3::sort const & s) const {
   return s.to_string().find("ArraySort") != std::string::npos;
 }
 
-void AXDSignature::setTheory(TheoryName new_theory_name){
+void axdinterpolator::AXDSignature::setTheory(TheoryName new_theory_name){
   theory_name = new_theory_name;
 }
 
 std::ostream & operator << (
     std::ostream & out, 
-    AXDSignature::z3_expr_set const & collection){
+    axdinterpolator::AXDSignature::z3_expr_set const & collection){
   for(auto const & x : collection)
     out << x << std::endl;
   return out;
@@ -165,15 +165,15 @@ std::ostream & operator << (
 
 std::ostream & operator << (
     std::ostream & os,
-    AXDSignature::TheoryName const & theory_name){
+    axdinterpolator::AXDSignature::TheoryName const & theory_name){
   switch(theory_name){
-    case AXDSignature::QF_TO:
+    case axdinterpolator::AXDSignature::QF_TO:
       return os << "QF_TO";
-    case AXDSignature::QF_IDL:
+    case axdinterpolator::AXDSignature::QF_IDL:
       return os << "QF_IDL";
-    case AXDSignature::QF_UTVPI:
+    case axdinterpolator::AXDSignature::QF_UTVPI:
       return os << "QF_UTVPI";
-    case AXDSignature::QF_LIA:
+    case axdinterpolator::AXDSignature::QF_LIA:
       return os << "QF_LIA";
   }
   return os;

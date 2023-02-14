@@ -27,7 +27,7 @@
       ARRAY.push_back(new_term);\
     }
 
-StandardInput::InstantiatedTerms::InstantiatedTerms(
+axdinterpolator::StandardInput::InstantiatedTerms::InstantiatedTerms(
     AXDSignature const & sig,
     z3::expr_vector const & vars):
   sig(sig),
@@ -41,15 +41,16 @@ StandardInput::InstantiatedTerms::InstantiatedTerms(
     terms.insert(var);
 }
 
-AXDSignature::z3_expr_set const & StandardInput::InstantiatedTerms::getInstantiatedTerms() const {
+axdinterpolator::AXDSignature::z3_expr_set const &
+axdinterpolator::StandardInput::InstantiatedTerms::getInstantiatedTerms() const {
   return terms;
 }
 
-unsigned StandardInput::InstantiatedTerms::getNumOfNewIndex() const {
+unsigned axdinterpolator::StandardInput::InstantiatedTerms::getNumOfNewIndex() const {
   return num_of_new_index;
 }
 
-void StandardInput::InstantiatedTerms::operator++(){
+void axdinterpolator::StandardInput::InstantiatedTerms::operator++(){
   num_of_instantiations++;
   switch(sig.getTheoryName()){
     case AXDSignature::QF_TO:
@@ -66,7 +67,7 @@ void StandardInput::InstantiatedTerms::operator++(){
   }
 }
 
-void StandardInput::InstantiatedTerms::instantiate_QF_IDL(){
+void axdinterpolator::StandardInput::InstantiatedTerms::instantiate_QF_IDL(){
   std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds});
 
@@ -76,7 +77,7 @@ void StandardInput::InstantiatedTerms::instantiate_QF_IDL(){
   PUSH_INSTANTIATIONS(collection);
 }
 
-void StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
+void axdinterpolator::StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
   std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds, &new_minus});
 
@@ -87,7 +88,7 @@ void StandardInput::InstantiatedTerms::instantiate_QF_UTVPI(){
   PUSH_INSTANTIATIONS(collection);
 }
 
-void StandardInput::InstantiatedTerms::instantiate_QF_LIA(){
+void axdinterpolator::StandardInput::InstantiatedTerms::instantiate_QF_LIA(){
   std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds, &new_minus
         , &new_adds, &new_subtracts});
@@ -101,7 +102,7 @@ void StandardInput::InstantiatedTerms::instantiate_QF_LIA(){
   PUSH_INSTANTIATIONS(collection);
 }
 
-void StandardInput::InstantiatedTerms::add_var(z3::expr const & var){
+void axdinterpolator::StandardInput::InstantiatedTerms::add_var(z3::expr const & var){
   terms.insert(var);
   num_of_new_index++;
 }

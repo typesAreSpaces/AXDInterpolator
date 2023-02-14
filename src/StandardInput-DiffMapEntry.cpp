@@ -1,6 +1,6 @@
 #include "StandardInput.h"
 
-StandardInput::DiffMapEntry::DiffMapEntry(
+axdinterpolator::StandardInput::DiffMapEntry::DiffMapEntry(
     AXDSignature const & sig, 
     z3::expr const & a, 
     z3::expr const & b) : 
@@ -14,7 +14,7 @@ StandardInput::DiffMapEntry::DiffMapEntry(
       sig.getDiffBySort(a.get_sort())(a, b));
 }
 
-void StandardInput::DiffMapEntry::push(
+void axdinterpolator::StandardInput::DiffMapEntry::push(
     z3::expr const & index, 
     z3::expr const & a,
     z3::expr const & b){

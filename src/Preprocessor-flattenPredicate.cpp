@@ -20,7 +20,7 @@
       INPUT_PART = temp_predicates;\
       current_conjs_in_input++;
 
-void Preprocessor::flattenPredicate(
+void axdinterpolator::Preprocessor::flattenPredicate(
     z3::expr const & formula, 
     SideInterpolant side,
     unsigned & current_conjs_in_input){
@@ -62,7 +62,7 @@ void Preprocessor::flattenPredicate(
     default:
       throw 
         "Error at "
-        "Preprocessor::flattenPredicate(z3::expr const &). "
+        "axdinterpolator::Preprocessor::flattenPredicate(z3::expr const &). "
         "Formula not in AXD";
   }
 }
@@ -72,7 +72,7 @@ void Preprocessor::flattenPredicate(
 // input side with fresh constants a, b if x
 // and y arent constants (respectively) obtaining
 // B(x, y)[x->a, y->b] \land x = a \land y = b
-void Preprocessor::flattenPredicateAux(
+void axdinterpolator::Preprocessor::flattenPredicateAux(
     z3::expr const & atomic_predicate, 
     SideInterpolant side,
     unsigned & current_conjs_in_input){
@@ -104,7 +104,7 @@ void Preprocessor::flattenPredicateAux(
   }
 }
 
-void Preprocessor::flattenTerm(
+void axdinterpolator::Preprocessor::flattenTerm(
     z3::expr const & term, 
     SideInterpolant side,
     unsigned & current_conjs_in_input){
@@ -161,7 +161,7 @@ void Preprocessor::flattenTerm(
       default:
         throw 
           "Problem @ "
-          "Preprocessor::flattenTerm "
+          "axdinterpolator::Preprocessor::flattenTerm "
           "Invalid function aplication";
     }
   }
@@ -169,7 +169,7 @@ void Preprocessor::flattenTerm(
     updateVarsDB(term, side);
 }
 
-void Preprocessor::cojoin(
+void axdinterpolator::Preprocessor::cojoin(
     z3::expr const & old_term, 
     z3::expr const & new_const, 
     SideInterpolant side,
@@ -190,7 +190,7 @@ void Preprocessor::cojoin(
   }
 }
 
-void Preprocessor::updateArrayVars(
+void axdinterpolator::Preprocessor::updateArrayVars(
     z3::expr const & e, 
     SideInterpolant side){
   switch(side){
@@ -203,7 +203,7 @@ void Preprocessor::updateArrayVars(
   }
 }
 
-void Preprocessor::updateIndexVars(
+void axdinterpolator::Preprocessor::updateIndexVars(
     z3::expr const & e, 
     SideInterpolant side){
   switch(side){
@@ -216,7 +216,7 @@ void Preprocessor::updateIndexVars(
   }
 }
 
-void Preprocessor::updateVarsDB(
+void axdinterpolator::Preprocessor::updateVarsDB(
     z3::expr const & e, 
     SideInterpolant side){
   if(e.is_int() && !e.is_numeral()){
@@ -229,23 +229,23 @@ void Preprocessor::updateVarsDB(
   }
 }
 
-z3::expr Preprocessor::fresh_index_constant(){
+z3::expr axdinterpolator::Preprocessor::fresh_index_constant(){
   return sig.ctx.constant((FRESH_INDEX_PREFIX 
         + std::to_string(fresh_num++)).c_str(), sig.int_sort);
 }
 
-z3::expr Preprocessor::fresh_array_constant(z3::sort const & s){
+z3::expr axdinterpolator::Preprocessor::fresh_array_constant(z3::sort const & s){
   return sig.ctx.constant((FRESH_ARRAY_PREFIX 
         + std::to_string(fresh_num++)).c_str(), sig.getArraySortBySort(s));
 }
 
-z3::expr Preprocessor::fresh_constant(z3::sort const & s){
+z3::expr axdinterpolator::Preprocessor::fresh_constant(z3::sort const & s){
   if(sig.isArraySort(s))
     return fresh_array_constant(s);
   if(s.is_int())
     return fresh_index_constant();
 
   throw 
-    "Problem @ Preprocessor::fresh_constant. "
+    "Problem @ axdinterpolator::Preprocessor::fresh_constant. "
     "No support for the given sort.";
 }

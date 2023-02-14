@@ -28,7 +28,7 @@
   for(unsigned i = 0; i < NUM_CONJS_INPUT; i++)\
   flattenPredicate(CONJUNCTION[i], SIDE, NUM_CONJS_INPUT);
 
-Preprocessor::Preprocessor(
+axdinterpolator::Preprocessor::Preprocessor(
     AXDSignature & sig, 
     z3::expr const & _input_part_a, 
     z3::expr const & _input_part_b):
@@ -92,6 +92,6 @@ Preprocessor::Preprocessor(
 }
 
 std::ostream & operator << (std::ostream & os, 
-    std::map<unsigned, AXDSignature::z3_expr_set> const & m){
+    std::map<unsigned, axdinterpolator::AXDSignature::z3_expr_set> const & m){
   return os;
 }

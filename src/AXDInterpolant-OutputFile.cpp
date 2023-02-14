@@ -11,7 +11,7 @@
         else \
         state_output = notfine;
 
-void AXDInterpolant::z3OutputFile(){
+void axdinterpolator::AXDInterpolant::z3OutputFile(){
   if(!is_unsat)
     throw 
       "Input problem "
@@ -97,7 +97,7 @@ void AXDInterpolant::z3OutputFile(){
   }
 }
 
-void AXDInterpolant::mathsatOutputFile(){
+void axdinterpolator::AXDInterpolant::mathsatOutputFile(){
   if(!is_unsat)
     throw 
       "Input problem is not unsatisfiable.";
@@ -176,7 +176,7 @@ void AXDInterpolant::mathsatOutputFile(){
   }
 }
 
-void AXDInterpolant::smtInterpolOutputFile(){
+void axdinterpolator::AXDInterpolant::smtInterpolOutputFile(){
   if(!is_unsat)
     throw 
       "Input problem is not unsatisfiable.";

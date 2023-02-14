@@ -16,16 +16,18 @@ int main(int argc, char **argv) {
 
 void test1() {
   z3::context ctx;
+
   auto A = ctx.uninterpreted_sort("A");
   auto a = ctx.constant("a", A);
   auto b = ctx.constant("b", A);
   auto f = ctx.function("f", A, A, A);
   auto f_f_a_b_a = f(f(a, b), a);
+
   traverse(f_f_a_b_a);
 }
 
 void test2() {
-z3::context ctx;
+  z3::context ctx;
 
   auto mytype = ctx.uninterpreted_sort("B");
   auto a = ctx.constant("a", mytype);
