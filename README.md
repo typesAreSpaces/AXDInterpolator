@@ -14,7 +14,7 @@ iZ3 and Mathsat as such engines.
 In the root directory, execute the command:
 
 ```
-make
+CURRENT_DIR=$(pwd) make
 ```
 
 If the above is successful, then the binary file _axd_interpolator_

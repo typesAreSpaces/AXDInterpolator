@@ -1,5 +1,3 @@
-CURRENT_DIR=/home/jose/Documents/GithubProjects/phd-thesis/Documents/Side-Projects/MaxDiff/Software/AXDInterpolator
-
 Z3_IDIR=$(CURRENT_DIR)/include
 ODIR=$(CURRENT_DIR)/obj
 SDIR=$(CURRENT_DIR)/src
