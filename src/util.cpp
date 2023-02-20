@@ -1,6 +1,5 @@
 #include "util.h"
 
-
 axdinterpolator::InputFormulaParser::InputFormulaParser(const char *theory,
 				       const char *smt_filename,
 				       const char *smt_engine_code,

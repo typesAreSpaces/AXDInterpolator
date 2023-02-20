@@ -1,4 +1,4 @@
-#include "_AXDInterpolant.h"
+#include "AXDInterpolant.h"
 
 axdinterpolator::AXDInterpolant::CircularPairIterator::CircularPairIterator(
     Preprocessor::ArrayVars const & vars) : 

@@ -1,5 +1,4 @@
-#include "_AXDInterpolant.h"
-#include "z3++.h"
+#include "AXDInterpolant.h"
 
 axdinterpolator::AXDInterpolant::AXDInterpolant(
     AXDSignature & sig, 

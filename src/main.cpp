@@ -1,6 +1,5 @@
 #include "todo.h"
 #include "util.h"
-#include "z3++.h"
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 
@@ -9,8 +8,9 @@ void test2();
 
 int main(int argc, char **argv) {
 
-  // axdinterpolator::run(argc, argv);
+  axdinterpolator::run(argc, argv);
   test1();
+  test2();
   return 0;
 }
 

@@ -1,73 +1,58 @@
-CURRENT_DIR=$(shell pwd)
-IDIR=$(CURRENT_DIR)/include
-ODIR=$(CURRENT_DIR)/obj
-SDIR=$(CURRENT_DIR)/src
-LDIR=$(CURRENT_DIR)/lib
-BDIR=$(CURRENT_DIR)/bin
+include common.mk
 
-TEST_DIR=$(CURRENT_DIR)/tests/smt2-files
-Z3_DIR=dependencies/z3-interp-plus
-
-AXD_INTERPOLATOR=bin/axd_interpolator
-TAGS=compile_commands.json
-
-CXX=g++
-CXXFLAGS= 
-CCFLAGS=
-PYTHON_CMD=python3
-
-OS=$(shell uname)
-ifeq ($(OS), Darwin)
-	DYLD_LIBRARY_PATH=$(LDIR)
-	export DYLD_LIBRARY_PATH
-	SO_EXT=dylib
-	_NUM_PROCS=$(shell sysctl -n hw.logicalcpu)
-endif
-ifeq ($(OS), Linux)
-	SO_EXT=so
-	_NUM_PROCS=$(shell nproc)
-endif
-_NUM_PROCS_H=$$(($(NUM_PROCS)/2))
-NUM_PROCS=$(_NUM_PROCS)
-
-SRC=$(wildcard $(SDIR)/*.cpp)
-_DEPS=$(wildcard $(IDIR)/*.h)
-DEPS:=$(filter-out $(IDIR)/AXDInterpolant.h,$(_DEPS)) \
-			$(IDIR)/_AXDInterpolant.h
-OBJS=$(SRC:$(SDIR)/%.cpp=$(ODIR)/%.o) $(LDIR)/libz3.$(SO_EXT)
-FLAGS=-I$(SDIR) -I$(IDIR) -std=c++11 -Wall
+LINKS=-I$(Z3_IDIR) -Isrc \
+			-Isrc/AXDInterpolant -Isrc/StandardInput \
+			-Isrc/Preprocess -Isrc/AXDSignature \
 
 #all: $(AXD_INTERPOLATOR)
-all: tests/one
+all: tests/one $(TAGS)
 #all: tests/all
 #all: tests/print_all
 
 # ---------------------------------------------------------
 #  Rules to build the project
-$(CURRENT_DIR)/$(Z3_DIR)/README.md:
+$(Z3_DIR)/README.md:
 	git submodule update --init --remote $(Z3_DIR) 
 	cd $(Z3_DIR); git checkout master
 
-$(LDIR)/libz3.$(SO_EXT): $(CURRENT_DIR)/$(Z3_DIR)/README.md
+$(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 	mkdir -p $(LDIR)
 	cd $(Z3_DIR);\
-		$(PYTHON_CMD) scripts/mk_make.py --prefix=$(CURRENT_DIR);\
+		$(PYTHON_CMD) scripts/mk_make.py \
+		--prefix=$(CURRENT_DIR);\
 		cd build; make install -j$(NUM_PROCS)
 
-$(IDIR)/_AXDInterpolant.h: $(IDIR)/AXDInterpolant.h
-	perl -pe "s|replace_once|$(CURRENT_DIR)|g" $< > $@
+.PHONY: AXDSignature Preprocess \
+	StandardInput AXDInterpolant
 
-$(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
-	mkdir -p $(ODIR)
-	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) $<
+AXDSignature: $(LDIR)/libz3.$(SO_EXT) 
+	make -C $(SDIR)/$@
+
+Preprocess: $(LDIR)/libz3.$(SO_EXT) 
+	make -C $(SDIR)/$@
+
+StandardInput: $(LDIR)/libz3.$(SO_EXT) 
+	make -C $(SDIR)/$@
+
+AXDInterpolant: $(LDIR)/libz3.$(SO_EXT) 
+	make -C $(SDIR)/$@ 
+
+$(ODIR)/%.o: $(SDIR)/%.cpp $(LDIR)/libz3.$(SO_EXT) 
+	mkdir -p $(ODIR) 
+	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
+		$(LINKS) $<
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
 debug: $(AXD_INTERPOLATOR)
 
-$(AXD_INTERPOLATOR): $(OBJS) $(LDIR)/libz3.$(SO_EXT)
+$(AXD_INTERPOLATOR): AXDSignature Preprocess \
+	StandardInput AXDInterpolant \
+	$(ODIR)/main.o $(ODIR)/util.o $(ODIR)/todo.o
 	mkdir -p $(BDIR)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(FLAGS) -lpthread
+	$(CXX) $(CXXFLAGS) -o $@ \
+		$(wildcard $(ODIR)/*.o) $(LDIR)/libz3.$(SO_EXT) \
+		$(FLAGS) $(LINKS) -lpthread
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
@@ -76,98 +61,24 @@ $(TAGS):
 	compiledb -n make
 # ---------------------------------------------------------
 
-# ---------------------------------------------------------
-#  Rules to test a single or many smt2 files
-METHOD=0# Z3
-#METHOD=1# MATHSAT
-#METHOD=2# SMTINTERPOL
-
-ALLOWED_ATTEMPS=1000000
-
-#-- Supported Theories
-#THEORY=QF_TO
-#THEORY=QF_IDL
-#THEORY=QF_UTVPI
-THEORY=QF_LIA
-
-#-- Sample files
-#FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
-#FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
-#FILE_TEST=$(TEST_DIR)/simple.smt2
-#FILE_TEST=$(TEST_DIR)/simple2.smt2
-#FILE_TEST=$(TEST_DIR)/simple3.smt2
-#FILE_TEST=$(TEST_DIR)/simple4.smt2
-#FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
-#FILE_TEST=$(TEST_DIR)/length_example.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
-#FILE_TEST=$(TEST_DIR)/jhala.smt2
-FILE_TEST=$(TEST_DIR)/strcpy_example_variant_1.smt2
-#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_2.smt2
-#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_3.smt2
-
-tests/one: $(AXD_INTERPOLATOR)
-	./$(AXD_INTERPOLATOR) \
-		$(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
-	rm -rf tests/*.o $@
-
-tests/all: $(AXD_INTERPOLATOR)
-	for smt_file in $(TEST_DIR)/*.smt2; do \
-		./$(AXD_INTERPOLATOR) \
-		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) ; \
-		done
-	rm -rf tests/*.o $@
-
-tests/print_all: $(AXD_INTERPOLATOR)
-	for smt_file in $(TEST_DIR)/*.smt2; do \
-		if [ "${METHOD}" = "0" ]; \
-		then METHOD_NAME="Z3"; \
-		else \
-		if [ "${METHOD}" = "1" ]; \
-		then METHOD_NAME="MATHSAT"; \
-		else METHOD_NAME="SMTINTERPOL"; \
-		fi \
-		fi; \
-		./$(AXD_INTERPOLATOR) \
-		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) \
-		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
-		done
-	rm -rf tests/*.o $@
-# ---------------------------------------------------------
-
-# ---------------------------------------------------------
-#  Check output
-check: 
-	make -C ./output
-
-mathsat_check: 
-	SMT_SOLVER=MATHSAT make check
-
-z3_check: 
-	SMT_SOLVER=Z3 make check
-# ---------------------------------------------------------
+include test.mk
 
 # ---------------------------------------------------------
 #  Cleaning
-.PHONY: clean
+.PHONY: clean z3_clean deep_clean
 
 clean:
 	rm -rf $(ODIR) output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
-	rm -rf $(CURRENT_DIR)/$(AXD_INTERPOLATOR)
+	rm -rf $(AXD_INTERPOLATOR)
 	rm -rf $(TAGS)
 	cd output; make clean
-
-.PHONY: z3_clean
 
 z3_clean:
 	if [ -d "$(Z3_DIR)/build" ]; then \
 		cd $(Z3_DIR)/build; make uninstall; \
-	fi;
+		fi;
 	rm -rf $(LDIR)
-
-.PHONY: deep_clean
 
 deep_clean: clean z3_clean
 # ---------------------------------------------------------

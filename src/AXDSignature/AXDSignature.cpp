@@ -1,5 +1,4 @@
 #include "AXDSignature.h"
-#include "z3++.h"
 #include <sstream>
 
 #define INDEX_UNDEFINED_WR_RD(ELEMENT_SORT)\
