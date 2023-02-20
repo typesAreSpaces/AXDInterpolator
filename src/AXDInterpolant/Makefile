@@ -4,7 +4,6 @@ CPP_FILES=$(wildcard *.cpp)
 TODO=$(CPP_FILES:%.cpp=$(ODIR)/%.o)
 
 all: AXDInterpolant.h ${TODO} 
-	ls ../AXDSignature
 
 AXDInterpolant.h: _AXDInterpolant.h
 	perl -pe "s|replace_once|$(CURRENT_DIR)|g" $< > $@

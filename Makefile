@@ -52,7 +52,7 @@ $(AXD_INTERPOLATOR): AXDSignature Preprocess \
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ \
 		$(wildcard $(ODIR)/*.o) $(LDIR)/libz3.$(SO_EXT) \
-		$(FLAGS) $(LINKS) -lpthread
+		$(FLAGS) -lpthread
 # ---------------------------------------------------------
 
 # ---------------------------------------------------------
