@@ -6,7 +6,13 @@ INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 
 #all: $(AXD_INTERPOLATOR)
 all: tests/one $(TAGS)
-#all: util AXDSignature Preprocess SeparatedPair AXDInterpolant InputFormulaParser TODO
+#all: util \
+	#AXDSignature \
+	#Preprocess \
+	#SeparatedPair \
+	#AXDInterpolant \
+	#InputFormulaParser \
+	#TODO
 #all: tests/all
 #all: tests/print_all
 

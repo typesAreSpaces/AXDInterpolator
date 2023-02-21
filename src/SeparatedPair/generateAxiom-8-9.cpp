@@ -1,6 +1,6 @@
 #include "SeparatedPair.h"
 
-z3::expr axdinterpolator::SeparatedPair::generateAxiom8(Preprocessor::ArrayVars const & array_var_ids) const {
+z3::expr axdinterpolator::SeparatedPair::generateAxiom8(ArrayVars const & array_var_ids) const {
   z3::expr_vector conjs(sig.ctx);
 
   // Instantiate with all the current array elements

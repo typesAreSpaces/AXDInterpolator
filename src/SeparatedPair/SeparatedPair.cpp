@@ -5,7 +5,7 @@ axdinterpolator::SeparatedPair::SeparatedPair(
     AXDSignature const & sig,
     z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
-    Preprocessor::ArrayVars const & array_var_ids) :
+    ArrayVars const & array_var_ids) :
   sig(sig),
 
   diff_map(array_var_ids, sig),

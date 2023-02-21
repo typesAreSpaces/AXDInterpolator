@@ -18,26 +18,7 @@ class Preprocessor {
   // [NOTICE] This structure only contains
   // array vars of different
   // parametrized types
-public:
-  class ArrayVars {
-
-    friend class AXDInterpolant;
-
-    typedef std::map<unsigned, z3_expr_set> Container;
-
-    Container vars;
-    unsigned size;
-
-  public:
-    ArrayVars();
-    void insert(z3::expr const &);
-    bool isEmpty() const;
-    unsigned getSize() const;
-    bool areCommonPairsAvaible() const;
-
-    Container::const_iterator begin() const;
-    Container::const_iterator end() const;
-  };
+public: 
 
 private:
   // normalizeInput accomplishes the following:
@@ -80,9 +61,6 @@ private:
 
 public:
   Preprocessor(AXDSignature &, z3::expr const &, z3::expr const &);
-
-  friend std::ostream &operator<<(std::ostream &,
-				  Preprocessor::ArrayVars const &);
 };
 
 } // namespace axdinterpolator

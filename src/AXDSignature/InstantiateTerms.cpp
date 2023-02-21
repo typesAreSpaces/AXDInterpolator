@@ -1,4 +1,4 @@
-#include "SeparatedPair.h"
+#include "AXDSignature.h"
 #include "z3++.h"
 
 #define PUSH_INSTANTIATIONS(ARRAY_OF_ARRAYS)\
@@ -27,7 +27,7 @@
       ARRAY.push_back(new_term);\
     }
 
-axdinterpolator::SeparatedPair::InstantiatedTerms::InstantiatedTerms(
+axdinterpolator::InstantiatedTerms::InstantiatedTerms(
     AXDSignature const & sig,
     z3::expr_vector const & vars):
   sig(sig),
@@ -42,15 +42,15 @@ axdinterpolator::SeparatedPair::InstantiatedTerms::InstantiatedTerms(
 }
 
 axdinterpolator::z3_expr_set const &
-axdinterpolator::SeparatedPair::InstantiatedTerms::getInstantiatedTerms() const {
+axdinterpolator::InstantiatedTerms::getInstantiatedTerms() const {
   return terms;
 }
 
-unsigned axdinterpolator::SeparatedPair::InstantiatedTerms::getNumOfNewIndex() const {
+unsigned axdinterpolator::InstantiatedTerms::getNumOfNewIndex() const {
   return num_of_new_index;
 }
 
-void axdinterpolator::SeparatedPair::InstantiatedTerms::operator++(){
+void axdinterpolator::InstantiatedTerms::operator++(){
   num_of_instantiations++;
   switch(sig.getTheoryName()){
     case AXDSignature::QF_TO:
@@ -67,7 +67,7 @@ void axdinterpolator::SeparatedPair::InstantiatedTerms::operator++(){
   }
 }
 
-void axdinterpolator::SeparatedPair::InstantiatedTerms::instantiate_QF_IDL(){
+void axdinterpolator::InstantiatedTerms::instantiate_QF_IDL(){
   std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds});
 
@@ -77,7 +77,7 @@ void axdinterpolator::SeparatedPair::InstantiatedTerms::instantiate_QF_IDL(){
   PUSH_INSTANTIATIONS(collection);
 }
 
-void axdinterpolator::SeparatedPair::InstantiatedTerms::instantiate_QF_UTVPI(){
+void axdinterpolator::InstantiatedTerms::instantiate_QF_UTVPI(){
   std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds, &new_minus});
 
@@ -88,7 +88,7 @@ void axdinterpolator::SeparatedPair::InstantiatedTerms::instantiate_QF_UTVPI(){
   PUSH_INSTANTIATIONS(collection);
 }
 
-void axdinterpolator::SeparatedPair::InstantiatedTerms::instantiate_QF_LIA(){
+void axdinterpolator::InstantiatedTerms::instantiate_QF_LIA(){
   std::vector<z3::expr_vector*> 
     collection({&new_succs, &new_preds, &new_minus
         , &new_adds, &new_subtracts});
@@ -102,7 +102,7 @@ void axdinterpolator::SeparatedPair::InstantiatedTerms::instantiate_QF_LIA(){
   PUSH_INSTANTIATIONS(collection);
 }
 
-void axdinterpolator::SeparatedPair::InstantiatedTerms::add_var(z3::expr const & var){
+void axdinterpolator::InstantiatedTerms::add_var(z3::expr const & var){
   terms.insert(var);
   num_of_new_index++;
 }

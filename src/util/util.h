@@ -44,7 +44,10 @@ namespace axdinterpolator {
   void extractNameFromSort(std::string &);
   bool isArraySort(z3::sort const &);
 
-  std::ostream &operator<<(std::ostream &, z3_expr_set const &);
+  std::ostream &operator<<(std::ostream &, 
+      z3_expr_set const &);
+  std::ostream &operator<<(std::ostream &, 
+      std::map<unsigned, axdinterpolator::z3_expr_set> const &);
 
   // TODO: add utility functions
 

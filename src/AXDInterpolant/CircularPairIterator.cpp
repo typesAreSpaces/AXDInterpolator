@@ -1,7 +1,7 @@
 #include "AXDInterpolant.h"
 
 axdinterpolator::AXDInterpolant::CircularPairIterator::CircularPairIterator(
-    Preprocessor::ArrayVars const & vars) : 
+    ArrayVars const & vars) : 
   vars(vars),
   p_array_vars_it(vars.begin()), 
   z3_expr_set_first((p_array_vars_it->second).begin()),
@@ -31,9 +31,9 @@ void axdinterpolator::AXDInterpolant::CircularPairIterator::next(){
   avoidLowerDiagonalAndDifferentTypes();
 }
 
-axdinterpolator::SeparatedPair::DiffMap::z3_expr_pair
+axdinterpolator::DiffMap::z3_expr_pair
 axdinterpolator::AXDInterpolant::CircularPairIterator::operator*() const {
-  return axdinterpolator::SeparatedPair::DiffMap::z3_expr_pair(
+  return axdinterpolator::DiffMap::z3_expr_pair(
       *z3_expr_set_first, *z3_expr_set_second);
 }
 

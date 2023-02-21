@@ -32,7 +32,7 @@ class AXDInterpolant : public Preprocessor {
   class CircularPairIterator {
     friend class AXDInterpolant;
 
-    typedef Preprocessor::ArrayVars PArrayVars;
+    typedef ArrayVars PArrayVars;
 
     PArrayVars const &vars;
     PArrayVars::Container::const_iterator p_array_vars_it;
@@ -42,9 +42,9 @@ class AXDInterpolant : public Preprocessor {
     void avoidLowerDiagonalAndDifferentTypes();
 
   public:
-    CircularPairIterator(Preprocessor::ArrayVars const &);
+    CircularPairIterator(ArrayVars const &);
     void next();
-    SeparatedPair::DiffMap::z3_expr_pair operator*() const;
+    DiffMap::z3_expr_pair operator*() const;
   };
 
   enum StateOutput { undefined, fine, notfine };
