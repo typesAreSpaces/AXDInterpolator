@@ -1,5 +1,8 @@
 include ../../common.mk
 
+DEPENDENCIES=util AXDSignature Preprocess SeparatedPair
+
+INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-I../%)
 CPP_FILES=$(wildcard *.cpp)
 TODO=$(CPP_FILES:%.cpp=$(ODIR)/%.o)
 
@@ -10,6 +13,4 @@ AXDInterpolant.h: _AXDInterpolant.h
 
 $(ODIR)/%.o: %.cpp $(LDIR)/libz3.$(SO_EXT)
 	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
-		-I$(Z3_IDIR) -I../AXDSignature \
-		-I../Preprocess -I../SeparatedPair \
-		$<
+		$(INCLUDES) $<

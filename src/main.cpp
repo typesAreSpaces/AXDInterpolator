@@ -1,5 +1,5 @@
 #include "todo.h"
-#include "util.h"
+#include "InputFormulaParser.h"
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 
