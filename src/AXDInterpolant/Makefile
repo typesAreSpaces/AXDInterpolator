@@ -12,6 +12,6 @@ AXDInterpolant.h: _AXDInterpolant.h
 	perl -pe "s|replace_once|$(CURRENT_DIR)|g" $< > $@
 
 $(ODIR)/%.o: %.cpp $(LDIR)/libz3.$(SO_EXT)
-	mkdir -p $(ODIR)
-	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
+	@mkdir -p $(ODIR)
+	@$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
 		$(INCLUDES) $<
