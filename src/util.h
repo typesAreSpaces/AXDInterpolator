@@ -1,8 +1,7 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-// TODO: change this if needed, for now it's fine
-#include "AXDInterpolant/AXDInterpolant.h"
+#include "AXDInterpolant.h"
 #include <sys/stat.h>
 #include <unistd.h>
 

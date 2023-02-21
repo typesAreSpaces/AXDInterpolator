@@ -1,6 +1,7 @@
 #include "todo.h"
 #include <sys/wait.h>
 #include "Preprocess.h"
+#include "AXDSignature.h"
 
 void traverse(z3::expr e) {
   std::cout << ">> Current e: " 
@@ -45,4 +46,12 @@ void initSaturation() {
   //i > len(b),
   //e == bottom)), curr_rd(a, i) == curr_rd(b, i));
   //}
+}
+
+// Provides simple example highlighting main parts of the
+// implementation 
+// TODO: parse from file a simple expression
+// TODO: rearrange the inputparser API if needed
+void simple_test(z3::expr){
+  return ;
 }
