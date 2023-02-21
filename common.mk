@@ -29,16 +29,7 @@ endif
 _NUM_PROCS_H=$$(($(NUM_PROCS)/2))
 NUM_PROCS=$(_NUM_PROCS)
 
-# TODO: Change this
-SRC=$(wildcard $(SDIR)/*.cpp)
-
-# TODO: Change this
 Z3_HEADERS=$(wildcard $(Z3_IDIR)/*.h)
-#DEPS:=$(filter-out $(IDIR)/AXDInterpolant.h,$(_DEPS)) \
-			#$(IDIR)/_AXDInterpolant.h
-
-# TODO: Change this
-OBJS=$(LDIR)/libz3.$(SO_EXT)
 
 FLAGS=-std=c++11 -Wall
 
