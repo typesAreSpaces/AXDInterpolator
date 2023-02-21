@@ -36,7 +36,7 @@ class AXDInterpolant : public Preprocessor {
 
     PArrayVars const &vars;
     PArrayVars::Container::const_iterator p_array_vars_it;
-    AXDSignature::z3_expr_set::const_iterator z3_expr_set_first,
+    z3_expr_set::const_iterator z3_expr_set_first,
 	z3_expr_set_second;
 
     void avoidLowerDiagonalAndDifferentTypes();

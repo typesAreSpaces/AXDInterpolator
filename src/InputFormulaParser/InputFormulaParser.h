@@ -1,5 +1,5 @@
-#ifndef _UTIL_H
-#define _UTIL_H
+#ifndef _INPUT_FORMULA_PARSER_H
+#define _INPUT_FORMULA_PARSER_H
 
 #include "AXDInterpolant.h"
 #include <sys/stat.h>

@@ -39,7 +39,7 @@ axdinterpolator::AXDInterpolant::CircularPairIterator::operator*() const {
 
 void axdinterpolator::AXDInterpolant::CircularPairIterator::
     avoidLowerDiagonalAndDifferentTypes() {
-  while (!AXDSignature::Z3ExprComparator()(*z3_expr_set_first,
+  while (!Z3ExprComparator()(*z3_expr_set_first,
 					   *z3_expr_set_second) ||
 	 (*z3_expr_set_first).get_sort().id() !=
 	     (*z3_expr_set_second).get_sort().id()) {

@@ -90,8 +90,3 @@ axdinterpolator::Preprocessor::Preprocessor(
         }
       }
 }
-
-std::ostream & operator << (std::ostream & os, 
-    std::map<unsigned, axdinterpolator::AXDSignature::z3_expr_set> const & m){
-  return os;
-}

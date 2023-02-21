@@ -41,7 +41,7 @@ axdinterpolator::SeparatedPair::InstantiatedTerms::InstantiatedTerms(
     terms.insert(var);
 }
 
-axdinterpolator::AXDSignature::z3_expr_set const &
+axdinterpolator::z3_expr_set const &
 axdinterpolator::SeparatedPair::InstantiatedTerms::getInstantiatedTerms() const {
   return terms;
 }

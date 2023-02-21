@@ -48,16 +48,6 @@ axdinterpolator::AXDSignature::AXDSignature(
   indexElementSorts();
 }
 
-bool axdinterpolator::AXDSignature::isSpaceOrParen(char T){
-  return T == ' ' || T == '(' || T == ')';
-}
-
-void axdinterpolator::AXDSignature::extractNameFromSort(std::string & s) const {
-  s.erase(
-      std::remove_if(s.begin(), s.end(), isSpaceOrParen), 
-      s.end());
-}
-
 void axdinterpolator::AXDSignature::processArrayDecls(std::string decls){
   std::smatch match;
   std::regex array_decl_regex(
@@ -152,14 +142,6 @@ bool axdinterpolator::AXDSignature::isArraySort(z3::sort const & s) const {
 
 void axdinterpolator::AXDSignature::setTheory(TheoryName new_theory_name){
   theory_name = new_theory_name;
-}
-
-std::ostream & operator << (
-    std::ostream & out, 
-    axdinterpolator::AXDSignature::z3_expr_set const & collection){
-  for(auto const & x : collection)
-    out << x << std::endl;
-  return out;
 }
 
 std::ostream & operator << (

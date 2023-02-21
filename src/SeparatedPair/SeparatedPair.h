@@ -79,7 +79,7 @@ class SeparatedPair {
 
   class InstantiatedTerms {
     AXDSignature const &sig;
-    AXDSignature::z3_expr_set terms;
+    z3_expr_set terms;
     unsigned num_of_instantiations;
     unsigned num_of_new_index;
 
@@ -92,7 +92,7 @@ class SeparatedPair {
   public:
     InstantiatedTerms(AXDSignature const &, z3::expr_vector const &);
 
-    AXDSignature::z3_expr_set const &getInstantiatedTerms() const;
+    z3_expr_set const &getInstantiatedTerms() const;
     unsigned getNumOfNewIndex() const;
     void operator++();
     void add_var(z3::expr const &);

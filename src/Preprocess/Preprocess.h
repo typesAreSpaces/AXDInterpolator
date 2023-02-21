@@ -23,7 +23,7 @@ public:
 
     friend class AXDInterpolant;
 
-    typedef std::map<unsigned, AXDSignature::z3_expr_set> Container;
+    typedef std::map<unsigned, z3_expr_set> Container;
 
     Container vars;
     unsigned size;
@@ -69,7 +69,7 @@ private:
   unsigned fresh_num;
   z3::expr_vector input_part_a, input_part_b;
 
-  AXDSignature::z3_expr_vector_unique part_a_index_vars, part_b_index_vars;
+  z3_expr_vector_unique part_a_index_vars, part_b_index_vars;
 
   ArrayVars part_a_array_vars, part_b_array_vars, common_array_vars;
 

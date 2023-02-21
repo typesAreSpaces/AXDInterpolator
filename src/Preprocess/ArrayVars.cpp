@@ -14,9 +14,9 @@ void axdinterpolator::Preprocessor::ArrayVars::insert(
     vars.insert(
         std::pair<
         unsigned, 
-        AXDSignature::z3_expr_set>(
+        z3_expr_set>(
           index, 
-          AXDSignature::z3_expr_set({})));
+          z3_expr_set({})));
   old_entry_size = vars[index].size();
   vars[index].insert(array_var);
   new_entry_size = vars[index].size();
