@@ -1,6 +1,6 @@
-#include "StandardInput.h"
+#include "SeparatedPair.h"
 
-axdinterpolator::StandardInput::DiffMap::DiffMap(
+axdinterpolator::SeparatedPair::DiffMap::DiffMap(
 						 axdinterpolator::Preprocessor::ArrayVars const & array_var_ids, 
     AXDSignature const & sig) : 
   m_map(),
@@ -23,14 +23,14 @@ axdinterpolator::StandardInput::DiffMap::DiffMap(
   }
 }
 
-bool axdinterpolator::StandardInput::DiffMap::Z3ExprExprComparator::operator() (
+bool axdinterpolator::SeparatedPair::DiffMap::Z3ExprExprComparator::operator() (
     z3_expr_pair const & a, z3_expr_pair const & b) const {
   return a.first.id() > b.first.id() 
     || (a.first.id() == b.first.id() 
         && a.second.id() > b.second.id());
 }
 
-void axdinterpolator::StandardInput::DiffMap::add(
+void axdinterpolator::SeparatedPair::DiffMap::add(
     z3::expr const & a, 
     z3::expr const & b, 
     z3::expr const & index){
@@ -42,32 +42,32 @@ void axdinterpolator::StandardInput::DiffMap::add(
     add_aux(b, a, index);
 }
 
-void axdinterpolator::StandardInput::DiffMap::add_aux(
+void axdinterpolator::SeparatedPair::DiffMap::add_aux(
     z3::expr const & a, 
     z3::expr const & b, 
     z3::expr const & index){
   auto table_entry = m_map.find(std::make_pair(a, b));
   if(table_entry == m_map.end()){
     throw 
-      "Problem @ axdinterpolator::StandardInput::DiffMap::add_aux. "
+      "Problem @ axdinterpolator::SeparatedPair::DiffMap::add_aux. "
       "Query a pair that should'nt be in the map";
   }
   table_entry->second.push(index, a, b);
 }
 
-unsigned axdinterpolator::StandardInput::DiffMap::size_of_entry(
+unsigned axdinterpolator::SeparatedPair::DiffMap::size_of_entry(
     z3_expr_pair const & entry){
   return m_map.find(entry)->second.size();
 }
 
-z3::expr axdinterpolator::StandardInput::DiffMap::lift_diff_k(
+z3::expr axdinterpolator::SeparatedPair::DiffMap::lift_diff_k(
     unsigned index,
     z3::expr const & a,
     z3::expr const & b) const {
   auto table_entry = m_map.find(std::make_pair(a, b));
   if(table_entry == m_map.end()){
     throw 
-      "Problem @ axdinterpolator::StandardInput::DiffMap::add_aux. "
+      "Problem @ axdinterpolator::SeparatedPair::DiffMap::add_aux. "
       "Query a pair that should'nt be in the map";
   }
   return table_entry->second.lifted_diff_k[index];
@@ -76,7 +76,7 @@ z3::expr axdinterpolator::StandardInput::DiffMap::lift_diff_k(
 namespace axdinterpolator {
 
 std::ostream &operator<<(std::ostream &os,
-			 axdinterpolator::StandardInput::DiffMap const &dm) {
+			 axdinterpolator::SeparatedPair::DiffMap const &dm) {
 
   for (auto const &x : dm.m_map) {
     os << x.first.first << " " << x.first.second << " -> " << x.second

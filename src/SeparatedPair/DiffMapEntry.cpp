@@ -1,6 +1,6 @@
-#include "StandardInput.h"
+#include "SeparatedPair.h"
 
-axdinterpolator::StandardInput::DiffMapEntry::DiffMapEntry(
+axdinterpolator::SeparatedPair::DiffMapEntry::DiffMapEntry(
     AXDSignature const & sig, 
     z3::expr const & a, 
     z3::expr const & b) : 
@@ -14,7 +14,7 @@ axdinterpolator::StandardInput::DiffMapEntry::DiffMapEntry(
       sig.getDiffBySort(a.get_sort())(a, b));
 }
 
-void axdinterpolator::StandardInput::DiffMapEntry::push(
+void axdinterpolator::SeparatedPair::DiffMapEntry::push(
     z3::expr const & index, 
     z3::expr const & a,
     z3::expr const & b){

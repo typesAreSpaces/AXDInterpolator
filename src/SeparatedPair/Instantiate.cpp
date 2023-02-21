@@ -1,6 +1,6 @@
-#include "StandardInput.h"
+#include "SeparatedPair.h"
 
-void axdinterpolator::StandardInput::instantiate(
+void axdinterpolator::SeparatedPair::instantiate(
     z3::solver & s, 
     z3::expr & e) const {
   for(auto const & index_term 
@@ -12,7 +12,7 @@ void axdinterpolator::StandardInput::instantiate(
   }
 }
 
-void axdinterpolator::StandardInput::instantiate(
+void axdinterpolator::SeparatedPair::instantiate(
     std::ostream & os, 
     z3::expr & e) const {
   for(auto const & index_term 
@@ -24,7 +24,7 @@ void axdinterpolator::StandardInput::instantiate(
   }
 }
 
-void axdinterpolator::StandardInput::instantiate(
+void axdinterpolator::SeparatedPair::instantiate(
     z3::expr_vector & v, 
     z3::expr & e) const {
   for(auto const & index_term 

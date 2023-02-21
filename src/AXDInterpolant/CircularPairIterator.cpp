@@ -31,9 +31,9 @@ void axdinterpolator::AXDInterpolant::CircularPairIterator::next(){
   avoidLowerDiagonalAndDifferentTypes();
 }
 
-axdinterpolator::StandardInput::DiffMap::z3_expr_pair
+axdinterpolator::SeparatedPair::DiffMap::z3_expr_pair
 axdinterpolator::AXDInterpolant::CircularPairIterator::operator*() const {
-  return axdinterpolator::StandardInput::DiffMap::z3_expr_pair(
+  return axdinterpolator::SeparatedPair::DiffMap::z3_expr_pair(
       *z3_expr_set_first, *z3_expr_set_second);
 }
 

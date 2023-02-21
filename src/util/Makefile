@@ -9,5 +9,5 @@ $(ODIR)/%.o: %.cpp $(LDIR)/libz3.$(SO_EXT)
 	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
 		-I$(Z3_IDIR) \
 		-I../AXDSignature -I../Preprocess \
-		-I../StandardInput -I../AXDInterpolant \
+		-I../SeparatedPair -I../AXDInterpolant \
 		$<

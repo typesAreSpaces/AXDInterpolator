@@ -1,7 +1,7 @@
 include common.mk
 
 LINKS=-I$(Z3_IDIR) -Isrc \
-			-Isrc/AXDInterpolant -Isrc/StandardInput \
+			-Isrc/AXDInterpolant -Isrc/SeparatedPair \
 			-Isrc/Preprocess -Isrc/AXDSignature \
 			-Isrc/util
 
@@ -24,7 +24,7 @@ $(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 		cd build; make install -j$(NUM_PROCS)
 
 .PHONY: AXDSignature Preprocess \
-	StandardInput AXDInterpolant \
+	SeparatedPair AXDInterpolant \
 	util
 
 AXDSignature: $(LDIR)/libz3.$(SO_EXT) 
@@ -33,7 +33,7 @@ AXDSignature: $(LDIR)/libz3.$(SO_EXT)
 Preprocess: $(LDIR)/libz3.$(SO_EXT) 
 	make -C $(SDIR)/$@
 
-StandardInput: $(LDIR)/libz3.$(SO_EXT) 
+SeparatedPair: $(LDIR)/libz3.$(SO_EXT) 
 	make -C $(SDIR)/$@
 
 AXDInterpolant: $(LDIR)/libz3.$(SO_EXT) 
@@ -54,7 +54,7 @@ debug: $(AXD_INTERPOLATOR)
 
 $(AXD_INTERPOLATOR): \
 	AXDSignature Preprocess \
-	StandardInput AXDInterpolant util \
+	SeparatedPair AXDInterpolant util \
 	$(ODIR)/main.o
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ \

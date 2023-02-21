@@ -56,18 +56,18 @@
 
 void axdinterpolator::AXDInterpolant::SmtSolverSetup(
     z3::solver & solver, 
-    StandardInput const & side_part){
+    SeparatedPair const & side_part){
   SETUP(solver, solver.add(assertion));
 }
 
 void axdinterpolator::AXDInterpolant::SmtSolverOutStreamSetup(
     std::ostream & out, 
-    StandardInput const & side_part){
+    SeparatedPair const & side_part){
   SETUP(out, out << assertion << std::endl);
 }
 
 void axdinterpolator::AXDInterpolant::AB_VectorsSetup(
     z3::expr_vector & part_vector, 
-    StandardInput const & side_part){
+    SeparatedPair const & side_part){
   SETUP(part_vector, part_vector.push_back(assertion));
 }

@@ -1,5 +1,5 @@
-#ifndef _STANDARD_INPUT_
-#define _STANDARD_INPUT_
+#ifndef _SEPARATED_PAIR_
+#define _SEPARATED_PAIR_
 
 #include "z3++.h"
 #define _DEBUG_STDINPUT_ 0
@@ -26,7 +26,7 @@
 
 namespace axdinterpolator {
 
-class StandardInput {
+class SeparatedPair {
 
   friend class AXDInterpolant;
 
@@ -45,7 +45,7 @@ class StandardInput {
   // c_array_var.id() x c_array_var.id() -> sequence of diff_k
   struct DiffMap {
 
-    friend class StandardInput;
+    friend class SeparatedPair;
 
     typedef std::pair<z3::expr, z3::expr> z3_expr_pair;
 
@@ -113,7 +113,7 @@ class StandardInput {
   z3::expr generateAxiom9() const;
 
 public:
-  StandardInput(AXDSignature const &, z3::expr_vector const &,
+  SeparatedPair(AXDSignature const &, z3::expr_vector const &,
 		z3::expr_vector &, Preprocessor::ArrayVars const &);
 
   void initSaturation();
@@ -124,11 +124,11 @@ public:
   void instantiate(std::ostream &, z3::expr &) const;
   void instantiate(z3::expr_vector &, z3::expr &) const;
 
-  friend std::ostream &operator<<(std::ostream &, StandardInput const &);
+  friend std::ostream &operator<<(std::ostream &, SeparatedPair const &);
   friend std::ostream &operator<<(std::ostream &,
-				  StandardInput::DiffMap const &);
+				  SeparatedPair::DiffMap const &);
   friend std::ostream &operator<<(std::ostream &,
-				  StandardInput::WriteVector const &);
+				  SeparatedPair::WriteVector const &);
 };
 
 } // namespace axdinterpolator

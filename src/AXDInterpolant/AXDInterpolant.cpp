@@ -42,7 +42,7 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(
   std::cout << "Input Part B" << std::endl;
   std::cout << input_part_b << std::endl;
 
-  std::cout << "Before StandardInput" << std::endl;
+  std::cout << "Before SeparatedPair" << std::endl;
   std::cout << "Input Part A" << std::endl;
   std::cout << part_a << std::endl;
   std::cout << "Input Part B" << std::endl;
@@ -171,7 +171,7 @@ z3::expr axdinterpolator::AXDInterpolant::liftInterpolant(
 void axdinterpolator::AXDInterpolant::liftInterpolantDiffSubs(
     z3::expr_vector & from,
     z3::expr_vector & to,
-    StandardInput const & input
+    SeparatedPair const & input
     ){
   for(auto const & diff_entry : input.diff_map.m_map){
     auto const & diff_a   = diff_entry.first.first;

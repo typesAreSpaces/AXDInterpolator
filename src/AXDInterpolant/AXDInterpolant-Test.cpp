@@ -87,7 +87,7 @@ void axdinterpolator::AXDInterpolant::testOutputArrayAxiomatization(z3::solver &
 }
 
 void axdinterpolator::AXDInterpolant::testOutputDiffLifting(
-    z3::solver & s, StandardInput const & input){
+    z3::solver & s, SeparatedPair const & input){
   // Adding equations of new symbols
   for(auto const & diff_entry : input.diff_map.m_map){
     auto const & diff_a = diff_entry.first.first;

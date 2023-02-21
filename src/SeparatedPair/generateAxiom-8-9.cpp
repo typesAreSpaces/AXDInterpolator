@@ -1,6 +1,6 @@
-#include "StandardInput.h"
+#include "SeparatedPair.h"
 
-z3::expr axdinterpolator::StandardInput::generateAxiom8(Preprocessor::ArrayVars const & array_var_ids) const {
+z3::expr axdinterpolator::SeparatedPair::generateAxiom8(Preprocessor::ArrayVars const & array_var_ids) const {
   z3::expr_vector conjs(sig.ctx);
 
   // Instantiate with all the current array elements
@@ -30,7 +30,7 @@ z3::expr axdinterpolator::StandardInput::generateAxiom8(Preprocessor::ArrayVars 
   }
 }
 
-z3::expr axdinterpolator::StandardInput::generateAxiom9() const {
+z3::expr axdinterpolator::SeparatedPair::generateAxiom9() const {
   z3::expr_vector conjs(sig.ctx);
 
   for(unsigned i = 0; i < sig.element_sorts.size(); i++){

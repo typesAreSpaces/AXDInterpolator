@@ -1,7 +1,7 @@
-#include "StandardInput.h"
+#include "SeparatedPair.h"
 #include "z3++.h"
 
-axdinterpolator::StandardInput::StandardInput(
+axdinterpolator::SeparatedPair::SeparatedPair(
     AXDSignature const & sig,
     z3::expr_vector const & conjunction, 
     z3::expr_vector & initial_index_vars,
@@ -77,7 +77,7 @@ axdinterpolator::StandardInput::StandardInput(
         std::cout << current_arg << std::endl;
         throw 
           "Problem @ "
-          "axdinterpolator::StandardInput::axdinterpolator::StandardInput "
+          "axdinterpolator::SeparatedPair::axdinterpolator::SeparatedPair "
           "Invalid formula.";
     }
   }
@@ -126,7 +126,7 @@ axdinterpolator::StandardInput::StandardInput(
   initSaturation();
 }
 
-void axdinterpolator::StandardInput::initSaturation(){
+void axdinterpolator::SeparatedPair::initSaturation(){
   // ------------------------------------------------
   // Processing equations of the form a = wr(b, i, e)
   // The following adds [11] predicates
@@ -181,7 +181,7 @@ void axdinterpolator::StandardInput::initSaturation(){
   // -----------------------------------------------
 }
 
-void axdinterpolator::StandardInput::updateSaturation(
+void axdinterpolator::SeparatedPair::updateSaturation(
     DiffMap::z3_expr_pair const & entry,
     z3::expr const & _new_index, 
     unsigned min_dim){
@@ -251,7 +251,7 @@ void axdinterpolator::StandardInput::updateSaturation(
 
 namespace axdinterpolator {
 std::ostream &operator<<(std::ostream &os,
-			 axdinterpolator::StandardInput const &si) {
+			 axdinterpolator::SeparatedPair const &si) {
   return (os << "Part 1: " << si.part_1 << std::endl
 	     << "Part 2: " << si.part_2);
 }
