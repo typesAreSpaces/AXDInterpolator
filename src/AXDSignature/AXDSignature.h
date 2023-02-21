@@ -84,6 +84,8 @@ struct AXDSignature {
 class ArrayVars {
 
   friend class AXDInterpolant;
+  friend struct AXDSignature;
+  friend class CircularPairIterator;
 
   typedef std::map<unsigned, z3_expr_set> Container;
 
@@ -172,6 +174,21 @@ class InstantiatedTerms {
   void operator++();
   void add_var(z3::expr const &);
 };
+
+class CircularPairIterator {
+
+    ArrayVars const &vars;
+    ArrayVars::Container::const_iterator p_array_vars_it;
+    z3_expr_set::const_iterator z3_expr_set_first,
+	z3_expr_set_second;
+
+    void avoidLowerDiagonalAndDifferentTypes();
+
+  public:
+    CircularPairIterator(ArrayVars const &);
+    void next();
+    DiffMap::z3_expr_pair operator*() const;
+  };
 
 } // namespace axdinterpolator
 

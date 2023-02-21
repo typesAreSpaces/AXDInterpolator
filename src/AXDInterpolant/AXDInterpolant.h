@@ -29,33 +29,19 @@ namespace axdinterpolator {
 
 class AXDInterpolant : public Preprocessor {
 
-  class CircularPairIterator {
-    friend class AXDInterpolant;
-
-    typedef ArrayVars PArrayVars;
-
-    PArrayVars const &vars;
-    PArrayVars::Container::const_iterator p_array_vars_it;
-    z3_expr_set::const_iterator z3_expr_set_first,
-	z3_expr_set_second;
-
-    void avoidLowerDiagonalAndDifferentTypes();
-
-  public:
-    CircularPairIterator(ArrayVars const &);
-    void next();
-    DiffMap::z3_expr_pair operator*() const;
-  };
-
   enum StateOutput { undefined, fine, notfine };
 
   SeparatedPair part_a, part_b;
   std::string m_file_name;
+
   // TODO: Remove this as no fuel is needed
   unsigned num_attempts, remaining_fuel;
+
   bool is_interpolant_computed, is_unsat, is_valid_result;
   StateOutput state_output;
+
   z3::expr current_interpolant;
+
   z3::solver solver;
 
   void loop();

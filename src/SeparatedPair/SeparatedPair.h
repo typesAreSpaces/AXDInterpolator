@@ -16,12 +16,6 @@
 #   define ASSERT(condition, message) do { } while (false)
 #endif
 
-#include "z3++.h"
-#include <set>
-#include <utility>
-#include <map>
-#include <vector>
-#include <tuple>
 #include "Preprocess.h"
 
 namespace axdinterpolator {
@@ -30,7 +24,7 @@ class SeparatedPair {
 
   friend class AXDInterpolant;
  
-  AXDSignature const &sig;
+  AXDSignature const & sig;
   DiffMap diff_map;
   WriteVector write_vector;
   InstantiatedTerms instantiated_terms;

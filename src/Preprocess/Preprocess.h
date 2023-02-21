@@ -3,8 +3,6 @@
 
 #define _DEBUG_PREPROCESS_ 0
 
-#include <iostream>
-#include <string>
 #include "AXDSignature.h"
 
 namespace axdinterpolator {
@@ -15,12 +13,6 @@ class Preprocessor {
 
   enum SideInterpolant { PART_A, PART_B };
 
-  // [NOTICE] This structure only contains
-  // array vars of different
-  // parametrized types
-public: 
-
-private:
   // normalizeInput accomplishes the following:
   // 1. Removes applications of length(x)
   // replacing them with diff(x, empty_array)
@@ -46,18 +38,14 @@ private:
   z3::expr fresh_array_constant(z3::sort const &);
   z3::expr fresh_constant(z3::sort const &);
 
-  AXDSignature &sig;
+  AXDSignature & sig;
   unsigned fresh_num;
+
   z3::expr_vector input_part_a, input_part_b;
 
   z3_expr_vector_unique part_a_index_vars, part_b_index_vars;
 
   ArrayVars part_a_array_vars, part_b_array_vars, common_array_vars;
-
-  // AXDSignature::z3_expr_set
-  // part_a_array_vars,
-  // part_b_array_vars,
-  // common_array_vars;
 
 public:
   Preprocessor(AXDSignature &, z3::expr const &, z3::expr const &);

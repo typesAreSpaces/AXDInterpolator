@@ -1,6 +1,6 @@
-#include "AXDInterpolant.h"
+#include "AXDSignature.h"
 
-axdinterpolator::AXDInterpolant::CircularPairIterator::CircularPairIterator(
+axdinterpolator::CircularPairIterator::CircularPairIterator(
     ArrayVars const & vars) : 
   vars(vars),
   p_array_vars_it(vars.begin()), 
@@ -10,7 +10,7 @@ axdinterpolator::AXDInterpolant::CircularPairIterator::CircularPairIterator(
   avoidLowerDiagonalAndDifferentTypes(); 
 }
 
-void axdinterpolator::AXDInterpolant::CircularPairIterator::next(){
+void axdinterpolator::CircularPairIterator::next(){
   z3_expr_set_second++;
 
   if(z3_expr_set_second == p_array_vars_it->second.end()){
@@ -32,12 +32,12 @@ void axdinterpolator::AXDInterpolant::CircularPairIterator::next(){
 }
 
 axdinterpolator::DiffMap::z3_expr_pair
-axdinterpolator::AXDInterpolant::CircularPairIterator::operator*() const {
+axdinterpolator::CircularPairIterator::operator*() const {
   return axdinterpolator::DiffMap::z3_expr_pair(
       *z3_expr_set_first, *z3_expr_set_second);
 }
 
-void axdinterpolator::AXDInterpolant::CircularPairIterator::
+void axdinterpolator::CircularPairIterator::
     avoidLowerDiagonalAndDifferentTypes() {
   while (!Z3ExprComparator()(*z3_expr_set_first,
 					   *z3_expr_set_second) ||
