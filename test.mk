@@ -1,8 +1,9 @@
-# ---------------------------------------------------------
 #  Rules to test a single or many smt2 files
-METHOD=0# Z3
-#METHOD=1# MATHSAT
-#METHOD=2# SMTINTERPOL
+
+#-- Interpolation engines
+METHOD=0 # Z3
+#METHOD=1 # MATHSAT
+#METHOD=2 # SMTINTERPOL
 
 ALLOWED_ATTEMPS=1000000
 
@@ -29,6 +30,7 @@ FILE_TEST=$(TEST_DIR)/strcpy_example_variant_1.smt2
 #FILE_TEST=$(TEST_DIR)/strcpy_example_variant_2.smt2
 #FILE_TEST=$(TEST_DIR)/strcpy_example_variant_3.smt2
 
+# ---------------------------------------------------------
 tests/one: $(AXD_INTERPOLATOR)
 	$(AXD_INTERPOLATOR) \
 		$(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
@@ -58,7 +60,7 @@ tests/print_all: $(AXD_INTERPOLATOR)
 	rm -rf tests/*.o $@
 # ---------------------------------------------------------
 
-# ---------------------------------------------------------
+# -----------------------------
 #  Check output
 check: 
 	make -C ./output
@@ -68,4 +70,4 @@ mathsat_check:
 
 z3_check: 
 	SMT_SOLVER=Z3 make check
-# ---------------------------------------------------------
+# -----------------------------

@@ -32,4 +32,3 @@ NUM_PROCS=$(_NUM_PROCS)
 Z3_HEADERS=$(wildcard $(Z3_IDIR)/*.h)
 
 FLAGS=-std=c++11 -Wall
-
