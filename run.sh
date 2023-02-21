@@ -1,3 +1,5 @@
+#! /usr/bin/bash
+
 CURRENT_DIR=$(pwd)
 
 $CURRENT_DIR/bin/axd_interpolator \

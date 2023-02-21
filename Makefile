@@ -3,6 +3,7 @@ include common.mk
 LINKS=-I$(Z3_IDIR) -Isrc \
 			-Isrc/AXDInterpolant -Isrc/StandardInput \
 			-Isrc/Preprocess -Isrc/AXDSignature \
+			-Isrc/util
 
 #all: $(AXD_INTERPOLATOR)
 all: tests/one $(TAGS)
@@ -23,7 +24,8 @@ $(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 		cd build; make install -j$(NUM_PROCS)
 
 .PHONY: AXDSignature Preprocess \
-	StandardInput AXDInterpolant
+	StandardInput AXDInterpolant \
+	util
 
 AXDSignature: $(LDIR)/libz3.$(SO_EXT) 
 	make -C $(SDIR)/$@
@@ -37,6 +39,9 @@ StandardInput: $(LDIR)/libz3.$(SO_EXT)
 AXDInterpolant: $(LDIR)/libz3.$(SO_EXT) 
 	make -C $(SDIR)/$@ 
 
+util: $(LDIR)/libz3.$(SO_EXT) 
+	make -C $(SDIR)/$@
+
 $(ODIR)/%.o: $(SDIR)/%.cpp $(LDIR)/libz3.$(SO_EXT) 
 	mkdir -p $(ODIR) 
 	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
@@ -47,8 +52,8 @@ debug: CCFLAGS += -DDEBUG -g
 debug: $(AXD_INTERPOLATOR)
 
 $(AXD_INTERPOLATOR): AXDSignature Preprocess \
-	StandardInput AXDInterpolant \
-	$(ODIR)/main.o $(ODIR)/util.o $(ODIR)/todo.o
+	StandardInput AXDInterpolant util \
+	$(ODIR)/main.o
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ \
 		$(wildcard $(ODIR)/*.o) $(LDIR)/libz3.$(SO_EXT) \
