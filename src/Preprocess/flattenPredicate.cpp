@@ -223,7 +223,7 @@ void axdinterpolator::Preprocessor::updateVarsDB(
     updateIndexVars(e, side);
     return;
   }
-  if(sig.isArraySort(e.get_sort())){
+  if(isArraySort(e.get_sort())){
     updateArrayVars(e, side);
     return;
   }
@@ -240,7 +240,7 @@ z3::expr axdinterpolator::Preprocessor::fresh_array_constant(z3::sort const & s)
 }
 
 z3::expr axdinterpolator::Preprocessor::fresh_constant(z3::sort const & s){
-  if(sig.isArraySort(s))
+  if(isArraySort(s))
     return fresh_array_constant(s);
   if(s.is_int())
     return fresh_index_constant();

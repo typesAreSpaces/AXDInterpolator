@@ -136,10 +136,6 @@ bool axdinterpolator::AXDSignature::is_QF_IDL() const {
   return theory_name == QF_IDL;
 }
 
-bool axdinterpolator::AXDSignature::isArraySort(z3::sort const & s) const {
-  return s.to_string().find("ArraySort") != std::string::npos;
-}
-
 void axdinterpolator::AXDSignature::setTheory(TheoryName new_theory_name){
   theory_name = new_theory_name;
 }

@@ -40,7 +40,7 @@ axdinterpolator::SeparatedPair::SeparatedPair(
           if( // Covers equations of the form 
               // a = wr(b, i, e) or a = b 
               // when a is an array var
-              sig.isArraySort(_lhs.get_sort())
+              isArraySort(_lhs.get_sort())
               // Covers equations of the
               // form i = diff(a, b)
               || func_name(_rhs).find("diff") != std::string::npos){

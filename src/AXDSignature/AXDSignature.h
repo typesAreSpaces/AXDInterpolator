@@ -26,17 +26,33 @@ namespace axdinterpolator {
 struct AXDSignature {
 
   enum TheoryName { QF_TO, QF_IDL, QF_UTVPI, QF_LIA };
+ 
+  z3::context & ctx;
+
+  TheoryName theory_name;
+
+  z3::sort const bool_sort, int_sort;
+
+  // "es" stands for elements sorts
+  axdinterpolator::z3_sort_vector_unique element_sorts;
+  z3::sort_vector array_sorts;
+  z3::expr_vector undefined_es;
+  z3::expr_vector empty_array_es;
+  z3::func_decl_vector diff_es, diff_k_es, wr_es, rd_es, length_es;
+
+  // 1. Given the id() of a type A
+  // returns the indexing-position of the abstract type ArraySortA
+  // 2. Given the id() of an abstract type ArraySortA
+  // returns the indexing-position of the abstract type ArraySortA
+  std::map<unsigned, unsigned> array_sort_map;
+
+  AXDSignature(z3::context &, char const *, std::string);
 
   void processArrayDecls(std::string);
   void indexElementSorts();
 
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
-  
-  // --------------------------------------
-  // TODO: Move this function to util
-  bool isArraySort(z3::sort const &) const;
-  // --------------------------------------
 
   void setTheory(TheoryName);
 
@@ -56,27 +72,8 @@ struct AXDSignature {
   z3::func_decl getRdBySort(z3::sort const &) const;
   z3::func_decl getRdBySort(unsigned) const;
 
+
   friend std::ostream &operator<<(std::ostream &, TheoryName const &);
-
-  z3::context &ctx;
-  TheoryName theory_name;
-
-  z3::sort const bool_sort, int_sort;
-
-  // "es" stands for elements sorts
-  axdinterpolator::z3_sort_vector_unique element_sorts;
-  z3::sort_vector array_sorts;
-  z3::expr_vector undefined_es;
-  z3::expr_vector empty_array_es;
-  z3::func_decl_vector diff_es, diff_k_es, wr_es, rd_es, length_es;
-
-  // 1. Given the id() of a type A
-  // returns the indexing-position of the abstract type ArraySortA
-  // 2. Given the id() of an abstract type ArraySortA
-  // returns the indexing-position of the abstract type ArraySortA
-  std::map<unsigned, unsigned> array_sort_map;
-
-  AXDSignature(z3::context &, char const *, std::string);
 };
 
 } // namespace axdinterpolator

@@ -42,6 +42,7 @@ namespace axdinterpolator {
 
   bool isSpaceOrParen(char);
   void extractNameFromSort(std::string &);
+  bool isArraySort(z3::sort const &);
 
   std::ostream &operator<<(std::ostream &, z3_expr_set const &);
 

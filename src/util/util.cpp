@@ -10,6 +10,10 @@ void axdinterpolator::extractNameFromSort(std::string & s) {
       s.end());
 }
 
+bool axdinterpolator::isArraySort(z3::sort const & s) {
+  return s.to_string().find("ArraySort") != std::string::npos;
+}
+
 std::ostream & operator << (
     std::ostream & out, 
     axdinterpolator::z3_expr_set const & collection){
