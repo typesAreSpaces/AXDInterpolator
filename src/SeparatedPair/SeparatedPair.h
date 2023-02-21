@@ -30,6 +30,8 @@ class SeparatedPair {
 
   friend class AXDInterpolant;
 
+  // ----------------------------------------------------------------------
+  // TODO: Move this to AXDSignature
   struct DiffMapEntry : public z3::expr_vector {
 
     z3::expr_vector lifted_b;
@@ -95,6 +97,7 @@ class SeparatedPair {
     void operator++();
     void add_var(z3::expr const &);
   };
+  // ----------------------------------------------------------------------
 
   AXDSignature const &sig;
   DiffMap diff_map;

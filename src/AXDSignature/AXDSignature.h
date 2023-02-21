@@ -19,6 +19,7 @@
 #define sort_name(x)        x.decl().range().name().str()
 #define func_kind(x)        x.decl().decl_kind()
 
+#include "util.h"
 #include "z3++.h"
 #include <set>
 #include <cstring>
@@ -38,6 +39,8 @@ struct AXDSignature {
 
   enum TheoryName { QF_TO, QF_IDL, QF_UTVPI, QF_LIA };
 
+  // --------------------------------------
+  // TODO: Move this to util
   struct Z3ExprComparator {
     bool operator()(z3::expr const &a, z3::expr const &b) const;
   };
@@ -59,15 +62,24 @@ struct AXDSignature {
     z3_sort_vector_unique(z3::context &);
     void push(z3::sort const &);
   };
+  // --------------------------------------
 
+  // --------------------------------------
+  // TODO: Move these two functions to util
   static bool isSpaceOrParen(char);
   void extractNameFromSort(std::string &) const;
+  // --------------------------------------
+
   void processArrayDecls(std::string);
   void indexElementSorts();
 
   bool is_QF_TO() const;
   bool is_QF_IDL() const;
+  
+  // --------------------------------------
+  // TODO: Move this function to util
   bool isArraySort(z3::sort const &) const;
+  // --------------------------------------
 
   void setTheory(TheoryName);
 
