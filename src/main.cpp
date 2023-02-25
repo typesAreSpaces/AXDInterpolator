@@ -1,6 +1,8 @@
-#include "todo.h"
+#include "../include/todo.h"
 #include "util.h"
 #include "z3++.h"
+#include <sys/wait.h>
+#include "../include/Preprocess.h"
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 
@@ -14,16 +16,34 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+
 void test1() {
   z3::context ctx;
 
   auto A = ctx.uninterpreted_sort("A");
   auto a = ctx.constant("a", A);
   auto b = ctx.constant("b", A);
+  auto c = ctx.constant("c", A);
   auto f = ctx.function("f", A, A, A);
-  auto f_f_a_b_a = f(f(a, b), a);
+  auto g = ctx.function("g", A, A, A, A);
+  auto function = f(f(a, b), f(g(a, b, f(c, b)), f(a, b)));
 
-  traverse(f_f_a_b_a);
+  // expected output:
+  // var0 = (f a b)
+  // var1 = (f c b)
+  // var2 = (g a b var1)
+  // var3 = (f var2 var0)
+  // (f var0 var3)
+  // a
+  // b
+  // c
+  // MIGHT BE IN DIFFERENT ORDER!
+  
+  std::vector<z3::expr> vector_of_final_expr = flattening(function, ctx);
+
+  for (int i = 0; i < vector_of_final_expr.size(); i++) {
+    std::cout << vector_of_final_expr[i] << std::endl;
+  }
 }
 
 void test2() {
@@ -33,7 +53,7 @@ void test2() {
   auto a = ctx.constant("a", mytype);
   auto b = ctx.constant("b", mytype);
   auto f = ctx.function("f", mytype, mytype, mytype);
-  auto expr1 = f(a, (f(a, b)));
+  auto expr1 = f(a, f(a, b));
 
   z3::expr_vector v1(ctx);
   v1.push_back(f(a, b));
