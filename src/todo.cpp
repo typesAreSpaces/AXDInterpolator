@@ -60,9 +60,9 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
   std::vector<z3::expr> remove_duplicates_atoms;
 
   // I tried to use set and a custom comparator, but it was not working :(
-  for (int i = 0; i < subformulas.size(); i++) {
+  for (unsigned int i = 0; i < subformulas.size(); i++) {
     bool unique = true;
-    for (int j = i; j < subformulas.size(); j++) {
+    for (unsigned int j = i; j < subformulas.size(); j++) {
       if ((i != j) && (compare_expr(subformulas[i], subformulas[j]))) {
 	unique = false;
       }
@@ -72,9 +72,9 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
     }
   }
 
-  for (int i = 0; i < atoms.size(); i++) {
+  for (unsigned int i = 0; i < atoms.size(); i++) {
     bool unique = true;
-    for (int j = i; j < atoms.size(); j++) {
+    for (unsigned int j = i; j < atoms.size(); j++) {
       if ((i != j) && (compare_expr(atoms[i], atoms[j]))) {
 	unique = false;
       }
@@ -86,7 +86,7 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
     
   std::vector<z3::expr> final_formulas;
   
-  for (int j = 0; j < remove_duplicates_subformulas.size(); j++) {
+  for (unsigned int j = 0; j < remove_duplicates_subformulas.size(); j++) {
     z3::expr new_var = get_new_variable(e, ctx, var_name_counter); // generates new variable
 
     // creates vector with the subformula and its new variable name so we can use substitute
@@ -100,7 +100,7 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
     }
 
     // looks through all of the subformula and tries to replace current formula with the new variable
-    for (int k = 0; k < remove_duplicates_subformulas.size(); k++) {
+    for (unsigned int k = 0; k < remove_duplicates_subformulas.size(); k++) {
       if (j != k) {
 	remove_duplicates_subformulas[k] = remove_duplicates_subformulas[k].substitute(constants, I);
       }
@@ -108,12 +108,12 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
   }
 
   // adds all converted subformulas to final formulas vector 
-  for (int i = 0; i < remove_duplicates_subformulas.size(); i++) {
+  for (unsigned int i = 0; i < remove_duplicates_subformulas.size(); i++) {
     final_formulas.push_back(remove_duplicates_subformulas[i]);
   }
   
   // adds all atoms to final formulas vector 
-  for (int i = 0; i < remove_duplicates_atoms.size(); i++) {
+  for (unsigned int i = 0; i < remove_duplicates_atoms.size(); i++) {
     final_formulas.push_back(remove_duplicates_atoms[i]);
   }
 

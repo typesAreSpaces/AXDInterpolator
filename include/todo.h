@@ -1,6 +1,7 @@
 #ifndef TODO_H
 #define TODO_H
 
+#include <vector>
 #include <z3++.h>
 
 void traverse(z3::expr);

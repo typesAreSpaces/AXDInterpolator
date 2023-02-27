@@ -28,6 +28,8 @@ void test1() {
   auto g = ctx.function("g", A, A, A, A);
   auto function = f(f(a, b), f(g(a, b, f(c, b)), f(a, b)));
 
+  std::cout << function.get_sort() << std::endl;
+
   // expected output:
   // var0 = (f a b)
   // var1 = (f c b)
@@ -41,7 +43,7 @@ void test1() {
   
   std::vector<z3::expr> vector_of_final_expr = flattening(function, ctx);
 
-  for (int i = 0; i < vector_of_final_expr.size(); i++) {
+  for (unsigned int i = 0; i < vector_of_final_expr.size(); i++) {
     std::cout << vector_of_final_expr[i] << std::endl;
   }
 }
