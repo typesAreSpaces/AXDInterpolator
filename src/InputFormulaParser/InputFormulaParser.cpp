@@ -51,9 +51,9 @@ std::string axdinterpolator::InputFormulaParser::getDecls() {
   return input_parser.to_smt2_decls_only();
 }
 
-z3::expr axdinterpolator::InputFormulaParser::currentPartA() { return part_a[part_a_it]; }
+z3::expr axdinterpolator::InputFormulaParser::partA() { return part_a[part_a_it]; }
 
-z3::expr axdinterpolator::InputFormulaParser::currentPartB() { return part_b[part_b_it]; }
+z3::expr axdinterpolator::InputFormulaParser::partB() { return part_b[part_b_it]; }
 
 bool axdinterpolator::InputFormulaParser::next() {
 
@@ -93,7 +93,8 @@ int axdinterpolator::run(int argc, char **argv) {
       do {
 	AXDInterpolant axd(sig,
 			   // Input formulas
-			   input.currentPartA(), input.currentPartB(),
+			   input.partA(),
+			   input.partB(),
 			   // smt2 file name
 			   smt_filename);
 

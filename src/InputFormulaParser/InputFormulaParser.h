@@ -19,8 +19,8 @@ private:
 public:
   InputFormulaParser(const char *, const char *, const char *, z3::context &);
   std::string getDecls();
-  z3::expr currentPartA();
-  z3::expr currentPartB();
+  z3::expr partA();
+  z3::expr partB();
   bool next();
 };
 
