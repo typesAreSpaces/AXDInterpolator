@@ -102,7 +102,8 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
     // looks through all of the subformula and tries to replace current formula with the new variable
     for (unsigned int k = 0; k < remove_duplicates_subformulas.size(); k++) {
       if (j != k) {
-	remove_duplicates_subformulas[k] = remove_duplicates_subformulas[k].substitute(constants, I);
+	remove_duplicates_subformula
+	s[k] = remove_duplicates_subformulas[k].substitute(constants, I);
       }
     }
   }
@@ -117,12 +118,29 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
     final_formulas.push_back(remove_duplicates_atoms[i]);
   }
 
+  // Here
+  // How to check equisatisfiability
+  // = t1 t2
+
+  // solver1.add(t1 == t2)
+  // solver1.check()
+  // flattening(t1) -> {(eq1, ..., eq_m) t1'}
+  // flattening(t2) -> {(eq1', ..., eq_m') t2'}
+  // solver2.add(eq1)
+  //...
+  // solver2.add(eq_m)
+  // solver2.add(eq1')
+  //...
+  // solver2.add(eq_m')
+  // solver2.add(t1' == t2')
+  // solver2.check()
+
   return final_formulas;
 }
 
-
-void M_O_instantiation(z3::expr f, const z3::expr_vector & I, const z3::expr_vector & constants) {
-  assert (I.size() == constants.size());
+void M_O_instantiation(z3::expr f, const z3::expr_vector &I,
+		       const z3::expr_vector &constants) {
+  assert(I.size() == constants.size());
   std::cout << "Print1: ";
   std::cout << f << std::endl;
   std::cout << "Print2: ";
@@ -147,6 +165,7 @@ void M_O_instantiation(z3::expr f, const z3::expr_vector & I, const z3::expr_vec
     part_2.push_back(
 		     z3::implies(z3::or(i < 0,
 					i > len(b),
-					e == bottom)), curr_rd(a, i) == curr_rd(b, i));
+					e == bottom)), curr_rd(a, i) ==
+  curr_rd(b, i));
   }
   }*/
