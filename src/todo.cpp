@@ -38,7 +38,8 @@ z3::expr get_new_variable(z3::expr e, z3::context & ctx, int & counter) {
   std::string name_str = e.decl().name().str() + std::to_string(counter);
   const char * name_char = const_cast<char*>(name_str.c_str());
   z3::symbol name = ctx.str_symbol(name_char);
-  auto new_var = ctx.constant(name, e.get_sort());
+  // auto new_var = ctx.constant(name, e.get_sort());
+  auto new_var = ctx.constant(name_char, e.get_sort());
   counter++;
   return new_var;
 }
@@ -102,8 +103,7 @@ std::vector<z3::expr> flattening(z3::expr e, z3::context & ctx) {
     // looks through all of the subformula and tries to replace current formula with the new variable
     for (unsigned int k = 0; k < remove_duplicates_subformulas.size(); k++) {
       if (j != k) {
-	remove_duplicates_subformula
-	s[k] = remove_duplicates_subformulas[k].substitute(constants, I);
+	remove_duplicates_subformulas[k] = remove_duplicates_subformulas[k].substitute(constants, I);
       }
     }
   }
