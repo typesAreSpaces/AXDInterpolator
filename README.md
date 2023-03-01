@@ -11,10 +11,11 @@ iZ3 and Mathsat as such engines.
 
 ## Building the project
 
-In the root directory, execute the command:
+In the root directory, execute the commands:
 
 ```
-CURRENT_DIR=$(pwd) make
+./make_common.sh
+make
 ```
 
 If the above is successful, then the binary file _axd_interpolator_

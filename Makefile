@@ -88,6 +88,13 @@ clean:
 	rm -rf $(AXD_INTERPOLATOR)
 	rm -rf $(TAGS)
 	cd output; make clean
+	make clean -C $(SDIR)/util
+	make clean -C $(SDIR)/AXDSignature
+	make clean -C $(SDIR)/Preprocess
+	make clean -C $(SDIR)/SeparatedPair
+	make clean -C $(SDIR)/AXDInterpolant
+	make clean -C $(SDIR)/InputFormulaParser
+	make clean -C $(SDIR)/TODO
 
 z3_clean:
 	if [ -d "$(Z3_DIR)/build" ]; then \
