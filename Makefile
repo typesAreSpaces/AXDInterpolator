@@ -26,8 +26,8 @@ $(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 	mkdir -p $(LDIR)
 	cd $(Z3_DIR);\
 		$(PYTHON_CMD) scripts/mk_make.py \
-		--prefix=$(CURRENT_DIR);\
-		cd build; $(MAKE) install
+		--prefix=$(CURRENT_DIR)
+	$(MAKE) -C $(Z3_DIR)/build install
 
 .PHONY: $(DEPENDENCIES)
 

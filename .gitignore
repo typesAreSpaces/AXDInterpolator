@@ -8,6 +8,7 @@ bin/*
 include/z3*
 include/_*
 lib/libz3*
+dependencies/*
 
 output/*.smt2
 
