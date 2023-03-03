@@ -27,30 +27,30 @@ $(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 	cd $(Z3_DIR);\
 		$(PYTHON_CMD) scripts/mk_make.py \
 		--prefix=$(CURRENT_DIR);\
-		cd build; make install -j$(NUM_PROCS)
+		cd build; $(MAKE) install
 
 .PHONY: $(DEPENDENCIES)
 
 util: $(LDIR)/libz3.$(SO_EXT) 
-	make -C $(SDIR)/$@
+	$(MAKE) -C $(SDIR)/$@
 
 AXDSignature: $(LDIR)/libz3.$(SO_EXT) 
-	make -C $(SDIR)/$@
+	$(MAKE) -C $(SDIR)/$@
 
 Preprocess: $(LDIR)/libz3.$(SO_EXT) 
-	make -C $(SDIR)/$@
+	$(MAKE) -C $(SDIR)/$@
 
 SeparatedPair: $(LDIR)/libz3.$(SO_EXT) 
-	make -C $(SDIR)/$@
+	$(MAKE) -C $(SDIR)/$@
 
 AXDInterpolant: $(LDIR)/libz3.$(SO_EXT) 
-	make -C $(SDIR)/$@ 
+	$(MAKE) -C $(SDIR)/$@ 
 
 InputFormulaParser: $(LDIR)/libz3.$(SO_EXT) 
-	make -C $(SDIR)/$@ 
+	$(MAKE) -C $(SDIR)/$@ 
 
 TODO: $(LDIR)/libz3.$(SO_EXT) 
-	make -C $(SDIR)/$@ 
+	$(MAKE) -C $(SDIR)/$@ 
 
 $(ODIR)/%.o: $(SDIR)/%.cpp \
 	$(LDIR)/libz3.$(SO_EXT) 
@@ -70,11 +70,11 @@ $(AXD_INTERPOLATOR): $(DEPENDENCIES) $(ODIR)/main.o
 		$(FLAGS) -lpthread
 # ----------------------------------------------
 
-# -----------------
+# --------------------------
 # Generate TAGS
-$(TAGS):
+$(TAGS): $(AXD_INTERPOLATOR)
 	compiledb -n make
-# -----------------
+# --------------------------
 
 include test.mk
 
@@ -87,21 +87,22 @@ clean:
 	rm -rf $(TEST_DIR)/*.txt
 	rm -rf $(AXD_INTERPOLATOR)
 	rm -rf $(TAGS)
-	cd output; make clean
-	make clean -C $(SDIR)/util
-	make clean -C $(SDIR)/AXDSignature
-	make clean -C $(SDIR)/Preprocess
-	make clean -C $(SDIR)/SeparatedPair
-	make clean -C $(SDIR)/AXDInterpolant
-	make clean -C $(SDIR)/InputFormulaParser
-	make clean -C $(SDIR)/TODO
+	cd output; $(MAKE) clean
+	$(MAKE) clean -C $(SDIR)/util
+	$(MAKE) clean -C $(SDIR)/AXDSignature
+	$(MAKE) clean -C $(SDIR)/Preprocess
+	$(MAKE) clean -C $(SDIR)/SeparatedPair
+	$(MAKE) clean -C $(SDIR)/AXDInterpolant
+	$(MAKE) clean -C $(SDIR)/InputFormulaParser
+	$(MAKE) clean -C $(SDIR)/TODO
 
 z3_clean:
 	if [ -d "$(Z3_DIR)/build" ]; then \
 		cd $(Z3_DIR)/build; \
-		make uninstall; \
+		$(MAKE) uninstall; \
 		fi;
 	rm -rf $(LDIR)
+	rm -rf $(Z3_DIR)
 
 deep_clean: clean z3_clean
 # -----------------------------------
