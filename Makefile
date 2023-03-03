@@ -16,7 +16,7 @@ all: tests/one $(TAGS)
 #all: tests/all
 #all: tests/print_all
 
-# ----------------------------------------------
+# -------------------------------------------------
 #  Rules to build the project
 $(Z3_DIR)/README.md:
 	git submodule update --init --remote $(Z3_DIR)
@@ -68,13 +68,25 @@ $(AXD_INTERPOLATOR): $(DEPENDENCIES) $(ODIR)/main.o
 		$(wildcard $(ODIR)/*.o) \
 		$(LDIR)/libz3.$(SO_EXT) \
 		$(FLAGS) -lpthread
-# ----------------------------------------------
+# -------------------------------------------------
 
-# --------------------------
+# ---------------------------------------
 # Generate TAGS
 $(TAGS): $(AXD_INTERPOLATOR)
 	compiledb -n make
-# --------------------------
+	$(MAKE) -C $(SDIR)/AXDSignature \
+		compile_commands.json
+	$(MAKE) -C $(SDIR)/Preprocess \
+		compile_commands.json
+	$(MAKE) -C $(SDIR)/SeparatedPair \
+		compile_commands.json
+	$(MAKE) -C $(SDIR)/AXDInterpolant \
+		compile_commands.json
+	$(MAKE) -C $(SDIR)/InputFormulaParser \
+		compile_commands.json
+	$(MAKE) -C $(SDIR)/TODO \
+		compile_commands.json
+# ---------------------------------------
 
 include test.mk
 
@@ -105,4 +117,4 @@ z3_clean:
 	rm -rf $(Z3_DIR)
 
 deep_clean: clean z3_clean
-# -----------------------------------
+	# -----------------------------------

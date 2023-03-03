@@ -7,7 +7,7 @@ CPP_FILES=$(wildcard *.cpp)
 TODO=$(CPP_FILES:%.cpp=$(ODIR)/%.o)
 LOCAL_TAGS=compile_commands.json
 
-all: AXDInterpolant.h ${TODO} ${LOCAL_TAGS}
+all: AXDInterpolant.h ${TODO}
 
 AXDInterpolant.h: _AXDInterpolant.h
 	perl -pe "s|replace_once|$(CURRENT_DIR)|g" $< > $@

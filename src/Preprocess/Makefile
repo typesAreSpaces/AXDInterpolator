@@ -7,7 +7,7 @@ CPP_FILES=$(wildcard *.cpp)
 TODO=$(CPP_FILES:%.cpp=$(ODIR)/%.o)
 LOCAL_TAGS=compile_commands.json
 
-all: ${TODO} ${LOCAL_TAGS}
+all: ${TODO}
 
 $(ODIR)/%.o: %.cpp $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p $(ODIR)
