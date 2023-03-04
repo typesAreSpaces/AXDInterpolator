@@ -1,12 +1,16 @@
 include common.mk
 
-DEPENDENCIES=util AXDSignature Preprocess SeparatedPair \
-						 AXDInterpolant InputFormulaParser TODO
+DEPENDENCIES=util AXDSignature \
+						 Preprocess SeparatedPair \
+						 AXDInterpolant InputFormulaParser \
+						 TODO
 INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
 #all: $(AXD_INTERPOLATOR)
-all: tests/one $(TAGS)
+#all: tests/one $(TAGS)
+#all: tests/one
+all: $(ODIR)/main.o tests/one
 #all: tests/all
 #all: tests/print_all
 
@@ -52,7 +56,7 @@ $(SDIR)/TODO/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(MAKE) -C $(SDIR)/TODO
 
 $(ODIR)/%.o: $(SDIR)/%.cpp \
-	$(LDIR)/libz3.$(SO_EXT) 
+	$(LDIR)/libz3.$(SO_EXT)
 	mkdir -p $(ODIR) 
 	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
 		$(INCLUDES) $<
@@ -61,9 +65,9 @@ debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
 debug: $(AXD_INTERPOLATOR)
 
-$(AXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) $(ODIR)/main.o
+$(AXD_INTERPOLATOR): $(ODIR)/main.o \
+	$(BUILD_DEPENDENCIES)	
 	mkdir -p $(BDIR)
-	echo $(AXD_INTERPOLATOR)
 	$(CXX) $(CXXFLAGS) -o $@ \
 		$(wildcard $(ODIR)/*.o) \
 		$(LDIR)/libz3.$(SO_EXT) \
