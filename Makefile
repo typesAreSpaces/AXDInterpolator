@@ -46,6 +46,9 @@ $(SDIR)/AXDInterpolant/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/AXDInterpolant/*.cpp
 	$(MAKE) -C $(SDIR)/AXDInterpolant
 
+$(SDIR)/AXDInterpolant/AXDInterpolant:
+	$(MAKE) -C $(SDIR)/AXDInterpolant AXDInterpolant.h
+
 $(SDIR)/InputFormulaParser/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/InputFormulaParser/*.cpp
 	$(MAKE) -C $(SDIR)/InputFormulaParser

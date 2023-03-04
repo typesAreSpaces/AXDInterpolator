@@ -9,9 +9,9 @@ void test2();
 int main(int argc, char **argv) {
 
   axdinterpolator::run(argc, argv);
-  test1();
-  test2();
-  simple_test2();
+  // test1();
+  // test2();
+  // simple_test2();
   return 0;
 }
 

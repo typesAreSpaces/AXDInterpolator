@@ -24,5 +24,6 @@ $(LOCAL_TAGS):
 .PHONY: clean
 
 clean:
+	rm -rf AXDInterpolant.h
 	rm -rf ${LOCAL_TAGS}
 	rm -rf done
