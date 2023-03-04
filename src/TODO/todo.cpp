@@ -53,5 +53,11 @@ void initSaturation() {
 // TODO: parse from file a simple expression
 // TODO: rearrange the inputparser API if needed
 void simple_test(z3::expr){
+  std::cout << "Hello" << std::endl;
+  return ;
+}
+
+void simple_test2(){
+  std::cout << "Hello2" << std::endl;
   return ;
 }

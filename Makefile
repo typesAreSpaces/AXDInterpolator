@@ -3,16 +3,10 @@ include common.mk
 DEPENDENCIES=util AXDSignature Preprocess SeparatedPair \
 						 AXDInterpolant InputFormulaParser TODO
 INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
+BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
 #all: $(AXD_INTERPOLATOR)
 all: tests/one $(TAGS)
-#all: util \
-	#AXDSignature \
-	#Preprocess \
-	#SeparatedPair \
-	#AXDInterpolant \
-	#InputFormulaParser \
-	#TODO
 #all: tests/all
 #all: tests/print_all
 
@@ -29,28 +23,33 @@ $(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 		--prefix=$(CURRENT_DIR)
 	$(MAKE) -C $(Z3_DIR)/build install
 
-.PHONY: $(DEPENDENCIES)
+$(SDIR)/util/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/util/*.cpp
+	$(MAKE) -C $(SDIR)/util
 
-util: $(LDIR)/libz3.$(SO_EXT) 
-	$(MAKE) -C $(SDIR)/$@
+$(SDIR)/AXDSignature/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/AXDSignature/*.cpp
+	$(MAKE) -C $(SDIR)/AXDSignature
 
-AXDSignature: $(LDIR)/libz3.$(SO_EXT) 
-	$(MAKE) -C $(SDIR)/$@
+$(SDIR)/Preprocess/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/Preprocess/*.cpp
+	$(MAKE) -C $(SDIR)/Preprocess
 
-Preprocess: $(LDIR)/libz3.$(SO_EXT) 
-	$(MAKE) -C $(SDIR)/$@
+$(SDIR)/SeparatedPair/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/SeparatedPair/*.cpp
+	$(MAKE) -C $(SDIR)/SeparatedPair
 
-SeparatedPair: $(LDIR)/libz3.$(SO_EXT) 
-	$(MAKE) -C $(SDIR)/$@
+$(SDIR)/AXDInterpolant/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/AXDInterpolant/*.cpp
+	$(MAKE) -C $(SDIR)/AXDInterpolant
 
-AXDInterpolant: $(LDIR)/libz3.$(SO_EXT) 
-	$(MAKE) -C $(SDIR)/$@ 
+$(SDIR)/InputFormulaParser/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/InputFormulaParser/*.cpp
+	$(MAKE) -C $(SDIR)/InputFormulaParser
 
-InputFormulaParser: $(LDIR)/libz3.$(SO_EXT) 
-	$(MAKE) -C $(SDIR)/$@ 
-
-TODO: $(LDIR)/libz3.$(SO_EXT) 
-	$(MAKE) -C $(SDIR)/$@ 
+$(SDIR)/TODO/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/TODO/*.cpp
+	$(MAKE) -C $(SDIR)/TODO
 
 $(ODIR)/%.o: $(SDIR)/%.cpp \
 	$(LDIR)/libz3.$(SO_EXT) 
@@ -62,7 +61,7 @@ debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
 debug: $(AXD_INTERPOLATOR)
 
-$(AXD_INTERPOLATOR): $(DEPENDENCIES) $(ODIR)/main.o
+$(AXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) $(ODIR)/main.o
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ \
 		$(wildcard $(ODIR)/*.o) \
