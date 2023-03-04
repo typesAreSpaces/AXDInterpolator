@@ -63,6 +63,7 @@ debug: $(AXD_INTERPOLATOR)
 
 $(AXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) $(ODIR)/main.o
 	mkdir -p $(BDIR)
+	echo $(AXD_INTERPOLATOR)
 	$(CXX) $(CXXFLAGS) -o $@ \
 		$(wildcard $(ODIR)/*.o) \
 		$(LDIR)/libz3.$(SO_EXT) \
@@ -98,14 +99,14 @@ clean:
 	rm -rf $(TEST_DIR)/*.txt
 	rm -rf $(AXD_INTERPOLATOR)
 	rm -rf $(TAGS)
-	cd output; $(MAKE) clean
-	$(MAKE) clean -C $(SDIR)/util
-	$(MAKE) clean -C $(SDIR)/AXDSignature
-	$(MAKE) clean -C $(SDIR)/Preprocess
-	$(MAKE) clean -C $(SDIR)/SeparatedPair
-	$(MAKE) clean -C $(SDIR)/AXDInterpolant
-	$(MAKE) clean -C $(SDIR)/InputFormulaParser
-	$(MAKE) clean -C $(SDIR)/TODO
+	$(MAKE) -C output clean
+	$(MAKE) -C $(SDIR)/util clean 
+	$(MAKE) -C $(SDIR)/AXDSignature clean
+	$(MAKE) -C $(SDIR)/Preprocess clean 
+	$(MAKE) -C $(SDIR)/SeparatedPair clean 
+	$(MAKE) -C $(SDIR)/AXDInterpolant clean 
+	$(MAKE) -C $(SDIR)/InputFormulaParser clean 
+	$(MAKE) -C $(SDIR)/TODO clean 
 
 z3_clean:
 	if [ -d "$(Z3_DIR)/build" ]; then \

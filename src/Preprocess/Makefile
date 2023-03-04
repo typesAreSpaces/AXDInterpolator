@@ -22,3 +22,4 @@ $(LOCAL_TAGS):
 
 clean:
 	rm -rf ${LOCAL_TAGS}
+	rm -rf done
