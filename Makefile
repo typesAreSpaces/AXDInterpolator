@@ -8,9 +8,8 @@ INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
 #all: $(AXD_INTERPOLATOR)
-#all: tests/one $(TAGS)
+all: tests/one $(TAGS)
 #all: tests/one
-all: $(ODIR)/main.o tests/one
 #all: tests/all
 #all: tests/print_all
 
