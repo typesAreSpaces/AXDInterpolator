@@ -37,6 +37,7 @@ struct AXDSignature {
   z3_sort_vector_unique element_sorts;
   z3::sort_vector array_sorts;
   z3::expr_vector undefined_es;
+  z3::expr_vector el_es;
   z3::expr_vector empty_array_es;
   z3::func_decl_vector diff_es, diff_k_es, wr_es, rd_es, length_es;
 
