@@ -61,7 +61,7 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(
     .substr(0, m_file_name.find_last_of("."))
     .substr(m_file_name.find_last_of("\\/") + 1);
 
-  loop();
+  // loop();
 }
 
 void axdinterpolator::AXDInterpolant::loop(){

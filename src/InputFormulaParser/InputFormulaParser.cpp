@@ -1,9 +1,8 @@
 #include "InputFormulaParser.h"
 
-axdinterpolator::InputFormulaParser::InputFormulaParser(const char *theory,
-				       const char *smt_filename,
-				       const char *smt_engine_code,
-				       z3::context &ctx)
+axdinterpolator::InputFormulaParser::InputFormulaParser(
+    const char *theory, const char *smt_filename, const char *smt_engine_code,
+    z3::context &ctx)
     : input_parser(ctx), part_a_it(0), part_b_it(0), part_a(ctx), part_b(ctx) {
 
   if (!exists_file(smt_filename)) {
@@ -51,9 +50,13 @@ std::string axdinterpolator::InputFormulaParser::getDecls() {
   return input_parser.to_smt2_decls_only();
 }
 
-z3::expr axdinterpolator::InputFormulaParser::partA() { return part_a[part_a_it]; }
+z3::expr axdinterpolator::InputFormulaParser::partA() {
+  return part_a[part_a_it];
+}
 
-z3::expr axdinterpolator::InputFormulaParser::partB() { return part_b[part_b_it]; }
+z3::expr axdinterpolator::InputFormulaParser::partB() {
+  return part_b[part_b_it];
+}
 
 bool axdinterpolator::InputFormulaParser::next() {
 
@@ -93,11 +96,14 @@ int axdinterpolator::run(int argc, char **argv) {
       do {
 	AXDInterpolant axd(sig,
 			   // Input formulas
-			   input.partA(),
-			   input.partB(),
+			   input.partA(), input.partB(),
 			   // smt2 file name
 			   smt_filename);
 
+	// This block is commented
+	// in order to focus on other
+	// parts of the algorithm
+#if 0
 	switch (*smt_engine_code) {
 	case '0':
 	  axd.z3OutputFile();
@@ -109,11 +115,14 @@ int axdinterpolator::run(int argc, char **argv) {
 	  axd.smtInterpolOutputFile();
 	  break;
 	default:
-	  std::cout << "Not valid SMT solver option." << std::endl;
+	  std::cout
+	    << "Not valid SMT solver option."
+	    << std::endl;
 	  // return 3;
 	}
 
 	std::cout << axd << std::endl;
+#endif
       } while (input.next());
 
     } catch (char const *e) {
