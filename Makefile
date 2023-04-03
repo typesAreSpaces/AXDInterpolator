@@ -64,8 +64,8 @@ debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
 debug: $(AXD_INTERPOLATOR)
 
-$(AXD_INTERPOLATOR): $(ODIR)/main.o \
-	$(BUILD_DEPENDENCIES)	
+$(AXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) \
+	$(ODIR)/main.o 
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ \
 		$(wildcard $(ODIR)/*.o) \
