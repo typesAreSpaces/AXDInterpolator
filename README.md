@@ -4,7 +4,7 @@ This project implements an interpolation algorithm
 for the theory of arrays extended with the diff 
 operator equipped with an index theory $T_I$. 
 The approach computes a reduction from the $AXDiff(T_I)$
-theory to the theory of $EUF + T_I$ and 
+theory to the theory of $EUF \cup T_I$ and 
 calls an interpolation engine to process the 
 reduced formula. Currently, the software supports the following
 interpolation engines:
