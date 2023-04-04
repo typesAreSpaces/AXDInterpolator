@@ -7,8 +7,6 @@ METHOD=0 # Z3
 #METHOD=1 # MATHSAT
 #METHOD=2 # SMTINTERPOL
 
-ALLOWED_ATTEMPS=1000000
-
 #-- Supported Theories
 #THEORY=QF_TO
 #THEORY=QF_IDL
@@ -21,13 +19,13 @@ FILE_TEST=$(TEST_DIR)/6_2.smt2
 # ---------------------------------------------------------
 tests/one: $(AXD_INTERPOLATOR)
 	$(AXD_INTERPOLATOR) \
-		$(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
+		$(THEORY) $(FILE_TEST) $(METHOD)
 	rm -rf tests/*.o $@
 
 tests/all: $(AXD_INTERPOLATOR)
 	for smt_file in $(TEST_DIR)/*.smt2; do \
 		$(AXD_INTERPOLATOR) \
-		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) ; \
+		$(THEORY) $${smt_file} $(METHOD); \
 		done
 	rm -rf tests/*.o $@
 
@@ -42,7 +40,7 @@ tests/print_all: $(AXD_INTERPOLATOR)
 		fi \
 		fi; \
 		$(AXD_INTERPOLATOR) \
-		$(THEORY) $${smt_file} $(METHOD) $(ALLOWED_ATTEMPS) \
+		$(THEORY) $${smt_file} $(METHOD) \
 		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done
 	rm -rf tests/*.o $@

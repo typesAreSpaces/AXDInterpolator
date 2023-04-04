@@ -82,7 +82,7 @@ int axdinterpolator::run(int argc, char **argv) {
   ctx.set(":pp-max-depth", 1000000);
 
   switch (argc) {
-  case 5: {
+  case 4: {
 
     const char *theory = argv[1];
     const char *smt_filename = argv[2];
