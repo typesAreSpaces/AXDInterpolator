@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-CURRENT_DIR=$(pwd)
-LDIR=$CURRENT_DIR/lib
-DYLD_LIBRARY_PATH=$LDIR
-export DYLD_LIBRARY_PATH
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    LDIR=lib
+    DYLD_LIBRARY_PATH=$LDIR
+    export DYLD_LIBRARY_PATH
+fi
 
-$CURRENT_DIR/bin/axd_interpolator \
-  QF_LIA \
-  $CURRENT_DIR/tests/smt2-files/strcpy_example_variant_1.smt2 \
-  0 1000000
+./bin/axd_interpolator \
+    QF_LIA \
+    tests/smt2-files/strcpy_example_variant_1.smt2 \
+    0 1000000
