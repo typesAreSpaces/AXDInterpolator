@@ -4,5 +4,11 @@
 (declare-fun e () Int)
 (declare-fun lengthInt ((Array Int Int)) Int)
 
-(assert (= c1 (store c2 i e)))
-(assert (= (lengthInt c1) (lengthInt c2)))
+;; A part
+(assert
+ (and
+  (= c1 (store c2 i e))
+  (= (lengthInt c1) (lengthInt c2))))
+
+;; B part
+(assert false)

@@ -1,3 +1,5 @@
+TEST_DIR=$(CURRENT_DIR)/tests/smt2-files/caxd_examples
+
 #  Rules to test a single or many smt2 files
 
 #-- Interpolation engines
@@ -14,21 +16,7 @@ ALLOWED_ATTEMPS=1000000
 THEORY=QF_LIA
 
 #-- Sample files
-#FILE_TEST=$(TEST_DIR)/relax-1.c_valid-memsafety.prp.smt2
-#FILE_TEST=$(TEST_DIR)/array_tiling_poly6.c_unreach-call.prp.smt2
-#FILE_TEST=$(TEST_DIR)/simple.smt2
-#FILE_TEST=$(TEST_DIR)/simple2.smt2
-#FILE_TEST=$(TEST_DIR)/simple3.smt2
-#FILE_TEST=$(TEST_DIR)/simple4.smt2
-#FILE_TEST=$(TEST_DIR)/ijcar_2018_paper_example4_n_4.smt2
-#FILE_TEST=$(TEST_DIR)/length_example.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_compact.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example_another_another.smt2
-#FILE_TEST=$(TEST_DIR)/maxdiff_paper_example.smt2
-#FILE_TEST=$(TEST_DIR)/jhala.smt2
-FILE_TEST=$(TEST_DIR)/strcpy_example_variant_1.smt2
-#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_2.smt2
-#FILE_TEST=$(TEST_DIR)/strcpy_example_variant_3.smt2
+FILE_TEST=$(TEST_DIR)/6_2.smt2
 
 # ---------------------------------------------------------
 tests/one: $(AXD_INTERPOLATOR)
