@@ -23,7 +23,7 @@ make -j<N>
 ```
 where `<N>` is the number of cores the build script is allowed to use.
 
-If the above is successful, then the binary file _axd_interpolator_
+If the above is successful, then the binary file ``axd_interpolator``
 will be located inside the _bin_ directory.
 
 If the user wants to use the `MathSAT` SMT solver, the 
@@ -61,7 +61,7 @@ The first one encodes the A-part and the second one the B-part.
 
 ## Using the implementation
 
-The _axd_interpolator_ binaries receives 4 arguments:
+The ``axd_interpolator`` binaries receives 4 arguments:
 
 * The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality ($UTVPI$), and linear arithmetic logic. The user should specify $QF_{TO}$ to use the total order logic, $QF_{IDL}$ for integer difference logic, $QF_{UTVPI}$ for $UTVPI$, and $QF_{LIA}$ for the linear arithmetic logic option.
 * The second argument specifies the path of the smt2 file to work with.
@@ -71,7 +71,7 @@ The _axd_interpolator_ binaries receives 4 arguments:
   - Option 2 uses ``SMTInterpol``
 * The fourth argument specifies a number of attempts, i.e. a number that bounds the number of executions of the main loop of the implementation.
 
-The following is an example of an execution of the _axd_interpolator_ binary using ``iZ3`` as interpolating engine:
+The following is an example of an execution of the ``axd_interpolator`` binary using ``iZ3`` as interpolating engine:
 
 ```
 ./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 0 100
