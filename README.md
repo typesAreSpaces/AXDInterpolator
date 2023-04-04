@@ -9,9 +9,9 @@ calls an interpolation engine to process the
 reduced formula. Currently, the software supports the following
 interpolation engines:
 
-- `iZ3` 
-- `MathSAT` 
-- `SMTInterpol`
+- [`iZ3`](https://github.com/Z3Prover/z3/releases/tag/z3-4.7.1)
+- [`MathSAT`](https://mathsat.fbk.eu)
+- [`SMTInterpol`](https://github.com/ultimate-pa/smtinterpol)
 
 ## Building the project
 
@@ -63,7 +63,7 @@ The first one encodes the A-part and the second one the B-part.
 
 The _axd_interpolator_ binaries receives 4 arguments:
 
-* The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality (UTVPI), and linear arithmetic logic. The user should specify ``QF_TO`` to use the total order logic, ``QF_IDL`` for integer difference logic, ``QF_UTVPI`` for UTVPI, and ``QF_LIA`` for the linear arithmetic logic option.
+* The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality ($UTVPI$), and linear arithmetic logic. The user should specify $QF_{TO}$ to use the total order logic, $QF_{IDL}$ for integer difference logic, $QF_{UTVPI}$ for $UTVPI$, and $QF_{LIA}$ for the linear arithmetic logic option.
 * The second argument specifies the path of the smt2 file to work with.
 * The third argument specifies the engine/method to be used. For the latter there are three options: 0, 1, and 2. 
   - Option 0 uses ``iZ3`` 
