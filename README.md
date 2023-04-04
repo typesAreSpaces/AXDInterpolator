@@ -30,6 +30,8 @@ ln -s <mathsat-path> ./bin/mathsat
 
 ## Setting up an input formula
 
+We use the type `Int` to encode elements of the Index type.
+
 Input is processed as SMTLIB2 files. If the input
 includes function applications of our extended
 language, i.e. diff, length, empty_array, undefined,
