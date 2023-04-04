@@ -6,7 +6,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     export DYLD_LIBRARY_PATH
 fi
 
+THEORY=QF_LIA
+TEST_DIR=tests/smt2-files/caxd_examples/
+CURR_TEST=${TEST_DIR}/6_2.smt2
+
 ./bin/axd_interpolator \
-    QF_LIA \
-    tests/smt2-files/strcpy_example_variant_1.smt2 \
+    $THEORY $CURR_TEST \
     0 1000000
