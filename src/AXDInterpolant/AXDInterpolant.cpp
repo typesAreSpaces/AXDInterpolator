@@ -22,9 +22,6 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(
 
   m_file_name(std::string(file_name)),
 
-  // TODO: Remove this as no fuel is needed
-  num_attempts(0), remaining_fuel(1),
-
   is_interpolant_computed(false), 
   is_unsat(false), 
   is_valid_result(false),
@@ -87,7 +84,10 @@ void axdinterpolator::AXDInterpolant::loop(){
   }
 
   CircularPairIterator search_common_pair(common_array_vars);
-
+  // BEGIN:
+  // This part was used in the main loop
+  // of the AXDInterpolator implementation
+#if 0
   while(num_attempts++ < remaining_fuel){
     solver.push();
     // The following uses a z3::solver 
@@ -145,6 +145,10 @@ void axdinterpolator::AXDInterpolant::loop(){
 
     search_common_pair.next();
   }
+#endif
+  // This part was used in the main loop
+  // of the AXDInterpolator implementation
+  // END:
 }
 
 z3::expr axdinterpolator::AXDInterpolant::liftInterpolant(
@@ -195,9 +199,6 @@ namespace axdinterpolator {
 std::ostream &operator<<(std::ostream &os,
 			 axdinterpolator::AXDInterpolant const &axd) {
 
-  if (!axd.remaining_fuel)
-    return os << "Unknown: Input formula might be "
-		 "satisfiable or unsatisfiable.";
   if (!axd.is_unsat)
     return os << "Input formula is satisfiable.";
   if (!axd.is_valid_result)

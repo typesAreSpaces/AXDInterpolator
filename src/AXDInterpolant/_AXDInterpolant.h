@@ -34,9 +34,6 @@ class AXDInterpolant : public Preprocessor {
   SeparatedPair part_a, part_b;
   std::string m_file_name;
 
-  // TODO: Remove this as no fuel is needed
-  unsigned num_attempts, remaining_fuel;
-
   bool is_interpolant_computed, is_unsat, is_valid_result;
   StateOutput state_output;
 

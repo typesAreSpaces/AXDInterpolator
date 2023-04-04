@@ -14,8 +14,8 @@ INTERPOLATION_ENGINE=$iZ3
 THEORY=QF_LIA
 
 TEST_DIR=tests/smt2-files/caxd_examples
-CURR_TEST=$TEST_DIR/6_2.smt2
+CURR_TEST=6_2.smt2
 
 ./bin/axd_interpolator \
-    $THEORY $CURR_TEST \
+    $THEORY $TEST_DIR/$CURR_TEST \
     $INTERPOLATION_ENGINE
