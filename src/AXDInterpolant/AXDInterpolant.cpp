@@ -58,7 +58,16 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(
     .substr(0, m_file_name.find_last_of("."))
     .substr(m_file_name.find_last_of("\\/") + 1);
 
-  // loop();
+  // TODOs:
+  // - Implement Step 1 from paper:
+  //   The previous implementation was 'doing this
+  //   step' in each iteration of the main loop
+  //   Take a look to the code in 
+  //   SeparatedPair::updateSaturation
+  // - Remove loop
+  // - Instantiate directly just once
+  // - Check satisfiability using $EUF \cup T_I$
+  loop();
 }
 
 void axdinterpolator::AXDInterpolant::loop(){

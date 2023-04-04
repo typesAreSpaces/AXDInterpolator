@@ -186,8 +186,8 @@ void axdinterpolator::SeparatedPair::updateSaturation(
     z3::expr const & _new_index, 
     unsigned min_dim){
 
-  auto const & a = entry.first;
-  auto const & b = entry.second;
+  auto const & c1 = entry.first;
+  auto const & c2 = entry.second;
   auto const & map_element = diff_map.m_map.find(entry);
   auto const & current_indices = map_element->second;
   unsigned old_dim = current_indices.size();
@@ -212,7 +212,7 @@ void axdinterpolator::SeparatedPair::updateSaturation(
         _new_index == map_element->second[min_dim]
         );
   else{
-    auto const & curr_rd = sig.getRdBySort(a.get_sort());
+    auto const & curr_rd = sig.getRdBySort(c1.get_sort());
     diff_map.add(entry.first, entry.second, _new_index);
     // old_dim > 0 guarantees having a previous index
     if(old_dim > 0){
@@ -229,7 +229,7 @@ void axdinterpolator::SeparatedPair::updateSaturation(
       // The following adds [15] predicates
       part_2.push_back(z3::implies(
             _previous_index > _new_index,
-            curr_rd(a, _previous_index) != curr_rd(b, _previous_index)
+            curr_rd(c1, _previous_index) != curr_rd(c2, _previous_index)
             ));
 
       // The following adds [16] predicates
@@ -240,7 +240,7 @@ void axdinterpolator::SeparatedPair::updateSaturation(
     }
     // The following adds [17] predicates
     part_2.push_back(z3::implies(
-          curr_rd(a, _new_index) == curr_rd(b, _new_index),
+          curr_rd(c1, _new_index) == curr_rd(c2, _new_index),
           _new_index == sig.ctx.int_val(0)
           ));
   }
