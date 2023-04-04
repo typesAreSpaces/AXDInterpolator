@@ -15,8 +15,9 @@ In the root directory, execute the commands:
 
 ```
 ./make_common.sh
-make
+make -j<N>
 ```
+where `<N>` is the number of cores the build script will use.
 
 If the above is successful, then the binary file _axd_interpolator_
 will be located inside the _bin_ directory.
@@ -31,7 +32,9 @@ ln -s <mathsat-path> ./bin/mathsat
 
 ## Setting up an input formula
 
-We use the type `Int` to encode elements of the Index type.
+We use the type `Int` to encode elements of the Index type. 
+The SMT terms `select, store` are used to encode the terms `rd, wr` (read and write) 
+respectively.
 
 Input is processed as SMTLIB2 files. If the input
 includes function applications of our extended
