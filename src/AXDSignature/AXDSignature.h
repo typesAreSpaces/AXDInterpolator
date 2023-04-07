@@ -88,6 +88,10 @@ class ArrayVars {
   friend struct AXDSignature;
   friend class CircularPairIterator;
 
+  // 'Container' is an indexed set of array
+  // variables. The index is the id of the
+  // 'abstract sort' encoding the type of the
+  // array variable
   typedef std::map<unsigned, z3_expr_set> Container;
 
   Container vars;

@@ -9,6 +9,12 @@ axdinterpolator::ArrayVars::ArrayVars() :
 void axdinterpolator::ArrayVars::insert(
     z3::expr const & array_var){
   unsigned index = array_var.get_sort().id();
+#if 0
+  std::cout << ">> Debugging axdinterpolator::ArrayVars" << std::endl;
+  std::cout << "Index: " << index << std::endl;
+  std::cout << "Array var: " << array_var << std::endl;
+  std::cout << "Sort of array var: " << array_var.get_sort() << std::endl;
+#endif
   unsigned old_entry_size, new_entry_size;
   if(vars.find(index) == vars.end())
     vars.insert(
@@ -20,6 +26,8 @@ void axdinterpolator::ArrayVars::insert(
   old_entry_size = vars[index].size();
   vars[index].insert(array_var);
   new_entry_size = vars[index].size();
+  assert(new_entry_size - old_entry_size == 1 ||
+	 new_entry_size - old_entry_size == 0);
   size += new_entry_size - old_entry_size;
 }
 

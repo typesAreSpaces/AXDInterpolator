@@ -79,6 +79,10 @@ axdinterpolator::Preprocessor::Preprocessor(
   m_out << part_b_array_vars << std::endl;
 #endif
 
+  // Initialize common_arrays_vars
+  // to include common array variables
+  // between part_a_arrays_vars and
+  // part_b_arrays_vars
   for(auto const & a_array_var_entry : part_a_array_vars)
     for(auto const & b_array_var_entry  : part_b_array_vars)
       if(a_array_var_entry.first == b_array_var_entry.first){
