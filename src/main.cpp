@@ -47,21 +47,16 @@ void test1() {
   z3::solver solver1(ctx);
   
   z3::expr_vector vector_of_final_expr = flattening(function, ctx);
-  
-  solver1.add(function == d);
 
   for (unsigned int i = 0; i < vector_of_final_expr.size(); i++) {
-    //std::cout << vector_of_final_expr[i] << std::endl;
     if (i == vector_of_final_expr.size() - 1) {
-      solver1.add(vector_of_final_expr[i] == e);
+      solver1.add(vector_of_final_expr[i] != function);
     } else {
       solver1.add(vector_of_final_expr[i]);
     }
     
   }
   
-  solver1.add(d != e);
-
   std::cout << solver1 << std::endl;
   std::cout << solver1.to_smt2() << std::endl;
   std::cout << solver1.check() << std::endl;
