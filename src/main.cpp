@@ -20,10 +20,13 @@ int main(int argc, char **argv) {
 void test1() {
   z3::context ctx;
 
-  auto A = ctx.uninterpreted_sort("A");
+  //auto A = ctx.uninterpreted_sort("A");
+  auto A = ctx.int_sort();
   auto a = ctx.constant("a", A);
   auto b = ctx.constant("b", A);
   auto c = ctx.constant("c", A);
+  auto d = ctx.constant("d", A);
+  auto e = ctx.constant("e", A);
   auto f = ctx.function("f", A, A, A);
   auto g = ctx.function("g", A, A, A, A);
   auto function = f(f(a, b), f(g(a, b, f(c, b)), f(a, b)));
@@ -40,12 +43,28 @@ void test1() {
   // b
   // c
   // MIGHT BE IN DIFFERENT ORDER!
+
+  z3::solver solver1(ctx);
   
-  std::vector<z3::expr> vector_of_final_expr = flattening(function, ctx);
+  z3::expr_vector vector_of_final_expr = flattening(function, ctx);
+  
+  solver1.add(function == d);
 
   for (unsigned int i = 0; i < vector_of_final_expr.size(); i++) {
-    std::cout << vector_of_final_expr[i] << std::endl;
+    //std::cout << vector_of_final_expr[i] << std::endl;
+    if (i == vector_of_final_expr.size() - 1) {
+      solver1.add(vector_of_final_expr[i] == e);
+    } else {
+      solver1.add(vector_of_final_expr[i]);
+    }
+    
   }
+  
+  solver1.add(d != e);
+
+  std::cout << solver1 << std::endl;
+  std::cout << solver1.to_smt2() << std::endl;
+  std::cout << solver1.check() << std::endl;
 }
 
 void test2() {
