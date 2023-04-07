@@ -2,25 +2,31 @@
 
 This project implements an interpolation algorithm
 for the theory of arrays extended with the diff 
-operator equipped with an index theory T_I. 
-The approach computes a reduction from the AXDiff(T_I)
-theory to the theory of EUF + T_I and 
+operator equipped with an index theory $T_I$. 
+The approach computes a reduction from the $AXDiff(T_I)$
+theory to the theory of $EUF \cup T_I$ and 
 calls an interpolation engine to process the 
-reduced formula. Currently, the software supports 
-iZ3 and Mathsat as such engines.
+reduced formula. Currently, the software supports the following
+interpolation engines:
+
+- [`iZ3`](https://github.com/Z3Prover/z3/releases/tag/z3-4.7.1)
+- [`MathSAT`](https://mathsat.fbk.eu)
+- [`SMTInterpol`](https://github.com/ultimate-pa/smtinterpol)
 
 ## Building the project
 
-In the root directory, execute the command:
+In the root directory, execute the commands:
 
 ```
-make
+./make_common.sh
+make -j<N>
 ```
+where `<N>` is the number of cores the build script is allowed to use.
 
-If the above is successful, then the binary file _axd_interpolator_
+If the above is successful, then the binary file ``axd_interpolator``
 will be located inside the _bin_ directory.
 
-If the user wants to use the MATHSAT SMT solver, the 
+If the user wants to use the `MathSAT` SMT solver, the 
 implementation requires a soft link inside the ``bin``
 directory. For the latter, use the following command:
 
@@ -29,6 +35,10 @@ ln -s <mathsat-path> ./bin/mathsat
 ```
 
 ## Setting up an input formula
+
+We use the type `Int` to encode elements of the Index type. 
+The SMT terms `select, store` are used to encode the terms `rd, wr` (read and write) 
+respectively.
 
 Input is processed as SMTLIB2 files. If the input
 includes function applications of our extended
@@ -51,17 +61,17 @@ The first one encodes the A-part and the second one the B-part.
 
 ## Using the implementation
 
-The _axd_interpolator_ binaries receives 4 arguments:
+The ``axd_interpolator`` binaries receives 4 arguments:
 
-* The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality (UTVPI), and linear arithmetic logic. The user should specify ``QF_TO`` to use the total order logic, ``QF_IDL`` for integer difference logic, ``QF_UTVPI`` for UTVPI, and ``QF_LIA`` for the linear arithmetic logic option.
+* The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality ($UTVPI$), and linear arithmetic logic. The user should specify $QF_{TO}$ to use the total order logic, $QF_{IDL}$ for integer difference logic, $QF_{UTVPI}$ for $UTVPI$, and $QF_{LIA}$ for the linear arithmetic logic option.
 * The second argument specifies the path of the smt2 file to work with.
 * The third argument specifies the engine/method to be used. For the latter there are three options: 0, 1, and 2. 
-  - Option 0 uses ``Z3`` 
-  - Option 1 uses ``MATHSAT``
-  - Option 2 uses ``SMTINTERPOL``
+  - Option 0 uses ``iZ3`` 
+  - Option 1 uses ``MathSAT``
+  - Option 2 uses ``SMTInterpol``
 * The fourth argument specifies a number of attempts, i.e. a number that bounds the number of executions of the main loop of the implementation.
 
-The following is an example of an execution of the _axd_interpolator_ binary using ``Z3`` as interpolating engine:
+The following is an example of an execution of the ``axd_interpolator`` binary using ``iZ3`` as interpolating engine:
 
 ```
 ./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 0 100
@@ -69,8 +79,7 @@ The following is an example of an execution of the _axd_interpolator_ binary usi
 
 ### Note:
 
-If macOS is used, the previous command requires ``DYLD_LIBRARY_PATH=./lib`` to be  
-appended, i.e.:
+macOS users need to add ``DYLD_LIBRARY_PATH=./lib`` to execute the binary, i.e.:
 
 ```
 DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100

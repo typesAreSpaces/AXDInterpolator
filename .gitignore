@@ -3,11 +3,13 @@
 *.clangd
 *.cache
 *compile_commands.json
+*done
 
 bin/*
 include/z3*
 include/_*
 lib/libz3*
+dependencies/*
 
 output/*.smt2
 
@@ -16,3 +18,7 @@ tests/verification-files/files/*
 tests/benchmark/results/scripts/__pycache__/*
 
 sessions/*
+
+common.mk
+
+src/AXDInterpolant/AXDInterpolant.h
