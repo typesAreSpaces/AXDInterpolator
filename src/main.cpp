@@ -1,25 +1,27 @@
 #include "todo.h"
 #include "InputFormulaParser.h"
+#include "util.h"
 
 enum BENCHMARK_EXIT_CODE { SUCCESS, FAILED, TIMEOUT };
 
 void test1();
 void test2();
+void testZ3ExprVectorSet();
 
 int main(int argc, char **argv) {
 
-  axdinterpolator::run(argc, argv);
+  // axdinterpolator::run(argc, argv);
   // test1();
   // test2();
-  // simple_test2();
+  // simple_test2(); 
+  testZ3ExprVectorSet();
   return 0;
 }
-
 
 void test1() {
   z3::context ctx;
 
-  //auto A = ctx.uninterpreted_sort("A");
+  // auto A = ctx.uninterpreted_sort("A");
   auto A = ctx.int_sort();
   auto a = ctx.constant("a", A);
   auto b = ctx.constant("b", A);
@@ -44,7 +46,7 @@ void test1() {
   // MIGHT BE IN DIFFERENT ORDER!
 
   z3::solver solver1(ctx);
-  
+
   z3::expr_vector vector_of_final_expr = flattening(function, ctx);
 
   for (unsigned int i = 0; i < vector_of_final_expr.size(); i++) {
@@ -53,9 +55,8 @@ void test1() {
     } else {
       solver1.add(vector_of_final_expr[i]);
     }
-    
   }
-  
+
   std::cout << solver1 << std::endl;
   std::cout << solver1.to_smt2() << std::endl;
   std::cout << solver1.check() << std::endl;
@@ -81,4 +82,19 @@ void test2() {
   std::cout << v2 << std::endl;
 
   M_O_instantiation(expr1, v2, v1);
+}
+
+void testZ3ExprVectorSet() {
+  z3::context ctx;
+  z3::solver solver(ctx);
+
+  auto A = ctx.int_sort();
+  auto a = ctx.constant("a", A);
+  auto b = ctx.constant("b", A);
+
+  z3::expr_vector vec(ctx);
+  vec.push_back(a);
+  std::cout << vec << std::endl;
+  vec.set(0, b);
+  std::cout << vec << std::endl;
 }
