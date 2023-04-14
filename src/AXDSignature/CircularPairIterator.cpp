@@ -6,13 +6,13 @@ axdinterpolator::CircularPairIterator::CircularPairIterator(
       z3_expr_set_first((p_array_vars_it->second).begin()),
       z3_expr_set_second((p_array_vars_it->second).begin()),
       enableCircularity(enableCircularity) {
-  std::cout << "Creating new CircularPairIterator" << std::endl;
+  // std::cout << "Creating new CircularPairIterator" << std::endl;
   avoidLowerDiagonalAndDifferentTypes();
-  std::cout << "DONE Creating new CircularPairIterator" << std::endl;
+  // std::cout << "DONE Creating new CircularPairIterator" << std::endl;
 }
 
 void axdinterpolator::CircularPairIterator::next() {
-  std::cout << "using next()" << std::endl;
+  // std::cout << "using next()" << std::endl;
   z3_expr_set_second++;
 
   if (z3_expr_set_second == p_array_vars_it->second.end()) {
@@ -25,25 +25,25 @@ void axdinterpolator::CircularPairIterator::next() {
     z3_expr_set_second = p_array_vars_it->second.begin();
   }
   if (!this->enableCircularity && end()) {
-    std::cout << ">> end pointer detected" << std::endl;
+    // std::cout << ">> end pointer detected" << std::endl;
     // z3_expr_set_first = p_array_vars_it->second.begin();
     // z3_expr_set_second = p_array_vars_it->second.begin();
     return;
   }
   if (end()) {
-    std::cout << ">> end pointer detected but it will repeat" << std::endl;
+    // std::cout << ">> end pointer detected but it will repeat" << std::endl;
     p_array_vars_it = vars.begin();
     z3_expr_set_first = p_array_vars_it->second.begin();
     z3_expr_set_second = p_array_vars_it->second.begin();
   }
 
-  std::cout << "about to enter avoidLower ..." << std::endl;
+  // std::cout << "about to enter avoidLower ..." << std::endl;
 
   avoidLowerDiagonalAndDifferentTypes();
 }
 
 bool axdinterpolator::CircularPairIterator::end() {
-  std::cout << "using end()" << std::endl;
+  // std::cout << "using end()" << std::endl;
   return p_array_vars_it == vars.end();
 }
 

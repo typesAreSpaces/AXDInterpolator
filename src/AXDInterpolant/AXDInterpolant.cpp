@@ -87,10 +87,8 @@ void axdinterpolator::AXDInterpolant::loop() {
   CircularPairIterator search_common_pair(common_array_vars, false);
 
 #if _DEBUG_AXD_LOOP_
-  while (true) {
-    if(search_common_pair.end())
-      break;
-    m_out << ">> wot \n";
+  while (!search_common_pair.end()) {
+    // m_out << ">> wot \n";
     auto const &common_pair = *search_common_pair;
     m_out << "First component: ";
     m_out << common_pair.first << std::endl;
