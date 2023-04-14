@@ -17,6 +17,7 @@
 (assert
  (and
   (= (store a1 i1 i1) a3)
+  (= (store a1 1 i1) a3)
   (= (store a3 i2 i2) a4)
   (= (diffInt a1 a2) j)
   (= (diffInt a1 c1) j1)
@@ -25,6 +26,8 @@
 ;; B part
 (assert
  (and
+  (= (store a1 i1 i1) a3)
+  (= (store a3 i1 i2) a4)
   (< j l)
   (< j1 l)
   (< j2 l)
