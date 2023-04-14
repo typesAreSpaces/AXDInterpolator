@@ -7,7 +7,12 @@ DEPENDENCIES=util AXDSignature \
 INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
-all: tests/one $(TAGS)	
+all: debug $(TAGS)	
+	./run.sh
+
+# all: $(AXD_INTERPOLATOR) $(TAGS)	
+# 	./run.sh
+
 # -------------------------------------------------
 #  Rules to build the project
 $(Z3_DIR)/README.md:
@@ -20,6 +25,10 @@ $(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 		$(PYTHON_CMD) scripts/mk_make.py \
 		--prefix=$(CURRENT_DIR)
 	$(MAKE) -C $(Z3_DIR)/build install
+
+debug: CXXFLAGS += -DDEBUG -g
+debug: CCFLAGS += -DDEBUG -g
+debug: $(AXD_INTERPOLATOR)
 
 $(SDIR)/util/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/util/*.cpp
@@ -54,10 +63,6 @@ $(ODIR)/%.o: $(SDIR)/%.cpp \
 	mkdir -p $(ODIR) 
 	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
 		$(INCLUDES) $<
-
-debug: CXXFLAGS += -DDEBUG -g
-debug: CCFLAGS += -DDEBUG -g
-debug: $(AXD_INTERPOLATOR)
 
 $(AXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) \
 	$(ODIR)/main.o 

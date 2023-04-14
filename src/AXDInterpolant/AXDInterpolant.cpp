@@ -1,37 +1,25 @@
 #include "AXDInterpolant.h"
 
-axdinterpolator::AXDInterpolant::AXDInterpolant(
-    AXDSignature & sig, 
-    z3::expr _input_part_a,
-    z3::expr _input_part_b,
-    char const * file_name) : 
+axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
+						z3::expr _input_part_a,
+						z3::expr _input_part_b,
+						char const *file_name)
+    :
+      Preprocessor(sig, _input_part_a, _input_part_b),
 
-  Preprocessor(sig, _input_part_a, _input_part_b),
+      part_a(sig, input_part_a, part_a_index_vars, part_a_array_vars),
+      part_b(sig, input_part_b, part_b_index_vars, part_b_array_vars),
 
-  part_a(
-      sig,
-      input_part_a,
-      part_a_index_vars, 
-      part_a_array_vars),
+      m_file_name(std::string(file_name)),
 
-  part_b(
-      sig,
-      input_part_b,
-      part_b_index_vars, 
-      part_b_array_vars),
+      is_interpolant_computed(false), is_unsat(false), is_valid_result(false),
+      state_output(undefined),
 
-  m_file_name(std::string(file_name)),
+      current_interpolant(sig.ctx.bool_val(true)),
 
-  is_interpolant_computed(false), 
-  is_unsat(false), 
-  is_valid_result(false),
-  state_output(undefined),
+      solver(sig.ctx,
+	     sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_UFLIA") {
 
-  current_interpolant(sig.ctx.bool_val(true)),
-
-  solver(sig.ctx, 
-      sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_UFLIA")
-{
 #if _DEBUG_AXD_CONSTRUCTOR_
   std::cout << "After Processing" << std::endl;
   std::cout << "Input Part A" << std::endl;
@@ -53,17 +41,15 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(
   m_out << "Part B" << std::endl;
   m_out << part_b << std::endl;
 
-  m_file_name =
-    m_file_name
-    .substr(0, m_file_name.find_last_of("."))
-    .substr(m_file_name.find_last_of("\\/") + 1);
+  m_file_name = m_file_name.substr(0, m_file_name.find_last_of("."))
+		    .substr(m_file_name.find_last_of("\\/") + 1);
 
   // TODOs:
   // @Abby
   // - Implement Step 1 from paper:
   //   The previous implementation was 'doing this
   //   step' in each iteration of the main loop
-  //   Take a look to the code in 
+  //   Take a look to the code in
   //   SeparatedPair::updateSaturation
   // @Jose
   // - Remove loop
@@ -72,14 +58,14 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(
   loop();
 }
 
-void axdinterpolator::AXDInterpolant::loop(){
+void axdinterpolator::AXDInterpolant::loop() {
 
-  if(!common_array_vars.areCommonPairsAvaible()){
+  if (!common_array_vars.areCommonPairsAvaible()) {
     SmtSolverSetup(solver, part_a);
     SmtSolverSetup(solver, part_b);
 
-    if(solver.check() == z3::unsat){
-#if _DEBUG_AXD_LOOP_ 
+    if (solver.check() == z3::unsat) {
+#if _DEBUG_AXD_LOOP_
       m_out << "Iteration #0 no common array symbols" << std::endl;
       m_out << "Current A-part part 2: " << std::endl;
       SmtSolverOutStreamSetup(m_out, part_a);
@@ -94,7 +80,44 @@ void axdinterpolator::AXDInterpolant::loop(){
     return;
   }
 
-  CircularPairIterator search_common_pair(common_array_vars);
+#if _DEBUG_AXD_LOOP_
+  m_out << ">> There are common symbols" << std::endl;
+#endif
+
+  CircularPairIterator search_common_pair(common_array_vars, false);
+
+#if _DEBUG_AXD_LOOP_
+  while (true) {
+    if(search_common_pair.end())
+      break;
+    m_out << ">> wot \n";
+    auto const &common_pair = *search_common_pair;
+    m_out << "First component: ";
+    m_out << common_pair.first << std::endl;
+    m_out << "Second component: ";
+    m_out << common_pair.second << std::endl;
+    search_common_pair.next();
+  }
+
+  // int count = 0;
+  // while (count < 4) {
+  //   m_out << ">> wot \n";
+  //   auto const &common_pair = *search_common_pair;
+  //   m_out << "First component: ";
+  //   m_out << common_pair.first << std::endl;
+  //   m_out << "Second component: ";
+  //   m_out << common_pair.second << std::endl;
+  //   if(!search_common_pair.end())
+  //     search_common_pair.next();
+  //   else
+  //     break;
+  //   count++;
+  // }
+
+  m_out << "Ok" << std::endl;
+  return;
+#endif
+
   // BEGIN:
   // This part was used in the main loop
   // of the AXDInterpolator implementation
@@ -110,23 +133,23 @@ void axdinterpolator::AXDInterpolant::loop(){
     if(solver.check() == z3::unsat){
 #if _DEBUG_AXD_LOOP_ 
       m_out 
-        << "Iteration #" 
-        << num_attempts << std::endl;
+	<< "Iteration #" 
+	<< num_attempts << std::endl;
       m_out 
-        << "Current A-part part 2: " << std::endl;
+	<< "Current A-part part 2: " << std::endl;
       SmtSolverOutStreamSetup(m_out, part_a);
       m_out 
-        << "Current B-part part 2: " << std::endl;
+	<< "Current B-part part 2: " << std::endl;
       SmtSolverOutStreamSetup(m_out, part_b);
 #endif
 
       is_unsat = true;
 #if _DEBUG_AXD_LOOP_
       m_out 
-        << "Unsat after " 
-        << num_attempts 
-        << " iterations" 
-        << std::endl;
+	<< "Unsat after " 
+	<< num_attempts 
+	<< " iterations" 
+	<< std::endl;
 #endif
       return;
     }
@@ -147,8 +170,8 @@ void axdinterpolator::AXDInterpolant::loop(){
     auto const & common_pair = *search_common_pair;
 
     unsigned part_a_dim = part_a.diff_map.size_of_entry(common_pair),
-             part_b_dim = part_b.diff_map.size_of_entry(common_pair),
-             min_dim = std::min(part_a_dim, part_b_dim);
+	     part_b_dim = part_b.diff_map.size_of_entry(common_pair),
+	     min_dim = std::min(part_a_dim, part_b_dim);
 
     auto const & _new_index = fresh_index_constant();
     part_a.updateSaturation(common_pair, _new_index, min_dim);
@@ -163,15 +186,15 @@ void axdinterpolator::AXDInterpolant::loop(){
 }
 
 z3::expr axdinterpolator::AXDInterpolant::liftInterpolant(
-    z3::expr_vector const & interpolant){
+    z3::expr_vector const &interpolant) {
 
   z3::expr_vector _interpolant(sig.ctx);
 
-  if(sig.is_QF_TO())
-    for(auto const & x : interpolant)
+  if (sig.is_QF_TO())
+    for (auto const &x : interpolant)
       _interpolant.push_back(x.qf_to_simplify());
   else
-    for(auto const & x : interpolant)
+    for (auto const &x : interpolant)
       _interpolant.push_back(x);
 
   z3::expr_vector from(sig.ctx);
@@ -184,22 +207,18 @@ z3::expr axdinterpolator::AXDInterpolant::liftInterpolant(
 }
 
 void axdinterpolator::AXDInterpolant::liftInterpolantDiffSubs(
-    z3::expr_vector & from,
-    z3::expr_vector & to,
-    SeparatedPair const & input
-    ){
-  for(auto const & diff_entry : input.diff_map.m_map){
-    auto const & diff_a   = diff_entry.first.first;
-    auto const & diff_b   = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-    auto const & curr_diff_k = sig.getDiff_BySort(diff_a.get_sort());
+    z3::expr_vector &from, z3::expr_vector &to, SeparatedPair const &input) {
+  for (auto const &diff_entry : input.diff_map.m_map) {
+    auto const &diff_a = diff_entry.first.first;
+    auto const &diff_b = diff_entry.first.second;
+    auto const &diff_seq = diff_entry.second;
+    auto const &curr_diff_k = sig.getDiff_BySort(diff_a.get_sort());
     unsigned diff_iteration = 1;
-    for(auto const & k_ : diff_seq){
-      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
-        from.push_back(k_);
-        to.push_back(curr_diff_k(
-              sig.ctx.int_val(diff_iteration++), 
-              diff_a, diff_b));
+    for (auto const &k_ : diff_seq) {
+      if (func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0) {
+	from.push_back(k_);
+	to.push_back(
+	    curr_diff_k(sig.ctx.int_val(diff_iteration++), diff_a, diff_b));
       }
     }
   }

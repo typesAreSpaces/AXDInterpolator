@@ -3,22 +3,22 @@
 
 #include "util.h"
 
-#define FRESH_ARRAY_PREFIX    "fresh_array_"
-#define FRESH_ELEMENT_PREFIX  "fresh_element_"
-#define FRESH_INDEX_PREFIX    "fresh_index_"
-#define FRESH_COMMON_PREFIX   "fresh_"
-#define DETECT_THEORY         1
+#define FRESH_ARRAY_PREFIX "fresh_array_"
+#define FRESH_ELEMENT_PREFIX "fresh_element_"
+#define FRESH_INDEX_PREFIX "fresh_index_"
+#define FRESH_COMMON_PREFIX "fresh_"
+#define DETECT_THEORY 1
 
-#define lhs(x)              x.arg(0)
-#define rhs(x)              x.arg(1)
-#define func_name(x)        x.decl().name().str()
-#define _get_sort(x)        x.decl().range()
-#define sort_name(x)        x.decl().range().name().str()
-#define func_kind(x)        x.decl().decl_kind()
+#define lhs(x) x.arg(0)
+#define rhs(x) x.arg(1)
+#define func_name(x) x.decl().name().str()
+#define _get_sort(x) x.decl().range()
+#define sort_name(x) x.decl().range().name().str()
+#define func_kind(x) x.decl().decl_kind()
 
 // Notes:
 // The implementation considers
-// elements of any index theory 
+// elements of any index theory
 // to have int sort.
 
 namespace axdinterpolator {
@@ -26,8 +26,8 @@ namespace axdinterpolator {
 struct AXDSignature {
 
   enum TheoryName { QF_TO, QF_IDL, QF_UTVPI, QF_LIA };
- 
-  z3::context & ctx;
+
+  z3::context &ctx;
 
   TheoryName theory_name;
 
@@ -56,7 +56,7 @@ struct AXDSignature {
   bool is_QF_IDL() const;
 
   void setTheory(TheoryName);
-  TheoryName const & getTheoryName() const;
+  TheoryName const &getTheoryName() const;
 
   z3::sort getArraySortBySort(z3::sort const &) const;
   z3::sort getArraySortBySort(unsigned) const;
@@ -97,7 +97,7 @@ class ArrayVars {
   Container vars;
   unsigned size;
 
-  public:
+public:
   ArrayVars();
   void insert(z3::expr const &);
   bool isEmpty() const;
@@ -143,8 +143,7 @@ struct DiffMap {
 
   z3::expr lift_diff_k(unsigned, z3::expr const &, z3::expr const &) const;
 
-  friend std::ostream &operator<<(std::ostream &,
-      DiffMap const &);
+  friend std::ostream &operator<<(std::ostream &, DiffMap const &);
 };
 
 // Container keeping track of a, b, i, e from
@@ -153,10 +152,9 @@ struct WriteVector {
   std::vector<std::tuple<z3::expr, z3::expr, z3::expr, z3::expr>> m_vector;
   WriteVector();
   void add(z3::expr const &, z3::expr const &, z3::expr const &,
-      z3::expr const &);
+	   z3::expr const &);
 
-  friend std::ostream &operator<<(std::ostream &,
-      WriteVector const &);
+  friend std::ostream &operator<<(std::ostream &, WriteVector const &);
 };
 
 class InstantiatedTerms {
@@ -171,7 +169,7 @@ class InstantiatedTerms {
   void instantiate_QF_UTVPI();
   void instantiate_QF_LIA();
 
-  public:
+public:
   InstantiatedTerms(AXDSignature const &, z3::expr_vector const &);
 
   z3_expr_set const &getInstantiatedTerms() const;
@@ -180,20 +178,30 @@ class InstantiatedTerms {
   void add_var(z3::expr const &);
 };
 
+// The CircularPairIterator
+// uses two pointers to the same z3_expr_set
+// to check pairs of z3::expr's of the same
+// type
 class CircularPairIterator {
 
-    ArrayVars const &vars;
-    ArrayVars::Container::const_iterator p_array_vars_it;
-    z3_expr_set::const_iterator z3_expr_set_first,
-	z3_expr_set_second;
+  // Arrayvars is a data structure
+  // using a 'Container' which is a
+  // map from sort.id's to z3_expr_set's
+  ArrayVars const &vars;
+  ArrayVars::Container::const_iterator p_array_vars_it;
+  // z3_expr_set is a set of z3::expr's using Z3Exprcomparator
+  // as comparator
+  z3_expr_set::const_iterator z3_expr_set_first, z3_expr_set_second;
+  bool const enableCircularity;
 
-    void avoidLowerDiagonalAndDifferentTypes();
+  void avoidLowerDiagonalAndDifferentTypes();
 
-  public:
-    CircularPairIterator(ArrayVars const &);
-    void next();
-    DiffMap::z3_expr_pair operator*() const;
-  };
+public:
+  CircularPairIterator(ArrayVars const &, bool);
+  void next();
+  bool end();
+  DiffMap::z3_expr_pair operator*() const;
+};
 
 } // namespace axdinterpolator
 

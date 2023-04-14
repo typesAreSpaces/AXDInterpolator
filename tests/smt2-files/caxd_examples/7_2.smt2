@@ -2,6 +2,7 @@
 (declare-fun a2 () (Array Int Int))
 (declare-fun c1 () (Array Int Int))
 (declare-fun c2 () (Array Int Int))
+(declare-fun l () Int)
 (declare-fun j () Int)
 (declare-fun j1 () Int)
 (declare-fun j2 () Int)
