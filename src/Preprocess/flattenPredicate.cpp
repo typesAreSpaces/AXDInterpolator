@@ -1,3 +1,4 @@
+#include "AXDSignature.h"
 #include "Preprocess.h"
 
 #define SUBSTITUTE_AND_ADJOINT(INPUT_PART)\
@@ -146,106 +147,120 @@ void axdinterpolator::Preprocessor::flattenTerm(
         return;
       case Z3_OP_UNINTERPRETED:
         for(unsigned i = 0; i < term.num_args(); i++){
-          auto const & curr_arg = term.arg(i);
-          auto const & type_arg = _get_sort(curr_arg);
-          if(curr_arg.num_args() > 0)
-            cojoin(
-                curr_arg, 
-                fresh_constant(type_arg), 
-                side,
-                current_conjs_in_input);
-          else
-            updateVarsDB(curr_arg, side); 
-        }
-        return;
+	  auto term_name = func_name(term);
+	  std::cout << ">> hahah " << term << std::endl;
+	  std::cout << ">> hehe " << term_name << std::endl;
+	  if(term_name.find("wr") != std::string::npos){
+	    auto index_constant = term.arg(1);
+	    switch (side) {
+	    case PART_A:
+	      if (indexALocalIds.find(index_constant.id()) ==
+		  indexALocalIds.end()) {
+		indexALocalIds.insert(index_constant.id());
+		n_IndexALocal++;
+	      }
+	      break;
+	    case PART_B:
+	      if (indexBLocalIds.find(index_constant.id()) ==
+		  indexBLocalIds.end()) {
+		indexBLocalIds.insert(index_constant.id());
+		n_IndexBLocal++;
+	      }
+	      break;
+	    }
+	  }
+	  auto const &curr_arg = term.arg(i);
+	  auto const &type_arg = _get_sort(curr_arg);
+	  if (curr_arg.num_args() > 0)
+	    cojoin(curr_arg, fresh_constant(type_arg), side,
+		   current_conjs_in_input);
+	  else
+	    updateVarsDB(curr_arg, side);
+	}
+	return;
       default:
-        throw 
-          "Problem @ "
-          "axdinterpolator::Preprocessor::flattenTerm "
-          "Invalid function aplication";
-    }
-  }
-  else
+	throw "Problem @ "
+	      "axdinterpolator::Preprocessor::flattenTerm "
+	      "Invalid function aplication";
+      }
+  } else
     updateVarsDB(term, side);
 }
 
-void axdinterpolator::Preprocessor::cojoin(
-    z3::expr const & old_term, 
-    z3::expr const & new_const, 
-    SideInterpolant side,
-    unsigned & current_conjs_in_input){
+void axdinterpolator::Preprocessor::cojoin(z3::expr const &old_term,
+					   z3::expr const &new_const,
+					   SideInterpolant side,
+					   unsigned &current_conjs_in_input) {
 
   z3::expr_vector temp_predicates(sig.ctx);
   z3::expr_vector from(sig.ctx), to(sig.ctx);
   from.push_back(old_term);
   to.push_back(new_const);
 
-  switch(side){
-    case PART_A:
-      SUBSTITUTE_AND_ADJOINT_ONE(input_part_a);
-      return;
-    case PART_B:
-      SUBSTITUTE_AND_ADJOINT_ONE(input_part_b);
-      return;
+  switch (side) {
+  case PART_A:
+    SUBSTITUTE_AND_ADJOINT_ONE(input_part_a);
+    return;
+  case PART_B:
+    SUBSTITUTE_AND_ADJOINT_ONE(input_part_b);
+    return;
   }
 }
 
-void axdinterpolator::Preprocessor::updateArrayVars(
-    z3::expr const & e, 
-    SideInterpolant side){
-  switch(side){
-    case PART_A:
-      part_a_array_vars.insert(e);
-      return;
-    case PART_B:
-      part_b_array_vars.insert(e);
-      return;
+void axdinterpolator::Preprocessor::updateArrayVars(z3::expr const &e,
+						    SideInterpolant side) {
+  switch (side) {
+  case PART_A:
+    part_a_array_vars.insert(e);
+    return;
+  case PART_B:
+    part_b_array_vars.insert(e);
+    return;
   }
 }
 
-void axdinterpolator::Preprocessor::updateIndexVars(
-    z3::expr const & e, 
-    SideInterpolant side){
-  switch(side){
-    case PART_A:
-      part_a_index_vars.push(e);
-      return;
-    case PART_B:
-      part_b_index_vars.push(e);
-      return;
+void axdinterpolator::Preprocessor::updateIndexVars(z3::expr const &e,
+						    SideInterpolant side) {
+  switch (side) {
+  case PART_A:
+    part_a_index_vars.push(e);
+    return;
+  case PART_B:
+    part_b_index_vars.push(e);
+    return;
   }
 }
 
-void axdinterpolator::Preprocessor::updateVarsDB(
-    z3::expr const & e, 
-    SideInterpolant side){
-  if(e.is_int() && !e.is_numeral()){
+void axdinterpolator::Preprocessor::updateVarsDB(z3::expr const &e,
+						 SideInterpolant side) {
+  if (e.is_int() && !e.is_numeral()) {
     updateIndexVars(e, side);
     return;
   }
-  if(isArraySort(e.get_sort())){
+  if (isArraySort(e.get_sort())) {
     updateArrayVars(e, side);
     return;
   }
 }
 
-z3::expr axdinterpolator::Preprocessor::fresh_index_constant(){
-  return sig.ctx.constant((FRESH_INDEX_PREFIX 
-        + std::to_string(fresh_num++)).c_str(), sig.int_sort);
+z3::expr axdinterpolator::Preprocessor::fresh_index_constant() {
+  return sig.ctx.constant(
+      (FRESH_INDEX_PREFIX + std::to_string(fresh_num++)).c_str(), sig.int_sort);
 }
 
-z3::expr axdinterpolator::Preprocessor::fresh_array_constant(z3::sort const & s){
-  return sig.ctx.constant((FRESH_ARRAY_PREFIX 
-        + std::to_string(fresh_num++)).c_str(), sig.getArraySortBySort(s));
+z3::expr
+axdinterpolator::Preprocessor::fresh_array_constant(z3::sort const &s) {
+  return sig.ctx.constant(
+      (FRESH_ARRAY_PREFIX + std::to_string(fresh_num++)).c_str(),
+      sig.getArraySortBySort(s));
 }
 
-z3::expr axdinterpolator::Preprocessor::fresh_constant(z3::sort const & s){
-  if(isArraySort(s))
+z3::expr axdinterpolator::Preprocessor::fresh_constant(z3::sort const &s) {
+  if (isArraySort(s))
     return fresh_array_constant(s);
-  if(s.is_int())
+  if (s.is_int())
     return fresh_index_constant();
 
-  throw 
-    "Problem @ axdinterpolator::Preprocessor::fresh_constant. "
-    "No support for the given sort.";
+  throw "Problem @ axdinterpolator::Preprocessor::fresh_constant. "
+	"No support for the given sort.";
 }

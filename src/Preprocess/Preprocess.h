@@ -40,6 +40,10 @@ class Preprocessor {
 
   AXDSignature & sig;
   unsigned fresh_num;
+  unsigned n_IndexALocal;
+  unsigned n_IndexBLocal;
+  std::set<unsigned> indexALocalIds;
+  std::set<unsigned> indexBLocalIds;
 
   z3::expr_vector input_part_a, input_part_b;
 
@@ -49,6 +53,7 @@ class Preprocessor {
 
 public:
   Preprocessor(AXDSignature &, z3::expr const &, z3::expr const &);
+  void test();
 };
 
 } // namespace axdinterpolator

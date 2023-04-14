@@ -56,6 +56,7 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
   // - Instantiate directly just once
   // - Check satisfiability using $EUF \cup T_I$
   loop();
+  test();
 }
 
 void axdinterpolator::AXDInterpolant::loop() {

@@ -34,6 +34,10 @@ axdinterpolator::Preprocessor::Preprocessor(
     z3::expr const & _input_part_b):
   sig(sig),
   fresh_num(0), 
+  n_IndexALocal(0),
+  n_IndexBLocal(0),
+  indexALocalIds({}),
+  indexBLocalIds({}),
   input_part_a(sig.ctx), 
   input_part_b(sig.ctx),
   part_a_index_vars(sig.ctx), 
@@ -93,4 +97,11 @@ axdinterpolator::Preprocessor::Preprocessor(
             common_array_vars.insert(*iterator_a);
         }
       }
+}
+
+void axdinterpolator::Preprocessor::test() {
+  std::cout << "Num A index vars: ";
+  std::cout << n_IndexALocal << std::endl;
+  std::cout << "Num B index vars: ";
+  std::cout << n_IndexBLocal << std::endl;
 }
