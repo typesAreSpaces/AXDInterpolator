@@ -194,7 +194,7 @@ class CircularPairIterator {
   z3_expr_set::const_iterator z3_expr_set_first, z3_expr_set_second;
   bool const enableCircularity;
 
-  void avoidLowerDiagonalAndDifferentTypes();
+  void avoidLowerDiagonal();
 
 public:
   CircularPairIterator(ArrayVars const &, bool);

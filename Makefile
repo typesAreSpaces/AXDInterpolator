@@ -7,11 +7,8 @@ DEPENDENCIES=util AXDSignature \
 INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
-all: debug $(TAGS)	
+all: $(AXD_INTERPOLATOR) $(TAGS)	
 	./run.sh
-
-# all: $(AXD_INTERPOLATOR) $(TAGS)	
-# 	./run.sh
 
 # -------------------------------------------------
 #  Rules to build the project
