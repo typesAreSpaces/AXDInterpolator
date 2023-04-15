@@ -10,35 +10,38 @@ axdinterpolator::SeparatedPair::SeparatedPair(
 
   diff_map(array_var_ids, sig),
   write_vector(),
-  instantiated_terms(sig, initial_index_vars),
 
   part_1(sig.ctx),
   part_2(sig.ctx), 
 
   // Convention: we use Int
   // to encode the type of the INDEX sort
-  index_var(sig.ctx.constant("index_var", sig.int_sort)),
-
-  axiom_8(generateAxiom8(array_var_ids)), 
-  axiom_9(generateAxiom9())
+  index_var(sig.ctx.constant("index_var", sig.int_sort))
 {
+  // TODO:
+  // -) modify translation lemmas
+  // -) replace i for every |a| given equation |a| = i
+  // in translation lemmas
+  // -) provide support for equation chains of the form
+  // diff_n(c_1, c_2) = k_n 
+
   // Split input into part_1 and part_2
   // following the rules for "separated pairs".
-  for(auto const & current_arg : conjunction){
-    switch(func_kind(current_arg)){
+  for(auto const & current_conj : conjunction){
+    switch(func_kind(current_conj)){
       case Z3_OP_TRUE:
       case Z3_OP_FALSE:
-        part_2.push_back(current_arg);
+        part_2.push_back(current_conj);
       case Z3_OP_UNINTERPRETED:
-        if(current_arg.get_sort().is_bool()){
-          part_2.push_back(current_arg);
+        if(current_conj.get_sort().is_bool()){
+          part_2.push_back(current_conj);
           continue;
         }
         break;
       case Z3_OP_EQ:       // ==
         {     
-          auto const & _lhs = lhs(current_arg);
-          auto const & _rhs = rhs(current_arg);
+          auto const & _lhs = lhs(current_conj);
+          auto const & _rhs = rhs(current_conj);
           if( // Covers equations of the form 
               // a = wr(b, i, e) or a = b 
               // when a is an array var
@@ -47,36 +50,37 @@ axdinterpolator::SeparatedPair::SeparatedPair(
               // form i = diff(a, b)
               || func_name(_rhs).find("diff") != std::string::npos){
 
-            // [10] predicates are added here
+            // (17) predicates are added here, i.e. equations
+	    // of the form a = b
             if(_lhs.num_args() == 0 && _rhs.num_args() == 0){
               auto const & curr_diff = sig.getDiffBySort(_lhs.get_sort());
               auto const & curr_rd = sig.getRdBySort(_lhs.get_sort());
               part_1.push_back(0 == curr_diff(_lhs, _rhs));
               part_2.push_back(curr_rd(_lhs, 0) == curr_rd(_rhs, 0));
-              part_2.push_back(current_arg);
+              part_2.push_back(current_conj);
             }
             // Equations of the form i = diff(a, b), 
             // a = wr(b, i, e) will be processed 
             // in the for loop (*)
             else
-              part_1.push_back(current_arg);
+              part_1.push_back(current_conj);
           }
           else
-            part_2.push_back(current_arg);
+            part_2.push_back(current_conj);
           break;
         }
       case Z3_OP_DISTINCT: // !=
-        ASSERT(lhs(current_arg).num_args() == 0 
-            && rhs(current_arg).num_args() == 0, 
+        ASSERT(lhs(current_conj).num_args() == 0 
+            && rhs(current_conj).num_args() == 0, 
             "Invariant of constant_1 != constant_2 is violated");
       case Z3_OP_GE:       // >=
       case Z3_OP_LE:       // <=
       case Z3_OP_GT:       // >
       case Z3_OP_LT:       // <
-        part_2.push_back(current_arg);
+        part_2.push_back(current_conj);
         break;
       default:
-        std::cout << current_arg << std::endl;
+        std::cout << current_conj << std::endl;
         throw 
           "Problem @ "
           "axdinterpolator::SeparatedPair::axdinterpolator::SeparatedPair "
@@ -131,7 +135,7 @@ axdinterpolator::SeparatedPair::SeparatedPair(
 void axdinterpolator::SeparatedPair::initSaturation(){
   // ------------------------------------------------
   // Processing equations of the form a = wr(b, i, e)
-  // The following adds [11] predicates
+  // The following adds (18) predicates
   for(auto const & _4tuple : write_vector.m_vector){
     auto const & a = std::get<0>(_4tuple);
     auto const & i = std::get<2>(_4tuple);
@@ -194,15 +198,15 @@ void axdinterpolator::SeparatedPair::updateSaturation(
   auto const & current_indices = map_element->second;
   unsigned old_dim = current_indices.size();
 
-  instantiated_terms.add_var(_new_index);
+  // instantiated_terms.add_var(_new_index);
 
   // TODO: implement/compare more heuristics
   // to increase N_instantiation
   //
   // Heuristic for triggering N-instantiation
   //if(instantiated_terms.getNumOfNewIndex() % 1000 == 0)
-  if(false)
-    ++instantiated_terms;
+  // if(false)
+  //   ++instantiated_terms;
 
   // [11] predicates are processed in 
   // AXDInterpolant::SmtSolverSetup(z3::solver &);

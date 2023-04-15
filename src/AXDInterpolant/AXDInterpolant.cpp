@@ -55,6 +55,11 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
   // - Instantiate directly just once
   // - Check satisfiability using $EUF \cup T_I$
   // loop();
+
+  // TODO:
+  // -) Apply 0-instantiations to the separated
+  // pair structures
+  // -) Setup the solver and check for satisfiability
 }
 
 void axdinterpolator::AXDInterpolant::loop() {
