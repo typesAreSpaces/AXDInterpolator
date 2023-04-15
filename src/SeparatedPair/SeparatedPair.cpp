@@ -15,6 +15,8 @@ axdinterpolator::SeparatedPair::SeparatedPair(
   part_1(sig.ctx),
   part_2(sig.ctx), 
 
+  // Convention: we use Int
+  // to encode the type of the INDEX sort
   index_var(sig.ctx.constant("index_var", sig.int_sort)),
 
   axiom_8(generateAxiom8(array_var_ids)), 

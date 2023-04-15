@@ -1,26 +1,32 @@
 #include "Preprocess.h"
 #include "z3++.h"
 
-#define NORMALIZE_INPUT(OLD, NEW, TEMP_VAR)\
-  z3::expr const & TEMP_VAR =\
-  normalizeInput(OLD);\
-  if(func_kind(TEMP_VAR) == Z3_OP_AND){\
-    for(unsigned i = 0; i < TEMP_VAR.num_args(); ++i){\
-      auto const & curr_arg = TEMP_VAR.arg(i);\
+// NORMALIZED_INPUT normalizes RAW_INPUT (using normalizedInput)
+// and breaks the resulting z3::expr into a z3::vector_expr
+// containing the conjuncts of the normalized expr
+// Additionally, reorients equations into a 'prelimary canonical
+// normal form', i.e. of the form (= a (f a_1 ... a_{n-1}))
+// where a is a constant
+#define NORMALIZE_INPUT(RAW_INPUT, NORMALIZED_INPUT, NORMALIZED_EXPR)\
+  z3::expr const & NORMALIZED_EXPR =\
+  normalizeInput(RAW_INPUT);\
+  if(func_kind(NORMALIZED_EXPR) == Z3_OP_AND){\
+    for(unsigned i = 0; i < NORMALIZED_EXPR.num_args(); ++i){\
+      auto const & curr_arg = NORMALIZED_EXPR.arg(i);\
       if(func_kind(curr_arg) == Z3_OP_EQ\
           && rhs(curr_arg).num_args() == 0)\
-      NEW.push_back(rhs(curr_arg) == lhs(curr_arg));\
+      NORMALIZED_INPUT.push_back(rhs(curr_arg) == lhs(curr_arg));\
       else\
-      NEW.push_back(curr_arg);\
+      NORMALIZED_INPUT.push_back(curr_arg);\
     }\
   }\
   else { \
-    assert(TEMP_VAR.is_bool());\
-    if(func_kind(TEMP_VAR) == Z3_OP_EQ\
-        && rhs(TEMP_VAR).num_args() == 0)\
-    NEW.push_back(rhs(TEMP_VAR) == lhs(TEMP_VAR));\
+    assert(NORMALIZED_EXPR.is_bool());\
+    if(func_kind(NORMALIZED_EXPR) == Z3_OP_EQ\
+        && rhs(NORMALIZED_EXPR).num_args() == 0)\
+    NORMALIZED_INPUT.push_back(rhs(NORMALIZED_EXPR) == lhs(NORMALIZED_EXPR));\
     else\
-    NEW.push_back(TEMP_VAR);\
+    NORMALIZED_INPUT.push_back(NORMALIZED_EXPR);\
   }
 
 #define FLATTEN_PREDICATE(NUM_CONJS_INPUT, CONJUNCTION, SIDE)\
@@ -38,6 +44,7 @@ axdinterpolator::Preprocessor::Preprocessor(
   n_IndexBLocal(0),
   indexALocalIds({}),
   indexBLocalIds({}),
+  length_index_vars({}),
   input_part_a(sig.ctx), 
   input_part_b(sig.ctx),
   part_a_index_vars(sig.ctx), 
@@ -53,35 +60,29 @@ axdinterpolator::Preprocessor::Preprocessor(
   m_out << _input_part_b << std::endl;
 #endif
 
-  NORMALIZE_INPUT(_input_part_a, input_part_a, conjunction_a);
-  NORMALIZE_INPUT(_input_part_b, input_part_b, conjunction_b);
+  NORMALIZE_INPUT(_input_part_a, input_part_a, normalizedExpr_a);
+  NORMALIZE_INPUT(_input_part_b, input_part_b, normalizedExpr_b);
 
 #if _DEBUG_PREPROCESS_
   m_out << "Conjunction a" << std::endl;
-  m_out << conjunction_a << std::endl;
+  m_out << normalizedExpr_a << std::endl;
   m_out << "Conjunction b" << std::endl;
-  m_out << conjunction_b << std::endl;
+  m_out << normalizedExpr_b << std::endl;
   m_out << "Before Flattening Part a " << input_part_a << std::endl;
   m_out << "Before Flattening Part b " << input_part_b << std::endl;
 #endif
 
+  // empty_array elements are common to both
+  // part A and part B
   for(auto const & _empty_array : sig.empty_array_es){
     part_a_array_vars.insert(_empty_array);
     part_b_array_vars.insert(_empty_array);
+    updateLengthIndexVars(_empty_array, true);
   }
 
   unsigned current_conjs_in_input(0);
   FLATTEN_PREDICATE(current_conjs_in_input, input_part_a, PART_A);
   FLATTEN_PREDICATE(current_conjs_in_input, input_part_b, PART_B);
-
-#if _DEBUG_PREPROCESS_
-  m_out << "After Flattening Part a " << input_part_a << std::endl;
-  m_out << "After Flattening Part b " << input_part_b << std::endl;
-  m_out << "Arrays A-local" << std::endl;
-  m_out << part_a_array_vars << std::endl;
-  m_out << "Arrays B-local" << std::endl;
-  m_out << part_b_array_vars << std::endl;
-#endif
 
   // Initialize common_arrays_vars
   // to include common array variables
@@ -97,11 +98,32 @@ axdinterpolator::Preprocessor::Preprocessor(
             common_array_vars.insert(*iterator_a);
         }
       }
-}
 
-void axdinterpolator::Preprocessor::test() {
-  std::cout << "Num A index vars: ";
-  std::cout << n_IndexALocal << std::endl;
-  std::cout << "Num B index vars: ";
-  std::cout << n_IndexBLocal << std::endl;
+#if _DEBUG_PREPROCESS_
+  if (common_array_vars.areCommonPairsAvaible()) {
+    m_out << ">> There are common symbols" << std::endl;
+
+    CircularPairIterator search_common_pair(common_array_vars, false);
+
+    while (!search_common_pair.end()) {
+      auto const &common_pair = *search_common_pair;
+      m_out << ">> First component: ";
+      m_out << common_pair.first << std::endl;
+      m_out << ">> Id: ";
+      m_out << common_pair.first.id() << std::endl;
+      m_out << ">> Name of index representing its length: ";
+      m_out << getLengthIndexVar(common_pair.first) << std::endl;
+      m_out << ">> Second component: ";
+      m_out << common_pair.second << std::endl;
+      m_out << ">> Id: ";
+      m_out << common_pair.second.id() << std::endl;
+      m_out << ">> Name of index representing its length: ";
+      m_out << getLengthIndexVar(common_pair.second) << std::endl;
+      search_common_pair.next();
+    }
+    m_out << "Ok" << std::endl;
+  }
+#endif
+
+  return;
 }

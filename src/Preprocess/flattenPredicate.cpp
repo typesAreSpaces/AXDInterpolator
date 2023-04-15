@@ -21,50 +21,41 @@
       INPUT_PART = temp_predicates;\
       current_conjs_in_input++;
 
+// flattens a predicate expression
+// using flattenTerm and flattenPredidcateAux
+// as helper functions
 void axdinterpolator::Preprocessor::flattenPredicate(
-    z3::expr const & formula, 
-    SideInterpolant side,
-    unsigned & current_conjs_in_input){
-  switch(func_kind(formula)){
-    case Z3_OP_TRUE:
-    case Z3_OP_FALSE:
-      return;
-    case Z3_OP_EQ:       // ==
-      {
-        auto const & lhs_form = lhs(formula);
-        if(lhs_form.num_args() == 0){
-          updateVarsDB(
-              lhs_form, side);
-          flattenTerm(
-              rhs(formula), side, 
-              current_conjs_in_input);
-        }
-        else
-          flattenPredicateAux(
-              formula, side,
-              current_conjs_in_input);
-      }
-      return;
-    case Z3_OP_DISTINCT: // !=
-    case Z3_OP_GE:       // >=
-    case Z3_OP_LE:       // <=
-    case Z3_OP_GT:       // >
-    case Z3_OP_LT:       // <
-      flattenPredicateAux(
-          formula, side,
-          current_conjs_in_input);
-      return;
-    case Z3_OP_UNINTERPRETED:
-      assert(formula.get_sort().is_bool());
-      flattenTerm(
-          formula, side,
-          current_conjs_in_input);
-      return;
-    default:
-      throw 
-        "Error at "
-        "axdinterpolator::Preprocessor::flattenPredicate(z3::expr const &). "
-        "Formula not in AXD";
+    z3::expr const &formula, SideInterpolant side,
+    unsigned &current_conjs_in_input) {
+  switch (func_kind(formula)) {
+  case Z3_OP_TRUE:
+  case Z3_OP_FALSE:
+    return;
+  case Z3_OP_EQ: // ==
+  {
+    auto const &lhs_form = lhs(formula);
+    if (lhs_form.num_args() == 0) {
+      updateVarsDB(lhs_form, side);
+      flattenTerm(rhs(formula), side, current_conjs_in_input);
+    } else
+      flattenBinaryPredicate(formula, side, current_conjs_in_input);
+  }
+    return;
+  case Z3_OP_DISTINCT: // !=
+  case Z3_OP_GE:       // >=
+  case Z3_OP_LE:       // <=
+  case Z3_OP_GT:       // >
+  case Z3_OP_LT:       // <
+    flattenBinaryPredicate(formula, side, current_conjs_in_input);
+    return;
+  case Z3_OP_UNINTERPRETED:
+    assert(formula.get_sort().is_bool());
+    flattenTerm(formula, side, current_conjs_in_input);
+    return;
+  default:
+    throw "Error at "
+	  "axdinterpolator::Preprocessor::flattenPredicate(z3::expr const &). "
+	  "Formula not in AXD";
   }
 }
 
@@ -73,114 +64,109 @@ void axdinterpolator::Preprocessor::flattenPredicate(
 // input side with fresh constants a, b if x
 // and y arent constants (respectively) obtaining
 // B(x, y)[x->a, y->b] \land x = a \land y = b
-void axdinterpolator::Preprocessor::flattenPredicateAux(
-    z3::expr const & atomic_predicate, 
-    SideInterpolant side,
-    unsigned & current_conjs_in_input){
+void axdinterpolator::Preprocessor::flattenBinaryPredicate(
+    z3::expr const &atomic_predicate, SideInterpolant side,
+    unsigned &current_conjs_in_input) {
 
-  z3::expr_vector old_terms(sig.ctx); 
+  z3::expr_vector old_terms(sig.ctx);
   z3::expr_vector fresh_consts(sig.ctx);
   z3::expr_vector temp_predicates(sig.ctx);
 
-  auto const & lhs_atom = lhs(atomic_predicate);
-  if(lhs_atom.num_args() > 0){
+  auto const &lhs_atom = lhs(atomic_predicate);
+  if (lhs_atom.num_args() > 0) {
     old_terms.push_back(lhs_atom);
-    fresh_consts.push_back(
-        fresh_constant(_get_sort(lhs_atom)));
+    fresh_consts.push_back(fresh_constant(_get_sort(lhs_atom)));
   }
-  auto const & rhs_atom = rhs(atomic_predicate);
-  if(rhs_atom.num_args() > 0){
+  auto const &rhs_atom = rhs(atomic_predicate);
+  if (rhs_atom.num_args() > 0) {
     old_terms.push_back(rhs_atom);
-    fresh_consts.push_back(
-        fresh_constant(_get_sort(rhs_atom)));
+    fresh_consts.push_back(fresh_constant(_get_sort(rhs_atom)));
   }
 
-  switch(side){
-    case PART_A:
-      SUBSTITUTE_AND_ADJOINT(input_part_a);
-      return;
-    case PART_B:
-      SUBSTITUTE_AND_ADJOINT(input_part_b);
-      return;
+  switch (side) {
+  case PART_A:
+    SUBSTITUTE_AND_ADJOINT(input_part_a);
+    return;
+  case PART_B:
+    SUBSTITUTE_AND_ADJOINT(input_part_b);
+    return;
   }
 }
 
 void axdinterpolator::Preprocessor::flattenTerm(
-    z3::expr const & term, 
-    SideInterpolant side,
-    unsigned & current_conjs_in_input){
-  if(term.num_args() > 0){
-    switch(func_kind(term)){
-      case Z3_OP_UMINUS:
+    z3::expr const &term, SideInterpolant side,
+    unsigned &current_conjs_in_input) {
+  if (term.num_args() > 0) {
+    switch (func_kind(term)) {
+    case Z3_OP_UMINUS:
 #if DETECT_THEORY
-        if(sig.getTheoryName() < AXDSignature::QF_IDL)
-          sig.setTheory(AXDSignature::QF_IDL);
+      if (sig.getTheoryName() < AXDSignature::QF_IDL)
+	sig.setTheory(AXDSignature::QF_IDL);
 #endif
-      case Z3_OP_ADD:
-      case Z3_OP_SUB:
-      case Z3_OP_MUL:
-      case Z3_OP_DIV:
-      case Z3_OP_IDIV:
-      case Z3_OP_REM:
-      case Z3_OP_MOD:
+    case Z3_OP_ADD:
+    case Z3_OP_SUB:
+    case Z3_OP_MUL:
+    case Z3_OP_DIV:
+    case Z3_OP_IDIV:
+    case Z3_OP_REM:
+    case Z3_OP_MOD:
 #if DETECT_THEORY
-        if(sig.getTheoryName() < AXDSignature::QF_LIA)
-          sig.setTheory(AXDSignature::QF_LIA);
+      if (sig.getTheoryName() < AXDSignature::QF_LIA)
+	sig.setTheory(AXDSignature::QF_LIA);
 #endif
-        {
-          z3::expr_vector stack_args(sig.ctx);
-          for(unsigned i = 0; i < term.num_args(); i++)
-            stack_args.push_back(term.arg(i));
+      {
+	z3::expr_vector stack_args(sig.ctx);
+	for (unsigned i = 0; i < term.num_args(); i++)
+	  stack_args.push_back(term.arg(i));
 
-          while(stack_args.size() != 0){
-            z3::expr const & curr = stack_args.back();
-            stack_args.pop_back();
-            if(curr.num_args() == 0){
-              updateVarsDB(curr, side);
-            }
-            else{
-              for(unsigned i = 0; i < curr.num_args(); i++)
-                stack_args.push_back(curr.arg(i));
-            }
-          }
-        }
-        return;
-      case Z3_OP_UNINTERPRETED:
-        for(unsigned i = 0; i < term.num_args(); i++){
-	  auto term_name = func_name(term);
-	  if(term_name.find("wr") != std::string::npos){
-	    auto index_constant = term.arg(1);
-	    switch (side) {
-	    case PART_A:
-	      if (indexALocalIds.find(index_constant.id()) ==
-		  indexALocalIds.end()) {
-		indexALocalIds.insert(index_constant.id());
-		n_IndexALocal++;
-	      }
-	      break;
-	    case PART_B:
-	      if (indexBLocalIds.find(index_constant.id()) ==
-		  indexBLocalIds.end()) {
-		indexBLocalIds.insert(index_constant.id());
-		n_IndexBLocal++;
-	      }
-	      break;
-	    }
+	while (stack_args.size() != 0) {
+	  z3::expr const &curr = stack_args.back();
+	  stack_args.pop_back();
+	  if (curr.num_args() == 0) {
+	    updateVarsDB(curr, side);
+	  } else {
+	    for (unsigned i = 0; i < curr.num_args(); i++)
+	      stack_args.push_back(curr.arg(i));
 	  }
-	  auto const &curr_arg = term.arg(i);
-	  auto const &type_arg = _get_sort(curr_arg);
-	  if (curr_arg.num_args() > 0)
-	    cojoin(curr_arg, fresh_constant(type_arg), side,
-		   current_conjs_in_input);
-	  else
-	    updateVarsDB(curr_arg, side);
 	}
-	return;
-      default:
-	throw "Problem @ "
-	      "axdinterpolator::Preprocessor::flattenTerm "
-	      "Invalid function aplication";
       }
+      return;
+    case Z3_OP_UNINTERPRETED:
+      for (unsigned i = 0; i < term.num_args(); i++) {
+	auto term_name = func_name(term);
+	if (term_name.find("wr") != std::string::npos) {
+	  auto index_constant = term.arg(1);
+	  switch (side) {
+	  case PART_A:
+	    if (indexALocalIds.find(index_constant.id()) ==
+		indexALocalIds.end()) {
+	      indexALocalIds.insert(index_constant.id());
+	      n_IndexALocal++;
+	    }
+	    break;
+	  case PART_B:
+	    if (indexBLocalIds.find(index_constant.id()) ==
+		indexBLocalIds.end()) {
+	      indexBLocalIds.insert(index_constant.id());
+	      n_IndexBLocal++;
+	    }
+	    break;
+	  }
+	}
+	auto const &curr_arg = term.arg(i);
+	auto const &type_arg = _get_sort(curr_arg);
+	if (curr_arg.num_args() > 0)
+	  cojoin(curr_arg, fresh_constant(type_arg), side,
+		 current_conjs_in_input);
+	else
+	  updateVarsDB(curr_arg, side);
+      }
+      return;
+    default:
+      throw "Problem @ "
+	    "axdinterpolator::Preprocessor::flattenTerm "
+	    "Invalid function aplication";
+    }
   } else
     updateVarsDB(term, side);
 }

@@ -4,8 +4,7 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
 						z3::expr _input_part_a,
 						z3::expr _input_part_b,
 						char const *file_name)
-    :
-      Preprocessor(sig, _input_part_a, _input_part_b),
+    : Preprocessor(sig, _input_part_a, _input_part_b),
 
       part_a(sig, input_part_a, part_a_index_vars, part_a_array_vars),
       part_b(sig, input_part_b, part_b_index_vars, part_b_array_vars),
@@ -21,18 +20,17 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
 	     sig.is_QF_TO() || sig.is_QF_IDL() ? "QF_UFIDL" : "QF_UFLIA") {
 
 #if _DEBUG_AXD_CONSTRUCTOR_
-  std::cout << "After Processing" << std::endl;
-  std::cout << "Input Part A" << std::endl;
-  std::cout << input_part_a << std::endl;
-  std::cout << "Input Part B" << std::endl;
-  std::cout << input_part_b << std::endl;
+  m_out << "After Processing" << std::endl;
+  m_out << "Input Part A" << std::endl;
+  m_out << input_part_a << std::endl;
+  m_out << "Input Part B" << std::endl;
+  m_out << input_part_b << std::endl;
 
-  std::cout << "Before SeparatedPair" << std::endl;
-  std::cout << "Input Part A" << std::endl;
-  std::cout << part_a << std::endl;
-  std::cout << "Input Part B" << std::endl;
-  std::cout << part_b << std::endl;
-#endif
+  m_out << "Before SeparatedPair" << std::endl;
+  m_out << "Input Part A" << std::endl;
+  m_out << part_a << std::endl;
+  m_out << "Input Part B" << std::endl;
+  m_out << part_b << std::endl;
 
   m_out << "Solving file " << m_file_name << std::endl;
   m_out << "Input formula" << std::endl;
@@ -40,6 +38,7 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
   m_out << part_a << std::endl;
   m_out << "Part B" << std::endl;
   m_out << part_b << std::endl;
+#endif
 
   m_file_name = m_file_name.substr(0, m_file_name.find_last_of("."))
 		    .substr(m_file_name.find_last_of("\\/") + 1);
@@ -55,8 +54,7 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
   // - Remove loop
   // - Instantiate directly just once
   // - Check satisfiability using $EUF \cup T_I$
-  loop();
-  test();
+  // loop();
 }
 
 void axdinterpolator::AXDInterpolant::loop() {
@@ -80,41 +78,6 @@ void axdinterpolator::AXDInterpolant::loop() {
     }
     return;
   }
-
-#if _DEBUG_AXD_LOOP_
-  m_out << ">> There are common symbols" << std::endl;
-#endif
-
-  CircularPairIterator search_common_pair(common_array_vars, false);
-
-#if _DEBUG_AXD_LOOP_
-  while (!search_common_pair.end()) {
-    auto const &common_pair = *search_common_pair;
-    m_out << ">> First component: ";
-    m_out << common_pair.first << std::endl;
-    m_out << ">> Second component: ";
-    m_out << common_pair.second << std::endl;
-    search_common_pair.next();
-  }
-
-  // int count = 0;
-  // while (count < 4) {
-  //   m_out << ">> wot \n";
-  //   auto const &common_pair = *search_common_pair;
-  //   m_out << "First component: ";
-  //   m_out << common_pair.first << std::endl;
-  //   m_out << "Second component: ";
-  //   m_out << common_pair.second << std::endl;
-  //   if(!search_common_pair.end())
-  //     search_common_pair.next();
-  //   else
-  //     break;
-  //   count++;
-  // }
-
-  m_out << "Ok" << std::endl;
-  return;
-#endif
 
   // BEGIN:
   // This part was used in the main loop

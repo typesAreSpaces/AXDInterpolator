@@ -11,7 +11,7 @@ void testZ3ExprVectorSet();
 int main(int argc, char **argv) {
 
   axdinterpolator::run(argc, argv);
-  // test1();
+  //test1();
   // test2();
   // simple_test2(); 
   // testZ3ExprVectorSet();

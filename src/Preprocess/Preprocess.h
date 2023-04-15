@@ -26,24 +26,29 @@ class Preprocessor {
   z3::expr normalizeInput(z3::expr const &);
 
   void flattenPredicate(z3::expr const &, SideInterpolant, unsigned &);
-  void flattenPredicateAux(z3::expr const &, SideInterpolant, unsigned &);
+  void flattenBinaryPredicate(z3::expr const &, SideInterpolant, unsigned &);
   void flattenTerm(z3::expr const &, SideInterpolant, unsigned &);
   void cojoin(z3::expr const &, z3::expr const &, SideInterpolant, unsigned &);
 
   void updateArrayVars(z3::expr const &, SideInterpolant);
   void updateIndexVars(z3::expr const &, SideInterpolant);
   void updateVarsDB(z3::expr const &, SideInterpolant);
-
-  z3::expr fresh_index_constant();
-  z3::expr fresh_array_constant(z3::sort const &);
-  z3::expr fresh_constant(z3::sort const &);
-
+ 
   AXDSignature & sig;
   unsigned fresh_num;
+
   unsigned n_IndexALocal;
   unsigned n_IndexBLocal;
   std::set<unsigned> indexALocalIds;
   std::set<unsigned> indexBLocalIds;
+
+  // 'length_index_vars' is an indexed set of
+  // length of array variables. The index is the id of the
+  // expression
+  std::map<unsigned, z3::expr> length_index_vars;
+
+  void updateLengthIndexVars(z3::expr const &, bool);
+  z3::expr getLengthIndexVar(z3::expr const &);
 
   z3::expr_vector input_part_a, input_part_b;
 
@@ -53,7 +58,10 @@ class Preprocessor {
 
 public:
   Preprocessor(AXDSignature &, z3::expr const &, z3::expr const &);
-  void test();
+
+  z3::expr fresh_index_constant();
+  z3::expr fresh_array_constant(z3::sort const &);
+  z3::expr fresh_constant(z3::sort const &);
 };
 
 } // namespace axdinterpolator
