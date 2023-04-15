@@ -48,6 +48,7 @@ void axdinterpolator::CircularPairIterator::avoidLowerDiagonal() {
   //   next();
   // }
   while ((enableCircularity || !end()) &&
-	 !Z3ExprComparator()(*z3_expr_set_first, *z3_expr_set_second))
+	 !Z3ExprComparator()(*z3_expr_set_first, *z3_expr_set_second)) {
     next();
+  }
 }
