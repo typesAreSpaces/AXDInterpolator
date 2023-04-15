@@ -7,8 +7,18 @@ DEPENDENCIES=util AXDSignature \
 INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
-all: $(AXD_INTERPOLATOR) $(TAGS)	
+.PHONY: all execute debug \
+	clean z3_clean deep_clean
+
+all: execute
+
+execute: $(AXD_INTERPOLATOR) $(TAGS)	
 	./run.sh
+
+debug: CXXFLAGS += -DDEBUG -g
+debug: CCFLAGS += -DDEBUG -g
+debug: $(AXD_INTERPOLATOR) $(TAGS)	
+	./debug.sh
 
 # -------------------------------------------------
 #  Rules to build the project
@@ -23,37 +33,41 @@ $(LDIR)/libz3.$(SO_EXT): $(Z3_DIR)/README.md
 		--prefix=$(CURRENT_DIR)
 	$(MAKE) -C $(Z3_DIR)/build install
 
-debug: CXXFLAGS += -DDEBUG -g
-debug: CCFLAGS += -DDEBUG -g
-debug: $(AXD_INTERPOLATOR)
-
 $(SDIR)/util/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/util/*.cpp
-	$(MAKE) -C $(SDIR)/util
+	$(MAKE) -C $(SDIR)/util \
+		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(SDIR)/AXDSignature/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/AXDSignature/*.cpp
-	$(MAKE) -C $(SDIR)/AXDSignature
+	$(MAKE) -C $(SDIR)/AXDSignature \
+		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(SDIR)/Preprocess/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/Preprocess/*.cpp
-	$(MAKE) -C $(SDIR)/Preprocess
+	$(MAKE) -C $(SDIR)/Preprocess \
+		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(SDIR)/SeparatedPair/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/SeparatedPair/*.cpp
-	$(MAKE) -C $(SDIR)/SeparatedPair
+	$(MAKE) -C $(SDIR)/SeparatedPair \
+		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(SDIR)/AXDInterpolant/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/AXDInterpolant/*.cpp
-	$(MAKE) -C $(SDIR)/AXDInterpolant
+	$(MAKE) -C $(SDIR)/AXDInterpolant \
+		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(SDIR)/InputFormulaParser/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/AXDInterpolant/done \
 	$(SDIR)/InputFormulaParser/*.cpp
-	$(MAKE) -C $(SDIR)/InputFormulaParser
+	$(MAKE) -C $(SDIR)/InputFormulaParser \
+		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(SDIR)/TODO/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(SDIR)/TODO/*.cpp
-	$(MAKE) -C $(SDIR)/TODO
+	$(MAKE) -C $(SDIR)/TODO \
+		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(ODIR)/%.o: $(SDIR)/%.cpp \
 	$(LDIR)/libz3.$(SO_EXT)
@@ -92,8 +106,6 @@ include test.mk
 
 # -----------------------------------
 #  Cleaning
-.PHONY: clean z3_clean deep_clean
-
 clean:
 	rm -rf $(ODIR) output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
@@ -117,5 +129,4 @@ z3_clean:
 	rm -rf $(Z3_DIR)
 
 deep_clean: clean z3_clean
-
 # -----------------------------------
