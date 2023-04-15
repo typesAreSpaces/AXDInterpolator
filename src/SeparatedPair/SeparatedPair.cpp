@@ -200,9 +200,6 @@ void axdinterpolator::SeparatedPair::updateSaturation(
 
   // instantiated_terms.add_var(_new_index);
 
-  // TODO: implement/compare more heuristics
-  // to increase N_instantiation
-  //
   // Heuristic for triggering N-instantiation
   //if(instantiated_terms.getNumOfNewIndex() % 1000 == 0)
   // if(false)
