@@ -12,7 +12,7 @@ $(SDIR)/Preprocess/done: ${TODO}
 
 $(ODIR)/%.o: %.cpp $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p $(ODIR)
-	@$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
+	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
 		$(INCLUDES) $<
 
 $(LOCAL_TAGS):

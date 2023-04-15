@@ -148,8 +148,6 @@ void axdinterpolator::Preprocessor::flattenTerm(
       case Z3_OP_UNINTERPRETED:
         for(unsigned i = 0; i < term.num_args(); i++){
 	  auto term_name = func_name(term);
-	  std::cout << ">> hahah " << term << std::endl;
-	  std::cout << ">> hehe " << term_name << std::endl;
 	  if(term_name.find("wr") != std::string::npos){
 	    auto index_constant = term.arg(1);
 	    switch (side) {

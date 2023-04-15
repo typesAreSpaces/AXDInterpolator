@@ -38,7 +38,7 @@ void flattening_helper(z3::expr e, z3::expr_vector & subformulas, z3::expr_vecto
 z3::expr get_new_variable(z3::expr e, z3::context & ctx, int & counter) {
   std::string name_str = e.decl().name().str() + std::to_string(counter);
   const char * name_char = const_cast<char*>(name_str.c_str());
-  z3::symbol name = ctx.str_symbol(name_char);
+  // z3::symbol name = ctx.str_symbol(name_char);
   // auto new_var = ctx.constant(name, e.get_sort());
   auto new_var = ctx.constant(name_char, e.get_sort());
   counter++;
