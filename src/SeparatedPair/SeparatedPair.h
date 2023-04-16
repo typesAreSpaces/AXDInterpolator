@@ -15,7 +15,6 @@ class SeparatedPair {
   Preprocessor const &preprocessor;
 
   DiffMap diff_map;
-  WriteVector write_vector;
 
   // -) part_1 contains:
   // --) wr-equations

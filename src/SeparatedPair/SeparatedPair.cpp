@@ -8,7 +8,7 @@ axdinterpolator::SeparatedPair::SeparatedPair(
     z3::expr_vector const &conjunction, ArrayVars const &array_var_ids)
     : sig(sig), preprocessor(preprocessor),
 
-      diff_map(array_var_ids, sig), write_vector(),
+      diff_map(array_var_ids, sig),
 
       part_1(sig.ctx), part_2(sig.ctx),
 
@@ -37,6 +37,10 @@ axdinterpolator::SeparatedPair::SeparatedPair(
 }
 
 void axdinterpolator::SeparatedPair::initSaturation() {
+  // This section was commented out
+  // Because this corresponds to the
+  // AXD(T_I) approach
+#if 0
   // ------------------------------------------------
   // Processing equations of the form a = wr(b, i, e)
   // The following adds (18) predicates
@@ -54,7 +58,12 @@ void axdinterpolator::SeparatedPair::initSaturation() {
     // AXDInterpolant::SmtSolverSetup(z3::solver &);
   }
   // ------------------------------------------------
+#endif
 
+// This section was commented out
+// Because this corresponds to the
+// AXD(T_I) approach
+#if 0
   // -----------------------------------------------
   // Processing equations of the form diff(a, b) = i
   // The following adds [12] predicates
@@ -82,6 +91,7 @@ void axdinterpolator::SeparatedPair::initSaturation() {
     }
   }
   // -----------------------------------------------
+#endif
 }
 
 void axdinterpolator::SeparatedPair::updateSaturation(
@@ -226,7 +236,7 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
       part_2.push_back(current_conj);
       break;
     default:
-      std::cout << current_conj << std::endl;
+      m_out << current_conj << std::endl;
       throw "Problem @ "
 	    "axdinterpolator::SeparatedPair "
 	    "Invalid formula.";
@@ -277,13 +287,44 @@ void axdinterpolator::SeparatedPair::processPart_1() {
       part_2.push_back(third_predicate);
     }
 
-    // We don't push into part_2 the rewrites
-    // of equations of the form i = diff(a, b)
-    // Instead, we add these equations in our data structure
-    // DiffMap because more diff_k equations will be
-    // added later in Step 1 or the algorithm
+    // Processing equations of the form i = diff(a, b)
+    // The following adds instances when n = 1
+    // of (22) predicates
     if (f_name.find("diff") != std::string::npos) {
       diff_map.add(lhs(rhs(equation)), rhs(rhs(equation)), lhs(equation));
+      auto const &i = lhs(equation);
+      auto const &a = rhs(equation).arg(0);
+      auto const &b = rhs(equation).arg(1);
+      auto const &curr_rd = sig.getRdBySort(a.get_sort());
+      auto const &length_a = preprocessor.getLengthIndexVar(a);
+      auto const &length_b = preprocessor.getLengthIndexVar(b);
+      auto const &first_predicate = i >= 0;
+      auto const &second_predicate =
+	  z3::implies(curr_rd(a, i) == curr_rd(b, i), i == 0);
+      auto const &third_predicate = z3::implies(
+	  index_var > i, curr_rd(a, index_var) == curr_rd(b, index_var));
+      auto const &forth_predicate =
+	  z3::implies(length_a > length_b, i == length_a);
+      auto const &fifth_predicate =
+	  z3::implies(length_b > length_a, i == length_b);
+#if 0
+      m_out << std::endl;
+      m_out << "First predicate" << std::endl;
+      m_out << first_predicate << std::endl;
+      m_out << "Second predicate" << std::endl;
+      m_out << second_predicate << std::endl;
+      m_out << "Third predicate" << std::endl;
+      m_out << third_predicate << std::endl;
+      m_out << "Forth predicate" << std::endl;
+      m_out << forth_predicate << std::endl;
+      m_out << "Fifth predicate" << std::endl;
+      m_out << fifth_predicate << std::endl;
+#endif
+      part_2.push_back(first_predicate);
+      part_2.push_back(second_predicate);
+      part_2.push_back(third_predicate);
+      part_2.push_back(forth_predicate);
+      part_2.push_back(fifth_predicate);
     }
 
     // Processing equations of the form i = |a|

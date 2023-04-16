@@ -1,4 +1,5 @@
 #include "AXDInterpolant.h"
+#include <algorithm>
 
 void axdinterpolator::AXDInterpolant::step_1() {
 #if _DEBUG_STEPS_
@@ -13,34 +14,46 @@ void axdinterpolator::AXDInterpolant::step_1() {
 #endif
 
     CircularPairIterator common_array_pairs(common_array_vars, false);
+    unsigned N_bound = 1 + std::max(n_IndexALocal, n_IndexBLocal);
+
+    DiffMap diff_common_map(common_array_vars, sig);
 
     while (!common_array_pairs.end()) {
-      // TODO:
-      // -) Compute Step 1, i.e. the
-      // chain of equations of the form
-      // diff_n(c_1, c_2) = k_n for n = 1 ... N
-      // and update part_2 with the translation
-      // lemma of these equations using Lemma 3.5
-      // -) Remember the following:
-      // replace terms |a| by the index constant i
-      // such that |a| = i
       auto const &common_pair = *common_array_pairs;
-#if _DEBUG_STEPS_
-      m_out << ">> First component: ";
-      m_out << common_pair.first << std::endl;
-      m_out << ">> Id: ";
-      m_out << common_pair.first.id() << std::endl;
-      m_out << ">> Name of index representing its length: ";
-      m_out << getLengthIndexVar(common_pair.first) << std::endl;
-      m_out << ">> Second component: ";
-      m_out << common_pair.second << std::endl;
-      m_out << ">> Id: ";
-      m_out << common_pair.second.id() << std::endl;
-      m_out << ">> Name of index representing its length: ";
-      m_out << getLengthIndexVar(common_pair.second) << std::endl;
+
+      for (unsigned n = 1; n < N_bound; n++) {
+	diff_common_map.add(common_pair.first, common_pair.second,
+			    fresh_index_constant());
+#if 0
+	m_out << ">> First component: ";
+	m_out << common_pair.first << std::endl;
+	m_out << ">> Id: ";
+	m_out << common_pair.first.id() << std::endl;
+	m_out << ">> Name of index representing its length: ";
+	m_out << getLengthIndexVar(common_pair.first) << std::endl;
+	m_out << ">> Second component: ";
+	m_out << common_pair.second << std::endl;
+	m_out << ">> Id: ";
+	m_out << common_pair.second.id() << std::endl;
+	m_out << ">> Name of index representing its length: ";
+	m_out << getLengthIndexVar(common_pair.second) << std::endl;
 #endif
+      }
+
       common_array_pairs.next();
     }
+
+    m_out << diff_common_map << std::endl;
+    // TODO:
+    // -) Update part_a.part_2 using diff_common_map
+    // with the translattion lemma of these equations
+    // using Lemma 3.5
+    // -) Update part_b.part_2 using diff_common_map
+    // with the translattion lemma of these equations
+    // using Lemma 3.5
+    // *) Remember the following:
+    // replace terms |a| by the index constant i
+    // such that |a| = i
   }
 }
 
