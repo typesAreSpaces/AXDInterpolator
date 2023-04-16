@@ -22,7 +22,7 @@ void axdinterpolator::AXDInterpolant::step_1() {
     while (!common_array_pairs.end()) {
       auto const &common_pair = *common_array_pairs;
 
-      for (unsigned n = 1; n < N_bound; n++) {
+      for (unsigned n = 1; n <= N_bound; n++) {
 	diff_common_map.add(common_pair.first, common_pair.second,
 			    fresh_index_constant());
 #if 0
@@ -55,6 +55,7 @@ void axdinterpolator::AXDInterpolant::step_1() {
       auto const &length_c_1 = getLengthIndexVar(c_1);
       auto const &length_c_2 = getLengthIndexVar(c_2);
       auto const &indexes = entry.second;
+      auto const &size = indexes.size();
       auto const &curr_rd = sig.getRdBySort(c_1.get_sort());
 #if 0
       m_out << "Pair: ";
@@ -62,18 +63,19 @@ void axdinterpolator::AXDInterpolant::step_1() {
       m_out << c_2 << std::endl;
       m_out << indexes << std::endl;
 #endif
+      assert(size > 0);
       // -----------------------------------------------------
       // First predicate from (22)
-      for (unsigned l = 0; l < indexes.size() - 1; l++) {
+      for (unsigned l = 0; l < size - 1; l++) {
 	part_a.part_2.push_back(indexes[l] >= indexes[l + 1]);
 	part_b.part_2.push_back(indexes[l] >= indexes[l + 1]);
       }
-      part_a.part_2.push_back(indexes[indexes.size() - 1] >= 0);
-      part_b.part_2.push_back(indexes[indexes.size() - 1] >= 0);
+      part_a.part_2.push_back(indexes[size - 1] >= 0);
+      part_b.part_2.push_back(indexes[size - 1] >= 0);
       // -----------------------------------------------------
       // -----------------------------------------------------
       // Second predicate from (22)
-      for (unsigned l = 0; l < indexes.size() - 1; l++) {
+      for (unsigned l = 0; l < size - 1; l++) {
 	part_a.part_2.push_back(
 	    z3::implies(indexes[l] > indexes[l + 1],
 			curr_rd(c_1, indexes[l]) != curr_rd(c_2, indexes[l])));
@@ -84,7 +86,7 @@ void axdinterpolator::AXDInterpolant::step_1() {
       // -----------------------------------------------------
       // -----------------------------------------------------
       // Third predicate from (22)
-      for (unsigned l = 0; l < indexes.size() - 1; l++) {
+      for (unsigned l = 0; l < size - 1; l++) {
 	part_a.part_2.push_back(z3::implies(length_c_1 == length_c_2 &&
 						indexes[l] == indexes[l + 1],
 					    indexes[l] == 0));
@@ -95,7 +97,7 @@ void axdinterpolator::AXDInterpolant::step_1() {
       // -----------------------------------------------------
       // -----------------------------------------------------
       // Forth predicate from (22)
-      for (unsigned l = 0; l < indexes.size(); l++) {
+      for (unsigned l = 0; l < size; l++) {
 	part_a.part_2.push_back(
 	    z3::implies(curr_rd(c_1, indexes[l]) == curr_rd(c_2, indexes[l]),
 			indexes[l] == 0));
@@ -107,50 +109,46 @@ void axdinterpolator::AXDInterpolant::step_1() {
       // -----------------------------------------------------
       // Fifth predicate from (22)
       z3::expr_vector temp_disjs(sig.ctx);
-      for (unsigned l = 0; l < indexes.size() - 1; l++) {
+      for (unsigned l = 0; l < size - 1; l++) {
 	// part_a.index_var == part_b.index_var
 	// since both use the same context
 	temp_disjs.push_back(part_a.index_var == indexes[l]);
       }
-      part_a.part_2.push_back(
-	  z3::implies(part_a.index_var == indexes[indexes.size() - 1],
-		      curr_rd(c_1, part_a.index_var) ==
-			  curr_rd(c_2, part_a.index_var)) ||
-	  z3::mk_or(temp_disjs));
-      part_b.part_2.push_back(
-	  z3::implies(part_a.index_var == indexes[indexes.size() - 1],
-		      curr_rd(c_1, part_a.index_var) ==
-			  curr_rd(c_2, part_a.index_var)) ||
-	  z3::mk_or(temp_disjs));
+      part_a.part_2.push_back(z3::implies(part_a.index_var == indexes[size - 1],
+					  curr_rd(c_1, part_a.index_var) ==
+					      curr_rd(c_2, part_a.index_var)) ||
+			      z3::mk_or(temp_disjs));
+      part_b.part_2.push_back(z3::implies(part_a.index_var == indexes[size - 1],
+					  curr_rd(c_1, part_a.index_var) ==
+					      curr_rd(c_2, part_a.index_var)) ||
+			      z3::mk_or(temp_disjs));
       // -----------------------------------------------------
       // -----------------------------------------------------
       // Sixth predicate from (22)
-      part_a.part_2.push_back(
-	  z3::implies(length_c_1 > length_c_2,
-		      indexes[0] == indexes[indexes.size() - 1] &&
-			  indexes[indexes.size() - 1] == length_c_1));
-      part_b.part_2.push_back(
-	  z3::implies(length_c_1 > length_c_2,
-		      indexes[0] == indexes[indexes.size() - 1] &&
-			  indexes[indexes.size() - 1] == length_c_1));
+      part_a.part_2.push_back(z3::implies(length_c_1 > length_c_2,
+					  indexes[0] == indexes[size - 1] &&
+					      indexes[size - 1] == length_c_1));
+      part_b.part_2.push_back(z3::implies(length_c_1 > length_c_2,
+					  indexes[0] == indexes[size - 1] &&
+					      indexes[size - 1] == length_c_1));
       // -----------------------------------------------------
       // -----------------------------------------------------
       // Seventh predicate from (22)
-      part_a.part_2.push_back(
-	  z3::implies(length_c_2 > length_c_1,
-		      indexes[0] == indexes[indexes.size() - 1] &&
-			  indexes[indexes.size() - 1] == length_c_1));
-      part_b.part_2.push_back(
-	  z3::implies(length_c_2 > length_c_1,
-		      indexes[0] == indexes[indexes.size() - 1] &&
-			  indexes[indexes.size() - 1] == length_c_2));
+      part_a.part_2.push_back(z3::implies(length_c_2 > length_c_1,
+					  indexes[0] == indexes[size - 1] &&
+					      indexes[size - 1] == length_c_1));
+      part_b.part_2.push_back(z3::implies(length_c_2 > length_c_1,
+					  indexes[0] == indexes[size - 1] &&
+					      indexes[size - 1] == length_c_2));
       // -----------------------------------------------------
     }
   }
 }
 
 void axdinterpolator::AXDInterpolant::step_2() {
+#if 1
   m_out << std::endl;
+  m_out << "Step 2:" << std::endl;
   m_out << "Part A part_2" << std::endl;
   m_out << part_a.part_2 << std::endl;
   m_out << std::endl;
@@ -160,22 +158,38 @@ void axdinterpolator::AXDInterpolant::step_2() {
   m_out << part_b.part_2 << std::endl;
   m_out << "Part B index variables" << std::endl;
   m_out << part_b_index_vars << std::endl;
-// TODO:
-// -) Apply 0-instantiations to `part_2` of the
-// separated pair structures
-#if _DEBUG_STEPS_
-  m_out << std::endl;
-  m_out << "Step 2:" << std::endl;
 #endif
+
+  z3::expr_vector temp_disj_A(sig.ctx);
+  for(unsigned i = 0; i < part_a_index_vars.size(); i++){
+    temp_disj_A.push_back(part_a.index_var == part_a_index_vars[i]);
+  }
+  solver.add(z3::mk_and(part_a.part_2) && z3::mk_or(temp_disj_A));
+  z3::expr_vector temp_disj_B(sig.ctx);
+  for(unsigned i = 0; i < part_b_index_vars.size(); i++){
+    temp_disj_B.push_back(part_b.index_var == part_b_index_vars[i]);
+  }
+  solver.add(z3::mk_and(part_b.part_2) && z3::mk_or(temp_disj_B));
 }
 
 void axdinterpolator::AXDInterpolant::step_3() {
 // TODO:
-// -) Setup the solver and check for satisfiability
 // -) Lift and replace back AB-common
 // constants introduced by the transformations
 #if _DEBUG_STEPS_
   m_out << std::endl;
   m_out << "Step 3:" << std::endl;
 #endif
+  m_out << solver << std::endl;
+  switch (solver.check()) {
+  case z3::unsat:
+    m_out << "Unsatisfiable formula" << std::endl;
+    break;
+  case z3::sat:
+    m_out << "Satisfiable formula" << std::endl;
+    break;
+  case z3::unknown:
+    m_out << "Unknown formula" << std::endl;
+    break;
+  }
 }
