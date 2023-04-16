@@ -47,7 +47,6 @@ z3::expr axdinterpolator::Preprocessor::normalizeInputDefault(z3::expr const & e
 
 // Rewrites :
 // -) constant of type array into 'same' constant of type 'abstract array'
-// -) (length x) into (diff (normalizeInput x) empty)
 // -) (NOT (pred ... )) into (dual_pred ... )
 // -) (select a i1) into (rd a i1) with abstract sort types
 // -) (diff a b) into (diff a b) with abstract sort types
@@ -68,6 +67,10 @@ z3::expr axdinterpolator::Preprocessor::normalizeInput(z3::expr const &e) {
 	  }
 	  return e;
       case 1:
+	  // Length rewrite is disabled:
+	  // The CAXD extension handles this case
+	  // differently
+#if 0
 	  if (func_name(e).find("length") != std::string::npos) {
 	    auto const &arg = e.arg(0);
 	    z3::func_decl const &curr_diff =
@@ -76,6 +79,7 @@ z3::expr axdinterpolator::Preprocessor::normalizeInput(z3::expr const &e) {
 		sig.getEmptyArrayBySort(arg.get_sort().array_range());
 	    return curr_diff(normalizeInput(arg), curr_empty_array);
 	  }
+#endif
 
 	  if (func_kind(e) == Z3_OP_NOT) {
 	    z3::expr predicate = e.arg(0);

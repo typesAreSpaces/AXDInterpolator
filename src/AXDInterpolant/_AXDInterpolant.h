@@ -11,6 +11,7 @@
 #include "SeparatedPair.h"
 
 #define _DEBUG_AXD_LOOP_           1
+#define _DEBUG_STEPS_              1
 #define _DEBUG_AXD_CONSTRUCTOR_    0
 #define _TEST_OUTPUT_              0
 #define _TEST_OUTPUT_ORIGINAL_THY_ 0
@@ -42,6 +43,10 @@ class AXDInterpolant : public Preprocessor {
   z3::solver solver;
 
   void loop();
+
+  void step_1();
+  void step_2();
+  void step_3();
 
   bool testOutput(z3::expr_vector const &, z3::expr_vector &,
 		  z3::expr_vector &);

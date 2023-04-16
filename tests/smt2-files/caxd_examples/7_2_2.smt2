@@ -12,6 +12,7 @@
 (declare-fun i1 () Int)
 (declare-fun i2 () Int)
 (declare-fun diffInt ((Array Int Int) (Array Int Int)) Int)
+(declare-fun lengthInt ((Array Int Int)) Int)
 
 ;; A part
 (assert
@@ -19,6 +20,7 @@
   (= (store a1 i1 i1) a3)
   (= (store a1 1 i1) a3)
   (= (store a3 i2 i2) a4)
+  (= (lengthInt a1) 3)
   (= (diffInt a1 a2) j)
   (= (diffInt a1 c1) j1)
   (= (diffInt a2 c2) j2)))
