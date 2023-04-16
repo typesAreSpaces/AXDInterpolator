@@ -289,8 +289,6 @@ void axdinterpolator::SeparatedPair::processPart_1() {
     // Processing equations of the form i = |a|
     // The following adds (19) predicates
     if (f_name.find("length") != std::string::npos) {
-      // TODO: Provide support for
-      // equations of the form i = |a|
       auto const &i = lhs(equation);
       auto const &a = rhs(equation).arg(0);
       auto const &curr_rd = sig.getRdBySort(a.get_sort());
