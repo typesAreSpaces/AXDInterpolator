@@ -43,6 +43,8 @@ void axdinterpolator::AXDInterpolant::step_1() {
       common_array_pairs.next();
     }
 
+    m_out << ">> Chain of equation of the form diff_n(c_1, c_2) = k_n"
+	  << std::endl;
     m_out << diff_common_map << std::endl;
     // TODO:
     // -) Update part_a.part_2 using diff_common_map
