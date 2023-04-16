@@ -7,9 +7,9 @@
 // Additionally, reorients equations into a 'prelimary canonical
 // normal form', i.e. of the form (= a (f a_1 ... a_{n-1}))
 // where a is a constant
-#define NORMALIZE_INPUT(RAW_INPUT, NORMALIZED_INPUT, NORMALIZED_EXPR)\
+#define NORMALIZE_INPUT(RAW_INPUT, NORMALIZED_INPUT, NORMALIZED_EXPR, SIDE)	\
   z3::expr const & NORMALIZED_EXPR =\
-  normalizeInput(RAW_INPUT);\
+    normalizeInput(RAW_INPUT, SIDE);			\
   if(func_kind(NORMALIZED_EXPR) == Z3_OP_AND){\
     for(unsigned i = 0; i < NORMALIZED_EXPR.num_args(); ++i){\
       auto const & curr_arg = NORMALIZED_EXPR.arg(i);\
@@ -61,8 +61,8 @@ axdinterpolator::Preprocessor::Preprocessor(
   m_out << _input_part_b << std::endl;
 #endif
 
-  NORMALIZE_INPUT(_input_part_a, input_part_a, normalizedExpr_a);
-  NORMALIZE_INPUT(_input_part_b, input_part_b, normalizedExpr_b);
+  NORMALIZE_INPUT(_input_part_a, input_part_a, normalizedExpr_a, PART_A);
+  NORMALIZE_INPUT(_input_part_b, input_part_b, normalizedExpr_b, PART_B);
 
 #if _DEBUG_PREPROCESS_
   m_out << std::endl;
@@ -77,7 +77,8 @@ axdinterpolator::Preprocessor::Preprocessor(
   for(auto const & _empty_array : sig.empty_array_es){
     part_a_array_vars.insert(_empty_array);
     part_b_array_vars.insert(_empty_array);
-    updateLengthIndexVars(_empty_array, true);
+    updateLengthIndexVars(_empty_array, true, PART_A);
+    updateLengthIndexVars(_empty_array, true, PART_B);
   }
 
   unsigned current_conjs_in_input(0);
@@ -105,6 +106,10 @@ axdinterpolator::Preprocessor::Preprocessor(
   m_out << input_part_a << std::endl;
   m_out << "Flatten Part B" << std::endl;
   m_out << input_part_b << std::endl;
+  m_out << "Index variables Part A" << std::endl;
+  m_out << part_a_index_vars << std::endl;
+  m_out << "Index variables Part B" << std::endl;
+  m_out << part_b_index_vars << std::endl;
 #endif
 
   return;

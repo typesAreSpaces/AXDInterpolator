@@ -22,8 +22,8 @@ class Preprocessor {
   // type
   // 4. Replace store by wr of the appropriate
   // type
-  z3::expr normalizeInputDefault(z3::expr const &);
-  z3::expr normalizeInput(z3::expr const &);
+  z3::expr normalizeInputDefault(z3::expr const &, SideInterpolant);
+  z3::expr normalizeInput(z3::expr const &, SideInterpolant);
 
   void flattenPredicate(z3::expr const &, SideInterpolant, unsigned &);
   void flattenBinaryPredicate(z3::expr const &, SideInterpolant, unsigned &);
@@ -47,11 +47,12 @@ class Preprocessor {
   // expression
   std::map<unsigned, z3::expr> length_index_vars;
 
-  void updateLengthIndexVars(z3::expr const &, bool);
-  z3::expr getLengthIndexVar(z3::expr const &);
+  void updateLengthIndexVars(z3::expr const &, bool, SideInterpolant);
 
   z3::expr_vector input_part_a, input_part_b;
 
+  // Use these vectors to instantiate
+  // index variable in 'Step 2'
   z3_expr_vector_unique part_a_index_vars, part_b_index_vars;
 
   ArrayVars part_a_array_vars, part_b_array_vars, common_array_vars;
@@ -62,6 +63,8 @@ public:
   z3::expr fresh_index_constant();
   z3::expr fresh_array_constant(z3::sort const &);
   z3::expr fresh_constant(z3::sort const &);
+
+  z3::expr getLengthIndexVar(z3::expr const &) const;
 };
 
 } // namespace axdinterpolator

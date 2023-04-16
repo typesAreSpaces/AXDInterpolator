@@ -10,8 +10,9 @@ namespace axdinterpolator {
 class SeparatedPair {
 
   friend class AXDInterpolant;
- 
-  AXDSignature const & sig;
+
+  AXDSignature const &sig;
+  Preprocessor const &preprocessor;
 
   DiffMap diff_map;
   WriteVector write_vector;
@@ -25,9 +26,12 @@ class SeparatedPair {
 
   z3::expr const index_var;
 
+  void separateIntoPair(z3::expr_vector const &);
+  void processPart_1();
+
 public:
-  SeparatedPair(AXDSignature const &, z3::expr_vector const &,
-		z3::expr_vector &, ArrayVars const &);
+  SeparatedPair(AXDSignature const &, Preprocessor const &,
+		z3::expr_vector const &, ArrayVars const &);
 
   void initSaturation();
   void updateSaturation(DiffMap::z3_expr_pair const &, z3::expr const &,

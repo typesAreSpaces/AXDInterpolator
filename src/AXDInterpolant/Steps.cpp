@@ -7,18 +7,22 @@ void axdinterpolator::AXDInterpolant::step_1() {
 #endif
   
   if (common_array_vars.areCommonPairsAvaible()) {
+#if _DEBUG_STEPS_
     m_out << std::endl;
     m_out << ">> There are common symbols" << std::endl;
+#endif
 
     CircularPairIterator common_array_pairs(common_array_vars, false);
 
     while (!common_array_pairs.end()) {
-      // TODO: Compute Step 1, i.e. the
+      // TODO:
+      // Compute Step 1, i.e. the
       // chain of equations of the form
       // diff_n(c_1, c_2) = k_n for n = 1 ... N
       // and update part_2 with the translation
       // lemma of these equations using Lemma 3.5
       auto const &common_pair = *common_array_pairs;
+#if _DEBUG_STEPS_
       m_out << ">> First component: ";
       m_out << common_pair.first << std::endl;
       m_out << ">> Id: ";
@@ -31,6 +35,7 @@ void axdinterpolator::AXDInterpolant::step_1() {
       m_out << common_pair.second.id() << std::endl;
       m_out << ">> Name of index representing its length: ";
       m_out << getLengthIndexVar(common_pair.second) << std::endl;
+#endif
       common_array_pairs.next();
     }
   }

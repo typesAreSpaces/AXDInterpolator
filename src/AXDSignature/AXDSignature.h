@@ -119,7 +119,7 @@ struct DiffMapEntry : public z3::expr_vector {
   void push(z3::expr const &, z3::expr const &, z3::expr const &);
 };
 
-// DiffMap :
+// DiffMap:
 // c_array_var.id() x c_array_var.id() -> sequence of diff_k
 struct DiffMap {
 
