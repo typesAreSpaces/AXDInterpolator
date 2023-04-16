@@ -7,8 +7,8 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
 						char const *file_name)
     : Preprocessor(sig, _input_part_a, _input_part_b),
 
-      part_a(sig, (Preprocessor const)*this, input_part_a, part_a_array_vars),
-      part_b(sig, (Preprocessor const)*this, input_part_b, part_b_array_vars),
+      part_a(sig, (Preprocessor const) * this, input_part_a, part_a_array_vars),
+      part_b(sig, (Preprocessor const) * this, input_part_b, part_b_array_vars),
 
       m_file_name(std::string(file_name)),
 

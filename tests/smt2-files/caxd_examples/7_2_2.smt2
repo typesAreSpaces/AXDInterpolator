@@ -31,6 +31,7 @@
  (and
   (= (store a1 i2 i1) a3)
   (= (store a3 i1 i2) a4)
+  (= (lengthInt a2) i2)
   (< j l)
   (< j1 l)
   (< j2 l)

@@ -16,11 +16,14 @@ void axdinterpolator::AXDInterpolant::step_1() {
 
     while (!common_array_pairs.end()) {
       // TODO:
-      // Compute Step 1, i.e. the
+      // -) Compute Step 1, i.e. the
       // chain of equations of the form
       // diff_n(c_1, c_2) = k_n for n = 1 ... N
       // and update part_2 with the translation
       // lemma of these equations using Lemma 3.5
+      // -) Remember the following:
+      // replace terms |a| by the index constant i
+      // such that |a| = i
       auto const &common_pair = *common_array_pairs;
 #if _DEBUG_STEPS_
       m_out << ">> First component: ";

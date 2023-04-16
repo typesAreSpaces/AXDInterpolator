@@ -16,16 +16,10 @@ axdinterpolator::SeparatedPair::SeparatedPair(
       // to encode the type of the INDEX sort
       index_var(sig.ctx.constant("index_var", sig.int_sort)) {
 
-  // TODO:
-  // -) modify translation lemmas
-  // -) replace i for every |a| given equation |a| = i
-  // in translation lemmas
-  // -) plrovide support for equation chains of the form
-  // diff_n(c_1, c_2) = k_n
-
   separateIntoPair(conjunction);
 
-#if _DEBUG_SEPARATED_PAIR_
+#if 0
+  m_out << std::endl;
   m_out << "Part 1: " << part_1 << std::endl;
   m_out << "Part 2: " << part_2 << std::endl;
 #endif
@@ -33,13 +27,10 @@ axdinterpolator::SeparatedPair::SeparatedPair(
   processPart_1();
 
 #if 0
+  m_out << std::endl;
   m_out << "Start - Printing current DiffMap" << std::endl;
   m_out << diff_map << std::endl;
   m_out << "End DiffMap" << std::endl;
-  m_out << "Start - Printing current WriteVector" << std::endl;
-  m_out << write_vector << std::endl;
-  m_out << "End WriteVector" << std::endl;
-  m_out << std::endl;
 #endif
 
   initSaturation();
@@ -247,35 +238,85 @@ void axdinterpolator::SeparatedPair::processPart_1() {
   // Setting up internal data structures
   // WriteVector and DiffMap
   for (auto const &equation : part_1) {
-#if _DEBUG_SEPARATED_PAIR_
+#if 0
+    m_out << std::endl;
     m_out << "Processing equation: " << equation << std::endl;
 #endif
     auto f_name = func_name(rhs(equation));
+
+    // Processing equations of the form a = wr(b, i, e)
+    // The following adds (18) predicates
     if (f_name.find("wr") != std::string::npos) {
-      // Processing equations of the form a = wr(b, i, e)
-      // The following adds (18) predicates
       auto const &a = lhs(equation);
       auto const &b = rhs(equation).arg(0);
       auto const &i = rhs(equation).arg(1);
       auto const &e = rhs(equation).arg(2);
       auto const &curr_rd = sig.getRdBySort(a.get_sort());
+      auto const &curr_undefined = sig.getUndefinedBySort(e.get_sort());
+      auto const &length_b = preprocessor.getLengthIndexVar(b);
 
-      m_out << "haha" << std::endl;
-      m_out << b << std::endl;
-      // m_out << preprocessor.getLengthIndexVar(b) << std::endl;
+      auto const &first_predicate = z3::implies(
+	  e != curr_undefined && 0 <= i && i <= length_b, curr_rd(a, i) == e);
+      auto const &second_predicate =
+	  z3::implies(i < 0 || i > length_b || e == curr_undefined,
+		      curr_rd(a, i) == curr_rd(b, i));
+      auto const &third_predicate = z3::implies(
+	  index_var != i, curr_rd(a, index_var) == curr_rd(b, index_var));
 
-      // part_2.push_back(z3::implies(i >= 0, curr_rd(a, i) == e));
+#if 0
+      m_out << std::endl;
+      m_out << "First predicate Formula (18)" << std::endl;
+      m_out << first_predicate << std::endl;
+      m_out << "Second predicate Formula (18)" << std::endl;
+      m_out << second_predicate << std::endl;
+      m_out << "Third predicate Formula (18)" << std::endl;
+      m_out << third_predicate << std::endl;
+#endif
+      part_2.push_back(first_predicate);
+      part_2.push_back(second_predicate);
+      part_2.push_back(third_predicate);
     }
+
+    // We don't push into part_2 the rewrites
+    // of equations of the form i = diff(a, b)
+    // Instead, we add these equations in our data structure
+    // DiffMap because more diff_k equations will be
+    // added later in Step 1 or the algorithm
     if (f_name.find("diff") != std::string::npos) {
       diff_map.add(lhs(rhs(equation)), rhs(rhs(equation)), lhs(equation));
+    }
+
+    // Processing equations of the form i = |a|
+    // The following adds (19) predicates
+    if (f_name.find("length") != std::string::npos) {
+      // TODO: Provide support for
+      // equations of the form i = |a|
+      auto const &i = lhs(equation);
+      auto const &a = rhs(equation).arg(0);
+      auto const &curr_rd = sig.getRdBySort(a.get_sort());
+      auto const &read_a_at_h = curr_rd(a, index_var);
+      auto const &curr_undefined =
+	  sig.getUndefinedBySort(read_a_at_h.get_sort());
+      auto const &first_predicate = i >= 0;
+      auto const &second_predicate =
+	  (read_a_at_h == curr_undefined) == (0 <= index_var && index_var <= i);
+#if 0
+      m_out << std::endl;
+      m_out << "First predicate" << std::endl;
+      m_out << first_predicate << std::endl;
+      m_out << "Second predicate" << std::endl;
+      m_out << second_predicate << std::endl;
+#endif
+      part_2.push_back(first_predicate);
+      part_2.push_back(second_predicate);
     }
   }
 }
 
 namespace axdinterpolator {
 std::ostream &operator<<(std::ostream &os,
-			 axdinterpolator::SeparatedPair const &si) {
-  return (os << "Part 1: " << si.part_1 << std::endl
-	     << "Part 2: " << si.part_2);
+			 axdinterpolator::SeparatedPair const &sp) {
+  return (os << "Part 1: " << sp.part_1 << std::endl
+	     << "Part 2: " << sp.part_2);
 }
 } // namespace axdinterpolator
