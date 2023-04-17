@@ -233,9 +233,6 @@ void axdinterpolator::AXDInterpolant::step_2() {
 }
 
 void axdinterpolator::AXDInterpolant::step_3() {
-// TODO:
-// -) Lift and replace back AB-common
-// constants introduced by the transformations
 #if _DEBUG_STEPS_
   m_out << std::endl;
   m_out << "Step 3:" << std::endl;

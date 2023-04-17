@@ -45,18 +45,6 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
   m_file_name = m_file_name.substr(0, m_file_name.find_last_of("."))
 		    .substr(m_file_name.find_last_of("\\/") + 1);
 
-  // TODOs:
-  // @Abby
-  // - Implement Step 1 from paper:
-  //   The previous implementation was 'doing this
-  //   step' in each iteration of the main loop
-  //   Take a look to the code in
-  //   SeparatedPair::updateSaturation
-  // @Jose
-  // - Remove loop
-  // - Instantiate directly just once
-  // - Check satisfiability using $EUF \cup T_I$
-
   step_1();
   step_2();
   step_3();
