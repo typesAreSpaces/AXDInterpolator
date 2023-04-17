@@ -60,6 +60,20 @@ z3::expr axdinterpolator::Preprocessor::normalizeInput(z3::expr const &e,
 	    func_name(e).c_str(),
 	    sig.getArraySortBySort(e.get_sort().array_range()));
 	updateLengthIndexVars(new_e, false, side);
+	// Add equations |a| = i
+	auto const &curr_length = sig.getLengthBySort(new_e.get_sort());
+	switch (side) {
+	case PART_A: {
+	  part_a_extra_length_eqs.push(getLengthIndexVar(new_e) ==
+				       curr_length(new_e));
+	  break;
+	}
+	case PART_B: {
+	  part_b_extra_length_eqs.push(getLengthIndexVar(new_e) ==
+				       curr_length(new_e));
+	  break;
+	}
+	}
 	return new_e;
       }
       return e;
@@ -67,7 +81,7 @@ z3::expr axdinterpolator::Preprocessor::normalizeInput(z3::expr const &e,
       // Length rewrite is disabled:
       // The CAXD extension handles this case
       // differently
-#if 0
+#if _DEBUG_NORMALIZE_INPUT_
 	  if (func_name(e).find("length") != std::string::npos) {
 	    auto const &arg = e.arg(0);
 	    z3::func_decl const &curr_diff =

@@ -55,100 +55,10 @@ axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
   // - Remove loop
   // - Instantiate directly just once
   // - Check satisfiability using $EUF \cup T_I$
-  // loop();
 
   step_1();
   step_2();
   step_3();
-}
-
-void axdinterpolator::AXDInterpolant::loop() {
-
-  if (!common_array_vars.areCommonPairsAvaible()) {
-    SmtSolverSetup(solver, part_a);
-    SmtSolverSetup(solver, part_b);
-
-    if (solver.check() == z3::unsat) {
-#if _DEBUG_AXD_LOOP_
-      m_out << "Iteration #0 no common array symbols" << std::endl;
-      m_out << "Current A-part part 2: " << std::endl;
-      SmtSolverOutStreamSetup(m_out, part_a);
-      m_out << "Current B-part part 2: " << std::endl;
-      SmtSolverOutStreamSetup(m_out, part_b);
-#endif
-      is_unsat = true;
-#if _DEBUG_AXD_LOOP_
-      m_out << "Unsat after 0 iterations" << std::endl;
-#endif
-    }
-    return;
-  }
-
-  // BEGIN:
-  // This part was used in the main loop
-  // of the AXDInterpolator implementation
-#if 0
-  while(num_attempts++ < remaining_fuel){
-    solver.push();
-    // The following uses a z3::solver 
-    // to check if part_a \land part_b
-    // is unsat
-    SmtSolverSetup(solver, part_a);
-    SmtSolverSetup(solver, part_b);
-
-    if(solver.check() == z3::unsat){
-#if _DEBUG_AXD_LOOP_ 
-      m_out 
-	<< "Iteration #" 
-	<< num_attempts << std::endl;
-      m_out 
-	<< "Current A-part part 2: " << std::endl;
-      SmtSolverOutStreamSetup(m_out, part_a);
-      m_out 
-	<< "Current B-part part 2: " << std::endl;
-      SmtSolverOutStreamSetup(m_out, part_b);
-#endif
-
-      is_unsat = true;
-#if _DEBUG_AXD_LOOP_
-      m_out 
-	<< "Unsat after " 
-	<< num_attempts 
-	<< " iterations" 
-	<< std::endl;
-#endif
-      return;
-    }
-
-    solver.pop();
-#if _DEBUG_AXD_LOOP_ 
-    m_out 
-      << "Iteration #" 
-      << num_attempts  << std::endl;
-    m_out 
-      << "Current A-part part 2: " << std::endl;
-    SmtSolverOutStreamSetup(m_out, part_a);
-    m_out 
-      << "Current B-part part 2: " << std::endl;
-    SmtSolverOutStreamSetup(m_out, part_b);
-#endif
-    // Find pair of common array variables
-    auto const & common_pair = *search_common_pair;
-
-    unsigned part_a_dim = part_a.diff_map.size_of_entry(common_pair),
-	     part_b_dim = part_b.diff_map.size_of_entry(common_pair),
-	     min_dim = std::min(part_a_dim, part_b_dim);
-
-    auto const & _new_index = fresh_index_constant();
-    part_a.updateSaturation(common_pair, _new_index, min_dim);
-    part_b.updateSaturation(common_pair, _new_index, min_dim);
-
-    search_common_pair.next();
-  }
-#endif
-  // This part was used in the main loop
-  // of the AXDInterpolator implementation
-  // END:
 }
 
 z3::expr axdinterpolator::AXDInterpolant::liftInterpolant(

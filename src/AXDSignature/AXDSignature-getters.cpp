@@ -59,3 +59,11 @@ z3::func_decl axdinterpolator::AXDSignature::getRdBySort(z3::sort const & sort) 
 z3::func_decl axdinterpolator::AXDSignature::getRdBySort(unsigned sort_id) const {
   return rd_es[array_sort_map.at(sort_id)];
 }
+
+z3::func_decl axdinterpolator::AXDSignature::getLengthBySort(z3::sort const & sort) const {
+  return length_es[array_sort_map.at(sort.id())];
+}
+
+z3::func_decl axdinterpolator::AXDSignature::getLengthBySort(unsigned sort_id) const {
+  return length_es[array_sort_map.at(sort_id)];
+}

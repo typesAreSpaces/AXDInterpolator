@@ -103,7 +103,7 @@ int axdinterpolator::run(int argc, char **argv) {
 	// This block is commented
 	// in order to focus on other
 	// parts of the algorithm
-#if 0
+#if _DEBUG_INPUT_FORMULA_PARSER
 	switch (*smt_engine_code) {
 	case '0':
 	  axd.z3OutputFile();

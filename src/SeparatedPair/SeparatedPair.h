@@ -1,7 +1,8 @@
 #ifndef _SEPARATED_PAIR_
 #define _SEPARATED_PAIR_
 
-#define _DEBUG_SEPARATED_PAIR_ 1
+#define _DEBUG_SEPARATED_PAIR_ 0
+#define _DEBUG_PROCESS_PART_1_ 0
 
 #include "Preprocess.h"
 

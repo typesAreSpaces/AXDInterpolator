@@ -1,6 +1,13 @@
 #include "AXDSignature.h"
 #include "Preprocess.h"
 
+// TODO:
+// Investigate `updateVarsDB`
+// This method should only be
+// used with arrays variables
+// and occurring index variables
+// not integers
+
 #define SUBSTITUTE_AND_ADJOINT(INPUT_PART)\
   for(unsigned i = 0; i < INPUT_PART.size(); i++)\
   temp_predicates.push_back(\
@@ -27,6 +34,10 @@
 void axdinterpolator::Preprocessor::flattenPredicate(
     z3::expr const &formula, SideInterpolant side,
     unsigned &current_conjs_in_input) {
+#if _DEBUG_PREPROCESS_
+  m_out << std::endl;
+  m_out << "-) Formula " << formula << std::endl;
+#endif
   switch (func_kind(formula)) {
   case Z3_OP_TRUE:
   case Z3_OP_FALSE:
@@ -34,6 +45,10 @@ void axdinterpolator::Preprocessor::flattenPredicate(
   case Z3_OP_EQ: // ==
   {
     auto const &lhs_form = lhs(formula);
+#if _DEBUG_PREPROCESS_
+    m_out << std::endl;
+    m_out << "-) Formula@Z3_OP_EQ " << formula << std::endl;
+#endif
     if (lhs_form.num_args() == 0) {
       updateVarsDB(lhs_form, side);
       flattenTerm(rhs(formula), side, current_conjs_in_input);
@@ -67,6 +82,10 @@ void axdinterpolator::Preprocessor::flattenPredicate(
 void axdinterpolator::Preprocessor::flattenBinaryPredicate(
     z3::expr const &atomic_predicate, SideInterpolant side,
     unsigned &current_conjs_in_input) {
+#if _DEBUG_PREPROCESS_
+  m_out << std::endl;
+  m_out << "-) I see " << atomic_predicate << std::endl;
+#endif
 
   z3::expr_vector old_terms(sig.ctx);
   z3::expr_vector fresh_consts(sig.ctx);
@@ -75,12 +94,26 @@ void axdinterpolator::Preprocessor::flattenBinaryPredicate(
   auto const &lhs_atom = lhs(atomic_predicate);
   if (lhs_atom.num_args() > 0) {
     old_terms.push_back(lhs_atom);
-    fresh_consts.push_back(fresh_constant(_get_sort(lhs_atom)));
+    if (func_name(lhs_atom).find("length") != std::string::npos) {
+      // This *should be fine* because every
+      // array constant is given a bound
+      // @ Preprocessor::normalizeInput
+      fresh_consts.push_back(getLengthIndexVar(lhs_atom.arg(0)));
+    } else {
+      fresh_consts.push_back(fresh_constant(_get_sort(lhs_atom)));
+    }
   }
   auto const &rhs_atom = rhs(atomic_predicate);
   if (rhs_atom.num_args() > 0) {
     old_terms.push_back(rhs_atom);
-    fresh_consts.push_back(fresh_constant(_get_sort(rhs_atom)));
+    if (func_name(rhs_atom).find("length") != std::string::npos) {
+      // This *should be fine* because every
+      // array constant is given a bound
+      // @ Preprocessor::normalizeInput
+      fresh_consts.push_back(getLengthIndexVar(rhs_atom.arg(0)));
+    } else {
+      fresh_consts.push_back(fresh_constant(_get_sort(rhs_atom)));
+    }
   }
 
   switch (side) {

@@ -43,8 +43,6 @@ class AXDInterpolant : public Preprocessor {
 
   z3::solver solver;
 
-  void loop();
-
   void step_1();
   void step_2();
   void step_3();

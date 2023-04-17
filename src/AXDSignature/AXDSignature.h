@@ -3,6 +3,8 @@
 
 #include "util.h"
 
+#define _DEBUG_ARRAY_VARS 0
+
 #define FRESH_ARRAY_PREFIX "fresh_array_"
 #define FRESH_ELEMENT_PREFIX "fresh_element_"
 #define FRESH_INDEX_PREFIX "fresh_index_"
@@ -78,6 +80,9 @@ struct AXDSignature {
 
   z3::func_decl getRdBySort(z3::sort const &) const;
   z3::func_decl getRdBySort(unsigned) const;
+
+  z3::func_decl getLengthBySort(z3::sort const &) const;
+  z3::func_decl getLengthBySort(unsigned) const;
 
   friend std::ostream &operator<<(std::ostream &, TheoryName const &);
 };

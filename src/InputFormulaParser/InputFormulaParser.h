@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#define _DEBUG_INPUT_FORMULA_PARSER 0
+
 namespace axdinterpolator {
 
 class InputFormulaParser {

@@ -9,7 +9,7 @@ axdinterpolator::ArrayVars::ArrayVars() :
 void axdinterpolator::ArrayVars::insert(
     z3::expr const & array_var){
   unsigned index = array_var.get_sort().id();
-#if 0
+#if _DEBUG_ARRAY_VARS 
   std::cout << ">> Debugging axdinterpolator::ArrayVars" << std::endl;
   std::cout << "Index: " << index << std::endl;
   std::cout << "Array var: " << array_var << std::endl;

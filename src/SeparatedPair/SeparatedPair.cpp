@@ -18,7 +18,7 @@ axdinterpolator::SeparatedPair::SeparatedPair(
 
   separateIntoPair(conjunction);
 
-#if 0
+#if _DEBUG_SEPARATED_PAIR_
   m_out << std::endl;
   m_out << "Part 1: " << part_1 << std::endl;
   m_out << "Part 2: " << part_2 << std::endl;
@@ -26,7 +26,7 @@ axdinterpolator::SeparatedPair::SeparatedPair(
 
   processPart_1();
 
-#if 0
+#if _DEBUG_SEPARATED_PAIR_
   m_out << std::endl;
   m_out << "Start - Printing current DiffMap" << std::endl;
   m_out << diff_map << std::endl;
@@ -40,7 +40,7 @@ void axdinterpolator::SeparatedPair::initSaturation() {
   // This section was commented out
   // Because this corresponds to the
   // AXD(T_I) approach
-#if 0
+#if _DEBUG_SEPARATED_PAIR_
   // ------------------------------------------------
   // Processing equations of the form a = wr(b, i, e)
   // The following adds (18) predicates
@@ -63,7 +63,7 @@ void axdinterpolator::SeparatedPair::initSaturation() {
 // This section was commented out
 // Because this corresponds to the
 // AXD(T_I) approach
-#if 0
+#if _DEBUG_SEPARATED_PAIR_
   // -----------------------------------------------
   // Processing equations of the form diff(a, b) = i
   // The following adds [12] predicates
@@ -153,7 +153,7 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
   // Split input into part_1 and part_2
   // following the rules for "separated pairs".
   for (auto const &current_conj : conjunction) {
-#if 0
+#if _DEBUG_SEPARATED_PAIR_
     m_out << std::endl;
     m_out << "@SeparatedPair" << std::endl;
     m_out << current_conj << std::endl;
@@ -248,9 +248,9 @@ void axdinterpolator::SeparatedPair::processPart_1() {
   // Setting up internal data structures
   // WriteVector and DiffMap
   for (auto const &equation : part_1) {
-#if 0
+#if _DEBUG_PROCESS_PART_1_
     m_out << std::endl;
-    m_out << "Processing equation: " << equation << std::endl;
+    m_out << ">> @processPart_1 Processing equation: " << equation << std::endl; 
 #endif
     auto f_name = func_name(rhs(equation));
 
@@ -273,7 +273,7 @@ void axdinterpolator::SeparatedPair::processPart_1() {
       auto const &third_predicate = z3::implies(
 	  index_var != i, curr_rd(a, index_var) == curr_rd(b, index_var));
 
-#if 0
+#if _DEBUG_SEPARATED_PAIR_
       m_out << std::endl;
       m_out << "First predicate Formula (18)" << std::endl;
       m_out << first_predicate << std::endl;
@@ -307,7 +307,7 @@ void axdinterpolator::SeparatedPair::processPart_1() {
 	  z3::implies(length_a > length_b, i == length_a);
       auto const &fifth_predicate =
 	  z3::implies(length_b > length_a, i == length_b);
-#if 0
+#if _DEBUG_SEPARATED_PAIR_
       m_out << std::endl;
       m_out << "First predicate" << std::endl;
       m_out << first_predicate << std::endl;
@@ -338,9 +338,10 @@ void axdinterpolator::SeparatedPair::processPart_1() {
 	  sig.getUndefinedBySort(read_a_at_h.get_sort());
       auto const &first_predicate = i >= 0;
       auto const &second_predicate =
-	  (read_a_at_h == curr_undefined) == (0 <= index_var && index_var <= i);
-#if 0
+	  (read_a_at_h != curr_undefined) == (0 <= index_var && index_var <= i);
+#if _DEBUG_PROCESS_PART_1_
       m_out << std::endl;
+      m_out << ">> Debugging translation lemmas for length" << std::endl;
       m_out << "First predicate" << std::endl;
       m_out << first_predicate << std::endl;
       m_out << "Second predicate" << std::endl;

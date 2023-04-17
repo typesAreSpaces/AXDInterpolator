@@ -2,6 +2,7 @@
 #define _PREPROCESS_
 
 #define _DEBUG_PREPROCESS_ 0
+#define _DEBUG_NORMALIZE_INPUT_ 0
 
 #include "AXDSignature.h"
 
@@ -54,6 +55,12 @@ class Preprocessor {
   // Use these vectors to instantiate
   // index variable in 'Step 2'
   z3_expr_vector_unique part_a_index_vars, part_b_index_vars;
+
+  // Use these vectors to keep track
+  // of equations of the form |a| = i
+  // that hasn't been added in the
+  // input formula
+  z3_expr_vector_unique part_a_extra_length_eqs, part_b_extra_length_eqs;
 
   ArrayVars part_a_array_vars, part_b_array_vars, common_array_vars;
 

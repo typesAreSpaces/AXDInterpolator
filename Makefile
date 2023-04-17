@@ -14,6 +14,7 @@ all: execute
 
 execute: $(AXD_INTERPOLATOR) $(TAGS)	
 	./run.sh
+# ./run.sh > result.txt
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
