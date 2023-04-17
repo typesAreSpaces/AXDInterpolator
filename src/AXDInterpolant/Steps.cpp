@@ -30,8 +30,12 @@ void axdinterpolator::AXDInterpolant::step_1() {
 	auto const & new_index = fresh_index_constant();
 	diff_common_map.add(common_pair.first, common_pair.second,
 			    new_index);
+	// Update Index vars
 	updateIndexVars(new_index, PART_A);
 	updateIndexVars(new_index, PART_B);
+	// Update DiffMap's
+	part_a.diff_map.add(common_pair.first, common_pair.second, new_index);
+	part_b.diff_map.add(common_pair.first, common_pair.second, new_index);
 #if _DEBUG_STEPS_
 	m_out << std::endl;
 	m_out << ">> First component: ";
@@ -220,7 +224,8 @@ void axdinterpolator::AXDInterpolant::step_2() {
     m_out << conj_B.substitute(from_parametric_index, temp_index_B)
 	  << std::endl;
 #endif
-    auto const &formula = conj_B.substitute(from_parametric_index, temp_index_B); 
+    auto const &formula =
+	conj_B.substitute(from_parametric_index, temp_index_B);
     instantiated_part_b.push_back(formula);
     solver.add(formula);
     temp_index_B.pop_back();

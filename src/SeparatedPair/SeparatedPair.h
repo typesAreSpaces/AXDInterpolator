@@ -33,14 +33,6 @@ public:
   SeparatedPair(AXDSignature const &, Preprocessor const &,
 		z3::expr_vector const &, ArrayVars const &);
 
-  void initSaturation();
-  void updateSaturation(DiffMap::z3_expr_pair const &, z3::expr const &,
-			unsigned min_dim);
-
-  // void instantiate(z3::solver &, z3::expr &) const;
-  // void instantiate(std::ostream &, z3::expr &) const;
-  // void instantiate(z3::expr_vector &, z3::expr &) const;
-
   friend std::ostream &operator<<(std::ostream &, SeparatedPair const &);
 };
 
