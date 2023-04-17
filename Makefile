@@ -7,7 +7,7 @@ DEPENDENCIES=util AXDSignature \
 INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
-.PHONY: all execute debug \
+.PHONY: all execute release debug \
 	clean z3_clean deep_clean
 
 all: execute
@@ -15,6 +15,10 @@ all: execute
 execute: $(AXD_INTERPOLATOR) $(TAGS)	
 	./run.sh
 # ./run.sh > result.txt
+
+release: CXXFLAGS += -O2
+release: CCFLAGS += -O2
+release: $(AXD_INTERPOLATOR) $(TAGS)	
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
