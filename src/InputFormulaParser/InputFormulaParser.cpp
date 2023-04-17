@@ -100,10 +100,6 @@ int axdinterpolator::run(int argc, char **argv) {
 			   // smt2 file name
 			   smt_filename);
 
-	// This block is commented
-	// in order to focus on other
-	// parts of the algorithm
-#if _DEBUG_INPUT_FORMULA_PARSER
 	switch (*smt_engine_code) {
 	case '0':
 	  axd.z3OutputFile();
@@ -115,14 +111,10 @@ int axdinterpolator::run(int argc, char **argv) {
 	  axd.smtInterpolOutputFile();
 	  break;
 	default:
-	  std::cout
-	    << "Not valid SMT solver option."
-	    << std::endl;
+	  std::cout << "Not valid SMT solver option." << std::endl;
 	  // return 3;
 	}
-
 	std::cout << axd << std::endl;
-#endif
       } while (input.next());
 
     } catch (char const *e) {

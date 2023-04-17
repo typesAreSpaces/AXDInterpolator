@@ -201,8 +201,11 @@ void axdinterpolator::AXDInterpolant::step_2() {
     m_out << ">>> After" << std::endl;
     m_out << conj_A.substitute(from_parametric_index, temp_index_A)
 	  << std::endl;
-#endif 
-    solver.add(conj_A.substitute(from_parametric_index, temp_index_A));
+#endif
+    auto const &formula =
+	conj_A.substitute(from_parametric_index, temp_index_A);
+    instantiated_part_a.push_back(formula);
+    solver.add(formula);
     temp_index_A.pop_back();
   }
 
@@ -217,7 +220,9 @@ void axdinterpolator::AXDInterpolant::step_2() {
     m_out << conj_B.substitute(from_parametric_index, temp_index_B)
 	  << std::endl;
 #endif
-    solver.add(conj_B.substitute(from_parametric_index, temp_index_B));
+    auto const &formula = conj_B.substitute(from_parametric_index, temp_index_B); 
+    instantiated_part_b.push_back(formula);
+    solver.add(formula);
     temp_index_B.pop_back();
   }
 }

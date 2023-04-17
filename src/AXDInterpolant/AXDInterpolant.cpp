@@ -2,13 +2,14 @@
 #include "Preprocess.h"
 
 axdinterpolator::AXDInterpolant::AXDInterpolant(AXDSignature &sig,
-						z3::expr _input_part_a,
-						z3::expr _input_part_b,
-						char const *file_name)
+                                                z3::expr _input_part_a,
+                                                z3::expr _input_part_b,
+                                                char const *file_name)
     : Preprocessor(sig, _input_part_a, _input_part_b),
 
       part_a(sig, (Preprocessor const) * this, input_part_a, part_a_array_vars),
       part_b(sig, (Preprocessor const) * this, input_part_b, part_b_array_vars),
+      instantiated_part_a(sig.ctx), instantiated_part_b(sig.ctx),
 
       m_file_name(std::string(file_name)),
 

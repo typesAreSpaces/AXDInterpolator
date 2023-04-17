@@ -34,6 +34,8 @@ class AXDInterpolant : public Preprocessor {
 
   SeparatedPair part_a, part_b;
 
+  z3::expr_vector instantiated_part_a, instantiated_part_b;
+
   std::string m_file_name;
 
   bool is_interpolant_computed, is_unsat, is_valid_result;
@@ -54,6 +56,7 @@ class AXDInterpolant : public Preprocessor {
 
   void SmtSolverSetup(z3::solver &, SeparatedPair const &);
   void SmtSolverOutStreamSetup(std::ostream &, SeparatedPair const &);
+  void SmtSolverOutStreamSetup(std::ostream &, z3::expr_vector const &);
   void AB_VectorsSetup(z3::expr_vector &, SeparatedPair const &);
 
   z3::expr liftInterpolant(z3::expr_vector const &);
