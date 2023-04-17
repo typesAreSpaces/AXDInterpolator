@@ -6,12 +6,14 @@
 
 ;; A part
 (assert
- (=
-  c1
-  (store c2 i e)))
+ (and
+  (=
+   c1
+   (store c2 i e))
+  (distinct
+   (lengthInt c1)
+   (lengthInt c2))))
 
 ;; B part
 (assert
- (distinct
-  (lengthInt c1)
-  (lengthInt c2)))
+ true)
