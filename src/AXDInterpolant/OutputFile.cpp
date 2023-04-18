@@ -18,7 +18,6 @@ void axdinterpolator::AXDInterpolant::z3OutputFile() {
   // Setup smt2 file with reduced formulas
   // in Index Theory + EUF
   system(("mkdir -p " + OUTPUT_DIR).c_str());
-  m_out << OUTPUT_DIR << std::endl;
   std::ofstream z3_file(OUTPUT_DIR + "/" + m_file_name + "_reduced_z3.smt2");
 
   z3_file << "(set-option :produce-interpolants true)" << std::endl;
