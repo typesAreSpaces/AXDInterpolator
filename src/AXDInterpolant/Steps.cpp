@@ -209,7 +209,6 @@ void axdinterpolator::AXDInterpolant::step_2() {
     auto const &formula =
 	conj_A.substitute(from_parametric_index, temp_index_A);
     instantiated_part_a.push_back(formula);
-    solver.add(formula);
     temp_index_A.pop_back();
   }
 
@@ -227,7 +226,6 @@ void axdinterpolator::AXDInterpolant::step_2() {
     auto const &formula =
 	conj_B.substitute(from_parametric_index, temp_index_B);
     instantiated_part_b.push_back(formula);
-    solver.add(formula);
     temp_index_B.pop_back();
   }
 }
@@ -236,12 +234,28 @@ void axdinterpolator::AXDInterpolant::step_3() {
 #if _DEBUG_STEPS_
   m_out << std::endl;
   m_out << "Step 3:" << std::endl;
+#endif
+  solver.add(z3::mk_and(instantiated_part_a));
+  solver.add(z3::mk_and(instantiated_part_b));
+#if _DEBUG_STEPS_
   m_out << solver << std::endl;
 #endif
   switch (solver.check()) {
   case z3::unsat:
     m_out << "Unsatisfiable formula" << std::endl;
     is_unsat = true;
+#if _COMPUTE_INTERPOLANT_DIRECTLY
+    {
+      z3::params p(sig.ctx);
+      m_out << "Interpolant computed using the C++ API" << std::endl;
+      m_out << sig.ctx.get_interpolant(
+		   solver.proof(),
+		   z3::interpolant(z3::mk_and(instantiated_part_a)) &&
+		       z3::mk_and(instantiated_part_b),
+		   p)
+	    << std::endl;
+    }
+#endif
     break;
   case z3::sat:
     m_out << "Satisfiable formula" << std::endl;

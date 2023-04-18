@@ -8,21 +8,24 @@ INCLUDES=-I$(Z3_IDIR) $(DEPENDENCIES:%=-Isrc/%)
 BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 
 .PHONY: all execute release debug \
-	clean z3_clean deep_clean
+	clean z3_clean deep_clean \
+	tags
 
-all: execute
+all: execute tags
 
-execute: $(AXD_INTERPOLATOR) $(TAGS)	
+tags: $(TAGS)
+
+execute: $(AXD_INTERPOLATOR)
 	./run.sh
 # ./run.sh > result.txt
 
 release: CXXFLAGS += -O2
 release: CCFLAGS += -O2
-release: $(AXD_INTERPOLATOR) $(TAGS)	
+release: $(AXD_INTERPOLATOR)
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
-debug: $(AXD_INTERPOLATOR) $(TAGS)	
+debug: $(AXD_INTERPOLATOR)
 	./debug.sh
 
 # -------------------------------------------------

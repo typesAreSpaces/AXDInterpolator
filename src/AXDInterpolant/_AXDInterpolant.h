@@ -10,12 +10,13 @@
 #include "Preprocess.h"
 #include "SeparatedPair.h"
 
-#define _DEBUG_AXD_LOOP_           0
-#define _DEBUG_STEPS_              0
-#define _DEBUG_AXD_CONSTRUCTOR_    0
-#define _TEST_OUTPUT_              0
-#define _TEST_OUTPUT_ORIGINAL_THY_ 0
-#define _INCLUDE_OUTPUT_           1
+#define _DEBUG_AXD_LOOP_              0
+#define _DEBUG_STEPS_                 0
+#define _DEBUG_AXD_CONSTRUCTOR_       0
+#define _TEST_OUTPUT_                 0
+#define _TEST_OUTPUT_ORIGINAL_THY_    0
+#define _INCLUDE_OUTPUT_              1
+#define _COMPUTE_INTERPOLANT_DIRECTLY 0
 
 #define CURRENT_DIR std::string("replace_once")
 #define OUTPUT_DIR  CURRENT_DIR + std::string("/output")

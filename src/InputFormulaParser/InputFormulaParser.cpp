@@ -1,4 +1,5 @@
 #include "InputFormulaParser.h"
+#include "z3++.h"
 
 axdinterpolator::InputFormulaParser::InputFormulaParser(
     const char *theory, const char *smt_filename, const char *smt_engine_code,
@@ -76,7 +77,9 @@ bool axdinterpolator::InputFormulaParser::next() {
 }
 
 int axdinterpolator::run(int argc, char **argv) {
-
+#if _COMPUTE_INTERPOLANT_DIRECTLY 
+  z3::set_param("proof", true);
+#endif
   z3::context ctx;
   ctx.set(":pp-min-alias-size", 1000000);
   ctx.set(":pp-max-depth", 1000000);
