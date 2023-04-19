@@ -259,6 +259,7 @@ void axdinterpolator::AXDInterpolant::step_3() {
     break;
   case z3::sat:
     m_out << "Satisfiable formula" << std::endl;
+    m_out << solver.get_model() << std::endl;
     break;
   case z3::unknown:
     m_out << "Unknown formula" << std::endl;
