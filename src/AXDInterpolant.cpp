@@ -80,8 +80,15 @@ void AXDInterpolant::loop(){
   }
 
   CircularPairIterator search_common_pair(common_array_vars);
+  const unsigned num_common_array_vars = common_array_vars.getSize();
+  // FIX: This can be buggy due overflow
+  const unsigned upper_bound_iterations =
+    num_common_array_vars*num_common_array_vars;
 
   while(num_attempts++ < remaining_fuel){
+    if(sig.is_QF_TO() && num_attempts > upper_bound_iterations){
+      return;
+    }
     solver.push();
     // The following uses a z3::solver 
     // to check if part_a \land part_b
@@ -181,6 +188,10 @@ void AXDInterpolant::liftInterpolantDiffSubs(
       }
     }
   }
+}
+
+bool AXDInterpolant::isUnsat() {
+  return is_unsat;
 }
 
 std::ostream & operator << (std::ostream & os, 

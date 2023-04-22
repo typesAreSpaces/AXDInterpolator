@@ -82,7 +82,7 @@ METHOD=0# Z3
 #METHOD=1# MATHSAT
 #METHOD=2# SMTINTERPOL
 
-ALLOWED_ATTEMPS=1000000
+ALLOWED_ATTEMPS=100
 
 #-- Supported Theories
 THEORY=QF_TO
@@ -110,8 +110,7 @@ FILE_TEST=$(TEST_DIR)/not_7_2.smt2
 #FILE_TEST=$(TEST_DIR)/strcpy_example_variant_3.smt2
 
 tests/one: $(AXD_INTERPOLATOR)
-	./$(AXD_INTERPOLATOR) \
-		$(THEORY) $(FILE_TEST) $(METHOD) $(ALLOWED_ATTEMPS)
+	./run.sh
 	rm -rf tests/*.o $@
 
 tests/all: $(AXD_INTERPOLATOR)

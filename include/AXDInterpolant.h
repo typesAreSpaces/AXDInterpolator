@@ -98,6 +98,8 @@ class AXDInterpolant : public Preprocessor {
   void mathsatOutputFile();
   void smtInterpolOutputFile();
 
+  bool isUnsat();
+
   friend std::ostream & operator << (
       std::ostream &, AXDInterpolant const &);
 };

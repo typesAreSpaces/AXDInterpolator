@@ -70,37 +70,37 @@ int main(int argc, char * argv[]){
                   argv[2], 
                   // Number of allowed attemps
                   strtoul(argv[4], NULL, 0));
-              switch(*argv[3]){
-                case '0':
-                  axd.z3OutputFile();
-                  break;
-                case '1':
-                  axd.mathsatOutputFile();
-                  break;
-                case '2':
-                  axd.smtInterpolOutputFile();
-                  break;
-                default:
-                  std::cout
-                    << "Not valid SMT solver option."
-                    << std::endl;
-                  return 3;
-              }
-              std::cout << axd << std::endl;
-            }
-          }
-          return 0;
-        }
-        catch(char const * e){
-          std::cout << e << std::endl;
-          return 4;
-        }
-      }
+	      if (axd.isUnsat()) {
+		switch (*argv[3]) {
+		case '0':
+		  axd.z3OutputFile();
+		  break;
+		case '1':
+		  axd.mathsatOutputFile();
+		  break;
+		case '2':
+		  axd.smtInterpolOutputFile();
+		  break;
+		default:
+		  std::cout << "Not valid SMT solver option." << std::endl;
+		  return 3;
+		}
+		std::cout << axd << std::endl;
+              } else {
+		std::cout << "Formula is satisfiable" << std::endl;
+		return 0;
+	      }
+	    }
+	  }
+	  return 0;
+	} catch (char const *e) {
+	  std::cout << e << std::endl;
+	  return 4;
+	}
+    }
 
     default:
-      std::cout
-        << "Invalid number of arguments." 
-        << std::endl;
-      return 5;
-  }
+	std::cout << "Invalid number of arguments." << std::endl;
+	return 5;
+    }
 }
