@@ -8,25 +8,39 @@
 // and occurring index variables
 // not integers
 
-#define SUBSTITUTE_AND_ADJOINT(INPUT_PART)\
-  for(unsigned i = 0; i < INPUT_PART.size(); i++)\
-  temp_predicates.push_back(\
-      INPUT_PART[i].substitute(old_terms, fresh_consts)\
-      );\
-      \
-      for(unsigned i = 0; i < old_terms.size(); i++)\
-      temp_predicates.push_back(fresh_consts[i] == old_terms[i]);\
-      \
-      INPUT_PART = temp_predicates;\
-      current_conjs_in_input += old_terms.size();
+#define UPDATE_INDEX_CONSTANT                                                  \
+  switch (side) {                                                              \
+  case PART_A:                                                                 \
+    if (!inSet(index_constant.id(), indexALocalIds)) {                         \
+      indexALocalIds.insert(index_constant.id());                              \
+      n_IndexALocal++;                                                         \
+    }                                                                          \
+    break;                                                                     \
+  case PART_B:                                                                 \
+    if (!inSet(index_constant.id(), indexBLocalIds)) {                         \
+      indexBLocalIds.insert(index_constant.id());                              \
+      n_IndexBLocal++;                                                         \
+    }                                                                          \
+    break;                                                                     \
+  }
 
-#define SUBSTITUTE_AND_ADJOINT_ONE(INPUT_PART)\
-  for(unsigned i = 0; i < INPUT_PART.size(); i++)\
-  temp_predicates.push_back(\
-      INPUT_PART[i].substitute(from, to));\
-      temp_predicates.push_back(new_const == old_term);\
-      INPUT_PART = temp_predicates;\
-      current_conjs_in_input++;
+#define SUBSTITUTE_AND_ADJOINT(INPUT_PART)                                     \
+  for (unsigned i = 0; i < INPUT_PART.size(); i++)                             \
+    temp_predicates.push_back(                                                 \
+	INPUT_PART[i].substitute(old_terms, fresh_consts));                    \
+									       \
+  for (unsigned i = 0; i < old_terms.size(); i++)                              \
+    temp_predicates.push_back(fresh_consts[i] == old_terms[i]);                \
+									       \
+  INPUT_PART = temp_predicates;                                                \
+  current_conjs_in_input += old_terms.size();
+
+#define SUBSTITUTE_AND_ADJOINT_ONE(INPUT_PART)                                 \
+  for (unsigned i = 0; i < INPUT_PART.size(); i++)                             \
+    temp_predicates.push_back(INPUT_PART[i].substitute(from, to));             \
+  temp_predicates.push_back(new_const == old_term);                            \
+  INPUT_PART = temp_predicates;                                                \
+  current_conjs_in_input++;
 
 // flattens a predicate expression
 // using flattenTerm and flattenPredidcateAux
@@ -169,22 +183,7 @@ void axdinterpolator::Preprocessor::flattenTerm(
 	auto term_name = func_name(term);
 	if (term_name.find("wr") != std::string::npos) {
 	  auto index_constant = term.arg(1);
-	  switch (side) {
-	  case PART_A:
-	    if (indexALocalIds.find(index_constant.id()) ==
-		indexALocalIds.end()) {
-	      indexALocalIds.insert(index_constant.id());
-	      n_IndexALocal++;
-	    }
-	    break;
-	  case PART_B:
-	    if (indexBLocalIds.find(index_constant.id()) ==
-		indexBLocalIds.end()) {
-	      indexBLocalIds.insert(index_constant.id());
-	      n_IndexBLocal++;
-	    }
-	    break;
-	  }
+	  UPDATE_INDEX_CONSTANT;
 	}
 	auto const &curr_arg = term.arg(i);
 	auto const &type_arg = _get_sort(curr_arg);
