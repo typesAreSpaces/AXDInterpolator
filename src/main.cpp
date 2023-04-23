@@ -70,6 +70,10 @@ int main(int argc, char * argv[]){
                   argv[2], 
                   // Number of allowed attemps
                   strtoul(argv[4], NULL, 0));
+	      if(axd.fuelExhausted()){
+		std::cout << "Given fuel is not enough" << std::endl;
+		return 0;
+	      }
 	      if (axd.isUnsat()) {
 		switch (*argv[3]) {
 		case '0':
@@ -86,7 +90,7 @@ int main(int argc, char * argv[]){
 		  return 3;
 		}
 		std::cout << axd << std::endl;
-              } else {
+	      } else {
 		std::cout << "Formula is satisfiable" << std::endl;
 		return 0;
 	      }

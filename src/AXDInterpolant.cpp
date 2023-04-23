@@ -1,16 +1,12 @@
 #include "_AXDInterpolant.h"
 #include "z3++.h"
 
-AXDInterpolant::AXDInterpolant(
-    AXDSignature & sig, 
-    z3::expr const & _input_part_a,
-    z3::expr const & _input_part_b,
-    char const * file_name,
-    unsigned allowed_attempts) : 
-  Preprocessor(sig, _input_part_a, _input_part_b),
-  part_a(
-      sig,
-      input_part_a,
+AXDInterpolant::AXDInterpolant(AXDSignature &sig, z3::expr const &_input_part_a,
+                               z3::expr const &_input_part_b,
+                               char const *file_name, unsigned allowed_attempts)
+    : Preprocessor(sig, _input_part_a, _input_part_b), part_a(sig,
+
+                                                              input_part_a,
       part_a_index_vars, 
       part_a_array_vars),
   part_b(
@@ -85,78 +81,73 @@ void AXDInterpolant::loop(){
   const unsigned upper_bound_iterations =
     num_common_array_vars*num_common_array_vars;
 
-  while(num_attempts++ < remaining_fuel){
-    if(sig.is_QF_TO() && num_attempts > upper_bound_iterations){
+  while(true){
+    if(num_attempts > remaining_fuel){
+      state_output = not_enough_fuel;
       return;
     }
     solver.push();
-    // The following uses a z3::solver 
+    // The following uses a z3::solver
     // to check if part_a \land part_b
     // is unsat
     SmtSolverSetup(solver, part_a);
     SmtSolverSetup(solver, part_b);
+    if (sig.is_QF_TO() && num_attempts > upper_bound_iterations) {
+      std::cout << solver.assertions() << std::endl;
+      std::cout << solver.check() << std::endl;
+      std::cout << solver.get_model() << std::endl;
+      solver.pop();
+      return;
+    }
 
-    if(solver.check() == z3::unsat){
-#if _DEBUG_AXD_LOOP_ 
-      m_out 
-        << "Iteration #" 
-        << num_attempts << std::endl;
-      m_out 
-        << "Current A-part part 2: " << std::endl;
+    if (solver.check() == z3::unsat) {
+#if _DEBUG_AXD_LOOP_
+      m_out << "Iteration #" << num_attempts << std::endl;
       SmtSolverOutStreamSetup(m_out, part_a);
-      m_out 
-        << "Current B-part part 2: " << std::endl;
+      m_out << "Current B-part part 2: " << std::endl;
       SmtSolverOutStreamSetup(m_out, part_b);
 #endif
 
       is_unsat = true;
 #if _DEBUG_AXD_LOOP_
-      m_out 
-        << "Unsat after " 
-        << num_attempts 
-        << " iterations" 
-        << std::endl;
+      m_out << "Unsat after " << num_attempts << " iterations" << std::endl;
 #endif
       return;
     }
 
     solver.pop();
-#if _DEBUG_AXD_LOOP_ 
-    m_out 
-      << "Iteration #" 
-      << num_attempts  << std::endl;
-    m_out 
-      << "Current A-part part 2: " << std::endl;
+#if _DEBUG_AXD_LOOP_
+    m_out << "Iteration #" << num_attempts << std::endl;
+    m_out << "Current A-part part 2: " << std::endl;
     SmtSolverOutStreamSetup(m_out, part_a);
-    m_out 
-      << "Current B-part part 2: " << std::endl;
+    m_out << "Current B-part part 2: " << std::endl;
     SmtSolverOutStreamSetup(m_out, part_b);
 #endif
     // Find pair of common array variables
-    auto const & common_pair = *search_common_pair;
+    auto const &common_pair = *search_common_pair;
 
     unsigned part_a_dim = part_a.diff_map.size_of_entry(common_pair),
-             part_b_dim = part_b.diff_map.size_of_entry(common_pair),
-             min_dim = std::min(part_a_dim, part_b_dim);
+	     part_b_dim = part_b.diff_map.size_of_entry(common_pair),
+	     min_dim = std::min(part_a_dim, part_b_dim);
 
-    auto const & _new_index = fresh_index_constant();
+    auto const &_new_index = fresh_index_constant();
     part_a.updateSaturation(common_pair, _new_index, min_dim);
     part_b.updateSaturation(common_pair, _new_index, min_dim);
 
     search_common_pair.next();
+    num_attempts++;
   }
 }
 
-z3::expr AXDInterpolant::liftInterpolant(
-    z3::expr_vector const & interpolant){
+z3::expr AXDInterpolant::liftInterpolant(z3::expr_vector const &interpolant) {
 
   z3::expr_vector _interpolant(sig.ctx);
 
-  if(sig.is_QF_TO())
-    for(auto const & x : interpolant)
+  if (sig.is_QF_TO())
+    for (auto const &x : interpolant)
       _interpolant.push_back(x.qf_to_simplify());
   else
-    for(auto const & x : interpolant)
+    for (auto const &x : interpolant)
       _interpolant.push_back(x);
 
   z3::expr_vector from(sig.ctx);
@@ -168,83 +159,72 @@ z3::expr AXDInterpolant::liftInterpolant(
   return z3::mk_and(_interpolant).substitute(from, to);
 }
 
-void AXDInterpolant::liftInterpolantDiffSubs(
-    z3::expr_vector & from,
-    z3::expr_vector & to,
-    StandardInput const & input
-    ){
-  for(auto const & diff_entry : input.diff_map.m_map){
-    auto const & diff_a   = diff_entry.first.first;
-    auto const & diff_b   = diff_entry.first.second;
-    auto const & diff_seq = diff_entry.second;
-    auto const & curr_diff_k = sig.getDiff_BySort(diff_a.get_sort());
+void AXDInterpolant::liftInterpolantDiffSubs(z3::expr_vector &from,
+					     z3::expr_vector &to,
+					     StandardInput const &input) {
+  for (auto const &diff_entry : input.diff_map.m_map) {
+    auto const &diff_a = diff_entry.first.first;
+    auto const &diff_b = diff_entry.first.second;
+    auto const &diff_seq = diff_entry.second;
+    auto const &curr_diff_k = sig.getDiff_BySort(diff_a.get_sort());
     unsigned diff_iteration = 1;
-    for(auto const & k_ : diff_seq){
-      if(func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0){
-        from.push_back(k_);
-        to.push_back(curr_diff_k(
-              sig.ctx.int_val(diff_iteration++), 
-              diff_a, diff_b));
+    for (auto const &k_ : diff_seq) {
+      if (func_name(k_).rfind(FRESH_COMMON_PREFIX, 0) == 0) {
+	from.push_back(k_);
+	to.push_back(
+	    curr_diff_k(sig.ctx.int_val(diff_iteration++), diff_a, diff_b));
       }
     }
   }
 }
 
-bool AXDInterpolant::isUnsat() {
-  return is_unsat;
-}
+bool AXDInterpolant::isUnsat() { return is_unsat; }
 
-std::ostream & operator << (std::ostream & os, 
-    AXDInterpolant const & axd){
+bool AXDInterpolant::fuelExhausted() { return state_output == not_enough_fuel; }
 
-  if(!axd.remaining_fuel)
-    return os 
-      << "Unknown: Input formula might be "
-      "satisfiable or unsatisfiable.";
-  if(!axd.is_unsat)
-    return os 
-      << "Input formula is satisfiable.";
-  if(!axd.is_valid_result)
-    return os 
-      << "Input formula is unsatisfiable.\n"
-      "Solver used wasn't able to compute "
-      "an interpolant in the specified theory";
-  if(axd.is_interpolant_computed){
-    os 
-      << "Input formula is unsatisfiable." 
-      << std::endl;
-    switch(axd.state_output){
-      case AXDInterpolant::undefined:
-        os
-          << "State Output: not tested" 
-          << std::endl;
-        break;
-      case AXDInterpolant::fine:
-        os 
+std::ostream &operator<<(std::ostream &os, AXDInterpolant const &axd) {
+
+  if (!axd.remaining_fuel)
+    return os << "Unknown: Input formula might be "
+		 "satisfiable or unsatisfiable.";
+  if (!axd.is_unsat)
+    return os << "Input formula is satisfiable.";
+  if (!axd.is_valid_result)
+    return os << "Input formula is unsatisfiable.\n"
+		 "Solver used wasn't able to compute "
+		 "an interpolant in the specified theory";
+  if (axd.is_interpolant_computed) {
+    os << "Input formula is unsatisfiable." << std::endl;
+    switch (axd.state_output) {
+    case AXDInterpolant::not_enough_fuel:
+      os << "State Output: Fuel was depleted" << std::endl;
+      break;
+
+    case AXDInterpolant::undefined:
+      os << "State Output: not tested" << std::endl;
+      break;
+    case AXDInterpolant::fine:
+      os
 #if _TEST_OUTPUT_ORIGINAL_THY_
-          << "State Output: valid in the original theory" 
+	  << "State Output: valid in the original theory"
 #else
-          << "State Output: valid in the reduced theory" 
+	  << "State Output: valid in the reduced theory"
 #endif
-          << std::endl;
-        break;
-      case AXDInterpolant::notfine:
-        os 
-          << "State Output: not valid" 
-          << std::endl;
-        break;
+	  << std::endl;
+      break;
+    case AXDInterpolant::notfine:
+      os << "State Output: not valid" << std::endl;
+      break;
     }
-    return os 
+    return os
 #if _INCLUDE_OUTPUT_
-      << "Interpolant:" << std::endl
-      << axd.current_interpolant
+	   << "Interpolant:" << std::endl
+	   << axd.current_interpolant
 #endif
-      ;
-  }
-  else
-    return os 
-      << "Interpolant hasn't been computed.\n"
-      "Use .z3OutputFile or .mathsatOutputFile\n"
-      "or .directComputation on a AXDInterpolant\n" 
-      "object to obtain an interpolant.";
+	;
+  } else
+    return os << "Interpolant hasn't been computed.\n"
+		 "Use .z3OutputFile or .mathsatOutputFile\n"
+		 "or .directComputation on a AXDInterpolant\n"
+		 "object to obtain an interpolant.";
 }
