@@ -47,7 +47,7 @@ class AXDInterpolant : public Preprocessor {
     StandardInput::DiffMap::z3_expr_pair operator *() const;
   };
 
-  enum StateOutput { undefined, fine, notfine };
+  enum StateOutput { undefined, fine, notfine, not_enough_fuel };
 
   StandardInput        part_a, part_b;
   std::string          m_file_name;
@@ -99,6 +99,7 @@ class AXDInterpolant : public Preprocessor {
   void smtInterpolOutputFile();
 
   bool isUnsat();
+  bool fuelExhausted();
 
   friend std::ostream & operator << (
       std::ostream &, AXDInterpolant const &);
