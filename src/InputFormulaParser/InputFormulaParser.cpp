@@ -77,6 +77,9 @@ bool axdinterpolator::InputFormulaParser::next() {
 }
 
 int axdinterpolator::run(int argc, char **argv) {
+#if _ENABLE_UNSAT_CORES
+  z3::set_param("unsat_core", true);
+#endif
 #if _COMPUTE_INTERPOLANT_DIRECTLY 
   z3::set_param("proof", true);
 #endif

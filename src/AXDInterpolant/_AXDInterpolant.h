@@ -17,6 +17,7 @@
 #define _TEST_OUTPUT_ORIGINAL_THY_    0
 #define _INCLUDE_OUTPUT_              1
 #define _COMPUTE_INTERPOLANT_DIRECTLY 0
+#define _ENABLE_UNSAT_CORES           1
 
 #define CURRENT_DIR std::string("replace_once")
 #define OUTPUT_DIR  CURRENT_DIR + std::string("/output")

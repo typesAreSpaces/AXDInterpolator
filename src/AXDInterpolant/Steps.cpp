@@ -244,6 +244,10 @@ void axdinterpolator::AXDInterpolant::step_3() {
   case z3::unsat:
     m_out << "Unsatisfiable formula" << std::endl;
     is_unsat = true;
+#if _ENABLE_UNSAT_CORES
+    m_out << "Unsat core vector" << std::endl;
+    m_out << solver.unsat_core() << std::endl;
+#endif
 #if _COMPUTE_INTERPOLANT_DIRECTLY
     {
       z3::params p(sig.ctx);
