@@ -137,11 +137,11 @@ void axdinterpolator::AXDInterpolant::step_1() {
 		z3::mk_or(temp_disjs))
 	    << std::endl;
 #endif
-      part_a.part_2.push_back(z3::implies(part_a.index_var > indexes[size - 1],
+      part_a.parametric_formulas.push_back(z3::implies(part_a.index_var > indexes[size - 1],
 					  curr_rd(c_1, part_a.index_var) ==
 					      curr_rd(c_2, part_a.index_var)) ||
 			      z3::mk_or(temp_disjs));
-      part_b.part_2.push_back(z3::implies(part_a.index_var > indexes[size - 1],
+      part_b.parametric_formulas.push_back(z3::implies(part_a.index_var > indexes[size - 1],
 					  curr_rd(c_1, part_a.index_var) ==
 					      curr_rd(c_2, part_a.index_var)) ||
 			      z3::mk_or(temp_disjs));
@@ -195,7 +195,7 @@ void axdinterpolator::AXDInterpolant::step_2() {
   z3::expr_vector from_parametric_index(sig.ctx);
   from_parametric_index.push_back(part_a.index_var);
 
-  z3::expr conj_A = z3::mk_and(part_a.part_2);
+  z3::expr conj_A = z3::mk_and(part_a.parametric_formulas);
   z3::expr_vector temp_index_A(sig.ctx);
   for (unsigned i = 0; i < part_a_index_vars.size(); i++) {
     temp_index_A.push_back(part_a_index_vars[i]);
@@ -207,12 +207,13 @@ void axdinterpolator::AXDInterpolant::step_2() {
 	  << std::endl;
 #endif
     auto const &formula =
-	conj_A.substitute(from_parametric_index, temp_index_A);
+      conj_A.substitute(from_parametric_index, temp_index_A);
     instantiated_part_a.push_back(formula);
     temp_index_A.pop_back();
   }
+  instantiated_part_a.push_back(z3::mk_and(part_a.part_2));
 
-  z3::expr conj_B = z3::mk_and(part_b.part_2);
+  z3::expr conj_B = z3::mk_and(part_b.parametric_formulas);
   z3::expr_vector temp_index_B(sig.ctx);
   for (unsigned i = 0; i < part_b_index_vars.size(); i++) {
     temp_index_B.push_back(part_b_index_vars[i]);
@@ -228,6 +229,7 @@ void axdinterpolator::AXDInterpolant::step_2() {
     instantiated_part_b.push_back(formula);
     temp_index_B.pop_back();
   }
+  instantiated_part_b.push_back(z3::mk_and(part_b.part_2));
 }
 
 void axdinterpolator::AXDInterpolant::step_3() {
