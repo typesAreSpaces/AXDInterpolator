@@ -210,7 +210,8 @@ void axdinterpolator::SeparatedPair::processPart_1() {
 #endif
       part_2.push_back(first_predicate);
       part_2.push_back(second_predicate);
-      part_2.push_back(third_predicate);
+      //part_2.push_back(third_predicate);
+      parametric_formulas.push_back(third_predicate);
       part_2.push_back(forth_predicate);
       part_2.push_back(fifth_predicate);
     }
