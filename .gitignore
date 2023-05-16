@@ -3,6 +3,7 @@
 *.clangd
 *.cache
 *compile_commands.json
+*done
 
 bin/*
 include/z3*

@@ -65,17 +65,6 @@ $(SDIR)/AXDInterpolant/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(MAKE) -C $(SDIR)/AXDInterpolant \
 		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
-$(SDIR)/InputFormulaParser/done: $(LDIR)/libz3.$(SO_EXT) \
-	$(SDIR)/AXDInterpolant/done \
-	$(SDIR)/InputFormulaParser/*.cpp
-	$(MAKE) -C $(SDIR)/InputFormulaParser \
-		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
-
-$(SDIR)/TODO/done: $(LDIR)/libz3.$(SO_EXT) \
-	$(SDIR)/TODO/*.cpp
-	$(MAKE) -C $(SDIR)/TODO \
-		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
-
 $(ODIR)/%.o: $(SDIR)/%.cpp \
 	$(LDIR)/libz3.$(SO_EXT)
 	mkdir -p $(ODIR) 
@@ -103,10 +92,6 @@ $(TAGS): $(AXD_INTERPOLATOR)
 		compile_commands.json
 	$(MAKE) -C $(SDIR)/AXDInterpolant \
 		compile_commands.json
-	$(MAKE) -C $(SDIR)/InputFormulaParser \
-		compile_commands.json
-	$(MAKE) -C $(SDIR)/TODO \
-		compile_commands.json
 	# ---------------------------------------
 
 include test.mk
@@ -119,13 +104,10 @@ clean:
 	rm -rf $(AXD_INTERPOLATOR)
 	rm -rf $(TAGS)
 	$(MAKE) -C output clean
-	$(MAKE) -C $(SDIR)/util clean 
 	$(MAKE) -C $(SDIR)/AXDSignature clean
 	$(MAKE) -C $(SDIR)/Preprocess clean 
 	$(MAKE) -C $(SDIR)/StandardInput clean 
 	$(MAKE) -C $(SDIR)/AXDInterpolant clean 
-	$(MAKE) -C $(SDIR)/InputFormulaParser clean 
-	$(MAKE) -C $(SDIR)/TODO clean 
 
 z3_clean:
 	if [ -d "$(Z3_DIR)/build" ]; then \
