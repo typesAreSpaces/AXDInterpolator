@@ -88,7 +88,7 @@ DYLD_LIBRARY_PATH=./lib ./bin/caxd_interpolator QF_TO ./tests/smt2-files/maxdiff
 The binary ``caxd_interpolator`` outputs to the standard output any of the following:
 
 * If the formula is unsatisfiable, then it outputs *Unsatisfiable:* followed by the interpolant obtained.
-* If the formula is satisfiable, then the implementation outputs either *Satisfiable:*.
+* If the formula is satisfiable, then the implementation outputs either *Satisfiable*.
 
 ## Replicating SMT 2021 submission results
 
