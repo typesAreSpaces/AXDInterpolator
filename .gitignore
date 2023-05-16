@@ -17,3 +17,5 @@ tests/verification-files/files/*
 tests/benchmark/results/scripts/__pycache__/*
 
 sessions/*
+
+src/AXDInterpolant/AXDInterpolant.h
