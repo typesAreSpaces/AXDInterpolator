@@ -11,6 +11,7 @@ axdinterpolator::SeparatedPair::SeparatedPair(
       diff_map(array_var_ids, sig),
 
       part_1(sig.ctx), part_2(sig.ctx),
+      parametric_formulas(sig.ctx),
 
       // Convention: we use Int
       // to encode the type of the INDEX sort
@@ -170,7 +171,8 @@ void axdinterpolator::SeparatedPair::processPart_1() {
 #endif
       part_2.push_back(first_predicate);
       part_2.push_back(second_predicate);
-      part_2.push_back(third_predicate);
+      //part_2.push_back(third_predicate);
+      parametric_formulas.push_back(third_predicate);
     }
 
     // Processing equations of the form i = diff(a, b)
@@ -234,7 +236,8 @@ void axdinterpolator::SeparatedPair::processPart_1() {
       m_out << second_predicate << std::endl;
 #endif
       part_2.push_back(first_predicate);
-      part_2.push_back(second_predicate);
+      //part_2.push_back(second_predicate);
+      parametric_formulas.push_back(second_predicate);
     }
   }
 }

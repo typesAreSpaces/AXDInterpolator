@@ -23,6 +23,7 @@ class SeparatedPair {
   // --) |a| = i like equations
   // -) part_2 contains the rest
   z3::expr_vector part_1, part_2;
+  z3::expr_vector parametric_formulas;
 
   z3::expr const index_var;
 
