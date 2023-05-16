@@ -55,9 +55,9 @@ $(SDIR)/Preprocess/done: $(LDIR)/libz3.$(SO_EXT) \
 	$(MAKE) -C $(SDIR)/Preprocess \
 		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
-$(SDIR)/SeparatedPair/done: $(LDIR)/libz3.$(SO_EXT) \
-	$(SDIR)/SeparatedPair/*.cpp
-	$(MAKE) -C $(SDIR)/SeparatedPair \
+$(SDIR)/StandardInput/done: $(LDIR)/libz3.$(SO_EXT) \
+	$(SDIR)/StandardInput/*.cpp
+	$(MAKE) -C $(SDIR)/StandardInput \
 		CCFLAGS="$(CCFLAGS)" CXXFLAGS="$(CXXFLAGS)"
 
 $(SDIR)/AXDInterpolant/done: $(LDIR)/libz3.$(SO_EXT) \
@@ -99,7 +99,7 @@ $(TAGS): $(AXD_INTERPOLATOR)
 		compile_commands.json
 	$(MAKE) -C $(SDIR)/Preprocess \
 		compile_commands.json
-	$(MAKE) -C $(SDIR)/SeparatedPair \
+	$(MAKE) -C $(SDIR)/StandardInput \
 		compile_commands.json
 	$(MAKE) -C $(SDIR)/AXDInterpolant \
 		compile_commands.json
@@ -122,7 +122,7 @@ clean:
 	$(MAKE) -C $(SDIR)/util clean 
 	$(MAKE) -C $(SDIR)/AXDSignature clean
 	$(MAKE) -C $(SDIR)/Preprocess clean 
-	$(MAKE) -C $(SDIR)/SeparatedPair clean 
+	$(MAKE) -C $(SDIR)/StandardInput clean 
 	$(MAKE) -C $(SDIR)/AXDInterpolant clean 
 	$(MAKE) -C $(SDIR)/InputFormulaParser clean 
 	$(MAKE) -C $(SDIR)/TODO clean 
