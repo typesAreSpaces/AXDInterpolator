@@ -14,15 +14,10 @@ INTERPOLATION_ENGINE=$iZ3
 THEORY=QF_LIA
 
 TEST_DIR=tests/smt2-files/caxd_examples
-# CURR_TEST=6_8.smt2
-# CURR_TEST=7_1.smt2
-CURR_TEST=7_2.smt2
-# CURR_TEST=not_7_2.smt2
-# CURR_TEST=jhala.smt2
-# CURR_TEST=modified_jhala.smt2
+CURR_TEST=7_2_2.smt2
 
-echo ">> Checking file" "$TEST_DIR/$CURR_TEST"
+echo ">> Debugging file" "$TEST_DIR/$CURR_TEST"
 
-./bin/axd_interpolator \
+gdb --args ./bin/axd_interpolator \
     $THEORY $TEST_DIR/$CURR_TEST \
     $INTERPOLATION_ENGINE
