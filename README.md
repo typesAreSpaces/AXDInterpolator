@@ -14,8 +14,10 @@ iZ3 and Mathsat as such engines.
 In the root directory, execute the command:
 
 ```
-make
+./make_common.sh
+make -j<N>
 ```
+where `<N>` is the number of cores the build script is allowed to use.
 
 If the above is successful, then the binary file _axd_interpolator_
 will be located inside the _bin_ directory.
