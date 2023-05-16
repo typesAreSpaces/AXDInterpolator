@@ -1,9 +1,9 @@
-# AXDInterpolator
+# CAXDInterpolator
 
 This project implements an interpolation algorithm
 for the theory of arrays extended with the diff 
 operator equipped with an index theory $T_I$. 
-The approach computes a reduction from the $AXDiff(T_I)$
+The approach computes a reduction from the $CAXD(T_I)$
 theory to the theory of $EUF \cup T_I$ and 
 calls an interpolation engine to process the 
 reduced formula. Currently, the software supports the following
@@ -23,7 +23,7 @@ make -j<N>
 ```
 where `<N>` is the number of cores the build script is allowed to use.
 
-If the above is successful, then the binary file ``axd_interpolator``
+If the above is successful, then the binary file ``caxd_interpolator``
 will be located inside the _bin_ directory.
 
 If the user wants to use the `MathSAT` SMT solver, the 
@@ -61,7 +61,7 @@ The first one encodes the A-part and the second one the B-part.
 
 ## Using the implementation
 
-The ``axd_interpolator`` binaries receives 4 arguments:
+The ``caxd_interpolator`` binaries receives 3 arguments:
 
 * The first argument specifies the theory to be used. Currently, the implementation supports the quantifier free fragment of the following theories: total order, integer difference logic, unit-two variable per inequality ($UTVPI$), and linear arithmetic logic. The user should specify $QF_{TO}$ to use the total order logic, $QF_{IDL}$ for integer difference logic, $QF_{UTVPI}$ for $UTVPI$, and $QF_{LIA}$ for the linear arithmetic logic option.
 * The second argument specifies the path of the smt2 file to work with.
@@ -69,12 +69,11 @@ The ``axd_interpolator`` binaries receives 4 arguments:
   - Option 0 uses ``iZ3`` 
   - Option 1 uses ``MathSAT``
   - Option 2 uses ``SMTInterpol``
-* The fourth argument specifies a number of attempts, i.e. a number that bounds the number of executions of the main loop of the implementation.
 
-The following is an example of an execution of the ``axd_interpolator`` binary using ``iZ3`` as interpolating engine:
+The following is an example of an execution of the ``caxd_interpolator`` binary using ``iZ3`` as interpolating engine:
 
 ```
-./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 0 100
+./bin/caxd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 0
 ```
 
 ### Note:
@@ -82,14 +81,14 @@ The following is an example of an execution of the ``axd_interpolator`` binary u
 macOS users need to add ``DYLD_LIBRARY_PATH=./lib`` to execute the binary, i.e.:
 
 ```
-DYLD_LIBRARY_PATH=./lib ./bin/axd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 100
+DYLD_LIBRARY_PATH=./lib ./bin/caxd_interpolator QF_TO ./tests/smt2-files/maxdiff_paper_example.smt2 1 
 ```
 
 
-The binary ``axd_interpolator`` outputs to the standard output any of the following:
+The binary ``caxd_interpolator`` outputs to the standard output any of the following:
 
 * If the formula is unsatisfiable, then it outputs *Unsatisfiable:* followed by the interpolant obtained.
-* If the formula is satisfiable, then the implementation outputs either *Satisfiable:* or *Unknown:*. The last option happens when the internal variable ``num_attempts`` reaches 0.
+* If the formula is satisfiable, then the implementation outputs either *Satisfiable:*.
 
 ## Replicating SMT 2021 submission results
 

@@ -18,6 +18,6 @@ CURR_TEST=7_2_2.smt2
 
 echo ">> Debugging file" "$TEST_DIR/$CURR_TEST"
 
-gdb --args ./bin/axd_interpolator \
+gdb --args ./bin/caxd_interpolator \
     $THEORY $TEST_DIR/$CURR_TEST \
     $INTERPOLATION_ENGINE

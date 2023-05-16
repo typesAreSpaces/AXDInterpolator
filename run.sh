@@ -23,6 +23,6 @@ CURR_TEST=7_2.smt2
 
 echo ">> Checking file" "$TEST_DIR/$CURR_TEST"
 
-./bin/axd_interpolator \
+./bin/caxd_interpolator \
     $THEORY $TEST_DIR/$CURR_TEST \
     $INTERPOLATION_ENGINE

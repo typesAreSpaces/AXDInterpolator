@@ -17,19 +17,19 @@ THEORY=QF_LIA
 FILE_TEST=$(TEST_DIR)/6_2.smt2
 
 # ---------------------------------------------------------
-tests/one: $(AXD_INTERPOLATOR)
-	$(AXD_INTERPOLATOR) \
+tests/one: $(CAXD_INTERPOLATOR)
+	$(CAXD_INTERPOLATOR) \
 		$(THEORY) $(FILE_TEST) $(METHOD)
 	rm -rf tests/*.o $@
 
-tests/all: $(AXD_INTERPOLATOR)
+tests/all: $(CAXD_INTERPOLATOR)
 	for smt_file in $(TEST_DIR)/*.smt2; do \
-		$(AXD_INTERPOLATOR) \
+		$(CAXD_INTERPOLATOR) \
 		$(THEORY) $${smt_file} $(METHOD); \
 		done
 	rm -rf tests/*.o $@
 
-tests/print_all: $(AXD_INTERPOLATOR)
+tests/print_all: $(CAXD_INTERPOLATOR)
 	for smt_file in $(TEST_DIR)/*.smt2; do \
 		if [ "${METHOD}" = "0" ]; \
 		then METHOD_NAME="Z3"; \
@@ -39,7 +39,7 @@ tests/print_all: $(AXD_INTERPOLATOR)
 		else METHOD_NAME="SMTINTERPOL"; \
 		fi \
 		fi; \
-		$(AXD_INTERPOLATOR) \
+		$(CAXD_INTERPOLATOR) \
 		$(THEORY) $${smt_file} $(METHOD) \
 		> $${smt_file}_${THEORY}_$${METHOD_NAME}_output.txt ; \
 		done

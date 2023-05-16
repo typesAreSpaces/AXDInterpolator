@@ -15,17 +15,17 @@ all: execute tags
 
 tags: $(TAGS)
 
-execute: $(AXD_INTERPOLATOR)
+execute: $(CAXD_INTERPOLATOR)
 	./run.sh
 # ./run.sh > result.txt
 
 release: CXXFLAGS += -O2
 release: CCFLAGS += -O2
-release: $(AXD_INTERPOLATOR)
+release: $(CAXD_INTERPOLATOR)
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
-debug: $(AXD_INTERPOLATOR)
+debug: $(CAXD_INTERPOLATOR)
 	./debug.sh
 
 # -------------------------------------------------
@@ -83,7 +83,7 @@ $(ODIR)/%.o: $(SDIR)/%.cpp \
 	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
 		$(INCLUDES) $<
 
-$(AXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) \
+$(CAXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) \
 	$(ODIR)/main.o 
 	mkdir -p $(BDIR)
 	$(CXX) $(CXXFLAGS) -o $@ \
@@ -94,7 +94,7 @@ $(AXD_INTERPOLATOR): $(BUILD_DEPENDENCIES) \
 
 # ---------------------------------------
 # Generate TAGS
-$(TAGS): $(AXD_INTERPOLATOR)
+$(TAGS): $(CAXD_INTERPOLATOR)
 	compiledb -n make
 	$(MAKE) -C $(SDIR)/AXDSignature \
 		compile_commands.json
@@ -117,7 +117,7 @@ include test.mk
 clean:
 	rm -rf $(ODIR) output/*.smt2
 	rm -rf $(TEST_DIR)/*.txt
-	rm -rf $(AXD_INTERPOLATOR)
+	rm -rf $(CAXD_INTERPOLATOR)
 	rm -rf $(TAGS)
 	$(MAKE) -C output clean
 	$(MAKE) -C $(SDIR)/util clean 
