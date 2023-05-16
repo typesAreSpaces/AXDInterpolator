@@ -18,4 +18,6 @@ tests/benchmark/results/scripts/__pycache__/*
 
 sessions/*
 
+common.mk
+
 src/AXDInterpolant/AXDInterpolant.h
