@@ -185,12 +185,7 @@ void axdinterpolator::AXDInterpolant::step_2() {
   m_out << part_b.part_2 << std::endl;
   m_out << "Part B index variables" << std::endl;
   m_out << part_b_index_vars << std::endl;
-#endif
-
-  // TODO:
-  // Make instantiations more efficient
-  // Hint: just make substitutions on
-  // formulas involving index_var
+#endif 
 
   z3::expr_vector from_parametric_index(sig.ctx);
   from_parametric_index.push_back(part_a.index_var);
