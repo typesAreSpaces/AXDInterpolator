@@ -1,13 +1,6 @@
 #include "AXDSignature.h"
 #include "Preprocess.h"
 
-// TODO:
-// Investigate `updateVarsDB`
-// This method should only be
-// used with arrays variables
-// and occurring index variables
-// not integers
-
 #define UPDATE_INDEX_CONSTANT                                                  \
   switch (side) {                                                              \
   case PART_A:                                                                 \
@@ -63,11 +56,45 @@ void axdinterpolator::Preprocessor::flattenPredicate(
     m_out << std::endl;
     m_out << "-) Formula@Z3_OP_EQ " << formula << std::endl;
 #endif
-    if (lhs_form.num_args() == 0) {
+    auto const isLHSConstant = lhs_form.num_args() == 0;
+    auto const f_name = func_name(rhs(formula));
+    // ---------------------------------------------------------------
+    // TODO: Test more this part of the implementation 
+#if 1
+    // New approach: it only includes variables as index constants
+    // if it is the case that:
+    // * i in a = wr(b, i, e), or 
+    // * i in |a| = i, or
+    // * each k_l in \bigcap_{i=1}^{l}{diff_i(a, b) = k_l},
+    // in particular i in diff(a, b) = i
+    if (isLHSConstant &&
+	f_name.find("wr") != std::string::npos) {
+      auto const index_in_write = rhs(formula).arg(1);
+      updateVarsDB(index_in_write, side);
+    }
+    if(isLHSConstant &&
+	(f_name.find("diff") != std::string::npos ||
+	 f_name.find("length") != std::string::npos)){
       updateVarsDB(lhs_form, side);
+    }
+    if(isLHSConstant && isArraySort(lhs_form.get_sort())) {
+      m_out << "wait wat" << std::endl;
+      m_out << lhs_form << std::endl;
+      updateVarsDB(lhs_form, side);
+    }
+#else
+    // Old approach. This is wrong because an index variable
+    // its confused with constants of Int type
+    if (isLHSConstant) {
+      updateVarsDB(lhs_form, side);
+    }
+#endif
+    // ---------------------------------------------------------------
+    if (isLHSConstant) {
       flattenTerm(rhs(formula), side, current_conjs_in_input);
-    } else
+    } else {
       flattenBinaryPredicate(formula, side, current_conjs_in_input);
+    }
   }
     return;
   case Z3_OP_DISTINCT: // !=

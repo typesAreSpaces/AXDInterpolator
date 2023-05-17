@@ -1,4 +1,5 @@
 #include "InputFormulaParser.h"
+#include "util.h"
 #include "z3++.h"
 
 axdinterpolator::InputFormulaParser::InputFormulaParser(
@@ -7,7 +8,7 @@ axdinterpolator::InputFormulaParser::InputFormulaParser(
     : input_parser(ctx), part_a_it(0), part_b_it(0), part_a(ctx), part_b(ctx) {
 
   if (!exists_file(smt_filename)) {
-    std::cout << "File not found." << std::endl;
+    m_out << "File not found." << std::endl;
     // return 1;
     return;
   }
@@ -21,7 +22,7 @@ axdinterpolator::InputFormulaParser::InputFormulaParser(
 
   auto const &input_formula = input_parser.assertions();
   if (input_formula.size() == 0) {
-    std::cout << "No assertions in input file" << std::endl;
+    m_out << "No assertions in input file" << std::endl;
     // return 2;
   }
 
@@ -117,14 +118,14 @@ int axdinterpolator::run(int argc, char **argv) {
 	  axd.smtInterpolOutputFile();
 	  break;
 	default:
-	  std::cout << "Not valid SMT solver option." << std::endl;
+	  m_out << "Not valid SMT solver option." << std::endl;
 	  // return 3;
 	}
-	std::cout << axd << std::endl;
+	m_out << axd << std::endl;
       } while (input.next());
 
     } catch (char const *e) {
-      std::cout << e << std::endl;
+      m_out << e << std::endl;
       // return 4;
     }
 
@@ -132,7 +133,7 @@ int axdinterpolator::run(int argc, char **argv) {
   }
 
   default:
-    std::cout << "Invalid number of arguments." << std::endl;
+    m_out << "Invalid number of arguments." << std::endl;
     return 5;
   }
 

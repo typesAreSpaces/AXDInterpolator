@@ -11,13 +11,19 @@ void axdinterpolator::Preprocessor::updateLengthIndexVars(
       z3::expr freshIndexVar = fresh_index_constant();
       length_index_vars.insert(
 	  std::pair<unsigned, z3::expr>(index, freshIndexVar));
-      // The algorithm shouldn't consider the
-      // fresh bound as index (?)
+      // Q: Should the algorithm consider the
+      // fresh bound as index?
+      // A: Yes, since i in |a| = i is considered
+      // an index constant as suggested in Example 6.8
+      // of the paper
       updateIndexVars(freshIndexVar, side);
       return;
     }
-    // The algorithm shouldn't consider the
-    // fresh bound as index (?)
+    // Q: Should the algorithm consider the
+    // fresh bound as index?
+    // A: Yes, since i in |a| = i is considered
+    // an index constant as suggested in Example 6.8
+    // of the paper
     updateIndexVars(getLengthIndexVar(array_var), side);
     return;
   }

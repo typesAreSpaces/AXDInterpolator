@@ -239,7 +239,9 @@ void axdinterpolator::AXDInterpolant::step_3() {
 #endif
   switch (solver.check()) {
   case z3::unsat:
+#if _DEBUG_STEPS_
     m_out << "Unsatisfiable formula" << std::endl;
+#endif
     is_unsat = true;
 #if _ENABLE_UNSAT_CORES
     m_out << "Unsat core vector" << std::endl;
