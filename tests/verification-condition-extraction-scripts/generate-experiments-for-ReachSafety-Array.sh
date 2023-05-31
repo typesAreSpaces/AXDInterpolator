@@ -1,5 +1,30 @@
 #!/bin/bash
 
+# * https://sv-comp.sosy-lab.org/2023/benchmarks.php
+
+# c/ReachSafety-Arrays
+
+# Contains tasks for which treatment of arrays is necessary in order to determine reachability.
+
+# The verification tasks consist of the programs that match
+
+# array-examples/*.yml
+# array-industry-pattern/*.yml
+# reducercommutativity/*.yml
+# array-tiling/*.yml
+# array-programs/*.yml
+# array-crafted/*.yml
+# array-multidimensional/*.yml
+# array-patterns/*.yml
+# array-cav19/*.yml
+# array-lopstr16/*.yml
+# array-fpi/*.yml
+# with the specification:
+
+# CHECK( init(main()), LTL(G ! call(reach_error())) )
+
+# * Old (reference)
+
 #c/ReachSafety-Arrays
 
 #Contains tasks for which treatment of arrays is necessary in order to determine reachability.

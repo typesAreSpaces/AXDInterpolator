@@ -1,5 +1,38 @@
 #!/bin/bash
 
+# * https://sv-comp.sosy-lab.org/2023/benchmarks.php
+
+# c/MemSafety-Arrays
+
+# Contains tasks for checking memory safety of array-based programs.
+
+# The verification tasks consist of the programs that match
+
+# array-fpi/*.yml
+# array-memsafety/*.yml
+# array-examples/*.yml
+# array-memsafety-realloc/*.yml
+# termination-15/*.yml
+# termination-crafted-lit/HeizmannHoenickeLeikePodelski-ATVA2013-Fig7.yml
+# termination-crafted/Arrays*.yml
+# termination-crafted/LexIndexValue*.yml
+# termination-crafted/NonTermination*.yml
+# termination-dietlibc/*.yml
+# termination-memory-alloca/*.yml
+# verifythis/duplets.yml
+# verifythis/elimination_max.yml
+# verifythis/lcp.yml
+# verifythis/prefixsum_iter.yml
+# verifythis/elimination_max_rec.yml
+# verifythis/elimination_max_rec_onepoint.yml
+# with the specification:
+
+# CHECK( init(main()), LTL(G valid-free) )
+# CHECK( init(main()), LTL(G valid-deref) )
+# CHECK( init(main()), LTL(G valid-memtrack) )
+
+# * Old (reference)
+
 #c/MemSafety-Arrays
 
 #Contains tasks for checking memory safety of array-based programs.
