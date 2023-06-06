@@ -2,12 +2,13 @@
 
 TRACK="_track_"
 SUBTRACK="_sub_"
-# (?) Shouldn't this be "_prop_" (?)
-PROPERTY="_prop"
+PROPERTY="_prop_"
 
 MODE=simple
-SV_COMP_DIR=$HOME/Documents/GithubProjects/AXDInterpolator/tests/sv-benchmarks/c
-ULTIMATE_CMD=$HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux/Ultimate.py
+SV_COMP_DIR=$HOME/Documents/GithubProjects/AXDInterpolator/original/tests/sv-benchmarks/c
+ULTIMATE_DIR=$HOME/Documents/GithubProjects/ultimate/releaseScripts/default/adds
+ULTIMATE_DIR=/home/jose/Documents/GithubProjects/UAutomizer-linux
+ULTIMATE_CMD=$ULTIMATE_DIR/Ultimate.py
 LOG_FILE=$PWD/run_experiment-$TRACK-Log-$SUBTRACK.txt
 
 if [ ! -f $LOG_FILE ]; then 
@@ -16,6 +17,7 @@ if [ ! -f $LOG_FILE ]; then
 fi
 
 for file in $SV_COMP_DIR/$SUBTRACK/*.c; do
+  echo ">>> Processing file: $file"
   ROOT_DIR=$PWD
   if [ ! -d $ROOT_DIR/$TRACK/$SUBTRACK ]; then 
     mkdir -p $ROOT_DIR/$TRACK/$SUBTRACK
@@ -36,13 +38,17 @@ for file in $SV_COMP_DIR/$SUBTRACK/*.c; do
   unset ultimate_exit_code
 
   if [ "$arch" = "ILP32" ]; then 
-    timeout 900 $ULTIMATE_CMD --spec ../properties/$PROPERTY --architecture 32bit $MODE --file $file
+    timeout 900 $ULTIMATE_CMD --spec ../properties/$PROPERTY --architecture 32bit $MODE --file $file --full-output
     ultimate_exit_code=$?
   fi
   if [ "$arch" = "LP64" ]; then 
-    timeout 900 $ULTIMATE_CMD --spec ../properties/$PROPERTY --architecture 64bit $MODE --file $file
+    timeout 900 $ULTIMATE_CMD --spec ../properties/$PROPERTY --architecture 64bit $MODE --file $file --full-output
     ultimate_exit_code=$?
   fi
+
+  echo '>>>Inside subtrack'
+  read ok;
+  exit 1;
 
   if [ -z ${ultimate_exit_code+x} ]; then
     echo "Architecture not supported for file $file_no_path with property $PROPERTY" >> $LOG_FILE

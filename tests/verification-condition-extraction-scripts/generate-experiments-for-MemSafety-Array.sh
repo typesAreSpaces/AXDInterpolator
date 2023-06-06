@@ -64,7 +64,7 @@ get_num_procs_by_name(){
 }
 
 TRACK="MemSafety-Arrays"
-SUBTRACKS="array-memsafety\
+SUBTRACKS="array-memsafety \
   array-examples \
   array-memsafety-realloc"
 subtracks=($SUBTRACKS)
@@ -79,6 +79,9 @@ done
 
 for i in `seq 0 2`; do
   ./$TRACK-temp-${subtracks[i]}.sh &
+  echo ">>> Just one"
+  read ok;
+  exit 1;
 done
 wait
 
