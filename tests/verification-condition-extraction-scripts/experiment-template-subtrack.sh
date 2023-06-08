@@ -6,8 +6,7 @@ PROPERTY="_prop_"
 
 MODE=simple
 SV_COMP_DIR=$HOME/Documents/GithubProjects/AXDInterpolator/original/tests/sv-benchmarks/c
-ULTIMATE_DIR=$HOME/Documents/GithubProjects/ultimate/releaseScripts/default/adds
-ULTIMATE_DIR=/home/jose/Documents/GithubProjects/UAutomizer-linux
+ULTIMATE_DIR=$HOME/Documents/GithubProjects/ultimate/releaseScripts/default/UAutomizer-linux
 ULTIMATE_CMD=$ULTIMATE_DIR/Ultimate.py
 LOG_FILE=$PWD/run_experiment-$TRACK-Log-$SUBTRACK.txt
 
