@@ -3,7 +3,8 @@
 CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
 OUTPUT_FILE=$BENCHMARK_DIR/benchmark_memsafety_results-z3.txt
-VERIFICATION_FILES_DIR=$(dirname $BENCHMARK_DIR)/verification-files/files
+# VERIFICATION_FILES_DIR=$(dirname $BENCHMARK_DIR)/verification-files/files
+VERIFICATION_FILES_DIR=$BENCHMARK_DIR/files
 
 [ ! -f $OUTPUT_FILE ] && touch $OUTPUT_FILE
 make -j8 -C $BENCHMARK_DIR $BENCHMARK_DIR/bin/benchmark

@@ -3,7 +3,8 @@
 CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
 TESTS_DIR=$(dirname $BENCHMARK_DIR)
-VERIFICATION_FILES_DIR=$TESTS_DIR/verification-files/files
+# VERIFICATION_FILES_DIR=$TESTS_DIR/verification-files/files
+VERIFICATION_FILES_DIR=$BENCHMARK_DIR/files
 
 # Unzip 'raw' verification files
 # in ../../verification-files/files
@@ -26,11 +27,13 @@ read num_of_cores_allowed
 # Download z3-interp-plus if not present
 [ -z "$(ls -A ./dependencies/z3-interp-plus)" ] && git submodule update --init --remote dependencies/z3-interp-plus
 
-cd ./tests/verification-files
+# Move to directory containing files.zip
+# cd ./tests/verification-files
+cd $BENCHMARK_DIR
 [ ! -d files ] && unzip files.zip
 
-# Return to original directory
-cd ../benchmark
+## Return to original directory
+# cd ../benchmark
 
 # Execute main benchmark script
 make -j8 bin/benchmark
@@ -208,7 +211,7 @@ rm $BENCHMARK_DIR/benchmark_memsafety_results_*
 rm $BENCHMARK_DIR/benchmark_reachsafety_results_*
 
 # Post-processing script
-./process-results/SMT-2021-submission-results.py $TESTS_DIR/verification-files/files $BENCHMARK_DIR
+./process-results/SMT-2021-submission-results.py $VERIFICATION_FILES_DIR $BENCHMARK_DIR
 
 rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
 rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
