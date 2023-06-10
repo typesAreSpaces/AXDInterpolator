@@ -1,4 +1,4 @@
-#include "_AXDInterpolant.h"
+#include "AXDInterpolant.h"
 #include "z3++.h"
 
 AXDInterpolant::AXDInterpolant(AXDSignature &sig, z3::expr const &_input_part_a,
