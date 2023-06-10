@@ -32,9 +32,6 @@ read num_of_cores_allowed
 cd $BENCHMARK_DIR
 [ ! -d files ] && unzip files.zip
 
-## Return to original directory
-# cd ../benchmark
-
 # Execute main benchmark script
 make -j8 bin/benchmark
 
@@ -213,8 +210,9 @@ rm $BENCHMARK_DIR/benchmark_reachsafety_results_*
 # Post-processing script
 ./process-results/SMT-2021-submission-results.py $VERIFICATION_FILES_DIR $BENCHMARK_DIR
 
-rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
-rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
+#rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
+#rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
 
-make -C ../ clean
+make -C $BENCHMARK_DIR clean
+
 ulimit -St unlimited -Sv unlimited
