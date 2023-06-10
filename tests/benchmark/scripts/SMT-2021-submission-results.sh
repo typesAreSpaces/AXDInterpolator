@@ -3,40 +3,45 @@
 CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
 TESTS_DIR=$(dirname $BENCHMARK_DIR)
-# VERIFICATION_FILES_DIR=$TESTS_DIR/verification-files/files
-VERIFICATION_FILES_DIR=$BENCHMARK_DIR/files
+ROOT_DIR=$(dirname $TESTS_DIR)
+# VERIFICATION_FILES_DIR=$(dirname $BENCHMARK_DIR)/verification-files/files
+BENCHMARK_FILES_DIR=$ROOT_DIR/tests/smt2-files/benchmark
+VERIFICATION_FILES_DIR=$BENCHMARK_FILES_DIR/files
 
 # Unzip 'raw' verification files
-# in ../../verification-files/files
+# in $BENCHMARK_FILES_DIR
 # if such directory is not present
 [ ! -d $VERIFICATION_FILES_DIR ] \
-  && unzip $VERIFICATION_FILES_DIR.zip \
-  && mv files $VERIFICATION_FILES_DIR
+  && unzip $VERIFICATION_FILES_DIR.zip
 
-ulimit -St 360 -Sv 4500000
-
-# Move to root of project
-cd ../../../
+# ---------------------------
+# Move to the root of project
+cd $ROOT_DIR
 
 # Abort if mathsat bin is not present
-[ ! -f ./bin/mathsat ] && echo "Mathsat not in local bin folder" && cd ./tests/benchmark/scripts && exit
+[ ! -f ./bin/mathsat ] \
+    && echo "Mathsat not in local bin folder" \
+    && cd $CURRENT_DIR \
+    && exit
 
 echo "How many cores can be used? 1, 3, or 6"
 read num_of_cores_allowed
 
 # Download z3-interp-plus if not present
 [ -z "$(ls -A ./dependencies/z3-interp-plus)" ] && git submodule update --init --remote dependencies/z3-interp-plus
+# ---------------------------
 
 # Move to directory containing files.zip
 # cd ./tests/verification-files
 cd $BENCHMARK_DIR
-[ ! -d files ] && unzip files.zip
 
 # Execute main benchmark script
 make -j8 bin/benchmark
 
 # Move to 'scripts' directory to post-process the results
-cd ./scripts
+cd $CURRENT_DIR
+
+ulimit -St 360 -Sv 4500000
 
 if [ "$num_of_cores_allowed" == "1" ]; then
   ./axdinterpolator-execute-benchmark-memsafety-z3.sh
@@ -208,7 +213,7 @@ rm $BENCHMARK_DIR/benchmark_memsafety_results_*
 rm $BENCHMARK_DIR/benchmark_reachsafety_results_*
 
 # Post-processing script
-./process-results/SMT-2021-submission-results.py $VERIFICATION_FILES_DIR $BENCHMARK_DIR
+$CURRENT_DIR/process-results/SMT-2021-submission-results.py $VERIFICATION_FILES_DIR $BENCHMARK_DIR
 
 #rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
 #rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
