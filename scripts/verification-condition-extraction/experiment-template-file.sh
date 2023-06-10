@@ -9,7 +9,6 @@ MODE=simple
 ULTIMATE_CMD=$ULTIMATE_DIR/Ultimate.py
 ULTIMATE_ARGS_32="--spec ../properties/$PROPERTY --architecture 32bit $MODE"
 ULTIMATE_ARGS_64="--spec ../properties/$PROPERTY --architecture 64bit $MODE"
-TIMEOUT_CMD='timeout 300'
 LOG_FILE=$PWD/run_experiment-$TRACK-Log-$SUBTRACK.txt
 
 if [ ! -f $LOG_FILE ]; then 

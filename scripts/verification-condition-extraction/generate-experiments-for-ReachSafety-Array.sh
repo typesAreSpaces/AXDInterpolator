@@ -53,14 +53,18 @@ done
 
 for i in `seq 0 6`; do
     # Execute the scripts
-    SV_COMP_DIR="$SV_COMP_DIR" ULTIMATE_DIR="$ULTIMATE_DIR" \
+    SV_COMP_DIR="$SV_COMP_DIR" \
+	       ULTIMATE_DIR="$ULTIMATE_DIR" \
+	       TIMEOUT_CMD="$TIMEOUT_CMD" \
 	       ./$TRACK-temp-${subtracks[i]}.sh &
 done
 wait
 
 for i in `seq 7 10`; do
     # Execute the scripts
-    SV_COMP_DIR="$SV_COMP_DIR" ULTIMATE_DIR="$ULTIMATE_DIR" \
+    SV_COMP_DIR="$SV_COMP_DIR" \
+	       ULTIMATE_DIR="$ULTIMATE_DIR" \
+	       TIMEOUT_CMD="$TIMEOUT_CMD" \
 	       ./$TRACK-temp-${subtracks[i]}.sh &
 done
 wait
