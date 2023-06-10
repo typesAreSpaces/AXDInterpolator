@@ -16,7 +16,7 @@
 #define _TEST_OUTPUT_ORIGINAL_THY_ 0
 #define _INCLUDE_OUTPUT_           1
 
-#define CURRENT_DIR std::string("/Users/typesarespaces/Documents/GithubProjects/AXDInterpolator/original")
+#define CURRENT_DIR std::string("replace_once")
 #define OUTPUT_DIR  CURRENT_DIR + std::string("/output")
 
 // Notes:
