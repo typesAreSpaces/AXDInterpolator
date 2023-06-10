@@ -1,5 +1,8 @@
 files.zip: memsafety_done reachsafety_done
-	zip -r 'files.zip' MemSafety-Arrays ReachSafety-Arrays *.txt
+	rm -rf files
+	mkdir files
+	mv MemSafety-Arrays ReachSafety-Arrays *.txt files
+	zip -r 'files.zip' files
 
 memsafety_done:
 	rm -rf memsafety_done
