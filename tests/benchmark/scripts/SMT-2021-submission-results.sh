@@ -4,7 +4,6 @@ CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
 TESTS_DIR=$(dirname $BENCHMARK_DIR)
 ROOT_DIR=$(dirname $TESTS_DIR)
-# VERIFICATION_FILES_DIR=$(dirname $BENCHMARK_DIR)/verification-files/files
 BENCHMARK_FILES_DIR=$ROOT_DIR/tests/smt2-files/benchmark
 VERIFICATION_FILES_DIR=$BENCHMARK_FILES_DIR/files
 
@@ -214,9 +213,6 @@ rm $BENCHMARK_DIR/benchmark_reachsafety_results_*
 
 # Post-processing script
 $CURRENT_DIR/process-results/SMT-2021-submission-results.py $VERIFICATION_FILES_DIR $BENCHMARK_DIR
-
-#rm $BENCHMARK_DIR/benchmark_memsafety_results.txt
-#rm $BENCHMARK_DIR/benchmark_reachsafety_results.txt
 
 make -C $BENCHMARK_DIR clean
 
