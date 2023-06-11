@@ -41,7 +41,7 @@ FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/relax-2.c_val
 #FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/data_structures_set_multi_proc_trivial_ground.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(FILE_TEST_PREFIX_PATH)/ReachSafety-Arrays/array-cav19/array_tiling_poly6.c_unreach-call.prp.smt2
 
-all: test
+all: test $(TAGS)
 	echo $(BIN_BENCHMARK)
 
 # --------------------------------------------------------
