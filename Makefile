@@ -80,6 +80,10 @@ $(SDIR)/TODO/done: $(LDIR)/libz3.$(SO_EXT) \
 $(ODIR)/%.o: $(SDIR)/%.cpp \
 	$(LDIR)/libz3.$(SO_EXT)
 	mkdir -p $(ODIR) 
+	# TODO: Fix this
+	# Currently this slows down the compilation of main.cpp
+	# so AXDInterpolant.h is created
+	sleep 1
 	$(CXX) $(CXXFLAGS) -c -o $@ $(FLAGS) \
 		$(INCLUDES) $<
 
