@@ -36,8 +36,8 @@ AXD_INTERPOLATOR=$(AXD_INTERPOLATOR_PREFIX_PATH)/bin/axd_interpolator
 BIN_BENCHMARK=$(BDIR)/benchmark
 OUTPUT_FILE=$(CURRENT_DIR)/output.txt 
 
-FILE_TEST_PREFIX_PATH=/media/jose/Documents/MaxDiff-Experiments/files
-FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/relax-1.c_valid-memsafety.prp.smt2
+FILE_TEST_PREFIX_PATH=../smt2-files/benchmark/files
+FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/relax-2.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/data_structures_set_multi_proc_trivial_ground.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(FILE_TEST_PREFIX_PATH)/ReachSafety-Arrays/array-cav19/array_tiling_poly6.c_unreach-call.prp.smt2
 

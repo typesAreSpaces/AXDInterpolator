@@ -200,7 +200,7 @@ void UAutomizerFileReader::testOtherSolvers() {
             // EXEC_COMMAND
             std::string temp_file_name = "smtinterpol_inter_temp_" + current_file;
             sprintf(exec_command, 
-              "java -jar ./../../bin/smtinterpol-2.5-663-gf15aa217.jar -w %s > %s",
+              "java -jar ./../../bin/smtinterpol-2.5-1256-g55d6ba76.jar -w %s > %s", 
               file_for_implementation.c_str(), temp_file_name.c_str());,
             // LOG_COMMAND
             std::ifstream result(temp_file_name.c_str());
