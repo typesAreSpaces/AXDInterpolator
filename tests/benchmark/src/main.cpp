@@ -16,8 +16,16 @@ int main(int argc, char * argv[]){
   // argv[1] -> file path of smt file
   // argv[2] -> Solver Code
   // argv[3] -> file path of output file
+  // ** OLD **
   // argv[4] -> '0' -> test implementation
   //            '1' -> test other interpolation engines
+  // ** NEW **
+  // argv[4] -> '0' -> test caxdinterpolator
+  //            '1' -> test axdinterpolator
+  //            '2' -> test other interpolation engines
+  // TODO: Update code to reflect the
+  // proposed changes above
+
 
   char const * file = argv[1];
   if(!exists_file(file)){
@@ -43,7 +51,7 @@ int main(int argc, char * argv[]){
   }
 
   UAutomizerFileReader reader(
-      curr_solver, 500, argv[3], *argv[4] == '0');
+      curr_solver, 500, argv[3], *argv[4]);
 #if SINGLE_FORMULA
   reader.processSingleFile(file);
 #else
