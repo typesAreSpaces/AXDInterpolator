@@ -63,6 +63,40 @@ class ResultsReader:
             num_timeout += entry['152']
         return (num_success, num_failed, num_timeout)
 
+    def caxdInterpolatorTable(self, caption, label):
+        table = "\\begin{table}[htp]\n"
+        table += "\t\\small\n"
+        table += "\t\\begin{centering}\n"
+        table += "\t\t\\begin{tabular}{l|ccc|ccc|ccc}\n"
+        table += "\t\t\t & \\multicolumn{9}{c}{CAXD Interpolator} \\\\ \n"
+        table += "\t\t\t Subtracks & \\multicolumn{3}{c}{Using iZ3} & \\multicolumn{3}{c}{Using MathSat} & \\multicolumn{3}{c}{Using SMTInterpol} \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        table += "\t\t\t  & Success & Failed & Timeout & Success & Failed & Timeout & Success & Failed & Timeout \\\\ \n"
+        table += "\t\t\t \\hline \n"
+        for subtrack in self.table:
+            table += f"\t\t\t{subtrack} "
+
+            caxd_z3_entry = self.table[subtrack]['0']
+            caxd_mathsat_entry = self.table[subtrack]['1']
+            caxd_smtinterpol_entry = self.table[subtrack]['2']
+
+            (caxd_z3_num_success, caxd_z3_num_failed, caxd_z3_num_timeout) = self.makeTableEntry(caxd_z3_entry)
+            (caxd_mathsat_num_success, caxd_mathsat_num_failed, caxd_mathsat_num_timeout) = self.makeTableEntry(caxd_mathsat_entry)
+            (caxd_smtinterpol_num_success, caxd_smtinterpol_num_failed, caxd_smtinterpol_num_timeout) = self.makeTableEntry(caxd_smtinterpol_entry)
+            
+            entry_for_caxd_z3 = f"& {caxd_z3_num_success} & {caxd_z3_num_failed} & {caxd_z3_num_timeout} "
+            entry_for_caxd_mathsat = f"& {caxd_mathsat_num_success} & {caxd_mathsat_num_failed} & {caxd_mathsat_num_timeout} "
+            entry_for_caxd_smtinterpol = f"& {caxd_smtinterpol_num_success} & {caxd_smtinterpol_num_failed} & {caxd_smtinterpol_num_timeout} "
+
+            table += entry_for_caxd_z3 + entry_for_caxd_mathsat + entry_for_caxd_smtinterpol
+            table += "\\\\ \n" 
+        table += "\t\t\\end{tabular}\n"
+        table += "\t\t\\caption{" + caption + "}\n"
+        table += "\t\t\\label{" + label + "}\n"
+        table += "\t\\end{centering}\n"
+        table += "\\end{table}"
+        return table
+
     def axdInterpolatorTable(self, caption, label):
         table = "\\begin{table}[htp]\n"
         table += "\t\\small\n"
@@ -76,9 +110,9 @@ class ResultsReader:
         for subtrack in self.table:
             table += f"\t\t\t{subtrack} "
 
-            axd_z3_entry = self.table[subtrack]['0']
-            axd_mathsat_entry = self.table[subtrack]['1']
-            axd_smtinterpol_entry = self.table[subtrack]['2']
+            axd_z3_entry = self.table[subtrack]['3']
+            axd_mathsat_entry = self.table[subtrack]['4']
+            axd_smtinterpol_entry = self.table[subtrack]['5']
 
             (axd_z3_num_success, axd_z3_num_failed, axd_z3_num_timeout) = self.makeTableEntry(axd_z3_entry)
             (axd_mathsat_num_success, axd_mathsat_num_failed, axd_mathsat_num_timeout) = self.makeTableEntry(axd_mathsat_entry)
@@ -109,9 +143,9 @@ class ResultsReader:
         for subtrack in self.table:
             table += f"\t\t\t{subtrack} "
 
-            z3_entry = self.table[subtrack]['3']
-            mathsat_entry = self.table[subtrack]['4']
-            smtinterpol_entry = self.table[subtrack]['5']
+            z3_entry = self.table[subtrack]['6']
+            mathsat_entry = self.table[subtrack]['7']
+            smtinterpol_entry = self.table[subtrack]['8']
 
             (z3_num_success, z3_num_failed, z3_num_timeout) = self.makeTableEntry(z3_entry)
             (mathsat_num_success, mathsat_num_failed, mathsat_num_timeout) = self.makeTableEntry(mathsat_entry)
