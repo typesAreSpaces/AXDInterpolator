@@ -97,10 +97,11 @@ For the latter, the following items are neccessary:
 
 * Python3
 * Softlink to a mathsat binary file as indicated above.
-* Git with LFS support, git-lfs, or download the `files.zip` raw file from https://github.com/typesAreSpaces/AXDInterpolator/blob/master/tests/smt2-files/benchmark/files.zip. If the user downloads `files.zip` directly, the zip file should be moved to the `tests/smt2-files/benchmark` directory.
+* Git with LFS support, git-lfs, or download the `files-full.zip` raw file from https://github.com/typesAreSpaces/AXDInterpolator/blob/master/tests/smt2-files/benchmark/files-full.zip. If the user downloads `files-full.zip` directly, the zip file should be moved to the `tests/smt2-files/benchmark` directory.
 
 The steps to execute the benchmarking script are the following:
 
-1. Unzip the verification files in tests/verification-files with `unzip files.zip`
+1. Unzip the verification files in `tests/smt2-files/benchmark`  with `unzip files-full.zip`
 2. `cd` into `tests/benchmark/scripts` and execute the script `./submission-results.sh`
-3. The process will write two files `benchmark_memsafety_results.txt` and `benchmark_reachsafety_results.txt` in the parent directory. Executing the script `./get_table.sh` will produce a LaTeX-compatible table with the obtained results. 
+3. The previous step will write two files `benchmark_memsafety_results.txt` and `benchmark_reachsafety_results.txt` in the `tests/benchmark` directory. 
+4. To produce a LaTeX-compatible table with the obtained results, `cd` into `tests/benchmark/scripts` and execute the script `./get_table.sh`. 
