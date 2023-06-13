@@ -1,6 +1,6 @@
 [submodule "dependencies/z3-interp-plus"]
 	path = dependencies/z3-interp-plus
 	url = https://github.com/typesAreSpaces/z3-interp-plus
-[submodule "scripts/sv-benchmarks"]
-	path = scripts/sv-benchmarks
+[submodule "scripts/verification-condition-extraction/sv-benchmarks"]
+	path = scripts/verification-condition-extraction/sv-benchmarks
 	url = https://gitlab.com/sosy-lab/benchmarking/sv-benchmarks.git
