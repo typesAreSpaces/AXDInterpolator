@@ -44,6 +44,11 @@ FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/relax-2.c_val
 all: test $(TAGS)
 	echo $(BIN_BENCHMARK)
 
+debug: CXXFLAGS += -DDEBUG -g
+debug: CCFLAGS += -DDEBUG -g
+debug: $(BIN_BENCHMARK) $(AXD_INTERPOLATOR)
+	./debug.sh
+
 # --------------------------------------------------------
 #  Rules to build the project
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)

@@ -83,7 +83,7 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
 	// a = wr(b, i, e) will be processed
 	// the processPart_1 method
 	else {
-#if 1
+#if 0
 	  if (_func_name_rhs.find("wr") == std::string::npos) {
 	    m_out << ">>> Debugging BEGIN" << std::endl;
 	    m_out << "Current conjunction: " << current_conj << std::endl;

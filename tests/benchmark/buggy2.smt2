@@ -1,5 +1,3 @@
-(set-option :print-success true)
-
 (set-logic ALL)
 
 (set-info :source |SMT script generated on 2023-06-09T07:58:28-06:00 by Ultimate (https://ultimate.informatik.uni-freiburg.de/)|)
