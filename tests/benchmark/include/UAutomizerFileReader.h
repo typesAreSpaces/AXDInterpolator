@@ -29,6 +29,9 @@
   z3::context ctx;\
   z3::solver input_parser(ctx, "QF_AUFLIA");\
   input_parser.from_file(temp_file.c_str());\
+  std::cout << ">>> BEGIN Assertions" << std::endl;\
+  std::cout << input_parser.assertions() << std::endl;\
+  std::cout << ">>> END Assertions" << std::endl;\
   \
   for(auto const & x : input_parser.assertions()){\
     if(hasNonSupportedSymbols(x)){\

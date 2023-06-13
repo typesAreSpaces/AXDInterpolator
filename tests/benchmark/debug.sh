@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-./bin/benchmark /home/jose/Documents/GithubProjects/AXDInterpolator/extension/tests/smt2-files/benchmark/files/ReachSafety-Arrays/array-fpi/brs2f.c_unreach-call.prp.smt2 0 here.txt 0
+rm -rf debug_log.txt
+#./bin/benchmark buggy.smt2 0 debug_log.txt 0
+./bin/benchmark buggy2.smt2 0 debug_log.txt 0

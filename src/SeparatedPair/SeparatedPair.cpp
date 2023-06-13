@@ -60,6 +60,10 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
     {
       auto const &_lhs = lhs(current_conj);
       auto const &_rhs = rhs(current_conj);
+      auto const &_func_name_rhs = func_name(_rhs);
+
+      if (_func_name_rhs.find("rd") != std::string::npos)
+	goto process_part_2;
 
       // Covers equations of the form
       // a = wr(b, i, e) or a = b
@@ -79,7 +83,21 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
 	// a = wr(b, i, e) will be processed
 	// the processPart_1 method
 	else {
-	  assert(func_name(_rhs).find("wr") != std::string::npos);
+#if 1
+	  if (_func_name_rhs.find("wr") == std::string::npos) {
+	    m_out << ">>> Debugging BEGIN" << std::endl;
+	    m_out << "Current conjunction: " << current_conj << std::endl;
+	    m_out << ">>> Debugging END" << std::endl;
+	  }
+	  assert(_func_name_rhs.find("wr") != std::string::npos);
+	  // We can have
+	  // (= fresh_array_1
+	  // (rdArrayIntInt |c_#memory_int| |c_ULTIMATE.start_main_~#sum~0#1.base|))
+	  // where |c_#memory_int| is an array of arrays
+	  // BUT ... this shouldn't be the case in the sense
+	  // that this part of the program assumes equations of the form
+	  // a = wr(b, i, e) or a = b
+#endif
 	  part_1.push_back(current_conj);
 	}
 	continue;
@@ -87,7 +105,7 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
 
       // Covers equations of the
       // form i = diff(a, b)
-      if (func_name(_rhs).find("diff") != std::string::npos) {
+      if (_func_name_rhs.find("diff") != std::string::npos) {
 	// Equations of the form
 	// i = diff(a, b) will be processed
 	// the processPart_1 method
@@ -97,7 +115,7 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
 
       // Covers equations of the
       // form i = length(a)
-      if (func_name(_rhs).find("length") != std::string::npos) {
+      if (_func_name_rhs.find("length") != std::string::npos) {
 	// Equations of the form
 	// i = length(x) will be processed
 	// the processPart_1 method
@@ -120,6 +138,7 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
     case Z3_OP_LE: // <=
     case Z3_OP_GT: // >
     case Z3_OP_LT: // <
+    process_part_2:
       part_2.push_back(current_conj);
       break;
     default:
@@ -137,7 +156,7 @@ void axdinterpolator::SeparatedPair::processPart_1() {
   for (auto const &equation : part_1) {
 #if _DEBUG_PROCESS_PART_1_
     m_out << std::endl;
-    m_out << ">> @processPart_1 Processing equation: " << equation << std::endl; 
+    m_out << ">> @processPart_1 Processing equation: " << equation << std::endl;
 #endif
     auto f_name = func_name(rhs(equation));
 
@@ -171,7 +190,7 @@ void axdinterpolator::SeparatedPair::processPart_1() {
 #endif
       part_2.push_back(first_predicate);
       part_2.push_back(second_predicate);
-      //part_2.push_back(third_predicate);
+      // part_2.push_back(third_predicate);
       parametric_formulas.push_back(third_predicate);
     }
 
@@ -210,7 +229,7 @@ void axdinterpolator::SeparatedPair::processPart_1() {
 #endif
       part_2.push_back(first_predicate);
       part_2.push_back(second_predicate);
-      //part_2.push_back(third_predicate);
+      // part_2.push_back(third_predicate);
       parametric_formulas.push_back(third_predicate);
       part_2.push_back(forth_predicate);
       part_2.push_back(fifth_predicate);
@@ -237,7 +256,7 @@ void axdinterpolator::SeparatedPair::processPart_1() {
       m_out << second_predicate << std::endl;
 #endif
       part_2.push_back(first_predicate);
-      //part_2.push_back(second_predicate);
+      // part_2.push_back(second_predicate);
       parametric_formulas.push_back(second_predicate);
     }
   }

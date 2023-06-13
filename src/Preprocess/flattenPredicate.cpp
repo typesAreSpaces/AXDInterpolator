@@ -58,14 +58,22 @@ void axdinterpolator::Preprocessor::flattenPredicate(
 #endif
     auto const isLHSConstant = lhs_form.num_args() == 0;
     auto const f_name = func_name(rhs(formula));
+    if(isLHSConstant && isArraySort(lhs_form.get_sort())) {
+# if 0
+      m_out << "BEGIN wait wat" << std::endl;
+      m_out << lhs_form << std::endl;
+      m_out << "END wait wat" << std::endl;
+#endif
+      updateVarsDB(lhs_form, side);
+    }
     // ---------------------------------------------------------------
     // TODO: Test more this part of the implementation 
 #if 1
-    // New approach: it only includes variables as index constants
-    // if it is the case that:
-    // * i in a = wr(b, i, e), or 
-    // * i in |a| = i, or
-    // * each k_l in \bigcap_{i=1}^{l}{diff_i(a, b) = k_l},
+    // New approach: an index variable is a variable
+    // satisfying either one of the following:
+    // 1) i in a = wr(b, i, e), or 
+    // 2) i in |a| = i, or
+    // 3) each k_l in \bigcap_{i=1}^{l}{diff_i(a, b) = k_l},
     // in particular i in diff(a, b) = i
     if (isLHSConstant &&
 	f_name.find("wr") != std::string::npos) {
@@ -76,14 +84,9 @@ void axdinterpolator::Preprocessor::flattenPredicate(
 	(f_name.find("diff") != std::string::npos ||
 	 f_name.find("length") != std::string::npos)){
       updateVarsDB(lhs_form, side);
-    }
-    if(isLHSConstant && isArraySort(lhs_form.get_sort())) {
-      m_out << "wait wat" << std::endl;
-      m_out << lhs_form << std::endl;
-      updateVarsDB(lhs_form, side);
-    }
+    } 
 #else
-    // Old approach. This is wrong because an index variable
+    // Old approach. This is wrong because an index variables
     // its confused with constants of Int type
     if (isLHSConstant) {
       updateVarsDB(lhs_form, side);
