@@ -87,7 +87,7 @@ $(TAGS):
 
 clean:
 	make -C $(AXD_INTERPOLATOR_PREFIX_PATH)/ clean
-	rm -rf *.smt2
+	# rm -rf *.smt2
 	rm -rf $(ODIR) $(BDIR)
 	rm -rf $(BIN_BENCHMARK)
 	rm -rf $(TAGS) $(OUTPUT_FILE)

@@ -13,11 +13,14 @@ INTERPOLATION_ENGINE=$iZ3
 
 THEORY=QF_LIA
 
-TEST_DIR=tests/smt2-files/caxd_examples
-CURR_TEST=7_2_2.smt2
+#TEST_DIR=tests/smt2-files/caxd_examples
+TEST_DIR=tests/benchmark
+#CURR_TEST=7_2_2.smt2
+CURR_TEST=axdinterpolator_Z3_buggy2-simplified-2.smt2
 
 echo ">> Debugging file" "$TEST_DIR/$CURR_TEST"
 
 gdb --args ./bin/caxd_interpolator \
     $THEORY $TEST_DIR/$CURR_TEST \
     $INTERPOLATION_ENGINE
+

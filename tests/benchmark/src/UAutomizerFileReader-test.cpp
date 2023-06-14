@@ -44,7 +44,7 @@ void UAutomizerFileReader::testCAXDInterpolator() const {
 
       axdinterpolator_file << tseitin_solver.to_smt2();
       axdinterpolator_file.close();,
-
+ 
       sprintf(exec_command,
         "./../../bin/caxd_interpolator QF_LIA %s %u;",
         file_for_implementation.c_str(), curr_solver);,
@@ -65,7 +65,7 @@ void UAutomizerFileReader::testCAXDInterpolator() const {
         "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
         file_for_implementation.c_str(), curr_solver, ret, file_statistics);
       );
-      system(("rm -rf " + temp_file).c_str());
+  //system(("rm -rf " + temp_file).c_str());
 }
 
 void UAutomizerFileReader::testOtherSolvers() {

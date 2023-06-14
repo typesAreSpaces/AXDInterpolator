@@ -1,0 +1,8 @@
+(set-info :status unknown)
+(declare-fun a () Int)
+(declare-fun b () Int)
+(declare-fun c () (Array Int (Array Int Int)))
+(declare-fun d () Int)
+(assert (and true (= (select (select c b) a) 0))) 
+(assert (and true (<= 1 d) (< d 1)))
+(check-sat)

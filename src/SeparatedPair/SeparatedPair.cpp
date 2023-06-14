@@ -153,9 +153,13 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
 void axdinterpolator::SeparatedPair::processPart_1() {
   // Setting up internal data structures
   // WriteVector and DiffMap
+  m_out << ">> @processPart_1 Processing: " << part_1 << std::endl;
   for (auto const &equation : part_1) {
 #if _DEBUG_PROCESS_PART_1_
     m_out << std::endl;
+    m_out << equation.arg(0).get_sort() << std::endl;
+    m_out << equation.arg(1).get_sort() << std::endl;
+    m_out << equation.arg(1).arg(0).get_sort() << std::endl;
     m_out << ">> @processPart_1 Processing equation: " << equation << std::endl;
 #endif
     auto f_name = func_name(rhs(equation));
@@ -235,6 +239,7 @@ void axdinterpolator::SeparatedPair::processPart_1() {
       part_2.push_back(fifth_predicate);
     }
 
+    m_out << ">> debugging 1" << std::endl;
     // Processing equations of the form i = |a|
     // The following adds (19) predicates
     if (f_name.find("length") != std::string::npos) {
@@ -245,8 +250,11 @@ void axdinterpolator::SeparatedPair::processPart_1() {
       auto const &curr_undefined =
 	  sig.getUndefinedBySort(read_a_at_h.get_sort());
       auto const &first_predicate = i >= 0;
+      m_out << ">> debugging 1 1" << std::endl;
+      // The bug is here
       auto const &second_predicate =
 	  (read_a_at_h != curr_undefined) == (0 <= index_var && index_var <= i);
+      m_out << ">> debugging 1 2" << std::endl;
 #if _DEBUG_PROCESS_PART_1_
       m_out << std::endl;
       m_out << ">> Debugging translation lemmas for length" << std::endl;
@@ -259,7 +267,9 @@ void axdinterpolator::SeparatedPair::processPart_1() {
       // part_2.push_back(second_predicate);
       parametric_formulas.push_back(second_predicate);
     }
+    m_out << ">> debugging 2" << std::endl;
   }
+  m_out << "Ok" << std::endl;
 }
 
 namespace axdinterpolator {
