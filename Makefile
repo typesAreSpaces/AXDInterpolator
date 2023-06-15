@@ -11,13 +11,13 @@ BUILD_DEPENDENCIES=$(DEPENDENCIES:%=$(SDIR)/%/done)
 	clean z3_clean deep_clean \
 	tags
 
-all: execute tags
+#all: execute tags
+all: $(CAXD_INTERPOLATOR) tags
 
 tags: $(TAGS)
 
 execute: $(CAXD_INTERPOLATOR)
 	./run.sh
-# ./run.sh > result.txt
 
 release: CXXFLAGS += -O2
 release: CCFLAGS += -O2

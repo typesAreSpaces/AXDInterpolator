@@ -29,6 +29,11 @@
 
 #define inSet(element, set) (set.find(element) != set.end())
 
+#define basicPrintMap(MAP) \
+  for (auto it = MAP.begin(); it != MAP.end(); ++it) {	\
+    m_out << it->first << " " << it->second << "\n";	\
+  }
+
 namespace axdinterpolator {
 
   struct Z3ExprComparator {

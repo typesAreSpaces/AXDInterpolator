@@ -61,28 +61,13 @@ struct AXDSignature {
   TheoryName const &getTheoryName() const;
 
   z3::sort getArraySortBySort(z3::sort const &) const;
-  z3::sort getArraySortBySort(unsigned) const;
-
   z3::expr getUndefinedBySort(z3::sort const &) const;
-  z3::expr getUndefinedBySort(unsigned) const;
-
   z3::expr getEmptyArrayBySort(z3::sort const &) const;
-  z3::expr getEmptyArrayBySort(unsigned) const;
-
   z3::func_decl getDiffBySort(z3::sort const &) const;
-  z3::func_decl getDiffBySort(unsigned) const;
-
   z3::func_decl getDiff_BySort(z3::sort const &) const;
-  z3::func_decl getDiff_BySort(unsigned) const;
-
   z3::func_decl getWrBySort(z3::sort const &) const;
-  z3::func_decl getWrBySort(unsigned) const;
-
   z3::func_decl getRdBySort(z3::sort const &) const;
-  z3::func_decl getRdBySort(unsigned) const;
-
   z3::func_decl getLengthBySort(z3::sort const &) const;
-  z3::func_decl getLengthBySort(unsigned) const;
 
   friend std::ostream &operator<<(std::ostream &, TheoryName const &);
 };

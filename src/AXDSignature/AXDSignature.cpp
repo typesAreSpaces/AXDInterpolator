@@ -1,4 +1,5 @@
 #include "AXDSignature.h"
+#include "util.h"
 #include <sstream>
 
 #define INDEX_UNDEFINED_EL_WR_RD(ELEMENT_SORT)                                 \
@@ -37,6 +38,8 @@ axdinterpolator::AXDSignature::AXDSignature(z3::context &ctx,
 
   processArrayDecls(decls);
   indexElementSorts();
+  // m_out << ">>> Identified sorts:\n";
+  // m_out << element_sorts << std::endl;
 }
 
 void axdinterpolator::AXDSignature::processArrayDecls(std::string decls) {
@@ -75,7 +78,6 @@ void axdinterpolator::AXDSignature::processArrayDecls(std::string decls) {
 void axdinterpolator::AXDSignature::indexElementSorts() {
   // [NOTICE]: curr_element_sort can be an Array type
   for (auto const &curr_element_sort : element_sorts) {
-
     std::string temp_name_sort = curr_element_sort.to_string();
     extractNameFromSort(temp_name_sort);
 
@@ -86,6 +88,13 @@ void axdinterpolator::AXDSignature::indexElementSorts() {
 							array_sorts.size()));
     array_sort_map.insert(std::pair<unsigned, unsigned>(curr_array_sort.id(),
 							array_sorts.size()));
+
+    // m_out << ">>> Current element sort: " << curr_element_sort << std::endl;
+    // m_out << ">>> Current element sort id: " << curr_element_sort.id() << std::endl;
+    // m_out << ">>> Current array sort: " << curr_array_sort << std::endl;
+    // m_out << ">>> Current array sort id: " << curr_array_sort.id() << std::endl;
+    // m_out << ">>> Current state of array_sort_map" << std::endl; 
+    // basicPrintMap(array_sort_map);
 
     array_sorts.push_back(curr_array_sort);
 
@@ -102,7 +111,9 @@ void axdinterpolator::AXDSignature::indexElementSorts() {
 
   for (auto const &curr_element_sort : element_sorts) {
     std::string temp_name_sort = curr_element_sort.to_string();
+    // m_out << ">>>>> Original " << temp_name_sort << std::endl;
     extractNameFromSort(temp_name_sort);
+    // m_out << ">>>>> Changed " << temp_name_sort << std::endl;
 
     auto const &curr_array_sort =
 	ctx.uninterpreted_sort(("ArraySort" + temp_name_sort).c_str());
