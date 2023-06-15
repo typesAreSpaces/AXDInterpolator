@@ -144,7 +144,7 @@ void axdinterpolator::Preprocessor::flattenBinaryPredicate(
       // @ Preprocessor::normalizeInput
       fresh_consts.push_back(getLengthIndexVar(lhs_atom.arg(0)));
     } else {
-      fresh_consts.push_back(fresh_constant(_get_sort(lhs_atom)));
+      fresh_consts.push_back(fresh_constant(_get_sort(lhs_atom), side));
     }
   }
   auto const &rhs_atom = rhs(atomic_predicate);
@@ -156,7 +156,7 @@ void axdinterpolator::Preprocessor::flattenBinaryPredicate(
       // @ Preprocessor::normalizeInput
       fresh_consts.push_back(getLengthIndexVar(rhs_atom.arg(0)));
     } else {
-      fresh_consts.push_back(fresh_constant(_get_sort(rhs_atom)));
+      fresh_consts.push_back(fresh_constant(_get_sort(rhs_atom), side));
     }
   }
 
@@ -218,7 +218,7 @@ void axdinterpolator::Preprocessor::flattenTerm(
 	auto const &curr_arg = term.arg(i);
 	auto const &type_arg = _get_sort(curr_arg);
 	if (curr_arg.num_args() > 0)
-	  cojoin(curr_arg, fresh_constant(type_arg), side,
+	  cojoin(curr_arg, fresh_constant(type_arg, side), side,
 		 current_conjs_in_input);
 	else
 	  updateVarsDB(curr_arg, side);
@@ -295,15 +295,18 @@ z3::expr axdinterpolator::Preprocessor::fresh_index_constant() {
 }
 
 z3::expr
-axdinterpolator::Preprocessor::fresh_array_constant(z3::sort const &s) {
+axdinterpolator::Preprocessor::fresh_array_constant(z3::sort const &s, SideInterpolant side) {
   return sig.ctx.constant(
       (FRESH_ARRAY_PREFIX + std::to_string(fresh_num++)).c_str(),
       sig.getArraySortBySort(s));
 }
 
-z3::expr axdinterpolator::Preprocessor::fresh_constant(z3::sort const &s) {
-  if (isArraySort(s))
-    return fresh_array_constant(s);
+z3::expr axdinterpolator::Preprocessor::fresh_constant(z3::sort const &s, SideInterpolant side) {
+  if (isArraySort(s)){
+    auto const & new_array_const = fresh_array_constant(s, side);
+    updateLengthIndexVars(new_array_const, false, side);
+    return new_array_const;
+  }
   if (s.is_int())
     return fresh_index_constant();
 

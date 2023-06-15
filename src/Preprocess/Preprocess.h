@@ -68,8 +68,8 @@ public:
   Preprocessor(AXDSignature &, z3::expr const &, z3::expr const &);
 
   z3::expr fresh_index_constant();
-  z3::expr fresh_array_constant(z3::sort const &);
-  z3::expr fresh_constant(z3::sort const &);
+  z3::expr fresh_array_constant(z3::sort const &, SideInterpolant);
+  z3::expr fresh_constant(z3::sort const &, SideInterpolant);
 
   z3::expr getLengthIndexVar(z3::expr const &) const;
 };
