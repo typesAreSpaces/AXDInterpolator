@@ -21,7 +21,8 @@ THEORY=QF_LIA
 #CURR_TEST=jhala.smt2
 #CURR_TEST=modified_jhala.smt2
 TEST_DIR=tests/benchmark
-CURR_TEST=axdinterpolator_Z3_buggy2-simplified-2.smt2
+#CURR_TEST=axdinterpolator_Z3_buggy2-simplified-2.smt2
+CURR_TEST=axdinterpolator_Z3_brs4f.c_unreach-call.prp.smt2 
 
 echo ">> Checking file" "$TEST_DIR/$CURR_TEST"
 
