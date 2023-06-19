@@ -14,15 +14,12 @@ if __name__ == "__main__":
     reachsafety_ = ResultsReader(
             f"{results_dir}/benchmark_reachsafety_results.txt",
             f"{verification_files_dir}/ReachSafety-Arrays")
-    print("")
-    print("")
-    print("")
+
     print(memsafety_.caxdInterpolatorTable("Memsafety-track results - CAXDInterpolator", "label1"))
     print("")
     print(memsafety_.axdInterpolatorTable("Memsafety-track results - AXDInterpolator", "label2"))
     print("")
-    print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers",
-                                       "label3"))
+    print(memsafety_.otherSolversTable("Memsafety-track results - Other Solvers", "label3"))
     print("")
     print(reachsafety_.caxdInterpolatorTable("Reachsafety-track results - CAXDInterpolator", "label4"))
     print("")
