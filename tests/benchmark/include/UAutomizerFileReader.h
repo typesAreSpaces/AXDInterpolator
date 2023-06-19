@@ -78,12 +78,10 @@
     \
     char exec_command[1000];\
     EXEC_COMMAND;\
-    std::cout << "Ok 1" << std::endl << exec_command << std::endl;	\
     int ret = system(exec_command);\
     char log_command[1000];\
     LOG_COMMAND;\
     system(log_command);\
-    std::cout << "Ok 2" << std::endl;\
   }
     //system(("rm -rf " + file_for_implementation).c_str());	\
   //}

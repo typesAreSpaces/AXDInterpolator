@@ -60,6 +60,12 @@ void axdinterpolator::SeparatedPair::separateIntoPair(
     {
       auto const &_lhs = lhs(current_conj);
       auto const &_rhs = rhs(current_conj);
+
+      // Equation with constants
+      if(_rhs.num_args() == 0){
+	goto process_part_2;
+      }
+
       auto const &_func_name_rhs = func_name(_rhs);
 
       if (_func_name_rhs.find("rd") != std::string::npos)
@@ -156,9 +162,10 @@ void axdinterpolator::SeparatedPair::processPart_1() {
   for (auto const &equation : part_1) {
 #if _DEBUG_PROCESS_PART_1_
     m_out << std::endl;
+    m_out << equation << std::endl;
     m_out << equation.arg(0).get_sort() << std::endl;
     m_out << equation.arg(1).get_sort() << std::endl;
-    m_out << equation.arg(1).arg(0).get_sort() << std::endl;
+    // m_out << equation.arg(1).arg(0).get_sort() << std::endl; // ?
     m_out << ">> @processPart_1 Processing equation: " << equation << std::endl;
 #endif
     auto f_name = func_name(rhs(equation));
