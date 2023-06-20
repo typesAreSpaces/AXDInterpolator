@@ -31,8 +31,8 @@ TEST_OTHER_IMP=1
 
 TAGS=compile_commands.json
 
-AXD_INTERPOLATOR_PREFIX_PATH=../..
-AXD_INTERPOLATOR=$(AXD_INTERPOLATOR_PREFIX_PATH)/bin/axd_interpolator
+CAXD_INTERPOLATOR_PREFIX_PATH=../..
+CAXD_INTERPOLATOR=$(CAXD_INTERPOLATOR_PREFIX_PATH)/bin/caxd_interpolator
 BIN_BENCHMARK=$(BDIR)/benchmark
 OUTPUT_FILE=$(CURRENT_DIR)/output.txt 
 
@@ -41,12 +41,15 @@ FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/relax-2.c_val
 #FILE_TEST=$(FILE_TEST_PREFIX_PATH)/MemSafety-Arrays/array-examples/data_structures_set_multi_proc_trivial_ground.c_valid-memsafety.prp.smt2
 #FILE_TEST=$(FILE_TEST_PREFIX_PATH)/ReachSafety-Arrays/array-cav19/array_tiling_poly6.c_unreach-call.prp.smt2
 
-all: test $(TAGS)
-	echo $(BIN_BENCHMARK)
+#all: test $(TAGS)
+#	echo $(BIN_BENCHMARK)
+
+all: $(BIN_BENCHMARK) $(CAXD_INTERPOLATOR) $(TAGS)
+	@echo 'Done!'
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
-debug: $(BIN_BENCHMARK) $(AXD_INTERPOLATOR)
+debug: $(BIN_BENCHMARK) $(CAXD_INTERPOLATOR)
 	./debug.sh
 
 # --------------------------------------------------------
@@ -55,21 +58,21 @@ $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS) $(LDIR)/libz3.$(SO_EXT)
 	@mkdir -p $(CURRENT_DIR)/obj
 	$(CC) -g -c -o $@ $(FLAGS) $<
 
-$(AXD_INTERPOLATOR):
-	make -j8 --directory=$(AXD_INTERPOLATOR_PREFIX_PATH)/
+$(CAXD_INTERPOLATOR):
+	make -j8 --directory=$(CAXD_INTERPOLATOR_PREFIX_PATH)/
 
-$(LDIR)/libz3.$(SO_EXT): $(AXD_INTERPOLATOR)
+$(LDIR)/libz3.$(SO_EXT): $(CAXD_INTERPOLATOR)
 # --------------------------------------------------------
 
 # -------------------------------------------------------------------
-$(BIN_BENCHMARK): $(OBJS) $(LDIR)/libz3.$(SO_EXT) $(AXD_INTERPOLATOR)
+$(BIN_BENCHMARK): $(OBJS) $(LDIR)/libz3.$(SO_EXT) $(CAXD_INTERPOLATOR)
 	@mkdir -p $(BDIR)
 	$(CC) -g -o $@ $(OBJS) $(FLAGS) -lpthread
 # -------------------------------------------------------------------
 
 # ----------------------------------------------
 #  Rules to test a single or many smt2 files
-test: $(BIN_BENCHMARK) $(AXD_INTERPOLATOR)
+test: $(BIN_BENCHMARK) $(CAXD_INTERPOLATOR)
 	$(BIN_BENCHMARK) $(FILE_TEST) \
 		$(Z3_SOLVER_CODE) $(OUTPUT_FILE)\
 		$(TEST_OUR_IMP)
@@ -86,7 +89,7 @@ $(TAGS):
 .PHONY: clean
 
 clean:
-	make -C $(AXD_INTERPOLATOR_PREFIX_PATH)/ clean
+	make -C $(CAXD_INTERPOLATOR_PREFIX_PATH)/ clean
 	rm -rf *.smt2
 	rm -rf $(ODIR) $(BDIR)
 	rm -rf $(BIN_BENCHMARK)
