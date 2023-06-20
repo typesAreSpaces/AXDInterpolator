@@ -76,8 +76,6 @@ class ResultsReader:
         for subtrack in self.table:
             table += f"\t\t\t{subtrack} "
 
-            print(self.table)
-            print(self.table[subtrack])
             caxd_z3_entry = self.table[subtrack]['0']
             caxd_mathsat_entry = self.table[subtrack]['1']
             caxd_smtinterpol_entry = self.table[subtrack]['2']
