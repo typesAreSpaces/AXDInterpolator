@@ -87,6 +87,7 @@ void UAutomizerFileReader::process(char const * file_path){
     string_path.substr(string_path.find_last_of("/\\") + 1);
   std::ifstream smt_file;
   smt_file.open(file_path);
+  unsigned num_files = 0;
 
   while(std::getline(smt_file, line)){
 
@@ -106,16 +107,27 @@ void UAutomizerFileReader::process(char const * file_path){
 
       switch (implementation) {
       case '0':
-	testCAXDInterpolator();
-	break;
-      case '1':
-	testAXDInterpolator();
-	break;
-      case '2':
-	testOtherSolvers();
-	break;
+#if DEBUG_SMT_FILES
+      {
+        std::ofstream debuggingFile("/home/jose/debug_this_" +
+                                    std::to_string(num_files++) + ".smt2");
+        for (auto const &x : stack_of_frames) {
+            debuggingFile << x << std::endl;
+        }
+        debuggingFile << current_frame << std::endl;
+        debuggingFile.close();
       }
-      
+#endif
+        testCAXDInterpolator();
+        break;
+      case '1':
+        testAXDInterpolator();
+        break;
+      case '2':
+        testOtherSolvers();
+        break;
+      }
+
       current_frame = stack_of_frames.back();
       stack_of_frames.pop_back();
     } else if (isEchoCmd())
@@ -125,9 +137,9 @@ void UAutomizerFileReader::process(char const * file_path){
 
     if (nesting_level < 0)
       throw "Error @ "
-	    "UAutomizerFileReader::process "
-	    "The number of pop operations are bigger than "
-	    "the number of push operations.";
+            "UAutomizerFileReader::process "
+            "The number of pop operations are bigger than "
+            "the number of push operations.";
 
     if (max_nesting_level < nesting_level)
       max_nesting_level = nesting_level;
@@ -155,7 +167,7 @@ void UAutomizerFileReader::processSingleFile(char const *file_path) {
 
   if (input_parser.check() == z3::unsat) {
     std::string file_for_implementation =
-	"axdinterpolator_" + name_solver + "_" + current_file;
+        "axdinterpolator_" + name_solver + "_" + current_file;
     std::ofstream axdinterpolator_file(file_for_implementation.c_str());
 
     z3::expr_vector curr_assertions = input_parser.assertions();
@@ -173,7 +185,7 @@ void UAutomizerFileReader::processSingleFile(char const *file_path) {
     unsigned total_size_cnf = curr_conjunction.num_args();
     unsigned half_size_cnf = total_size_cnf / 2;
     if (curr_conjunction.decl().decl_kind() != Z3_OP_AND ||
-	half_size_cnf == 0 || (total_size_cnf - half_size_cnf) == 0) {
+        half_size_cnf == 0 || (total_size_cnf - half_size_cnf) == 0) {
       axdinterpolator_file.close();
       system(("rm -rf " + file_for_implementation).c_str());
       return;
@@ -197,7 +209,7 @@ void UAutomizerFileReader::processSingleFile(char const *file_path) {
     char exec_command[1000];
     // EXEC_COMMAND;
     sprintf(exec_command, "./../../bin/caxd_interpolator QF_LIA %s %u;",
-	    file_for_implementation.c_str(), curr_solver);
+            file_for_implementation.c_str(), curr_solver);
 
     int ret = system(exec_command);
     char log_command[1000];
@@ -206,19 +218,19 @@ void UAutomizerFileReader::processSingleFile(char const *file_path) {
     if (ret != 0 && ret != 152) {
       char complain_command[1000];
       sprintf(complain_command,
-	      "echo File: \"%s\" Solver Code: \"%u\" Sample Id: %d "
-	      "Exit Code: %d >> /home/jose/bad_cases.txt",
-	      file_for_implementation.c_str(), curr_solver, 500 - num_samples,
-	      ret);
+              "echo File: \"%s\" Solver Code: \"%u\" Sample Id: %d "
+              "Exit Code: %d >> /home/jose/bad_cases.txt",
+              file_for_implementation.c_str(), curr_solver, 500 - num_samples,
+              ret);
       system(complain_command);
       system(("mv " + file_for_implementation + " ~/" +
-	      file_for_implementation + std::to_string(500 - num_samples))
-		 .c_str());
+              file_for_implementation + std::to_string(500 - num_samples))
+                 .c_str());
     }
 #endif
     sprintf(log_command,
-	    "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
-	    file_for_implementation.c_str(), curr_solver, ret, file_statistics);
+            "echo File: \"%s\" Solver Code: \"%u\" Exit Code: %d >> \"%s\"",
+            file_for_implementation.c_str(), curr_solver, ret, file_statistics);
 
     system(log_command);
 

@@ -34,6 +34,10 @@ int main(int argc, char * argv[]){
     return 0;
   }
 
+#if DEBUG_SMT_FILES
+  std::cerr << "@benchmark. Analysing: " << file << std::endl;
+#endif
+
   SMT_SOLVER curr_solver;
   switch(*argv[2]){
     case '0':

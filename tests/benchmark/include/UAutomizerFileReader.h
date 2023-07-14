@@ -12,6 +12,7 @@
 
 #define SINGLE_FORMULA 0
 #define REPORT_BAD_CASES 0
+#define DEBUG_SMT_FILES 1
 
 #define TEMP_FILE_SETUP                                                        \
   std::string temp_file = "temp_" + name_solver + "_" + current_file;          \
