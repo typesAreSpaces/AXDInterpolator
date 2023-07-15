@@ -93,6 +93,9 @@ int axdinterpolator::run(int argc, char **argv) {
 
     const char *theory = argv[1];
     const char *smt_filename = argv[2];
+#if _DEBUG_INPUT_FORMULA_PARSER
+    std::cerr << "Process " << smt_filename << std::endl;
+#endif
     const char *smt_engine_code = argv[3];
 
     InputFormulaParser input(theory, smt_filename, smt_engine_code, ctx);
