@@ -128,23 +128,28 @@ void axdinterpolator::AXDInterpolant::step_1() {
 	// since both use the same context
 	temp_disjs.push_back(part_a.index_var == indexes[l]);
       }
+      auto const consequent_fifth_pred_22 = temp_disjs.size() == 0
+						? sig.ctx.bool_val(true)
+						: z3::mk_or(temp_disjs);
 #if _DEBUG_STEPS_
       m_out << std::endl;
       m_out << "Debugging chain of diff_k equations" << std::endl;
       m_out << (z3::implies(part_a.index_var == indexes[size - 1],
 			    curr_rd(c_1, part_a.index_var) ==
 				curr_rd(c_2, part_a.index_var)) ||
-		z3::mk_or(temp_disjs))
+		consequent_fifth_pred_22)
 	    << std::endl;
 #endif
-      part_a.parametric_formulas.push_back(z3::implies(part_a.index_var > indexes[size - 1],
-					  curr_rd(c_1, part_a.index_var) ==
-					      curr_rd(c_2, part_a.index_var)) ||
-			      z3::mk_or(temp_disjs));
-      part_b.parametric_formulas.push_back(z3::implies(part_a.index_var > indexes[size - 1],
-					  curr_rd(c_1, part_a.index_var) ==
-					      curr_rd(c_2, part_a.index_var)) ||
-			      z3::mk_or(temp_disjs));
+      part_a.parametric_formulas.push_back(
+	  z3::implies(part_a.index_var > indexes[size - 1],
+		      curr_rd(c_1, part_a.index_var) ==
+			  curr_rd(c_2, part_a.index_var)) ||
+	  consequent_fifth_pred_22);
+      part_b.parametric_formulas.push_back(
+	  z3::implies(part_a.index_var > indexes[size - 1],
+		      curr_rd(c_1, part_a.index_var) ==
+			  curr_rd(c_2, part_a.index_var)) ||
+	  consequent_fifth_pred_22);
       // -----------------------------------------------------
       // -----------------------------------------------------
       // Sixth predicate from (22)
@@ -185,7 +190,7 @@ void axdinterpolator::AXDInterpolant::step_2() {
   m_out << part_b.part_2 << std::endl;
   m_out << "Part B index variables" << std::endl;
   m_out << part_b_index_vars << std::endl;
-#endif 
+#endif
 
   z3::expr_vector from_parametric_index(sig.ctx);
   from_parametric_index.push_back(part_a.index_var);
@@ -196,13 +201,13 @@ void axdinterpolator::AXDInterpolant::step_2() {
     temp_index_A.push_back(part_a_index_vars[i]);
 #if _DEBUG_STEPS_
     m_out << "Part A: Replacing index_var with " << part_a_index_vars[i]
-	  << std::endl;
+          << std::endl;
     m_out << ">>> After" << std::endl;
     m_out << conj_A.substitute(from_parametric_index, temp_index_A)
-	  << std::endl;
+          << std::endl;
 #endif
     auto const &formula =
-      conj_A.substitute(from_parametric_index, temp_index_A);
+        conj_A.substitute(from_parametric_index, temp_index_A);
     instantiated_part_a.push_back(formula);
     temp_index_A.pop_back();
   }
@@ -214,13 +219,13 @@ void axdinterpolator::AXDInterpolant::step_2() {
     temp_index_B.push_back(part_b_index_vars[i]);
 #if _DEBUG_STEPS_
     m_out << "Part B: Replacing index_var with " << part_b_index_vars[i]
-	  << std::endl;
+          << std::endl;
     m_out << ">>> After" << std::endl;
     m_out << conj_B.substitute(from_parametric_index, temp_index_B)
-	  << std::endl;
+          << std::endl;
 #endif
     auto const &formula =
-	conj_B.substitute(from_parametric_index, temp_index_B);
+        conj_B.substitute(from_parametric_index, temp_index_B);
     instantiated_part_b.push_back(formula);
     temp_index_B.pop_back();
   }
@@ -252,11 +257,11 @@ void axdinterpolator::AXDInterpolant::step_3() {
       z3::params p(sig.ctx);
       m_out << "Interpolant computed using the C++ API" << std::endl;
       m_out << sig.ctx.get_interpolant(
-		   solver.proof(),
-		   z3::interpolant(z3::mk_and(instantiated_part_a)) &&
-		       z3::mk_and(instantiated_part_b),
-		   p)
-	    << std::endl;
+                   solver.proof(),
+                   z3::interpolant(z3::mk_and(instantiated_part_a)) &&
+                       z3::mk_and(instantiated_part_b),
+                   p)
+            << std::endl;
     }
 #endif
     break;

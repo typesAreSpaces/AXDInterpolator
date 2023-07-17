@@ -14,7 +14,8 @@ INTERPOLATION_ENGINE=0
 THEORY=QF_LIA
 
 TEST_DIR=tests/smt2-files/caxd_examples
-CURR_TEST=7_2_2.smt2
+#CURR_TEST=7_2_2.smt2
+CURR_TEST=7_2.smt2
 
 #TEST_DIR=tests/smt2-files/buggy-benchmark
 #CURR_TEST=axdinterpolator_Z3_buggy2-simplified-2.smt2

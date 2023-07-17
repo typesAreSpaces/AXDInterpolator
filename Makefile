@@ -25,7 +25,7 @@ release: $(CAXD_INTERPOLATOR)
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: CCFLAGS += -DDEBUG -g
-debug: $(CAXD_INTERPOLATOR)
+debug: $(CAXD_INTERPOLATOR) tags
 	./debug.sh
 
 # -------------------------------------------------
