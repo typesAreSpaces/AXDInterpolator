@@ -41,7 +41,7 @@ bool axdinterpolator::AXDInterpolant::testOutput(
 #endif
 
   if(test1.check() == z3::unsat){
-    //std::cout << "Done with A-part testing - PASSED" << std::endl;
+    //m_out << "Done with A-part testing - PASSED" << std::endl;
     return test2.check() == z3::unsat;
   }
 

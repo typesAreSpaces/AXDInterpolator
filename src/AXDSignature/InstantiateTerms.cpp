@@ -4,12 +4,12 @@
 #define PUSH_INSTANTIATIONS(ARRAY_OF_ARRAYS)\
   for(auto const & vec_pointer : ARRAY_OF_ARRAYS){\
     for(auto const & elem : *vec_pointer){\
-      std::cout << ">>> ahhh " << elem << std::endl;\
+      m_out << ">>> Elem: " << elem << std::endl;\
       terms.insert(elem);\
     }\
     vec_pointer->resize(0);\
   }\
-  std::cout << "Done PUSH_INSTANTIATIONS" << std::endl;
+  m_out << "Done PUSH_INSTANTIATIONS" << std::endl;
 
 
 #define UNARY_INSTANTIATION(TERM, ARRAY, OP)\

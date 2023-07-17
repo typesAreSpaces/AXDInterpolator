@@ -87,7 +87,9 @@ void UAutomizerFileReader::process(char const * file_path){
     string_path.substr(string_path.find_last_of("/\\") + 1);
   std::ifstream smt_file;
   smt_file.open(file_path);
+#if DEBUG_SMT_FILES
   unsigned num_files = 0;
+#endif
 
   while(std::getline(smt_file, line)){
 
@@ -153,8 +155,6 @@ void UAutomizerFileReader::processSingleFile(char const *file_path) {
 
   std::string string_path = file_path;
   current_file = string_path.substr(string_path.find_last_of("/\\") + 1);
-
-  std::cout << file_path << std::endl;
 
   z3::context ctx;
   z3::solver input_parser(ctx);

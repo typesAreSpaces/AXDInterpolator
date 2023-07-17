@@ -4,9 +4,9 @@
 #include "AXDSignature.h"
 
 void traverse(z3::expr e) {
-  std::cout << "Current e: " << e << std::endl;
-  std::cout << e.num_args() << std::endl;
-  std::cout << func_name(e) << std::endl;
+  m_out << "Current e: " << e << std::endl;
+  m_out << e.num_args() << std::endl;
+  m_out << func_name(e) << std::endl;
   if(e.is_app()){
     for(unsigned int i = 0; i < e.num_args(); i++){
       traverse(e.arg(i));
@@ -90,7 +90,7 @@ z3::expr_vector flattening(z3::expr e, z3::context & ctx) {
   
   for (unsigned int j = 0; j < remove_duplicates_subformulas.size(); j++) {
     z3::expr new_var = get_new_variable(e, ctx, var_name_counter); // generates new variable
-    // std::cout << new_var << std::endl;
+    // m_out << new_var << std::endl;
 
     // creates vector with the subformula and its new variable name so we can use substitute
     z3::expr_vector I(ctx);
@@ -99,10 +99,10 @@ z3::expr_vector flattening(z3::expr e, z3::context & ctx) {
     constants.push_back(remove_duplicates_subformulas[j]);
 
     if (j != (remove_duplicates_subformulas.size() - 1)) { // because we don't want to full formula to be assigned a variable
-      //std::cout << remove_duplicates_subformulas[j] << std::endl;
+      //m_out << remove_duplicates_subformulas[j] << std::endl;
       Z3_ast_vector_set(ctx, remove_duplicates_subformulas, j, (new_var == remove_duplicates_subformulas[j]));
       //remove_duplicates_subformulas[j] = (new_var == remove_duplicates_subformulas[j]);
-      //std::cout << remove_duplicates_subformulas[j] << std::endl;
+      //m_out << remove_duplicates_subformulas[j] << std::endl;
     }
 
     // looks through all of the subformula and tries to replace current formula with the new variable
@@ -149,10 +149,10 @@ z3::expr_vector flattening(z3::expr e, z3::context & ctx) {
 void M_O_instantiation(z3::expr f, const z3::expr_vector &I,
 		       const z3::expr_vector &constants) {
   assert(I.size() == constants.size());
-  std::cout << "Print1: ";
-  std::cout << f << std::endl;
-  std::cout << "Print2: ";
-  std::cout << f.substitute(constants, I) << std::endl;
+  m_out << "Print1: ";
+  m_out << f << std::endl;
+  m_out << "Print2: ";
+  m_out << f.substitute(constants, I) << std::endl;
 }
 
 /*void initSaturation() {

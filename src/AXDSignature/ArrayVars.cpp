@@ -10,10 +10,10 @@ void axdinterpolator::ArrayVars::insert(
     z3::expr const & array_var){
   unsigned index = array_var.get_sort().id();
 #if _DEBUG_ARRAY_VARS 
-  std::cout << ">> Debugging axdinterpolator::ArrayVars" << std::endl;
-  std::cout << "Index: " << index << std::endl;
-  std::cout << "Array var: " << array_var << std::endl;
-  std::cout << "Sort of array var: " << array_var.get_sort() << std::endl;
+  m_out << ">> Debugging axdinterpolator::ArrayVars" << std::endl;
+  m_out << "Index: " << index << std::endl;
+  m_out << "Array var: " << array_var << std::endl;
+  m_out << "Sort of array var: " << array_var.get_sort() << std::endl;
 #endif
   unsigned old_entry_size, new_entry_size;
   if(vars.find(index) == vars.end())
