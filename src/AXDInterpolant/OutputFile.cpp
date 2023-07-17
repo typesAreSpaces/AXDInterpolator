@@ -226,6 +226,10 @@ void axdinterpolator::AXDInterpolant::smtInterpolOutputFile() {
   // includes an additional parenthesis
   interpolant_from_file += ")\n";
   interpolant_from_file += "(check-sat)\n";
+#if _DEBUG_SMTINTERPOLOUTPUTFILE_
+  m_out << "Printing smt2 file from smtInterpolOutputFile" << std::endl;
+  m_out << interpolant_from_file << std::endl;
+#endif
   // system(("rm -rf "
   //+ OUTPUT_DIR + "/" + m_file_name + "temp.smt2").c_str());
 

@@ -13,6 +13,7 @@
 #define _DEBUG_AXD_LOOP_              0
 #define _DEBUG_STEPS_                 0
 #define _DEBUG_AXD_CONSTRUCTOR_       0
+#define _DEBUG_SMTINTERPOLOUTPUTFILE_ 0
 #define _TEST_OUTPUT_                 0
 #define _TEST_OUTPUT_ORIGINAL_THY_    0
 #define _INCLUDE_OUTPUT_              1
