@@ -108,13 +108,13 @@ void axdinterpolator::AXDInterpolant::mathsatOutputFile() {
   // This true assertion prevents
   // an unary application of and
   mathsat_file << "true" << std::endl;
-  SmtSolverOutStreamSetup(mathsat_file, part_a);
+  SmtSolverOutStreamSetup(mathsat_file, instantiated_part_a);
   mathsat_file << ") :interpolation-group part_a))" << std::endl;
   mathsat_file << "(assert (! (and " << std::endl;
   // This true assertion prevents
   // an unary application of and
   mathsat_file << "true" << std::endl;
-  SmtSolverOutStreamSetup(mathsat_file, part_b);
+  SmtSolverOutStreamSetup(mathsat_file, instantiated_part_b);
   mathsat_file << ") :interpolation-group part_b))" << std::endl;
   mathsat_file << "(check-sat)" << std::endl;
   mathsat_file << "(get-interpolant (part_a))" << std::endl;
@@ -181,13 +181,13 @@ void axdinterpolator::AXDInterpolant::smtInterpolOutputFile() {
   // This true assertion prevents
   // an unary application of and
   smtinterpol_file << "true" << std::endl;
-  SmtSolverOutStreamSetup(smtinterpol_file, part_a);
+  SmtSolverOutStreamSetup(smtinterpol_file, instantiated_part_a);
   smtinterpol_file << ") :named part_a))" << std::endl;
   smtinterpol_file << "(assert (! (and" << std::endl;
   // This true assertion prevents
   // an unary application of and
   smtinterpol_file << "true" << std::endl;
-  SmtSolverOutStreamSetup(smtinterpol_file, part_b);
+  SmtSolverOutStreamSetup(smtinterpol_file, instantiated_part_b);
   smtinterpol_file << ") :named part_b))" << std::endl;
   smtinterpol_file << "(check-sat)" << std::endl;
   smtinterpol_file << "(get-interpolants part_a part_b)" << std::endl;
