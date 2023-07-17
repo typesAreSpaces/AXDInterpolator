@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-rm -rf debug_log.txt
-#./bin/benchmark buggy.smt2 0 debug_log.txt 0
-#./bin/benchmark buggy2.smt2 0 debug_log.txt 0
-./bin/benchmark buggy2-simplified.smt2 0 debug_log.txt 0
-#./bin/benchmark buggy2-simplified-but-works-this-time.smt2 0 debug_log.txt 0
+FILE=../smt2-files/caxd_examples/7_2.smt2
 
-#gdb --args ./bin/benchmark buggy2-simplified.smt2 0 debug_log.txt 0
+rm -rf debug_log.txt
+touch debug_log.txt
+
+gdb --args ./bin/benchmark $FILE 0 debug_log.txt 0
