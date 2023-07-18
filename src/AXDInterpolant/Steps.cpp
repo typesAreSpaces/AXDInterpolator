@@ -1,4 +1,5 @@
 #include "AXDInterpolant.h"
+#include "util.h"
 #include "z3++.h"
 #include <algorithm>
 
@@ -128,9 +129,7 @@ void axdinterpolator::AXDInterpolant::step_1() {
 	// since both use the same context
 	temp_disjs.push_back(part_a.index_var == indexes[l]);
       }
-      auto const consequent_fifth_pred_22 = temp_disjs.size() == 0
-						? sig.ctx.bool_val(true)
-						: z3::mk_or(temp_disjs);
+      auto const consequent_fifth_pred_22 = z3_or(temp_disjs);
 #if _DEBUG_STEPS_
       m_out << std::endl;
       m_out << "Debugging chain of diff_k equations" << std::endl;
@@ -195,7 +194,7 @@ void axdinterpolator::AXDInterpolant::step_2() {
   z3::expr_vector from_parametric_index(sig.ctx);
   from_parametric_index.push_back(part_a.index_var);
 
-  z3::expr conj_A = z3::mk_and(part_a.parametric_formulas);
+  z3::expr conj_A = z3_and(part_a.parametric_formulas);
   z3::expr_vector temp_index_A(sig.ctx);
   for (unsigned i = 0; i < part_a_index_vars.size(); i++) {
     temp_index_A.push_back(part_a_index_vars[i]);
@@ -211,9 +210,9 @@ void axdinterpolator::AXDInterpolant::step_2() {
     instantiated_part_a.push_back(formula);
     temp_index_A.pop_back();
   }
-  instantiated_part_a.push_back(z3::mk_and(part_a.part_2));
+  instantiated_part_a.push_back(z3_and(part_a.part_2));
 
-  z3::expr conj_B = z3::mk_and(part_b.parametric_formulas);
+  z3::expr conj_B = z3_and(part_b.parametric_formulas);
   z3::expr_vector temp_index_B(sig.ctx);
   for (unsigned i = 0; i < part_b_index_vars.size(); i++) {
     temp_index_B.push_back(part_b_index_vars[i]);
@@ -229,7 +228,7 @@ void axdinterpolator::AXDInterpolant::step_2() {
     instantiated_part_b.push_back(formula);
     temp_index_B.pop_back();
   }
-  instantiated_part_b.push_back(z3::mk_and(part_b.part_2));
+  instantiated_part_b.push_back(z3_and(part_b.part_2));
 }
 
 void axdinterpolator::AXDInterpolant::step_3() {
@@ -237,8 +236,8 @@ void axdinterpolator::AXDInterpolant::step_3() {
   m_out << std::endl;
   m_out << "Step 3:" << std::endl;
 #endif
-  solver.add(z3::mk_and(instantiated_part_a));
-  solver.add(z3::mk_and(instantiated_part_b));
+  solver.add(z3_and(instantiated_part_a));
+  solver.add(z3_and(instantiated_part_b));
 #if _DEBUG_STEPS_
   m_out << solver << std::endl;
 #endif
@@ -258,8 +257,8 @@ void axdinterpolator::AXDInterpolant::step_3() {
       m_out << "Interpolant computed using the C++ API" << std::endl;
       m_out << sig.ctx.get_interpolant(
                    solver.proof(),
-                   z3::interpolant(z3::mk_and(instantiated_part_a)) &&
-                       z3::mk_and(instantiated_part_b),
+                   z3::interpolant(z3_and(instantiated_part_a)) &&
+                       z3_and(instantiated_part_b),
                    p)
             << std::endl;
     }

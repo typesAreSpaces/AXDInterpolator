@@ -15,29 +15,29 @@ bool axdinterpolator::AXDInterpolant::testOutput(
 #if _TEST_OUTPUT_ORIGINAL_THY_
   test1.add(
       not(z3::implies(
-          z3::mk_and(input_part_a), 
-          z3::mk_and(interpolant))));
+          z3_and(input_part_a), 
+          z3_and(interpolant))));
   testOutputArrayAxiomatization(test1);
   testOutputDiffLifting(test1, part_a);
   testOutputDiffLifting(test1, part_b);
 #else
   test1.add(
       not(z3::implies(
-          z3::mk_and(part_a_vector), 
-          z3::mk_and(interpolant))));
+          z3_and(part_a_vector), 
+          z3_and(interpolant))));
 #endif
 
 #if _TEST_OUTPUT_ORIGINAL_THY_
   test2.add(
-      z3::mk_and(input_part_b) 
-      && z3::mk_and(interpolant));
+      z3_and(input_part_b) 
+      && z3_and(interpolant));
   testOutputArrayAxiomatization(test2);
   testOutputDiffLifting(test2, part_a);
   testOutputDiffLifting(test2, part_b);
 #else
   test2.add(
       mk_and(part_b_vector) 
-      && z3::mk_and(interpolant));
+      && z3_and(interpolant));
 #endif
 
   if(test1.check() == z3::unsat){

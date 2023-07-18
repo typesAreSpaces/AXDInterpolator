@@ -26,7 +26,7 @@
 //     case 1:
 //       return conjs[0];
 //     default:
-//       return z3::mk_and(conjs);
+//       return z3_and(conjs);
 //   }
 // }
 
@@ -47,6 +47,6 @@
 //     case 1:
 //       return conjs[0];
 //     default:
-//       return z3::mk_and(conjs);
+//       return z3_and(conjs);
 //   }
 // }

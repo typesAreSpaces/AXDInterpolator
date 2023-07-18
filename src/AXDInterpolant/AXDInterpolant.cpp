@@ -68,7 +68,7 @@ z3::expr axdinterpolator::AXDInterpolant::liftInterpolant(
   liftInterpolantDiffSubs(from, to, part_a);
   liftInterpolantDiffSubs(from, to, part_b);
 
-  return z3::mk_and(_interpolant).substitute(from, to);
+  return z3_and(_interpolant).substitute(from, to);
 }
 
 void axdinterpolator::AXDInterpolant::liftInterpolantDiffSubs(
