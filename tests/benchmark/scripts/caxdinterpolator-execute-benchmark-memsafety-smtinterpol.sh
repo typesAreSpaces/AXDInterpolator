@@ -2,7 +2,7 @@
 
 CURRENT_DIR=$(pwd)
 BENCHMARK_DIR=$(dirname $CURRENT_DIR)
-OUTPUT_FILE=$BENCHMARK_DIR/benchmark_memsafety_results-axdinterpolator.txt
+OUTPUT_FILE=$BENCHMARK_DIR/benchmark_memsafety_results-caxdinterpolator.txt
 TESTS_DIR=$(dirname $BENCHMARK_DIR)
 ROOT_DIR=$(dirname $TESTS_DIR)
 # VERIFICATION_FILES_DIR=$(dirname $BENCHMARK_DIR)/verification-files/files
