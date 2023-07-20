@@ -49,7 +49,7 @@ bool axdinterpolator::InputFormulaParser::exists_file(const char *name) {
 }
 
 std::string axdinterpolator::InputFormulaParser::getDecls() {
-  return input_parser.to_smt2_decls_only();
+  return input_parser.to_smt2_decls();
 }
 
 z3::expr axdinterpolator::InputFormulaParser::partA() {

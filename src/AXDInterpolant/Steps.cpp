@@ -239,7 +239,8 @@ void axdinterpolator::AXDInterpolant::step_3() {
   solver.add(z3_and(instantiated_part_a));
   solver.add(z3_and(instantiated_part_b));
 #if _DEBUG_STEPS_
-  m_out << solver << std::endl;
+  m_out << "Solver output" << std::endl;
+  m_out << solver << std::endl; 
 #endif
   switch (solver.check()) {
   case z3::unsat:

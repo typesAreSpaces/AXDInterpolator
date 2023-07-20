@@ -111,7 +111,7 @@ void UAutomizerFileReader::testOtherSolvers() {
         if (line == "unsat") {
           std::getline(result, line);
 
-          interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+          interpolant_from_file += tseitin_solver.to_smt2_decls();
 
           interpolant_from_file += "(assert (and true\n";
           while (std::getline(result, line))
@@ -174,7 +174,7 @@ void UAutomizerFileReader::testOtherSolvers() {
         std::getline(result, line);
 
         if (line == "unsat") {
-          interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+          interpolant_from_file += tseitin_solver.to_smt2_decls();
           interpolant_from_file += "(assert (and true\n";
           std::string _interpolant_result = "";
           while (std::getline(result, line))
@@ -252,7 +252,7 @@ void UAutomizerFileReader::testOtherSolvers() {
         std::getline(result, line);
 
         if (line == "unsat") {
-          interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+          interpolant_from_file += tseitin_solver.to_smt2_decls();
           interpolant_from_file += "(assert \n";
           std::getline(result, line);
           interpolant_from_file += line.erase(0, 1) + "\n";

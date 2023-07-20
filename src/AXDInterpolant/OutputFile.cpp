@@ -27,7 +27,7 @@ void axdinterpolator::AXDInterpolant::z3OutputFile() {
 	  << ")" << std::endl;
   //"QF_UFLIA" : "QF_UFLIA") << ")" << std::endl;
 
-  z3_file << solver.to_smt2_decls_only();
+  z3_file << solver.to_smt2_decls();
   z3_file << "(assert (! (and" << std::endl;
   // This true assertion prevents
   // an unary application of and
@@ -59,7 +59,7 @@ void axdinterpolator::AXDInterpolant::z3OutputFile() {
   std::getline(result, line);
   std::getline(result, line);
 
-  interpolant_from_file += solver.to_smt2_decls_only();
+  interpolant_from_file += solver.to_smt2_decls();
   interpolant_from_file += "(assert (and\n";
   while (std::getline(result, line)) {
     is_valid_result = true;
@@ -103,7 +103,7 @@ void axdinterpolator::AXDInterpolant::mathsatOutputFile() {
 						       : "QF_UFLIA")
 	       << ")" << std::endl;
 
-  mathsat_file << solver.to_smt2_decls_only();
+  mathsat_file << solver.to_smt2_decls();
   mathsat_file << "(assert (! (and" << std::endl;
   // This true assertion prevents
   // an unary application of and
@@ -134,7 +134,7 @@ void axdinterpolator::AXDInterpolant::mathsatOutputFile() {
   // mathsat outputs "check-sat" followed
   // by the interpolant
   std::getline(result, line);
-  interpolant_from_file += solver.to_smt2_decls_only();
+  interpolant_from_file += solver.to_smt2_decls();
   interpolant_from_file += "(assert \n";
   while (std::getline(result, line)) {
     is_valid_result = true;
@@ -176,7 +176,7 @@ void axdinterpolator::AXDInterpolant::smtInterpolOutputFile() {
 							   : "QF_UFLIA")
 		   << ")" << std::endl;
 
-  smtinterpol_file << solver.to_smt2_decls_only();
+  smtinterpol_file << solver.to_smt2_decls();
   smtinterpol_file << "(assert (! (and" << std::endl;
   // This true assertion prevents
   // an unary application of and
@@ -207,7 +207,7 @@ void axdinterpolator::AXDInterpolant::smtInterpolOutputFile() {
   // mathsat outputs "check-sat" followed
   // by the interpolant
   std::getline(result, line);
-  interpolant_from_file += solver.to_smt2_decls_only();
+  interpolant_from_file += solver.to_smt2_decls();
   interpolant_from_file += "(assert \n";
   // SMTINTERPOL returns a single
   // line containing a list
