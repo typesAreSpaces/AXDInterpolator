@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
     if(not(os.path.isfile(results_path_reachsafety))):
         sys.exit("benchmark_reachsafety_results.txt not available")
-    if(not(os.path.isfile(db_path_reachsafety))):
+    if(not(os.path.isdir(db_path_reachsafety))):
         sys.exit("Reachsafety database not available")
 
     memsafety_ = ResultsReader(results_path_memsafety, db_path_memsafety)
