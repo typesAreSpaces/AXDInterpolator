@@ -32,16 +32,17 @@ THEORY=QF_LIA
 #CURR_TEST=debug_this_156.smt2
 
 TEST_DIR=/home/jose
-CURR_TEST=debug_this_241.smt2
+#CURR_TEST=debug_this_241.smt2
+CURR_TEST=debug_this_497.smt2
 
 echo ">> Checking file" "$TEST_DIR/$CURR_TEST"
 
-# ./bin/caxd_interpolator \
-#     $THEORY $TEST_DIR/$CURR_TEST \
-#     $INTERPOLATION_ENGINE
+ ./bin/caxd_interpolator \
+     $THEORY $TEST_DIR/$CURR_TEST \
+     $INTERPOLATION_ENGINE
 
-for x in $TEST_DIR/*.smt2; do
-    ./bin/caxd_interpolator \
-    $THEORY $x \
-    $INTERPOLATION_ENGINE
-done;
+#for x in $TEST_DIR/*.smt2; do
+    #./bin/caxd_interpolator \
+    #$THEORY $x \
+    #$INTERPOLATION_ENGINE
+#done;

@@ -8,7 +8,7 @@
 [ ! -d $VERIFICATION_FILES_DIR ] \
   && unzip $VERIFICATION_FILES_DIR.zip
 
-# ---------------------------
+# ---------------------------------------------------------------------
 # Move to the root of project
 cd $ROOT_DIR
 
@@ -18,19 +18,24 @@ cd $ROOT_DIR
     && cd $CURRENT_DIR \
     && exit
 
-echo "How many cores can be used? 1, 3, or 6"
-read num_of_cores_allowed
-
 # Download z3-interp-plus if not present
-[ -z "$(ls -A ./dependencies/z3-interp-plus)" ] && git submodule update --init --remote dependencies/z3-interp-plus
-# ---------------------------
+[ -z "$(ls -A ./dependencies/z3-interp-plus)" ] \
+    && git submodule update --init --remote dependencies/z3-interp-plus
+# ---------------------------------------------------------------------
 
 # Move to directory containing files.zip
 # cd ./tests/verification-files
 cd $BENCHMARK_DIR
 
 # Execute main benchmark script
-make -j8 bin/benchmark
+#make -j8 bin/benchmark
+
+[ ! -f ./bin/bechmark ] \
+    && echo "Benchmark binary not available" \
+    && exit
+
+echo "How many cores can be used? 1, 3, or 6"
+read num_of_cores_allowed
 
 # Move to 'scripts' directory to post-process the results
 cd $CURRENT_DIR
@@ -242,12 +247,12 @@ fi
 cat $BENCHMARK_DIR/benchmark_memsafety_results_* > $BENCHMARK_DIR/benchmark_memsafety_results.txt
 cat $BENCHMARK_DIR/benchmark_reachsafety_results_* > $BENCHMARK_DIR/benchmark_reachsafety_results.txt
 
-rm $BENCHMARK_DIR/benchmark_memsafety_results_*
-rm $BENCHMARK_DIR/benchmark_reachsafety_results_*
+#rm $BENCHMARK_DIR/benchmark_memsafety_results_*
+#rm $BENCHMARK_DIR/benchmark_reachsafety_results_*
 
 # Post-processing script
 . get_table.sh
 
-make -C $BENCHMARK_DIR clean
+#make -C $BENCHMARK_DIR clean
 
 ulimit -St unlimited -Sv unlimited
