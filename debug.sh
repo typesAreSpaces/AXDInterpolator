@@ -9,7 +9,7 @@ fi
 iZ3=0
 MathSAT=1
 SMTInterpolator=2
-INTERPOLATION_ENGINE=0
+INTERPOLATION_ENGINE=2
 
 THEORY=QF_LIA
 
@@ -28,7 +28,11 @@ THEORY=QF_LIA
 #CURR_TEST=debug_this_156.smt2
 
 TEST_DIR=/home/jose
-CURR_TEST=debug_this_241.smt2
+#CURR_TEST=debug_this_241.smt2
+CURR_TEST=debug_this_226.smt2
+
+make clean
+make debug -j8
 
 echo ">> Debugging file" "$TEST_DIR/$CURR_TEST"
 

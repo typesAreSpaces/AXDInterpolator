@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    LDIR=lib
-    DYLD_LIBRARY_PATH=$LDIR
-    export DYLD_LIBRARY_PATH
+  LDIR=lib
+  DYLD_LIBRARY_PATH=$LDIR
+  export DYLD_LIBRARY_PATH
 fi
 
 iZ3=0
@@ -33,16 +33,29 @@ THEORY=QF_LIA
 
 TEST_DIR=/home/jose
 #CURR_TEST=debug_this_241.smt2
-CURR_TEST=debug_this_497.smt2
+#CURR_TEST=debug_this_497.smt2
+
+CURR_TEST=debug_this_226.smt2
+#CURR_TEST=debug_this_228.smt2
+#CURR_TEST=debug_this_229.smt2
+#CURR_TEST=debug_this_230.smt2
+#CURR_TEST=debug_this_231.smt2
+#CURR_TEST=debug_this_272.smt2
+#CURR_TEST=debug_this_323.smt2
+#CURR_TEST=debug_this_361.smt2
+#CURR_TEST=debug_this_363.smt2
+#CURR_TEST=debug_this_446.smt2
+#CURR_TEST=debug_this_448.smt2
 
 echo ">> Checking file" "$TEST_DIR/$CURR_TEST"
 
  ./bin/caxd_interpolator \
-     $THEORY $TEST_DIR/$CURR_TEST \
-     $INTERPOLATION_ENGINE
+   $THEORY $TEST_DIR/$CURR_TEST \
+   $INTERPOLATION_ENGINE
 
-#for x in $TEST_DIR/*.smt2; do
-    #./bin/caxd_interpolator \
-    #$THEORY $x \
-    #$INTERPOLATION_ENGINE
-#done;
+ #for x in $TEST_DIR/*.smt2; do
+   #echo $x
+   #./bin/caxd_interpolator \
+     #$THEORY $x \
+     #$INTERPOLATION_ENGINE
+      #done;
