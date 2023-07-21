@@ -13,7 +13,10 @@
 
 #define lhs(x) x.arg(0)
 #define rhs(x) x.arg(1)
-#define func_name(x) x.decl().name().str()
+#define func_name(x)                                                           \
+  ((x.decl().name().kind() == 1)                                               \
+       ? x.decl().name().str()                                                 \
+       : "k!" + std::to_string(x.decl().name().to_int()))
 #define _get_sort(x) x.decl().range()
 #define sort_name(x) x.decl().range().name().str()
 #define func_kind(x) x.decl().decl_kind()
@@ -142,7 +145,7 @@ struct WriteVector {
   std::vector<std::tuple<z3::expr, z3::expr, z3::expr, z3::expr>> m_vector;
   WriteVector();
   void add(z3::expr const &, z3::expr const &, z3::expr const &,
-	   z3::expr const &);
+           z3::expr const &);
 
   friend std::ostream &operator<<(std::ostream &, WriteVector const &);
 };

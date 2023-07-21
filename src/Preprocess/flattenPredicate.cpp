@@ -55,6 +55,10 @@ void axdinterpolator::Preprocessor::flattenPredicate(
 #if _DEBUG_PREPROCESS_
     m_out << std::endl;
     m_out << "-) Formula@Z3_OP_EQ " << formula << std::endl;
+    m_out << formula << std::endl;
+    m_out << rhs(formula).decl() << std::endl;
+    m_out << rhs(formula).decl().name() << std::endl;
+    m_out << "The kind: " << rhs(formula).decl().name().kind() << std::endl;
 #endif
     auto const isLHSConstant = lhs_form.num_args() == 0;
     auto const f_name = func_name(rhs(formula));
