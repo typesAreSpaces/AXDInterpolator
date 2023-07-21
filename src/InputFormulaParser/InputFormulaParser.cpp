@@ -124,7 +124,7 @@ int axdinterpolator::run(int argc, char **argv) {
 	  m_out << "Not valid SMT solver option." << std::endl;
 	  // return 3;
 	}
-	m_out << axd << std::endl;
+	//m_out << axd << std::endl;
       } while (input.next());
 
     } catch (char const *e) {

@@ -44,8 +44,8 @@ pid_memsafety_z3=$!
 pid_memsafety_mathsat=$!
 # Execute scripts to test caxdinterpolant using smtinterpol
 # for the memsafety track
-#./caxdinterpolator-execute-benchmark-memsafety-smtinterpol.sh &
-#pid_memsafety_smtinterpol=$!
+./caxdinterpolator-execute-benchmark-memsafety-smtinterpol.sh &
+pid_memsafety_smtinterpol=$!
 # Execute scripts to test caxdinterpolant using z3
 # for the reachsafety track
 ./caxdinterpolator-execute-benchmark-reachsafety-z3.sh &
@@ -56,16 +56,16 @@ pid_reachsafety_z3=$!
 pid_reachsafety_mathsat=$!
 # Execute scripts to test caxdinterpolant using smtinterpol
 # for the reachsafety track
-#./caxdinterpolator-execute-benchmark-reachsafety-smtinterpol.sh &
-#pid_reachsafety_smtinterpol=$!
+./caxdinterpolator-execute-benchmark-reachsafety-smtinterpol.sh &
+pid_reachsafety_smtinterpol=$!
 
 # Join for the async executions to finish
 wait $pid_memsafety_z3
 wait $pid_memsafety_mathsat
-#wait $pid_memsafety_smtinterpol
+wait $pid_memsafety_smtinterpol
 wait $pid_reachsafety_z3
 wait $pid_reachsafety_mathsat
-#wait $pid_reachsafety_smtinterpol
+wait $pid_reachsafety_smtinterpol
 
 # Rename stuff (?)
 cat $BENCHMARK_DIR/benchmark_memsafety_results-* > $BENCHMARK_DIR/benchmark_memsafety_results_caxdinterpolator.txt
