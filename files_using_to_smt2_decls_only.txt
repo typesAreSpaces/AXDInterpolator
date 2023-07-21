@@ -1,0 +1,12 @@
+./src/AXDInterpolant/Steps.cpp:247:  m_out << solver.to_smt2_decls_only() << std::endl;
+./src/AXDInterpolant/OutputFile.cpp:30:  z3_file << solver.to_smt2_decls_only();
+./src/AXDInterpolant/OutputFile.cpp:62:  interpolant_from_file += solver.to_smt2_decls_only();
+./src/AXDInterpolant/OutputFile.cpp:106:  mathsat_file << solver.to_smt2_decls_only();
+./src/AXDInterpolant/OutputFile.cpp:137:  interpolant_from_file += solver.to_smt2_decls_only();
+./src/AXDInterpolant/OutputFile.cpp:179:  smtinterpol_file << solver.to_smt2_decls_only();
+./src/AXDInterpolant/OutputFile.cpp:210:  interpolant_from_file += solver.to_smt2_decls_only();
+./src/InputFormulaParser/InputFormulaParser.cpp:52:  return input_parser.to_smt2_decls_only();
+./tests/benchmark/include/z3++.h:2056:    std::string to_smt2_decls_only(char const* status = "unknown") {
+./tests/benchmark/src/UAutomizerFileReader-test.cpp:114:          interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+./tests/benchmark/src/UAutomizerFileReader-test.cpp:177:          interpolant_from_file += tseitin_solver.to_smt2_decls_only();
+./tests/benchmark/src/UAutomizerFileReader-test.cpp:255:          interpolant_from_file += tseitin_solver.to_smt2_decls_only();

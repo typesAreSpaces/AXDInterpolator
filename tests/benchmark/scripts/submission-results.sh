@@ -30,7 +30,7 @@ cd $BENCHMARK_DIR
 # Execute main benchmark script
 #make -j8 bin/benchmark
 
-[ ! -f ./bin/bechmark ] \
+[ ! -f ./bin/benchmark ] \
     && echo "Benchmark binary not available" \
     && exit
 
