@@ -13,12 +13,12 @@ INTERPOLATION_ENGINE=2
 
 THEORY=QF_LIA
 
-#TEST_DIR=tests/smt2-files/caxd_examples
+TEST_DIR=tests/smt2-files/caxd_examples
 #CURR_TEST=6_8.smt2
 #CURR_TEST=7_1.smt2
 #CURR_TEST=7_2.smt2
 #CURR_TEST=not_7_2.smt2
-#CURR_TEST=jhala.smt2
+CURR_TEST=jhala.smt2
 #CURR_TEST=modified_jhala.smt2
 
 #TEST_DIR=tests/smt2-files/buggy-benchmark
@@ -31,11 +31,11 @@ THEORY=QF_LIA
 #TEST_DIR=tests/smt2-files/problematic_files_caxdinterpolator_smtinterpol/check
 #CURR_TEST=debug_this_156.smt2
 
-TEST_DIR=/home/jose
+#TEST_DIR=/home/jose
 #CURR_TEST=debug_this_241.smt2
 #CURR_TEST=debug_this_497.smt2
 
-CURR_TEST=debug_this_226.smt2
+#CURR_TEST=debug_this_226.smt2
 #CURR_TEST=debug_this_228.smt2
 #CURR_TEST=debug_this_229.smt2
 #CURR_TEST=debug_this_230.smt2

@@ -13,9 +13,9 @@ INTERPOLATION_ENGINE=2
 
 THEORY=QF_LIA
 
-#TEST_DIR=tests/smt2-files/caxd_examples
+TEST_DIR=tests/smt2-files/caxd_examples
 #CURR_TEST=7_2_2.smt2
-#CURR_TEST=7_2.smt2
+CURR_TEST=7_2.smt2
 
 #TEST_DIR=tests/smt2-files/buggy-benchmark
 #CURR_TEST=axdinterpolator_Z3_buggy2-simplified-2.smt2
@@ -27,9 +27,9 @@ THEORY=QF_LIA
 #TEST_DIR=tests/smt2-files/problematic_files_caxdinterpolator_smtinterpol/check
 #CURR_TEST=debug_this_156.smt2
 
-TEST_DIR=/home/jose
+#TEST_DIR=/home/jose
 #CURR_TEST=debug_this_241.smt2
-CURR_TEST=debug_this_226.smt2
+#CURR_TEST=debug_this_226.smt2
 
 make clean
 make debug -j8
