@@ -9,6 +9,8 @@
 #include <string>
 #include <type_traits>
 #include <vector>
+#include <chrono>
+#include <thread>
 
 #define SINGLE_FORMULA 0
 #define REPORT_BAD_CASES 0

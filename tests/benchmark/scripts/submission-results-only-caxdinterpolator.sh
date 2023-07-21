@@ -32,7 +32,8 @@ cd $BENCHMARK_DIR
 # Move to 'scripts' directory to post-process the results
 cd $CURRENT_DIR
 
-ulimit -St 360 -Sv 4500000
+#ulimit -St 360 -Sv 4500000
+ulimit -St 360 -Sv 50000000
 
 # Execute scripts to test caxdinterpolant using z3
 # for the memsafety track

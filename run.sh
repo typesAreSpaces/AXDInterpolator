@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  LDIR=lib
-  DYLD_LIBRARY_PATH=$LDIR
-  export DYLD_LIBRARY_PATH
+    LDIR=lib
+    DYLD_LIBRARY_PATH=$LDIR
+    export DYLD_LIBRARY_PATH
 fi
 
 iZ3=0
@@ -49,13 +49,13 @@ CURR_TEST=jhala.smt2
 
 echo ">> Checking file" "$TEST_DIR/$CURR_TEST"
 
- ./bin/caxd_interpolator \
-   $THEORY $TEST_DIR/$CURR_TEST \
-   $INTERPOLATION_ENGINE
+./bin/caxd_interpolator \
+    $THEORY $TEST_DIR/$CURR_TEST \
+    $INTERPOLATION_ENGINE
 
- #for x in $TEST_DIR/*.smt2; do
-   #echo $x
-   #./bin/caxd_interpolator \
-     #$THEORY $x \
-     #$INTERPOLATION_ENGINE
-      #done;
+# for x in $TEST_DIR/*.smt2; do
+#    echo $x
+#    ./bin/caxd_interpolator \
+    #      $THEORY $x \
+    #      $INTERPOLATION_ENGINE
+#       done;

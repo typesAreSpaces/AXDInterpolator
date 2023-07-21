@@ -40,7 +40,8 @@ read num_of_cores_allowed
 # Move to 'scripts' directory to post-process the results
 cd $CURRENT_DIR
 
-ulimit -St 360 -Sv 4500000
+#ulimit -St 360 -Sv 4500000
+ulimit -St 360 -Sv 50000000
 
 if [ "$num_of_cores_allowed" == "1" ]; then
   ./axdinterpolator-execute-benchmark-memsafety-z3.sh
